@@ -8,3 +8,5 @@
 https://greasyfork.org/zh-CN
 
 本 Userscript 的安装地址为：https://greasyfork.org/zh-CN/scripts/368192-%E5%9B%9B%E5%B7%9D%E5%A4%A7%E5%AD%A6%E7%BB%BC%E5%90%88%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F%E5%8A%A9%E6%89%8B
+
+编译命令为：npm run build
