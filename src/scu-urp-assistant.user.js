@@ -1,4 +1,4 @@
-// ===UserScript===
+// ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
 // @version      0.5
@@ -7,7 +7,7 @@
 // @include      http://202.115.47.141/loginAction.do
 // @include      http://zhjw.scu.edu.cn/loginAction.do
 // @grant        none
-// ===/UserScript===
+// ==/UserScript==
 
 import 'babel-polyfill'
 
