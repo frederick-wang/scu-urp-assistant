@@ -1,10 +1,13 @@
 {
   "name": "scu-urp-assistant",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "scu-urp-assistant.js",
   "scripts": {
-    "build": "babel src -d dist"
+    "build": "npm run transform && npm run userscript && npm run bookmarklet",
+    "transform": "babel --plugins transform-runtime src --out-dir transformed",
+    "userscript": "parcel build transformed/scu-urp-assistant.user.js --no-minify --no-source-maps",
+    "bookmarklet": "parcel build transformed/scu-urp-assistant-bookmarklet.js --no-minify --no-source-maps"
   },
   "repository": {
     "type": "git",
@@ -18,6 +21,7 @@
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
@@ -27,6 +31,7 @@
     "eslint-plugin-standard": "^3.1.0"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0"
+    "babel-polyfill": "^6.26.0",
+    "babel-runtime": "^6.26.0"
   }
 }
