@@ -1112,10 +1112,9 @@ var fastEvaluation = {
     var _this2 = this;
 
     var origin = window.location.origin;
-    if (index >= 3) {
-      // if (index >= this.list.length) {
+    if (index >= this.list.length) {
       this.changePromopt('\u672C\u9875\u4E0A\u7684\u8001\u5E08\u5DF2\u7ECF\u5168\u90E8\u8BC4\u4EF7\u5B8C\u6BD5\uFF01\u6B63\u5728\u5237\u65B0\u2026\u2026');
-      this.mainFrame.location.href = origin + '/student/teachingEvaluation/evaluation/index';
+      window.location.href = origin + '/student/teachingEvaluation/evaluation/index';
       return;
     }
     var item = this.list[index];
