@@ -14,7 +14,7 @@ const fastEvaluation = {
   ],
   init () {
     if (window.location.pathname === '/student/teachingEvaluation/evaluation/index') {
-      this.$btn = window.$('<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此一键评教</button>')
+      this.$btn = window.$('<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此给本页所有老师好评！</button>')
       this.$prompt = window.$('<span id="fast_evaluation_prompt" style="margin-left: 10px;"></span>')
 
       window.$('#close > h4').append(this.$btn, this.$prompt)
