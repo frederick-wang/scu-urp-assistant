@@ -4,7 +4,7 @@
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "scu-urp-assistant.js",
   "scripts": {
-    "build": "npm run transform && npm run userscript && npm run bookmarklet",
+    "start": "npm run transform && npm run userscript && npm run bookmarklet",
     "transform": "babel --plugins transform-runtime src --out-dir transformed",
     "userscript": "parcel build transformed/scu-urp-assistant.user.js --no-minify --no-source-maps",
     "bookmarklet": "parcel build transformed/scu-urp-assistant-bookmarklet.js --no-minify --no-source-maps"
