@@ -26,14 +26,26 @@ var tooltip = require('./plugins/tooltip');
 var $sua = {
   // 属性值的存放处
   data: {
-    timeInterval: 100
+    /**
+     * 定时任务的执行间隔
+     */
+    taskTimeInterval: 100
   },
-  // 插件
+  /**
+   * 插件
+   */
   plugins: [tooltip, fastEvaluation],
-  // 初始化任务的队列
+  /**
+   * 初始化任务的队列
+   */
   initQueue: [],
-  // 定时执行的任务的队列
+  /**
+   * 定时执行的任务的队列
+   */
   taskQueue: [],
+  /**
+   * 初始化 SCU URP 助手
+   */
   init: function init() {
     var _this = this;
 

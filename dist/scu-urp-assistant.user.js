@@ -3154,7 +3154,7 @@ var fastEvaluation = {
     var items = (0, _from2.default)(document.getElementById('jxpgtbody').getElementsByTagName('button')).filter(function (item) {
       return item.innerText === '评估';
     }).map(function (item) {
-      return item.getAttribute('onClick');
+      return item.getAttribute('onClick').replace(/evaluationResult\("|evaluation\("|"\);return false;/ig, '') + ('","' + item.parentElement.parentElement.children[3].innerText);
     });
     if (!items.length) {
       window.urp.confirm('本页上的所有教师都已经评教过了，您可以换一页再使用。', function () {});
@@ -3169,7 +3169,7 @@ var fastEvaluation = {
     this.$prompt.text(str);
   },
   parseName: function parseName(data) {
-    data = data.replace(/evaluation\("|"\);return false;/ig, '').split('","');
+    data = data.split('","');
 
     var _data = data,
         _data2 = (0, _slicedToArray3.default)(_data, 6),
@@ -3347,14 +3347,26 @@ var tooltip = require('./plugins/tooltip');
 var $sua = {
   // 属性值的存放处
   data: {
-    timeInterval: 100
+    /**
+     * 定时任务的执行间隔
+     */
+    taskTimeInterval: 100
   },
-  // 插件
+  /**
+   * 插件
+   */
   plugins: [tooltip, fastEvaluation],
-  // 初始化任务的队列
+  /**
+   * 初始化任务的队列
+   */
   initQueue: [],
-  // 定时执行的任务的队列
+  /**
+   * 定时执行的任务的队列
+   */
   taskQueue: [],
+  /**
+   * 初始化 SCU URP 助手
+   */
   init: function init() {
     var _this = this;
 
