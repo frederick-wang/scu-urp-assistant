@@ -27,6 +27,9 @@ const fastEvaluation = {
     window.urp.alert('正在收集本页问卷数据……')
     let items = Array.from(document.getElementById('jxpgtbody').getElementsByTagName('button'))
       .filter(item => item.innerText === '评估')
+      // 2018-8-31 20:21:20
+      // 今天发现 urp 代码有修改，把 evaluationContentContent 从 onClick 函数调用里删除了。
+      // 临时这样补上，尽量不做大修改，防止出错。
       .map(item => item.getAttribute('onClick').replace(/evaluationResult\("|evaluation\("|"\);return false;/ig, '') + `","${item.parentElement.parentElement.children[3].innerText}`)
     if (!items.length) {
       window.urp.confirm('本页上的所有教师都已经评教过了，您可以换一页再使用。', () => { })

@@ -34,7 +34,11 @@ var fastEvaluation = {
     window.urp.alert('正在收集本页问卷数据……');
     var items = (0, _from2.default)(document.getElementById('jxpgtbody').getElementsByTagName('button')).filter(function (item) {
       return item.innerText === '评估';
-    }).map(function (item) {
+    })
+    // 2018-8-31 20:21:20
+    // 今天发现 urp 代码有修改，把 evaluationContentContent 从 onClick 函数调用里删除了。
+    // 临时这样补上，尽量不做大修改，防止出错。
+    .map(function (item) {
       return item.getAttribute('onClick').replace(/evaluationResult\("|evaluation\("|"\);return false;/ig, '') + ('","' + item.parentElement.parentElement.children[3].innerText);
     });
     if (!items.length) {
