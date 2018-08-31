@@ -1,5 +1,13 @@
 'use strict';
 
+var _values = require('babel-runtime/core-js/object/values');
+
+var _values2 = _interopRequireDefault(_values);
+
+var _typeof2 = require('babel-runtime/helpers/typeof');
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
 var _getIterator2 = require('babel-runtime/core-js/get-iterator');
 
 var _getIterator3 = _interopRequireDefault(_getIterator2);
@@ -10,7 +18,9 @@ var _assign2 = _interopRequireDefault(_assign);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var minimatch = require('minimatch');
 var fastEvaluation = require('./plugins/fast-evaluation');
+var tooltip = require('./plugins/tooltip');
 
 // 挂载到 window 上的全局对象
 var $sua = {
@@ -18,12 +28,12 @@ var $sua = {
   data: {
     timeInterval: 100
   },
+  // 插件
+  plugins: [tooltip, fastEvaluation],
   // 初始化任务的队列
   initQueue: [],
   // 定时执行的任务的队列
   taskQueue: [],
-  // 插件
-  plugins: [fastEvaluation],
   init: function init() {
     var _this = this;
 
@@ -41,15 +51,18 @@ var $sua = {
         plugin.$sua = $sua;
         // 将data中的属性注入plugin对象中，使其内部可以用this直接访问
         plugin = (0, _assign2.default)(plugin, $sua.data);
-        // 将初始化方法推入队列中
-        if (plugin.init) {
-          this.initQueue.push(plugin.init.bind(plugin));
-        }
-        // 将需要定时执行的任务推入队列中
-        if (plugin.task) {
-          this.taskQueue.push(plugin.task.bind(plugin));
+        if (urlTrigger(plugin)) {
+          // 将初始化方法推入队列中
+          if (plugin.init) {
+            this.initQueue.push(plugin.init.bind(plugin));
+          }
+          // 将需要定时执行的任务推入队列中
+          if (plugin.task) {
+            this.taskQueue.push(plugin.task.bind(plugin));
+          }
         }
       }
+      // 初始化方法
     } catch (err) {
       _didIteratorError = true;
       _iteratorError = err;
@@ -75,6 +88,7 @@ var $sua = {
 
         i();
       }
+      // 定时任务
     } catch (err) {
       _didIteratorError2 = true;
       _iteratorError2 = err;
@@ -116,6 +130,87 @@ var $sua = {
         }
       }
     }, this.timeInterval);
+
+    /**
+     * 检测当前的location.pathname是否满足插件触发要求
+     *
+     * @param {*} plugin 插件对象，pathname 属性可以是 Boolean、String、Array、Object、Function等类型。
+     * 如果 pathname 属性不存在，则默认对全体 url 均生效
+     * @returns 检测的结果
+     */
+    function urlTrigger(plugin) {
+      var pathname = plugin.pathname;
+      // 如果pathname不存在，默认对全部url生效
+
+      if (!pathname) {
+        return true;
+      } else if (typeof pathname === 'boolean') {
+        return pathname;
+      } else if (typeof pathname === 'string') {
+        return minimatch(window.location.pathname, pathname);
+      } else if (Array.isArray(pathname)) {
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
+
+        try {
+          for (var _iterator4 = (0, _getIterator3.default)(pathname), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var item = _step4.value;
+
+            if (minimatch(window.location.pathname, item)) {
+              return true;
+            }
+          }
+        } catch (err) {
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion4 && _iterator4.return) {
+              _iterator4.return();
+            }
+          } finally {
+            if (_didIteratorError4) {
+              throw _iteratorError4;
+            }
+          }
+        }
+
+        return false;
+      } else if ((typeof pathname === 'undefined' ? 'undefined' : (0, _typeof3.default)(pathname)) === 'object') {
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
+
+        try {
+          for (var _iterator5 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var _item = _step5.value;
+
+            if (minimatch(window.location.pathname, _item)) {
+              return true;
+            }
+          }
+        } catch (err) {
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion5 && _iterator5.return) {
+              _iterator5.return();
+            }
+          } finally {
+            if (_didIteratorError5) {
+              throw _iteratorError5;
+            }
+          }
+        }
+
+        return false;
+      } else if (typeof pathname === 'function') {
+        return pathname.bind(plugin)();
+      }
+      return false;
+    }
   }
 };
 

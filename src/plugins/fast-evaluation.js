@@ -1,5 +1,7 @@
 // 一键评教插件
 const fastEvaluation = {
+  name: 'fast-evaluation',
+  pathname: '/student/teachingEvaluation/evaluation/index',
   $btn: undefined,
   $prompt: undefined,
   list: [],
@@ -13,14 +15,12 @@ const fastEvaluation = {
     '老师的讲课节奏安排的不错，最后大家对知识掌握的都比较好，复习也比较充分，考试情况不错。'
   ],
   init () {
-    if (window.location.pathname === '/student/teachingEvaluation/evaluation/index') {
-      this.$btn = window.$('<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此给本页所有老师好评！</button>')
-      this.$prompt = window.$('<span id="fast_evaluation_prompt" style="margin-left: 10px;"></span>')
+    this.$btn = window.$('<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此给本页所有老师好评！</button>')
+    this.$prompt = window.$('<span id="fast_evaluation_prompt" style="margin-left: 10px;"></span>')
 
-      window.$('#close > h4').append(this.$btn, this.$prompt)
+    window.$('#close > h4').append(this.$btn, this.$prompt)
 
-      this.$btn.click(this.onClickBtn.bind(this))
-    }
+    this.$btn.click(this.onClickBtn.bind(this))
   },
   onClickBtn (e) {
     e.preventDefault()
