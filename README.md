@@ -5,4 +5,4 @@
 
 介绍主页为：https://zhaoji.wang/sichuan-university-urp-assistant/
 
-编译命令为：npm run build
+编译命令为：npm start
