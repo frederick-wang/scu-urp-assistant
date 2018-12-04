@@ -159,7 +159,7 @@ var fastEvaluation = {
             _this2.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
           },
           success: function success(data) {
-            if (data.includes('/')) {
+            if (data.indexOf('/') !== -1) {
               console.log(data);
             } else if (data === 'success') {
               _this2.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);

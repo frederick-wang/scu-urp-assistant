@@ -156,7 +156,7 @@ const fastEvaluation = {
             this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
           },
           success: (data) => {
-            if (data.includes('/')) {
+            if (data.indexOf('/') !== -1) {
               console.log(data)
             } else if (data === 'success') {
               this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}`)

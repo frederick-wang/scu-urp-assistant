@@ -3278,7 +3278,7 @@ var fastEvaluation = {
             _this2.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
           },
           success: function success(data) {
-            if (data.includes('/')) {
+            if (data.indexOf('/') !== -1) {
               console.log(data);
             } else if (data === 'success') {
               _this2.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
@@ -3307,7 +3307,7 @@ var tooltip = {
   pathname: '/**',
   $loginTooltip: undefined,
   $navTooltip: undefined,
-  version: '0.7.5',
+  version: '0.7.6',
   init: function init() {
     if (window.location.pathname === '/login') {
       this.$loginTooltip = window.$('\n        <span class="sua-tooltip" style="\n          position: absolute;\n          font-size: 12px;\n          top: 10px;\n          right: 15px;\n          color: #909399;\n        ">\n          SCU URP \u52A9\u624B ' + this.version + '\n        </span>');
@@ -3558,7 +3558,7 @@ module.exports = $sua;
 // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.7.5
+// @version      0.7.6
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
