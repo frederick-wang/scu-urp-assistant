@@ -167,7 +167,7 @@ const fastEvaluation = {
       yes: (index, layero) => {
         this.list = window.$('#selection-form').serializeArray().map(v => this.list[Number(v.name.replace('selection-checkbox-', ''))])
         window.layer.close(index)
-        if (!this.list.length) {
+        if (this.list.length) {
           this.$btn.remove()
           this.evaluate(0)
         }

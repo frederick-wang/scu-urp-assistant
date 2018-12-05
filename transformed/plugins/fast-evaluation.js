@@ -107,7 +107,7 @@ var fastEvaluation = {
           return _this.list[Number(v.name.replace('selection-checkbox-', ''))];
         });
         window.layer.close(index);
-        if (!_this.list.length) {
+        if (_this.list.length) {
           _this.$btn.remove();
           _this.evaluate(0);
         }
