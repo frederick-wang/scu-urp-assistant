@@ -6,6 +6,64 @@ const fastEvaluation = {
   $prompt: undefined,
   list: [],
   evaluationInterval: 500,
+  templates: {
+    btn: '<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此开始一键评教!</button>',
+    prompt: '<span id="fast_evaluation_prompt" style="margin-left: 10px;"></span>',
+    selectionModal: `
+      <div id="selection-modal">
+        <style>
+          #selection-modal {
+            padding: 10px 20px;
+          }
+
+          .selection-modal-introduction>p {
+            font-size: 14px;
+            margin-bottom: 10px;
+          }
+
+          .selection-modal-introduction>p:last-child {
+            margin-bottom: 0;
+          }
+
+          .checkboxes-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+          }
+
+          .checkboxes-wrapper:last-child {
+            margin-bottom: 0;
+          }
+
+          #selection-checkboxes-wrapper>.checkbox {
+            padding-bottom: 7px;
+          }
+
+        </style>
+        <form id="selection-form" class="form-horizontal" role="form">
+          <div class="row">
+            <div class="col-xs-12">
+              <div class="selection-modal-introduction">
+                <p>所有选中的老师都将被一键满分好评，主观评价会从25条语句库里随机抽取。</p>
+                <p>默认所有老师都是选中状态，您只需要取消勾选您想手动评价的老师即可。</p>
+              </div>
+              <hr>
+              <h4 class="lighter blue">学生评教（课堂教学）</h4>
+              <div id="ktjx-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <h4 class="lighter blue">学生评教（实验教学）</h4>
+              <div id="syjx-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <h4 class="lighter blue">学生评教（实践教学）</h4>
+              <div id="sjjx-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <h4 class="lighter blue">学生评教（体育教学）</h4>
+              <div id="tyjx-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <h4 class="lighter blue">研究生助教评价</h4>
+              <div id="yjs-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+    `
+  },
   comments: [
     '老师是很好的，平时课堂上讲课风趣又不失严谨，课下也对同学们的问题有求必应，帮助了我很多。',
     '老师挺不错的，对问题分析的透彻，讲课能切中要害，很喜欢老师的讲课风格。',
@@ -35,8 +93,8 @@ const fastEvaluation = {
     '本门课程对教学内容把握透彻、挖掘深入、处理新颖，在课堂教学中，对重难点言简意赅，分析透彻。对练习以思维训练为核心，落实双基，是一门非常成功的课'
   ],
   init () {
-    this.$btn = window.$('<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此给本页所有老师好评！</button>')
-    this.$prompt = window.$('<span id="fast_evaluation_prompt" style="margin-left: 10px;"></span>')
+    this.$btn = window.$(this.templates.btn)
+    this.$prompt = window.$(this.templates.prompt)
 
     window.$('#close > h4').append(this.$btn, this.$prompt)
 
@@ -44,7 +102,80 @@ const fastEvaluation = {
   },
   onClickBtn (e) {
     e.preventDefault()
-    window.urp.alert('正在收集本页问卷数据……')
+    let hasUnevaluatedquestionnaire = this.collectData()
+    if (hasUnevaluatedquestionnaire) {
+      this.showSelectionModal()
+    } else {
+      window.urp.confirm('本页上的所有教师都已经评教过了，您可以换一页再使用。', () => { })
+    }
+  },
+  showSelectionModal () {
+    window.layer.open({
+      type: 1,
+      area: '90%',
+      title: '请选择需要「一键好评」的老师',
+      shadeClose: true,
+      offset: '50px',
+      btn: ['开始一键评教!'],
+      content: this.templates.selectionModal,
+      success: (layero, index) => {
+        this.list.forEach(({ evaluatedPeople: name, evaluationContentContent: curriculum, questionnaireName: type }, index) => {
+          let selector
+          switch (type) {
+            case '研究生助教评价':
+              selector = '#yjs-checkboxes-wrapper'
+              break
+            case '学生评教（课堂教学）':
+              selector = '#ktjx-checkboxes-wrapper'
+              break
+            case '学生评教（实验教学）':
+              selector = '#syjx-checkboxes-wrapper'
+              break
+            case '学生评教（实践教学）':
+              selector = '#sjjx-checkboxes-wrapper'
+              break
+            case '学生评教（体育教学）':
+              selector = '#tyjx-checkboxes-wrapper'
+              break
+            default:
+              console.log('无效的问卷名称：' + type)
+              return
+          }
+          window.$(selector).append(`<div class="checkbox"><label><input name="selection-checkbox-${index}" type="checkbox" class="ace ace-checkbox-2 selection-checkbox" checked><span class="lbl">${name}-${curriculum}</span></label></div>`)
+        })
+        if (!window.$('#yjs-checkboxes-wrapper').children().length) {
+          window.$('#yjs-checkboxes-wrapper').prev().remove()
+          window.$('#yjs-checkboxes-wrapper').remove()
+        }
+        if (!window.$('#ktjx-checkboxes-wrapper').children().length) {
+          window.$('#ktjx-checkboxes-wrapper').prev().remove()
+          window.$('#ktjx-checkboxes-wrapper').remove()
+        }
+        if (!window.$('#syjx-checkboxes-wrapper').children().length) {
+          window.$('#syjx-checkboxes-wrapper').prev().remove()
+          window.$('#syjx-checkboxes-wrapper').remove()
+        }
+        if (!window.$('#sjjx-checkboxes-wrapper').children().length) {
+          window.$('#sjjx-checkboxes-wrapper').prev().remove()
+          window.$('#sjjx-checkboxes-wrapper').remove()
+        }
+        if (!window.$('#tyjx-checkboxes-wrapper').children().length) {
+          window.$('#tyjx-checkboxes-wrapper').prev().remove()
+          window.$('#tyjx-checkboxes-wrapper').remove()
+        }
+      },
+      yes: (index, layero) => {
+        this.list = window.$('#selection-form').serializeArray().map(v => this.list[Number(v.name.replace('selection-checkbox-', ''))])
+        window.layer.close(index)
+        if (!this.list.length) {
+          this.$btn.remove()
+          this.evaluate(0)
+        }
+      }
+    })
+  },
+  collectData () {
+    let collectingMsgIndex = window.layer.msg('正在收集本页问卷数据……')
     let items = Array.from(document.getElementById('jxpgtbody').getElementsByTagName('button'))
       .filter(item => item.innerText === '评估')
       // 2018-8-31 20:21:20
@@ -52,11 +183,11 @@ const fastEvaluation = {
       // 临时这样补上，尽量不做大修改，防止出错。
       .map(item => item.getAttribute('onClick').replace(/evaluationResult\("|evaluation\("|"\);return false;/ig, '') + `","${item.parentElement.parentElement.children[3].innerText}`)
     if (!items.length) {
-      window.urp.confirm('本页上的所有教师都已经评教过了，您可以换一页再使用。', () => { })
       return false
     }
     this.list = items.map(item => this.parseName(item))
-    this.evaluate(0)
+    window.layer.close(collectingMsgIndex)
+    return true
   },
   changePromopt (str) {
     this.$prompt.text(str)
