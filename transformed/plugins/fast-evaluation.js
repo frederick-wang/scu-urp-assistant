@@ -18,6 +18,35 @@ var fastEvaluation = {
   $prompt: undefined,
   list: [],
   evaluationInterval: 500,
+  checkboxesWrapperSelectors: {
+    '研究生助教评价': '#yjs-checkboxes-wrapper',
+    '学生评教（课堂教学）': '#ktjx-checkboxes-wrapper',
+    '学生评教（实验教学）': '#syjx-checkboxes-wrapper',
+    '学生评教（实践教学）': '#sjjx-checkboxes-wrapper',
+    '学生评教（体育教学）': '#tyjx-checkboxes-wrapper'
+  },
+  questionsNumberRange: {
+    '研究生助教评价': {
+      begin: 28,
+      end: 33
+    },
+    '学生评教（课堂教学）': {
+      begin: 36,
+      end: 42
+    },
+    '学生评教（实验教学）': {
+      begin: 82,
+      end: 88
+    },
+    '学生评教（实践教学）': {
+      begin: 89,
+      end: 95
+    },
+    '学生评教（体育教学）': {
+      begin: 96,
+      end: 102
+    }
+  },
   templates: {
     btn: '<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此开始一键评教!</button>',
     prompt: '<span id="fast_evaluation_prompt" style="margin-left: 10px;"></span>',
@@ -52,61 +81,32 @@ var fastEvaluation = {
       offset: '50px',
       btn: ['开始一键评教!'],
       content: this.templates.selectionModal,
-      success: function success(layero, index) {
+      success: function success() {
         _this.list.forEach(function (_ref, index) {
           var name = _ref.evaluatedPeople,
               curriculum = _ref.evaluationContentContent,
               type = _ref.questionnaireName;
 
-          var selector = void 0;
-          switch (type) {
-            case '研究生助教评价':
-              selector = '#yjs-checkboxes-wrapper';
-              break;
-            case '学生评教（课堂教学）':
-              selector = '#ktjx-checkboxes-wrapper';
-              break;
-            case '学生评教（实验教学）':
-              selector = '#syjx-checkboxes-wrapper';
-              break;
-            case '学生评教（实践教学）':
-              selector = '#sjjx-checkboxes-wrapper';
-              break;
-            case '学生评教（体育教学）':
-              selector = '#tyjx-checkboxes-wrapper';
-              break;
-            default:
-              console.log('无效的问卷名称：' + type);
-              return;
+          if (_this.checkboxesWrapperSelectors[type]) {
+            var selector = _this.checkboxesWrapperSelectors[type];
+            window.$(selector).append('\n              <div class="checkbox">\n                <label>\n                  <input name="selection-checkbox-' + index + '" type="checkbox" class="ace ace-checkbox-2 selection-checkbox" checked>\n                  <span class="lbl">' + name + '-' + curriculum + '</span>\n                </label>\n              </div>\n            ');
+          } else {
+            console.log('无效的问卷名称：' + type);
           }
-          window.$(selector).append('<div class="checkbox"><label><input name="selection-checkbox-' + index + '" type="checkbox" class="ace ace-checkbox-2 selection-checkbox" checked><span class="lbl">' + name + '-' + curriculum + '</span></label></div>');
         });
-        if (!window.$('#yjs-checkboxes-wrapper').children().length) {
-          window.$('#yjs-checkboxes-wrapper').prev().remove();
-          window.$('#yjs-checkboxes-wrapper').remove();
-        }
-        if (!window.$('#ktjx-checkboxes-wrapper').children().length) {
-          window.$('#ktjx-checkboxes-wrapper').prev().remove();
-          window.$('#ktjx-checkboxes-wrapper').remove();
-        }
-        if (!window.$('#syjx-checkboxes-wrapper').children().length) {
-          window.$('#syjx-checkboxes-wrapper').prev().remove();
-          window.$('#syjx-checkboxes-wrapper').remove();
-        }
-        if (!window.$('#sjjx-checkboxes-wrapper').children().length) {
-          window.$('#sjjx-checkboxes-wrapper').prev().remove();
-          window.$('#sjjx-checkboxes-wrapper').remove();
-        }
-        if (!window.$('#tyjx-checkboxes-wrapper').children().length) {
-          window.$('#tyjx-checkboxes-wrapper').prev().remove();
-          window.$('#tyjx-checkboxes-wrapper').remove();
+        for (var key in _this.checkboxesWrapperSelectors) {
+          var selector = _this.checkboxesWrapperSelectors[key];
+          if (!window.$(selector).children().length) {
+            window.$(selector).prev().remove();
+            window.$(selector).remove();
+          }
         }
       },
-      yes: function yes(index, layero) {
+      yes: function yes(layerIndex) {
         _this.list = window.$('#selection-form').serializeArray().map(function (v) {
           return _this.list[Number(v.name.replace('selection-checkbox-', ''))];
         });
-        window.layer.close(index);
+        window.layer.close(layerIndex);
         if (_this.list.length) {
           _this.$btn.remove();
           _this.evaluate(0);
@@ -155,7 +155,7 @@ var fastEvaluation = {
     return result;
   },
   getComment: function getComment() {
-    return encodeURI(this.comments[Math.floor(Math.random() * this.comments.length)]);
+    return encodeURIComponent(this.comments[Math.floor(Math.random() * this.comments.length)]);
   },
   evaluate: function evaluate(index) {
     var _this3 = this;
@@ -166,13 +166,14 @@ var fastEvaluation = {
       window.location.href = origin + '/student/teachingEvaluation/evaluation/index';
       return;
     }
-    var item = this.list[index];
-    var evaluatedPeopleNumber = item.evaluatedPeopleNumber;
-    var evaluatedPeople = item.evaluatedPeople;
-    var evaluationContentNumber = item.evaluationContentNumber;
-    var evaluationContentContent = item.evaluationContentContent;
-    var questionnaireCode = item.questionnaireCode;
-    var questionnaireName = item.questionnaireName;
+    var _list$index = this.list[index],
+        evaluatedPeopleNumber = _list$index.evaluatedPeopleNumber,
+        evaluatedPeople = _list$index.evaluatedPeople,
+        evaluationContentNumber = _list$index.evaluationContentNumber,
+        evaluationContentContent = _list$index.evaluationContentContent,
+        questionnaireCode = _list$index.questionnaireCode,
+        questionnaireName = _list$index.questionnaireName;
+
     var tokenValue = void 0;
 
     this.changePromopt('\u6B63\u5728\u8BC4\u4EF7' + evaluationContentContent + '\u8BFE\u7A0B\u7684' + evaluatedPeople + '\u8001\u5E08\uFF08' + (index + 1) + '/' + this.list.length + '\uFF09');
@@ -199,65 +200,46 @@ var fastEvaluation = {
       success: function success(data) {
         tokenValue = data.match(/<input type="hidden" name="tokenValue" value="(.+)"\/>/i)[1];
 
-        var begin = void 0;
-        var end = void 0;
-        switch (questionnaireName) {
-          case '研究生助教评价':
-            begin = 28;
-            end = 33;
-            break;
-          case '学生评教（课堂教学）':
-            begin = 36;
-            end = 42;
-            break;
-          case '学生评教（实验教学）':
-            begin = 82;
-            end = 88;
-            break;
-          case '学生评教（实践教学）':
-            begin = 89;
-            end = 95;
-            break;
-          case '学生评教（体育教学）':
-            begin = 96;
-            end = 102;
-            break;
-          default:
-            console.log('无效的问卷名称：' + questionnaireName);
-            return;
-        }
+        if (_this3.questionsNumberRange[questionnaireName]) {
+          var _questionsNumberRange = _this3.questionsNumberRange[questionnaireName],
+              begin = _questionsNumberRange.begin,
+              end = _questionsNumberRange.end;
 
-        var bodyStr = 'tokenValue=' + tokenValue + '&questionnaireCode=' + questionnaireCode + '&evaluationContentNumber=' + evaluationContentNumber + '&evaluatedPeopleNumber=' + evaluatedPeopleNumber;
-        for (var i = begin; i <= end; i++) {
-          var num = ('0000000000' + i).substr(-10);
-          bodyStr += '&' + num + '=10_1';
-        }
-        bodyStr += '&zgpj=' + _this3.getComment();
 
-        window.$.ajax({
-          cache: true,
-          type: 'POST',
-          async: true,
-          url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
-          data: bodyStr,
-          error: function error(xhr) {
-            window.urp.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
-            _this3.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length);
-          },
-          success: function success(data) {
-            if (data.indexOf('/') !== -1) {
-              console.log(data);
-            } else if (data === 'success') {
-              _this3.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length);
-              setTimeout(function () {
-                _this3.evaluate(++index);
-              }, _this3.evaluationInterval);
-            } else {
-              window.urp.alert('保存失败');
-              _this3.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length);
-            }
+          var bodyStr = 'tokenValue=' + tokenValue + '&questionnaireCode=' + questionnaireCode + '&evaluationContentNumber=' + evaluationContentNumber + '&evaluatedPeopleNumber=' + evaluatedPeopleNumber;
+          for (var i = begin; i <= end; i++) {
+            var num = ('0000000000' + i).substr(-10);
+            bodyStr += '&' + num + '=10_1';
           }
-        });
+          bodyStr += '&zgpj=' + _this3.getComment();
+
+          window.$.ajax({
+            cache: true,
+            type: 'POST',
+            async: true,
+            url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
+            data: bodyStr,
+            error: function error(xhr) {
+              window.urp.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
+              _this3.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length);
+            },
+            success: function success(data) {
+              if (data.indexOf('/') !== -1) {
+                console.log(data);
+              } else if (data === 'success') {
+                _this3.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length);
+                setTimeout(function () {
+                  _this3.evaluate(++index);
+                }, _this3.evaluationInterval);
+              } else {
+                window.urp.alert('保存失败');
+                _this3.changePromopt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length);
+              }
+            }
+          });
+        } else {
+          console.log('无效的问卷名称：' + questionnaireName);
+        }
       }
     });
   }

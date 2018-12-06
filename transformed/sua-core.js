@@ -21,6 +21,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var minimatch = require('minimatch');
 var fastEvaluation = require('./plugins/fast-evaluation');
 var tooltip = require('./plugins/tooltip');
+var removeEvaluationTimeLimit = require('./plugins/remove-evaluation-time-limit');
 
 // 挂载到 window 上的全局对象
 var $sua = {
@@ -34,7 +35,7 @@ var $sua = {
   /**
    * 插件
    */
-  plugins: [tooltip, fastEvaluation],
+  plugins: [tooltip, fastEvaluation, removeEvaluationTimeLimit],
   /**
    * 初始化任务的队列
    */
@@ -141,7 +142,7 @@ var $sua = {
           }
         }
       }
-    }, this.timeInterval);
+    }, this.taskTimeInterval);
 
     /**
      * 检测当前的location.pathname是否满足插件触发要求

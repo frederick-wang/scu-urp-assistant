@@ -1,6 +1,7 @@
 const minimatch = require('minimatch')
 const fastEvaluation = require('./plugins/fast-evaluation')
 const tooltip = require('./plugins/tooltip')
+const removeEvaluationTimeLimit = require('./plugins/remove-evaluation-time-limit')
 
 // 挂载到 window 上的全局对象
 const $sua = {
@@ -14,7 +15,7 @@ const $sua = {
   /**
    * 插件
    */
-  plugins: [tooltip, fastEvaluation],
+  plugins: [tooltip, fastEvaluation, removeEvaluationTimeLimit],
   /**
    * 初始化任务的队列
    */
@@ -54,7 +55,7 @@ const $sua = {
       for (let t of this.taskQueue) {
         t()
       }
-    }, this.timeInterval)
+    }, this.taskTimeInterval)
 
     /**
      * 检测当前的location.pathname是否满足插件触发要求

@@ -6,6 +6,35 @@ const fastEvaluation = {
   $prompt: undefined,
   list: [],
   evaluationInterval: 500,
+  checkboxesWrapperSelectors: {
+    '研究生助教评价': '#yjs-checkboxes-wrapper',
+    '学生评教（课堂教学）': '#ktjx-checkboxes-wrapper',
+    '学生评教（实验教学）': '#syjx-checkboxes-wrapper',
+    '学生评教（实践教学）': '#sjjx-checkboxes-wrapper',
+    '学生评教（体育教学）': '#tyjx-checkboxes-wrapper'
+  },
+  questionsNumberRange: {
+    '研究生助教评价': {
+      begin: 28,
+      end: 33
+    },
+    '学生评教（课堂教学）': {
+      begin: 36,
+      end: 42
+    },
+    '学生评教（实验教学）': {
+      begin: 82,
+      end: 88
+    },
+    '学生评教（实践教学）': {
+      begin: 89,
+      end: 95
+    },
+    '学生评教（体育教学）': {
+      begin: 96,
+      end: 102
+    }
+  },
   templates: {
     btn: '<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此开始一键评教!</button>',
     prompt: '<span id="fast_evaluation_prompt" style="margin-left: 10px;"></span>',
@@ -118,55 +147,37 @@ const fastEvaluation = {
       offset: '50px',
       btn: ['开始一键评教!'],
       content: this.templates.selectionModal,
-      success: (layero, index) => {
-        this.list.forEach(({ evaluatedPeople: name, evaluationContentContent: curriculum, questionnaireName: type }, index) => {
-          let selector
-          switch (type) {
-            case '研究生助教评价':
-              selector = '#yjs-checkboxes-wrapper'
-              break
-            case '学生评教（课堂教学）':
-              selector = '#ktjx-checkboxes-wrapper'
-              break
-            case '学生评教（实验教学）':
-              selector = '#syjx-checkboxes-wrapper'
-              break
-            case '学生评教（实践教学）':
-              selector = '#sjjx-checkboxes-wrapper'
-              break
-            case '学生评教（体育教学）':
-              selector = '#tyjx-checkboxes-wrapper'
-              break
-            default:
-              console.log('无效的问卷名称：' + type)
-              return
+      success: () => {
+        this.list.forEach(({
+          evaluatedPeople: name,
+          evaluationContentContent: curriculum,
+          questionnaireName: type
+        }, index) => {
+          if (this.checkboxesWrapperSelectors[type]) {
+            let selector = this.checkboxesWrapperSelectors[type]
+            window.$(selector).append(`
+              <div class="checkbox">
+                <label>
+                  <input name="selection-checkbox-${index}" type="checkbox" class="ace ace-checkbox-2 selection-checkbox" checked>
+                  <span class="lbl">${name}-${curriculum}</span>
+                </label>
+              </div>
+            `)
+          } else {
+            console.log('无效的问卷名称：' + type)
           }
-          window.$(selector).append(`<div class="checkbox"><label><input name="selection-checkbox-${index}" type="checkbox" class="ace ace-checkbox-2 selection-checkbox" checked><span class="lbl">${name}-${curriculum}</span></label></div>`)
         })
-        if (!window.$('#yjs-checkboxes-wrapper').children().length) {
-          window.$('#yjs-checkboxes-wrapper').prev().remove()
-          window.$('#yjs-checkboxes-wrapper').remove()
-        }
-        if (!window.$('#ktjx-checkboxes-wrapper').children().length) {
-          window.$('#ktjx-checkboxes-wrapper').prev().remove()
-          window.$('#ktjx-checkboxes-wrapper').remove()
-        }
-        if (!window.$('#syjx-checkboxes-wrapper').children().length) {
-          window.$('#syjx-checkboxes-wrapper').prev().remove()
-          window.$('#syjx-checkboxes-wrapper').remove()
-        }
-        if (!window.$('#sjjx-checkboxes-wrapper').children().length) {
-          window.$('#sjjx-checkboxes-wrapper').prev().remove()
-          window.$('#sjjx-checkboxes-wrapper').remove()
-        }
-        if (!window.$('#tyjx-checkboxes-wrapper').children().length) {
-          window.$('#tyjx-checkboxes-wrapper').prev().remove()
-          window.$('#tyjx-checkboxes-wrapper').remove()
+        for (let key in this.checkboxesWrapperSelectors) {
+          let selector = this.checkboxesWrapperSelectors[key]
+          if (!window.$(selector).children().length) {
+            window.$(selector).prev().remove()
+            window.$(selector).remove()
+          }
         }
       },
-      yes: (index, layero) => {
+      yes: (layerIndex) => {
         this.list = window.$('#selection-form').serializeArray().map(v => this.list[Number(v.name.replace('selection-checkbox-', ''))])
-        window.layer.close(index)
+        window.layer.close(layerIndex)
         if (this.list.length) {
           this.$btn.remove()
           this.evaluate(0)
@@ -199,7 +210,7 @@ const fastEvaluation = {
     return result
   },
   getComment () {
-    return encodeURI(this.comments[Math.floor(Math.random() * this.comments.length)])
+    return encodeURIComponent(this.comments[Math.floor(Math.random() * this.comments.length)])
   },
   evaluate (index) {
     let origin = window.location.origin
@@ -208,13 +219,7 @@ const fastEvaluation = {
       window.location.href = `${origin}/student/teachingEvaluation/evaluation/index`
       return
     }
-    let item = this.list[index]
-    let evaluatedPeopleNumber = item.evaluatedPeopleNumber
-    let evaluatedPeople = item.evaluatedPeople
-    let evaluationContentNumber = item.evaluationContentNumber
-    let evaluationContentContent = item.evaluationContentContent
-    let questionnaireCode = item.questionnaireCode
-    let questionnaireName = item.questionnaireName
+    let { evaluatedPeopleNumber, evaluatedPeople, evaluationContentNumber, evaluationContentContent, questionnaireCode, questionnaireName } = this.list[index]
     let tokenValue
 
     this.changePromopt(`正在评价${evaluationContentContent}课程的${evaluatedPeople}老师（${index + 1}/${this.list.length}）`)
@@ -241,65 +246,43 @@ const fastEvaluation = {
       success: (data) => {
         tokenValue = data.match(/<input type="hidden" name="tokenValue" value="(.+)"\/>/i)[1]
 
-        let begin
-        let end
-        switch (questionnaireName) {
-          case '研究生助教评价':
-            begin = 28
-            end = 33
-            break
-          case '学生评教（课堂教学）':
-            begin = 36
-            end = 42
-            break
-          case '学生评教（实验教学）':
-            begin = 82
-            end = 88
-            break
-          case '学生评教（实践教学）':
-            begin = 89
-            end = 95
-            break
-          case '学生评教（体育教学）':
-            begin = 96
-            end = 102
-            break
-          default:
-            console.log('无效的问卷名称：' + questionnaireName)
-            return
-        }
+        if (this.questionsNumberRange[questionnaireName]) {
+          let { begin, end } = this.questionsNumberRange[questionnaireName]
 
-        let bodyStr = `tokenValue=${tokenValue}&questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}`
-        for (let i = begin; i <= end; i++) {
-          let num = ('0000000000' + i).substr(-10)
-          bodyStr += `&${num}=10_1`
-        }
-        bodyStr += `&zgpj=${this.getComment()}`
-
-        window.$.ajax({
-          cache: true,
-          type: 'POST',
-          async: true,
-          url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
-          data: bodyStr,
-          error: (xhr) => {
-            window.urp.alert(`错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`)
-            this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
-          },
-          success: (data) => {
-            if (data.indexOf('/') !== -1) {
-              console.log(data)
-            } else if (data === 'success') {
-              this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}`)
-              setTimeout(() => {
-                this.evaluate(++index)
-              }, this.evaluationInterval)
-            } else {
-              window.urp.alert('保存失败')
-              this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
-            }
+          let bodyStr = `tokenValue=${tokenValue}&questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}`
+          for (let i = begin; i <= end; i++) {
+            let num = ('0000000000' + i).substr(-10)
+            bodyStr += `&${num}=10_1`
           }
-        })
+          bodyStr += `&zgpj=${this.getComment()}`
+
+          window.$.ajax({
+            cache: true,
+            type: 'POST',
+            async: true,
+            url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
+            data: bodyStr,
+            error: (xhr) => {
+              window.urp.alert(`错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`)
+              this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
+            },
+            success: (data) => {
+              if (data.indexOf('/') !== -1) {
+                console.log(data)
+              } else if (data === 'success') {
+                this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}`)
+                setTimeout(() => {
+                  this.evaluate(++index)
+                }, this.evaluationInterval)
+              } else {
+                window.urp.alert('保存失败')
+                this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
+              }
+            }
+          })
+        } else {
+          console.log('无效的问卷名称：' + questionnaireName)
+        }
       }
     })
   }
