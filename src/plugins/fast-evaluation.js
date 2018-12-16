@@ -6,12 +6,12 @@ const fastEvaluation = {
   $prompt: undefined,
   list: [],
   evaluationInterval: 500,
-  checkboxesWrapperSelectors: {
-    '研究生助教评价': '#yjs-checkboxes-wrapper',
-    '学生评教（课堂教学）': '#ktjx-checkboxes-wrapper',
-    '学生评教（实验教学）': '#syjx-checkboxes-wrapper',
-    '学生评教（实践教学）': '#sjjx-checkboxes-wrapper',
-    '学生评教（体育教学）': '#tyjx-checkboxes-wrapper'
+  checkboxWrapperSelectors: {
+    '研究生助教评价': '#yjs-checkbox-wrapper',
+    '学生评教（课堂教学）': '#ktjx-checkbox-wrapper',
+    '学生评教（实验教学）': '#syjx-checkbox-wrapper',
+    '学生评教（实践教学）': '#sjjx-checkbox-wrapper',
+    '学生评教（体育教学）': '#tyjx-checkbox-wrapper'
   },
   questionsNumberRange: {
     '研究生助教评价': {
@@ -54,17 +54,17 @@ const fastEvaluation = {
             margin-bottom: 0;
           }
 
-          .checkboxes-wrapper {
+          .checkbox-wrapper {
             display: flex;
             flex-wrap: wrap;
             margin-bottom: 10px;
           }
 
-          .checkboxes-wrapper:last-child {
+          .checkbox-wrapper:last-child {
             margin-bottom: 0;
           }
 
-          #selection-checkboxes-wrapper>.checkbox {
+          #selection-checkbox-wrapper>.checkbox {
             padding-bottom: 7px;
           }
 
@@ -78,15 +78,15 @@ const fastEvaluation = {
               </div>
               <hr>
               <h4 class="lighter blue">学生评教（课堂教学）</h4>
-              <div id="ktjx-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <div id="ktjx-checkbox-wrapper" class="checkbox-wrapper"></div>
               <h4 class="lighter blue">学生评教（实验教学）</h4>
-              <div id="syjx-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <div id="syjx-checkbox-wrapper" class="checkbox-wrapper"></div>
               <h4 class="lighter blue">学生评教（实践教学）</h4>
-              <div id="sjjx-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <div id="sjjx-checkbox-wrapper" class="checkbox-wrapper"></div>
               <h4 class="lighter blue">学生评教（体育教学）</h4>
-              <div id="tyjx-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <div id="tyjx-checkbox-wrapper" class="checkbox-wrapper"></div>
               <h4 class="lighter blue">研究生助教评价</h4>
-              <div id="yjs-checkboxes-wrapper" class="checkboxes-wrapper"></div>
+              <div id="yjs-checkbox-wrapper" class="checkbox-wrapper"></div>
             </div>
           </div>
         </form>
@@ -131,8 +131,8 @@ const fastEvaluation = {
   },
   onClickBtn (e) {
     e.preventDefault()
-    let hasUnevaluatedquestionnaire = this.collectData()
-    if (hasUnevaluatedquestionnaire) {
+    let hasUnevaluatedQuestionnaire = this.collectData()
+    if (hasUnevaluatedQuestionnaire) {
       this.showSelectionModal()
     } else {
       window.urp.confirm('本页上的所有教师都已经评教过了，您可以换一页再使用。', () => { })
@@ -153,8 +153,8 @@ const fastEvaluation = {
           evaluationContentContent: curriculum,
           questionnaireName: type
         }, index) => {
-          if (this.checkboxesWrapperSelectors[type]) {
-            let selector = this.checkboxesWrapperSelectors[type]
+          if (this.checkboxWrapperSelectors[type]) {
+            let selector = this.checkboxWrapperSelectors[type]
             window.$(selector).append(`
               <div class="checkbox">
                 <label>
@@ -167,8 +167,8 @@ const fastEvaluation = {
             console.log('无效的问卷名称：' + type)
           }
         })
-        for (let key in this.checkboxesWrapperSelectors) {
-          let selector = this.checkboxesWrapperSelectors[key]
+        for (let key in this.checkboxWrapperSelectors) {
+          let selector = this.checkboxWrapperSelectors[key]
           if (!window.$(selector).children().length) {
             window.$(selector).prev().remove()
             window.$(selector).remove()
@@ -200,7 +200,7 @@ const fastEvaluation = {
     window.layer.close(collectingMsgIndex)
     return true
   },
-  changePromopt (str) {
+  changePrompt (str) {
     this.$prompt.text(str)
   },
   parseName (data) {
@@ -215,14 +215,14 @@ const fastEvaluation = {
   evaluate (index) {
     let origin = window.location.origin
     if (index >= this.list.length) {
-      this.changePromopt(`本页上的老师已经全部评价完毕！正在刷新……`)
+      this.changePrompt(`本页上的老师已经全部评价完毕！正在刷新……`)
       window.location.href = `${origin}/student/teachingEvaluation/evaluation/index`
       return
     }
     let { evaluatedPeopleNumber, evaluatedPeople, evaluationContentNumber, evaluationContentContent, questionnaireCode, questionnaireName } = this.list[index]
     let tokenValue
 
-    this.changePromopt(`正在评价${evaluationContentContent}课程的${evaluatedPeople}老师（${index + 1}/${this.list.length}）`)
+    this.changePrompt(`正在评价${evaluationContentContent}课程的${evaluatedPeople}老师（${index + 1}/${this.list.length}）`)
 
     window.$.ajax({
       type: 'POST',
@@ -264,19 +264,19 @@ const fastEvaluation = {
             data: bodyStr,
             error: (xhr) => {
               window.urp.alert(`错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`)
-              this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
+              this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
             },
             success: (data) => {
               if (data.indexOf('/') !== -1) {
                 console.log(data)
               } else if (data === 'success') {
-                this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}`)
+                this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}`)
                 setTimeout(() => {
                   this.evaluate(++index)
                 }, this.evaluationInterval)
               } else {
                 window.urp.alert('保存失败')
-                this.changePromopt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
+                this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
               }
             }
           })
