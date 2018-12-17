@@ -3393,7 +3393,7 @@ var tooltip = {
 };
 
 module.exports = tooltip;
-},{}],7:[function(require,module,exports) {
+},{}],8:[function(require,module,exports) {
 'use strict';
 
 // 删除手动评教的时间限制插件
@@ -3408,7 +3408,7 @@ var removeEvaluationTimeLimit = {
 };
 
 module.exports = removeEvaluationTimeLimit;
-},{}],8:[function(require,module,exports) {
+},{}],7:[function(require,module,exports) {
 'use strict';
 
 // 修复兼容性插件(旧版教务系统)
@@ -4011,7 +4011,7 @@ var $sua = {
 };
 
 module.exports = $sua;
-},{"babel-runtime/core-js/object/values":12,"babel-runtime/helpers/typeof":13,"babel-runtime/core-js/get-iterator":14,"babel-runtime/core-js/object/assign":15,"minimatch":11,"./plugins/fast-evaluation":5,"./plugins/tooltip":6,"./plugins/remove-evaluation-time-limit":7,"./plugins/compatibility-legacy":8,"./plugins/fast-evaluation-legacy":9}],1:[function(require,module,exports) {
+},{"babel-runtime/core-js/object/values":12,"babel-runtime/helpers/typeof":13,"babel-runtime/core-js/get-iterator":14,"babel-runtime/core-js/object/assign":15,"minimatch":11,"./plugins/fast-evaluation":5,"./plugins/tooltip":6,"./plugins/remove-evaluation-time-limit":8,"./plugins/compatibility-legacy":7,"./plugins/fast-evaluation-legacy":9}],1:[function(require,module,exports) {
 'use strict';
 
 // ==UserScript==

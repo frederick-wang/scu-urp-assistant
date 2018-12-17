@@ -14,7 +14,7 @@ const sua = require('./sua-core');
 
 (function () {
   var href = window.location.href
-  if (href.indexOf('202.115.47.141') !== -1 || href.indexOf('zhjw.scu.edu.cn') !== -1) {
+  if (href.indexOf('202.115.47.141') !== -1 || href.indexOf('zhjw.scu.edu.cn') !== -1 || href.indexOf('zhjwwx.scu.edu.cn') !== -1) {
     sua.init()
     window.alert('恭喜！启动成功！如果刷新页面，需要再启动一下哦~')
   } else {
