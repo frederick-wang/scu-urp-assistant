@@ -138,6 +138,13 @@ var fastEvaluationLegacy = {
       url: origin + '/jxpgXsAction.do',
       headers: this.headers,
       data: encodeURIComponent('wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject + '&oper=' + oper + '&pageSize=20&page=1&currentPage=1&pageNo='),
+      beforeSend: function beforeSend(xhr) {
+        xhr.setRequestHeader('X-Requested-With', {
+          toString: function toString() {
+            return '';
+          }
+        });
+      },
       error: function error(xhr) {
         window.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
       },

@@ -115,6 +115,13 @@ const fastEvaluationLegacy = {
       url: `${origin}/jxpgXsAction.do`,
       headers: this.headers,
       data: encodeURIComponent(`wjbm=${questionnaire}&bpr=${teacher}&pgnr=${subject}&oper=${oper}&pageSize=20&page=1&currentPage=1&pageNo=`),
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader('X-Requested-With', {
+          toString: function () {
+            return ''
+          }
+        })
+      },
       error: xhr => {
         window.alert(`错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`)
       },
