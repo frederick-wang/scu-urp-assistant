@@ -270,7 +270,7 @@ const fastEvaluation = {
               if (data['result'].indexOf('/') !== -1) {
                 console.log(data)
               } else if (data['result'] === 'success') {
-                this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}，将在2分钟后自动开始评价下一位老师~`)
+                this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}，将在2分钟后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`)
                 setTimeout(() => {
                   this.evaluate(++index)
                 }, this.evaluationInterval)
