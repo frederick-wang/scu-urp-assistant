@@ -31,14 +31,14 @@ const fastEvaluationLegacy = {
   },
   onClickBtn (e) {
     e.preventDefault()
-    this.changePromopt('正在收集本页问卷数据……')
+    this.changePrompt('正在收集本页问卷数据……')
     let names = Array.from(this.mainFrame.document.getElementsByTagName('img'))
       .filter(item => item.getAttribute('title') === '评估')
       .map(item => item.name)
       .filter(item => (item && item !== 'goto'))
     if (!names.length) {
       window.alert('本页上的所有教师都已经评教过了，您可以换一页再使用。')
-      this.changePromopt('本页上的所有教师都已经评教过了，您可以换一页再使用。')
+      this.changePrompt('本页上的所有教师都已经评教过了，您可以换一页再使用。')
       return
     }
     this.list = names.map(item => this.parseName(item))
@@ -74,7 +74,7 @@ const fastEvaluationLegacy = {
     ]
     return comments[Math.floor(Math.random() * comments.length)]
   },
-  changePromopt (str) {
+  changePrompt (str) {
     this.span.innerText = str
   },
   isListPage () {
@@ -97,7 +97,7 @@ const fastEvaluationLegacy = {
       if (this.mainFrame.location.search.indexOf('page=') !== -1) {
         page = this.mainFrame.location.search.match(/page=(\d+)/)[1]
       }
-      this.changePromopt(`第${page}页上的老师已经全部评价完毕！正在刷新……`)
+      this.changePrompt(`第${page}页上的老师已经全部评价完毕！正在刷新……`)
       this.mainFrame.location.href = `${origin}/jxpgXsAction.do?oper=listWj&page=${page}`
       return
     }
@@ -109,7 +109,7 @@ const fastEvaluationLegacy = {
     let questionnaire = item.wjbm
     let questionnaireName = item.wjmc
     let oper = item.oper
-    this.changePromopt(`正在评价${subjectName}课程的${teacherName}老师（${index + 1}/${this.list.length}）`)
+    this.changePrompt(`正在评价${subjectName}课程的${teacherName}老师（${index + 1}/${this.list.length}）`)
     window.fetch(`${origin}/jxpgXsAction.do`, {
       'credentials': 'include',
       'headers': this.headers,
@@ -118,61 +118,62 @@ const fastEvaluationLegacy = {
       'body': `wjbm=${questionnaire}&bpr=${teacher}&pgnr=${subject}&oper=${oper}&pageSize=20&page=1&currentPage=1&pageNo=`,
       'method': 'POST',
       'mode': 'cors'
-    }).then(response => {
-      let begin = void 0
-      let end = void 0
-      switch (questionnaireName) {
-        case '研究生助教评价':
-          begin = 28
-          end = 33
-          break
-        case '学生评教（课堂教学）':
-          begin = 36
-          end = 42
-          break
-        case '学生评教（实验教学）':
-          begin = 82
-          end = 88
-          break
-        case '学生评教（实践教学）':
-          begin = 89
-          end = 95
-          break
-        case '学生评教（体育教学）':
-          begin = 96
-          end = 102
-          break
-        default:
-          console.log('无效的问卷名称：' + questionnaireName)
-          return
-      }
-      let bodyStr = `wjbm=${questionnaire}&bpr=${teacher}&pgnr=${subject}`
-      for (let i = begin; i <= end; i++) {
-        let num = ('0000000000' + i).substr(-10)
-        bodyStr += `&${num}=10_1`
-      }
-      bodyStr += `&zgpj=${this.getComment()}`
-      window.fetch(`${origin}/jxpgXsAction.do?oper=wjpg`, {
-        'credentials': 'include',
-        'headers': this.headers,
-        'referrer': `${origin}/jxpgXsAction.do`,
-        'referrerPolicy': 'no-referrer-when-downgrade',
-        'body': bodyStr,
-        'method': 'POST',
-        'mode': 'cors'
-      }).then(response => {
-        response.text().then(text => {
-          if (text.indexOf('location.href=') !== -1) {
-            this.changePromopt(`${teacherName}（${subjectName}）评价成功，进度：${index + 1}/${this.list.length}`)
-          } else if (text.indexOf('history.back(-1);') !== -1) {
-            this.changePromopt(`${teacherName}（${subjectName}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
-          }
-          setTimeout(() => {
-            this.evaluate(++index)
-          }, this.evaluationInterval)
+    })
+      .then(() => {
+        let begin = void 0
+        let end = void 0
+        switch (questionnaireName) {
+          case '研究生助教评价':
+            begin = 28
+            end = 33
+            break
+          case '学生评教（课堂教学）':
+            begin = 36
+            end = 42
+            break
+          case '学生评教（实验教学）':
+            begin = 82
+            end = 88
+            break
+          case '学生评教（实践教学）':
+            begin = 89
+            end = 95
+            break
+          case '学生评教（体育教学）':
+            begin = 96
+            end = 102
+            break
+          default:
+            console.log('无效的问卷名称：' + questionnaireName)
+            return
+        }
+        let bodyStr = `wjbm=${questionnaire}&bpr=${teacher}&pgnr=${subject}`
+        for (let i = begin; i <= end; i++) {
+          let num = ('0000000000' + i).substr(-10)
+          bodyStr += `&${num}=10_1`
+        }
+        bodyStr += `&zgpj=${this.getComment()}`
+        return window.fetch(`${origin}/jxpgXsAction.do?oper=wjpg`, {
+          'credentials': 'include',
+          'headers': this.headers,
+          'referrer': `${origin}/jxpgXsAction.do`,
+          'referrerPolicy': 'no-referrer-when-downgrade',
+          'body': bodyStr,
+          'method': 'POST',
+          'mode': 'cors'
         })
       })
-    })
+      .then(res => res.text())
+      .then(res => {
+        if (res.indexOf('location.href=') !== -1) {
+          this.changePrompt(`${teacherName}（${subjectName}）评价成功，进度：${index + 1}/${this.list.length}`)
+        } else if (res.indexOf('history.back(-1);') !== -1) {
+          this.changePrompt(`${teacherName}（${subjectName}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
+        }
+        setTimeout(() => {
+          this.evaluate(++index)
+        }, this.evaluationInterval)
+      })
   }
 }
 
