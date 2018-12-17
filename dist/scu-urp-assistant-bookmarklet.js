@@ -3114,7 +3114,7 @@ module.exports = require('../../modules/_core').Array.from;
 
 },{"../../modules/es6.string.iterator":47,"../../modules/es6.array.from":87,"../../modules/_core":60}],31:[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/array/from"), __esModule: true };
-},{"core-js/library/fn/array/from":50}],6:[function(require,module,exports) {
+},{"core-js/library/fn/array/from":50}],5:[function(require,module,exports) {
 'use strict';
 
 var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
@@ -3370,7 +3370,7 @@ var fastEvaluation = {
 };
 
 module.exports = fastEvaluation;
-},{"babel-runtime/helpers/slicedToArray":32,"babel-runtime/core-js/array/from":31}],7:[function(require,module,exports) {
+},{"babel-runtime/helpers/slicedToArray":32,"babel-runtime/core-js/array/from":31}],6:[function(require,module,exports) {
 'use strict';
 
 // 提示信息插件
@@ -3393,7 +3393,7 @@ var tooltip = {
 };
 
 module.exports = tooltip;
-},{}],5:[function(require,module,exports) {
+},{}],7:[function(require,module,exports) {
 'use strict';
 
 // 删除手动评教的时间限制插件
@@ -3611,7 +3611,7 @@ var fastEvaluationLegacy = {
       type: 'POST',
       url: origin + '/jxpgXsAction.do',
       headers: this.headers,
-      data: encodeURIComponent('wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject + '&oper=' + oper + '&pageSize=20&page=1&currentPage=1&pageNo='),
+      data: encodeURI('wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject + '&oper=' + oper + '&pageSize=20&page=1&currentPage=1&pageNo='),
       beforeSend: function beforeSend(xhr) {
         xhr.setRequestHeader('X-Requested-With', {
           toString: function toString() {
@@ -4019,7 +4019,7 @@ var $sua = {
 };
 
 module.exports = $sua;
-},{"babel-runtime/core-js/object/values":12,"babel-runtime/helpers/typeof":13,"babel-runtime/core-js/get-iterator":14,"babel-runtime/core-js/object/assign":15,"minimatch":11,"./plugins/fast-evaluation":6,"./plugins/tooltip":7,"./plugins/remove-evaluation-time-limit":5,"./plugins/compatibility-legacy":8,"./plugins/fast-evaluation-legacy":9}],1:[function(require,module,exports) {
+},{"babel-runtime/core-js/object/values":12,"babel-runtime/helpers/typeof":13,"babel-runtime/core-js/get-iterator":14,"babel-runtime/core-js/object/assign":15,"minimatch":11,"./plugins/fast-evaluation":5,"./plugins/tooltip":6,"./plugins/remove-evaluation-time-limit":7,"./plugins/compatibility-legacy":8,"./plugins/fast-evaluation-legacy":9}],1:[function(require,module,exports) {
 'use strict';
 
 // ==UserScript==
@@ -4042,15 +4042,13 @@ var sua = require('./sua-core');
     var src = 'https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js';
     var script = document.createElement('script');
     script.setAttribute('type', 'text/javascript');
-    script.onreadystatechange = function () {
-      if (this.readyState === 'loaded' || this.readyState === 'complete') {
-        var href = window.location.href;
-        if (href.indexOf('202.115.47.141') !== -1 || href.indexOf('zhjw.scu.edu.cn') !== -1 || href.indexOf('zhjwwx.scu.edu.cn') !== -1) {
-          sua.init();
-          window.alert('恭喜！启动成功！如果刷新页面，需要再启动一下哦~');
-        } else {
-          window.alert('抱歉，您当前不处于四川大学 URP 登陆后的页面。请登陆后再使用哦。');
-        }
+    script.onload = function () {
+      var href = window.location.href;
+      if (href.indexOf('202.115.47.141') !== -1 || href.indexOf('zhjw.scu.edu.cn') !== -1 || href.indexOf('zhjwwx.scu.edu.cn') !== -1) {
+        sua.init();
+        window.alert('恭喜！启动成功！如果刷新页面，需要再启动一下哦~');
+      } else {
+        window.alert('抱歉，您当前不处于四川大学 URP 登陆后的页面。请登陆后再使用哦。');
       }
     };
     script.setAttribute('src', src);

@@ -137,7 +137,7 @@ var fastEvaluationLegacy = {
       type: 'POST',
       url: origin + '/jxpgXsAction.do',
       headers: this.headers,
-      data: encodeURIComponent('wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject + '&oper=' + oper + '&pageSize=20&page=1&currentPage=1&pageNo='),
+      data: encodeURI('wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject + '&oper=' + oper + '&pageSize=20&page=1&currentPage=1&pageNo='),
       beforeSend: function beforeSend(xhr) {
         xhr.setRequestHeader('X-Requested-With', {
           toString: function toString() {
