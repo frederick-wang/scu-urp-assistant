@@ -3607,68 +3607,69 @@ var fastEvaluationLegacy = {
     var questionnaireName = item.wjmc;
     var oper = item.oper;
     this.changePrompt('\u6B63\u5728\u8BC4\u4EF7' + subjectName + '\u8BFE\u7A0B\u7684' + teacherName + '\u8001\u5E08\uFF08' + (index + 1) + '/' + this.list.length + '\uFF09');
-    window.fetch(origin + '/jxpgXsAction.do', {
-      'credentials': 'include',
-      'headers': this.headers,
-      'referrer': origin + '/jxpgXsAction.do?totalrows=25&page=1&pageSize=20',
-      'referrerPolicy': 'no-referrer-when-downgrade',
-      'body': 'wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject + '&oper=' + oper + '&pageSize=20&page=1&currentPage=1&pageNo=',
-      'method': 'POST',
-      'mode': 'cors'
-    }).then(function () {
-      var begin = void 0;
-      var end = void 0;
-      switch (questionnaireName) {
-        case '研究生助教评价':
-          begin = 28;
-          end = 33;
-          break;
-        case '学生评教（课堂教学）':
-          begin = 36;
-          end = 42;
-          break;
-        case '学生评教（实验教学）':
-          begin = 82;
-          end = 88;
-          break;
-        case '学生评教（实践教学）':
-          begin = 89;
-          end = 95;
-          break;
-        case '学生评教（体育教学）':
-          begin = 96;
-          end = 102;
-          break;
-        default:
-          console.log('无效的问卷名称：' + questionnaireName);
-          return;
+    window.$.ajax({
+      type: 'POST',
+      url: origin + '/jxpgXsAction.do',
+      headers: this.headers,
+      data: encodeURIComponent('wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject + '&oper=' + oper + '&pageSize=20&page=1&currentPage=1&pageNo='),
+      error: function error(xhr) {
+        window.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
+      },
+      success: function success() {
+        var begin = void 0;
+        var end = void 0;
+        switch (questionnaireName) {
+          case '研究生助教评价':
+            begin = 28;
+            end = 33;
+            break;
+          case '学生评教（课堂教学）':
+            begin = 36;
+            end = 42;
+            break;
+          case '学生评教（实验教学）':
+            begin = 82;
+            end = 88;
+            break;
+          case '学生评教（实践教学）':
+            begin = 89;
+            end = 95;
+            break;
+          case '学生评教（体育教学）':
+            begin = 96;
+            end = 102;
+            break;
+          default:
+            console.log('无效的问卷名称：' + questionnaireName);
+            return;
+        }
+        var bodyStr = 'wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject;
+        for (var i = begin; i <= end; i++) {
+          var num = ('0000000000' + i).substr(-10);
+          bodyStr += '&' + num + '=10_1';
+        }
+        bodyStr += '&zgpj=' + _this2.getComment();
+        window.$.ajax({
+          type: 'POST',
+          url: origin + '/jxpgXsAction.do?oper=wjpg',
+          headers: _this2.headers,
+          data: bodyStr,
+          error: function error(xhr) {
+            window.urp.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
+            _this2.changePrompt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
+          },
+          success: function success(res) {
+            if (res.indexOf('location.href=') !== -1) {
+              _this2.changePrompt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
+            } else if (res.indexOf('history.back(-1);') !== -1) {
+              _this2.changePrompt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
+            }
+            setTimeout(function () {
+              _this2.evaluate(++index);
+            }, _this2.evaluationInterval);
+          }
+        });
       }
-      var bodyStr = 'wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject;
-      for (var i = begin; i <= end; i++) {
-        var num = ('0000000000' + i).substr(-10);
-        bodyStr += '&' + num + '=10_1';
-      }
-      bodyStr += '&zgpj=' + _this2.getComment();
-      return window.fetch(origin + '/jxpgXsAction.do?oper=wjpg', {
-        'credentials': 'include',
-        'headers': _this2.headers,
-        'referrer': origin + '/jxpgXsAction.do',
-        'referrerPolicy': 'no-referrer-when-downgrade',
-        'body': bodyStr,
-        'method': 'POST',
-        'mode': 'cors'
-      });
-    }).then(function (res) {
-      return res.text();
-    }).then(function (res) {
-      if (res.indexOf('location.href=') !== -1) {
-        _this2.changePrompt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
-      } else if (res.indexOf('history.back(-1);') !== -1) {
-        _this2.changePrompt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
-      }
-      setTimeout(function () {
-        _this2.evaluate(++index);
-      }, _this2.evaluationInterval);
     });
   }
 };
@@ -4029,22 +4030,32 @@ module.exports = $sua;
 var sua = require('./sua-core');
 
 (function () {
-  var HEAD = document.getElementsByTagName('head')[0] || document.documentElement;
-  var src = 'https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js';
-  var script = document.createElement('script');
-  script.setAttribute('type', 'text/javascript');
-  script.onreadystatechange = function () {
-    if (this.readyState === 'loaded' || this.readyState === 'complete') {
-      var href = window.location.href;
-      if (href.indexOf('202.115.47.141') !== -1 || href.indexOf('zhjw.scu.edu.cn') !== -1 || href.indexOf('zhjwwx.scu.edu.cn') !== -1) {
-        sua.init();
-        window.alert('恭喜！启动成功！如果刷新页面，需要再启动一下哦~');
-      } else {
-        window.alert('抱歉，您当前不处于四川大学 URP 登陆后的页面。请登陆后再使用哦。');
+  if (!window.jQuery) {
+    var HEAD = document.getElementsByTagName('head')[0] || document.documentElement;
+    var src = 'https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js';
+    var script = document.createElement('script');
+    script.setAttribute('type', 'text/javascript');
+    script.onreadystatechange = function () {
+      if (this.readyState === 'loaded' || this.readyState === 'complete') {
+        var href = window.location.href;
+        if (href.indexOf('202.115.47.141') !== -1 || href.indexOf('zhjw.scu.edu.cn') !== -1 || href.indexOf('zhjwwx.scu.edu.cn') !== -1) {
+          sua.init();
+          window.alert('恭喜！启动成功！如果刷新页面，需要再启动一下哦~');
+        } else {
+          window.alert('抱歉，您当前不处于四川大学 URP 登陆后的页面。请登陆后再使用哦。');
+        }
       }
+    };
+    script.setAttribute('src', src);
+    HEAD.appendChild(script);
+  } else {
+    var href = window.location.href;
+    if (href.indexOf('202.115.47.141') !== -1 || href.indexOf('zhjw.scu.edu.cn') !== -1 || href.indexOf('zhjwwx.scu.edu.cn') !== -1) {
+      sua.init();
+      window.alert('恭喜！启动成功！如果刷新页面，需要再启动一下哦~');
+    } else {
+      window.alert('抱歉，您当前不处于四川大学 URP 登陆后的页面。请登陆后再使用哦。');
     }
-  };
-  script.setAttribute('src', src);
-  HEAD.appendChild(script);
+  }
 })();
 },{"./sua-core":3}]},{},[1], null)

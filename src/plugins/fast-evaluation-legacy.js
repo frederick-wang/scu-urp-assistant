@@ -110,16 +110,15 @@ const fastEvaluationLegacy = {
     let questionnaireName = item.wjmc
     let oper = item.oper
     this.changePrompt(`正在评价${subjectName}课程的${teacherName}老师（${index + 1}/${this.list.length}）`)
-    window.fetch(`${origin}/jxpgXsAction.do`, {
-      'credentials': 'include',
-      'headers': this.headers,
-      'referrer': origin + '/jxpgXsAction.do?totalrows=25&page=1&pageSize=20',
-      'referrerPolicy': 'no-referrer-when-downgrade',
-      'body': `wjbm=${questionnaire}&bpr=${teacher}&pgnr=${subject}&oper=${oper}&pageSize=20&page=1&currentPage=1&pageNo=`,
-      'method': 'POST',
-      'mode': 'cors'
-    })
-      .then(() => {
+    window.$.ajax({
+      type: 'POST',
+      url: `${origin}/jxpgXsAction.do`,
+      headers: this.headers,
+      data: encodeURIComponent(`wjbm=${questionnaire}&bpr=${teacher}&pgnr=${subject}&oper=${oper}&pageSize=20&page=1&currentPage=1&pageNo=`),
+      error: xhr => {
+        window.alert(`错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`)
+      },
+      success: () => {
         let begin = void 0
         let end = void 0
         switch (questionnaireName) {
@@ -153,27 +152,28 @@ const fastEvaluationLegacy = {
           bodyStr += `&${num}=10_1`
         }
         bodyStr += `&zgpj=${this.getComment()}`
-        return window.fetch(`${origin}/jxpgXsAction.do?oper=wjpg`, {
-          'credentials': 'include',
-          'headers': this.headers,
-          'referrer': `${origin}/jxpgXsAction.do`,
-          'referrerPolicy': 'no-referrer-when-downgrade',
-          'body': bodyStr,
-          'method': 'POST',
-          'mode': 'cors'
+        window.$.ajax({
+          type: 'POST',
+          url: `${origin}/jxpgXsAction.do?oper=wjpg`,
+          headers: this.headers,
+          data: bodyStr,
+          error: xhr => {
+            window.urp.alert(`错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`)
+            this.changePrompt(`${teacherName}（${subjectName}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
+          },
+          success: res => {
+            if (res.indexOf('location.href=') !== -1) {
+              this.changePrompt(`${teacherName}（${subjectName}）评价成功，进度：${index + 1}/${this.list.length}`)
+            } else if (res.indexOf('history.back(-1);') !== -1) {
+              this.changePrompt(`${teacherName}（${subjectName}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
+            }
+            setTimeout(() => {
+              this.evaluate(++index)
+            }, this.evaluationInterval)
+          }
         })
-      })
-      .then(res => res.text())
-      .then(res => {
-        if (res.indexOf('location.href=') !== -1) {
-          this.changePrompt(`${teacherName}（${subjectName}）评价成功，进度：${index + 1}/${this.list.length}`)
-        } else if (res.indexOf('history.back(-1);') !== -1) {
-          this.changePrompt(`${teacherName}（${subjectName}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
-        }
-        setTimeout(() => {
-          this.evaluate(++index)
-        }, this.evaluationInterval)
-      })
+      }
+    })
   }
 }
 
