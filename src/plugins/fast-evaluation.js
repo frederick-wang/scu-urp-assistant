@@ -5,7 +5,7 @@ const fastEvaluation = {
   $btn: undefined,
   $prompt: undefined,
   list: [],
-  evaluationInterval: 500,
+  evaluationInterval: 1000 * 121,
   checkboxWrapperSelectors: {
     '研究生助教评价': '#yjs-checkbox-wrapper',
     '学生评教（课堂教学）': '#ktjx-checkbox-wrapper',
@@ -244,7 +244,7 @@ const fastEvaluation = {
         window.urp.alert(`错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`)
       },
       success: (data) => {
-        tokenValue = data.match(/<input type="hidden" name="tokenValue" value="(.+)"\/>/i)[1]
+        tokenValue = data.match(/<input.+tokenValue.+value="(.+)"\/>/i)[1]
 
         if (this.questionsNumberRange[questionnaireName]) {
           let { begin, end } = this.questionsNumberRange[questionnaireName]
@@ -267,13 +267,17 @@ const fastEvaluation = {
               this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
             },
             success: (data) => {
-              if (data.indexOf('/') !== -1) {
+              if (data['result'].indexOf('/') !== -1) {
                 console.log(data)
-              } else if (data === 'success') {
-                this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}`)
+              } else if (data['result'] === 'success') {
+                this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index + 1}/${this.list.length}，将在2分钟后自动开始评价下一位老师~`)
                 setTimeout(() => {
                   this.evaluate(++index)
                 }, this.evaluationInterval)
+              } else if (data['result'] === 'notEnoughTime') {
+                tokenValue = data['token']
+                this.changePrompt(`${evaluatedPeople}（${evaluationContentContent} 距离上一次提交未到2分钟 QAQ，进度：${index + 1}/${this.list.length}`)
+                this.evaluate(index)
               } else {
                 window.urp.alert('保存失败')
                 this.changePrompt(`${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index + 1}/${this.list.length}`)
