@@ -3380,7 +3380,7 @@ var tooltip = {
   pathname: '/**',
   $loginTooltip: undefined,
   $navTooltip: undefined,
-  version: '0.7.11',
+  version: '0.7.12',
   init: function init() {
     if (window.location.pathname === '/login') {
       this.$loginTooltip = window.$('\n        <span class="sua-tooltip" style="\n          position: absolute;\n          font-size: 12px;\n          top: 10px;\n          right: 15px;\n          color: #909399;\n        ">\n          SCU URP \u52A9\u624B ' + this.version + '\n        </span>');
@@ -3408,7 +3408,273 @@ var removeEvaluationTimeLimit = {
 };
 
 module.exports = removeEvaluationTimeLimit;
-},{}],3:[function(require,module,exports) {
+},{}],8:[function(require,module,exports) {
+'use strict';
+
+// 修复兼容性插件(旧版教务系统)
+
+var compatibilityLegacy = {
+  init: function init() {
+    var _this = this;
+
+    this.topFrame.changeLeftMenu = function () {
+      if (_this.bottomFrame && _this.menuFrame && _this.menuFrame.menus) {
+        _this.menuFrame.menus.index = _this.topFrame.moduleNum;
+        _this.menuFrame.menus.show();
+        _this.menuFrame.menus.click();
+      }
+    };
+    this.topFrame.changeLeftMenu();
+  },
+  task: function task() {
+    if (!this.mainFrame.showModalDialog) {
+      this.mainFrame.showModalDialog = this.showModalDialog;
+    }
+  },
+  showModalDialog: function showModalDialog(arg1, arg2, arg3) {
+    var w = void 0;
+    var h = void 0;
+    var resizable = 'no';
+    // 默认窗口需要可以滚动，不然课程表之类的都只能显示一半
+    var scroll = 'yes';
+    var status = 'no';
+    var mdattrs = arg3.split(';');
+    for (var i = 0; i < mdattrs.length; i++) {
+      var mdattr = mdattrs[i].split(':');
+      var n = mdattr[0];
+      var v = mdattr[1];
+      if (n) {
+        n = n.trim().toLowerCase();
+      }
+      if (v) {
+        v = v.trim().toLowerCase();
+      }
+      if (n === 'dialogheight') {
+        h = v.replace('px', '');
+      } else if (n === 'dialogwidth') {
+        w = v.replace('px', '');
+      } else if (n === 'resizable') {
+        resizable = v;
+      } else if (n === 'scroll') {
+        scroll = v;
+      } else if (n === 'status') {
+        status = v;
+      }
+    }
+    var left = window.screenX + window.outerWidth / 2 - w / 2;
+    var top = window.screenY + window.outerHeight / 2 - h / 2;
+    var targetWin = window.open(arg1, arg1, 'toolbar=no, location=no, directories=no, status=' + status + ', menubar=no, scrollbars=' + scroll + ', resizable=' + resizable + ', copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+    targetWin.focus();
+  }
+};
+
+module.exports = compatibilityLegacy;
+},{}],9:[function(require,module,exports) {
+'use strict';
+
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _from = require('babel-runtime/core-js/array/from');
+
+var _from2 = _interopRequireDefault(_from);
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
+
+// 一键评教插件(旧版教务系统)
+var fastEvaluationLegacy = {
+  list: [],
+  btn: void 0,
+  span: void 0,
+  evaluationInterval: 500,
+  headers: {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'Cache-Control': 'max-age=0',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Upgrade-Insecure-Requests': '1'
+  },
+  task: function task() {
+    if (this.mainFrame.location.pathname.indexOf('jxpgXsAction') !== -1) {
+      if (this.mainFrame.document.getElementsByTagName('body').length) {
+        if (this.isListPage() && !this.mainFrame.evaluationHacked) {
+          this.btn = document.createElement('button');
+          var node = document.createTextNode('给本页所有老师好评！');
+          this.span = document.createElement('span');
+          var td = document.createElement('td');
+          this.btn.appendChild(node);
+          td.appendChild(this.btn);
+          td.appendChild(this.span);
+          var tblHead = this.mainFrame.document.getElementById('tblHead');
+          tblHead.getElementsByTagName('table')[0].getElementsByTagName('tr')[0].appendChild(td);
+          this.mainFrame.evaluationHacked = true;
+          this.btn.onclick = this.onClickBtn.bind(this);
+        }
+      }
+    }
+  },
+  onClickBtn: function onClickBtn(e) {
+    var _this = this;
+
+    e.preventDefault();
+    this.changePromopt('正在收集本页问卷数据……');
+    var names = (0, _from2.default)(this.mainFrame.document.getElementsByTagName('img')).filter(function (item) {
+      return item.getAttribute('title') === '评估';
+    }).map(function (item) {
+      return item.name;
+    }).filter(function (item) {
+      return item && item !== 'goto';
+    });
+    if (!names.length) {
+      window.alert('本页上的所有教师都已经评教过了，您可以换一页再使用。');
+      this.changePromopt('本页上的所有教师都已经评教过了，您可以换一页再使用。');
+      return;
+    }
+    this.list = names.map(function (item) {
+      return _this.parseName(item);
+    });
+    this.evaluate(0);
+  },
+  parseName: function parseName(data) {
+    data = data.split('#@');
+
+    var _data = data,
+        _data2 = (0, _slicedToArray3.default)(_data, 6),
+        wjbm = _data2[0],
+        bpr = _data2[1],
+        bprm = _data2[2],
+        wjmc = _data2[3],
+        pgnrm = _data2[4],
+        pgnr = _data2[5];
+
+    var oper = void 0;
+    switch (wjmc) {
+      case '研究生助教评价':
+      case '学生评教（体育教学）':
+      case '学生评教（课堂教学）':
+      case '学生评教（实践教学）':
+      case '学生评教（实验教学）':
+        oper = 'wjShow';
+        break;
+      default:
+        console.log('无效的问卷名称：' + wjmc);
+        return;
+    }
+    var result = { wjbm: wjbm, bpr: bpr, bprm: bprm, wjmc: wjmc, pgnrm: pgnrm, pgnr: pgnr, oper: oper };
+    return result;
+  },
+  getComment: function getComment() {
+    var comments = ['%C0%CF%CA%A6%CA%C7%BA%DC%BA%C3%B5%C4%A3%AC%C6%BD%CA%B1%BF%CE%CC%C3%C9%CF%BD%B2%BF%CE%B7%E7%C8%A4%D3%D6%B2%BB%CA%A7%D1%CF%BD%F7%A3%AC%BF%CE%CF%C2%D2%B2%B6%D4%CD%AC%D1%A7%C3%C7%B5%C4%CE%CA%CC%E2%D3%D0%C7%F3%B1%D8%D3%A6%A3%AC%B0%EF%D6%FA%C1%CB%CE%D2%BA%DC%B6%E0%A1%A3', '%C0%CF%CA%A6%CD%A6%B2%BB%B4%ED%B5%C4%A3%AC%B6%D4%CE%CA%CC%E2%B7%D6%CE%F6%B5%C4%CD%B8%B3%B9%A3%AC%BD%B2%BF%CE%C4%DC%C7%D0%D6%D0%D2%AA%BA%A6%A3%AC%BA%DC%CF%B2%BB%B6%C0%CF%CA%A6%B5%C4%BD%B2%BF%CE%B7%E7%B8%F1%A1%A3', '%C0%CF%CA%A6%BD%B2%BF%CE%BA%DC%D3%C3%D0%C4%A3%AC%B8%F8%CE%D2%C3%C7%BB%AE%B6%A8%C1%CB%D1%A7%CF%B0%C4%BF%B1%EA%A3%AC%B0%E0%C0%EF%CD%AC%D1%A7%B6%BC%D1%A7%B5%C3%B2%BB%B4%ED%A3%AC%B8%F8%B7%D6%D2%B2%BA%C3%A1%A3', '%C0%CF%CA%A6%BE%AD%D1%E9%BA%DC%B7%E1%B8%BB%A3%AC%C6%BD%CA%B1%D2%AA%C7%F3%CA%CA%D6%D0%A3%AC%D7%A2%D6%D8%D3%EB%CE%D2%C3%C7%B9%B5%CD%A8%BD%BB%C1%F7%A3%AC%B0%D1%D6%AA%CA%B6%D5%E6%D5%FD%B5%C4%B4%AB%B5%DD%B8%F8%C1%CB%CE%D2%C3%C7%A1%A3', '%C0%CF%CA%A6%BD%B2%B5%C4%C4%DA%C8%DD%BD%F4%D7%B7%CA%B1%B4%FA%B2%BD%B7%A5%A3%AC%B2%BB%B9%FD%CA%B1%A3%AC%BD%B2%BF%CE%B7%E7%B8%F1%CF%EA%CA%B5%C9%FA%B6%AF%A3%AC%B4%F3%BC%D2%B6%BC%BA%DC%CF%B2%BB%B6%A1%A3', '%C0%CF%CA%A6%B5%C4%BD%B2%BF%CE%BD%DA%D7%E0%B0%B2%C5%C5%B5%C4%B2%BB%B4%ED%A3%AC%D7%EE%BA%F3%B4%F3%BC%D2%B6%D4%D6%AA%CA%B6%D5%C6%CE%D5%B5%C4%B6%BC%B1%C8%BD%CF%BA%C3%A3%AC%B8%B4%CF%B0%D2%B2%B1%C8%BD%CF%B3%E4%B7%D6%A3%AC%BF%BC%CA%D4%C7%E9%BF%F6%B2%BB%B4%ED%A1%A3'];
+    return comments[Math.floor(Math.random() * comments.length)];
+  },
+  changePromopt: function changePromopt(str) {
+    this.span.innerText = str;
+  },
+  isListPage: function isListPage() {
+    if (this.mainFrame.location.pathname.indexOf('jxpgXsAction') === -1) {
+      return false;
+    }
+    var text = '';
+    if (this.mainFrame.document.getElementsByTagName('body').length) {
+      text = this.mainFrame.document.getElementsByTagName('body')[0].innerHTML;
+    }
+    if (text.indexOf('每页显示的记录数') !== -1) {
+      return true;
+    }
+    return false;
+  },
+  evaluate: function evaluate(index) {
+    var _this2 = this;
+
+    var origin = window.location.origin;
+    if (index >= this.list.length) {
+      var page = '1';
+      if (this.mainFrame.location.search.indexOf('page=') !== -1) {
+        page = this.mainFrame.location.search.match(/page=(\d+)/)[1];
+      }
+      this.changePromopt('\u7B2C' + page + '\u9875\u4E0A\u7684\u8001\u5E08\u5DF2\u7ECF\u5168\u90E8\u8BC4\u4EF7\u5B8C\u6BD5\uFF01\u6B63\u5728\u5237\u65B0\u2026\u2026');
+      this.mainFrame.location.href = origin + '/jxpgXsAction.do?oper=listWj&page=' + page;
+      return;
+    }
+    var item = this.list[index];
+    var teacher = item.bpr;
+    var teacherName = item.bprm;
+    var subject = item.pgnr;
+    var subjectName = item.pgnrm;
+    var questionnaire = item.wjbm;
+    var questionnaireName = item.wjmc;
+    var oper = item.oper;
+    this.changePromopt('\u6B63\u5728\u8BC4\u4EF7' + subjectName + '\u8BFE\u7A0B\u7684' + teacherName + '\u8001\u5E08\uFF08' + (index + 1) + '/' + this.list.length + '\uFF09');
+    window.fetch(origin + '/jxpgXsAction.do', {
+      'credentials': 'include',
+      'headers': this.headers,
+      'referrer': origin + '/jxpgXsAction.do?totalrows=25&page=1&pageSize=20',
+      'referrerPolicy': 'no-referrer-when-downgrade',
+      'body': 'wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject + '&oper=' + oper + '&pageSize=20&page=1&currentPage=1&pageNo=',
+      'method': 'POST',
+      'mode': 'cors'
+    }).then(function (response) {
+      var begin = void 0;
+      var end = void 0;
+      switch (questionnaireName) {
+        case '研究生助教评价':
+          begin = 28;
+          end = 33;
+          break;
+        case '学生评教（课堂教学）':
+          begin = 36;
+          end = 42;
+          break;
+        case '学生评教（实验教学）':
+          begin = 82;
+          end = 88;
+          break;
+        case '学生评教（实践教学）':
+          begin = 89;
+          end = 95;
+          break;
+        case '学生评教（体育教学）':
+          begin = 96;
+          end = 102;
+          break;
+        default:
+          console.log('无效的问卷名称：' + questionnaireName);
+          return;
+      }
+      var bodyStr = 'wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject;
+      for (var i = begin; i <= end; i++) {
+        var num = ('0000000000' + i).substr(-10);
+        bodyStr += '&' + num + '=10_1';
+      }
+      bodyStr += '&zgpj=' + _this2.getComment();
+      window.fetch(origin + '/jxpgXsAction.do?oper=wjpg', {
+        'credentials': 'include',
+        'headers': _this2.headers,
+        'referrer': origin + '/jxpgXsAction.do',
+        'referrerPolicy': 'no-referrer-when-downgrade',
+        'body': bodyStr,
+        'method': 'POST',
+        'mode': 'cors'
+      }).then(function (response) {
+        response.text().then(function (text) {
+          if (text.indexOf('location.href=') !== -1) {
+            _this2.changePromopt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
+          } else if (text.indexOf('history.back(-1);') !== -1) {
+            _this2.changePromopt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
+          }
+          setTimeout(function () {
+            _this2.evaluate(++index);
+          }, _this2.evaluationInterval);
+        });
+      });
+    });
+  }
+};
+
+module.exports = fastEvaluationLegacy;
+},{"babel-runtime/helpers/slicedToArray":32,"babel-runtime/core-js/array/from":31}],3:[function(require,module,exports) {
 'use strict';
 
 var _values = require('babel-runtime/core-js/object/values');
@@ -3435,6 +3701,8 @@ var minimatch = require('minimatch');
 var fastEvaluation = require('./plugins/fast-evaluation');
 var tooltip = require('./plugins/tooltip');
 var removeEvaluationTimeLimit = require('./plugins/remove-evaluation-time-limit');
+var compatibilityLegacy = require('./plugins/compatibility-legacy');
+var fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy');
 
 // 挂载到 window 上的全局对象
 var $sua = {
@@ -3463,95 +3731,197 @@ var $sua = {
   init: function init() {
     var _this = this;
 
-    // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
-    window.$sua = (0, _assign2.default)($sua, $sua.data);
-    // 加载插件
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
+    // 旧版教务系统兼容
+    if (window.location.host === 'zhjwwx.scu.edu.cn:8080') {
+      if (window.location.pathname !== '/loginAction.do') {
+        return;
+      }
+      var dataLegacy = {
+        topFrame: window.frames.topFrame,
+        bottomFrame: window.frames.bottomFrame,
+        menuFrame: window.frames.bottomFrame.frames.menuFrame,
+        mainFrame: window.frames.bottomFrame.frames.mainFrame
+      };
 
-    try {
-      for (var _iterator = (0, _getIterator3.default)(this.plugins), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var plugin = _step.value;
+      var pluginsLegacy = [compatibilityLegacy, fastEvaluationLegacy];
 
-        plugin.$sua = $sua;
-        // 将data中的属性注入plugin对象中，使其内部可以用this直接访问
-        plugin = (0, _assign2.default)(plugin, $sua.data);
-        if (urlTrigger(plugin)) {
-          // 将初始化方法推入队列中
+      window.$sua = (0, _assign2.default)($sua, dataLegacy);
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = (0, _getIterator3.default)(pluginsLegacy), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var plugin = _step.value;
+
+          plugin.$sua = $sua;
+          plugin = (0, _assign2.default)(plugin, dataLegacy);
           if (plugin.init) {
             this.initQueue.push(plugin.init.bind(plugin));
           }
-          // 将需要定时执行的任务推入队列中
           if (plugin.task) {
             this.taskQueue.push(plugin.task.bind(plugin));
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = (0, _getIterator3.default)(this.initQueue), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var i = _step2.value;
+
+          i();
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      setInterval(function () {
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+          for (var _iterator3 = (0, _getIterator3.default)(_this.taskQueue), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var t = _step3.value;
+
+            t();
+          }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+              _iterator3.return();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
+          }
+        }
+      }, this.timeInterval);
+
+      return;
+    }
+
+    // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
+    window.$sua = (0, _assign2.default)($sua, $sua.data);
+    // 加载插件
+    var _iteratorNormalCompletion4 = true;
+    var _didIteratorError4 = false;
+    var _iteratorError4 = undefined;
+
+    try {
+      for (var _iterator4 = (0, _getIterator3.default)(this.plugins), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        var _plugin = _step4.value;
+
+        _plugin.$sua = $sua;
+        // 将data中的属性注入plugin对象中，使其内部可以用this直接访问
+        _plugin = (0, _assign2.default)(_plugin, $sua.data);
+        if (urlTrigger(_plugin)) {
+          // 将初始化方法推入队列中
+          if (_plugin.init) {
+            this.initQueue.push(_plugin.init.bind(_plugin));
+          }
+          // 将需要定时执行的任务推入队列中
+          if (_plugin.task) {
+            this.taskQueue.push(_plugin.task.bind(_plugin));
           }
         }
       }
       // 初始化方法
     } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
+      _didIteratorError4 = true;
+      _iteratorError4 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
+        if (!_iteratorNormalCompletion4 && _iterator4.return) {
+          _iterator4.return();
         }
       } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
+        if (_didIteratorError4) {
+          throw _iteratorError4;
         }
       }
     }
 
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
+    var _iteratorNormalCompletion5 = true;
+    var _didIteratorError5 = false;
+    var _iteratorError5 = undefined;
 
     try {
-      for (var _iterator2 = (0, _getIterator3.default)(this.initQueue), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var i = _step2.value;
+      for (var _iterator5 = (0, _getIterator3.default)(this.initQueue), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        var _i = _step5.value;
 
-        i();
+        _i();
       }
       // 定时任务
     } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
+      _didIteratorError5 = true;
+      _iteratorError5 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return();
+        if (!_iteratorNormalCompletion5 && _iterator5.return) {
+          _iterator5.return();
         }
       } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
+        if (_didIteratorError5) {
+          throw _iteratorError5;
         }
       }
     }
 
     setInterval(function () {
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion6 = true;
+      var _didIteratorError6 = false;
+      var _iteratorError6 = undefined;
 
       try {
-        for (var _iterator3 = (0, _getIterator3.default)(_this.taskQueue), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var t = _step3.value;
+        for (var _iterator6 = (0, _getIterator3.default)(_this.taskQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+          var t = _step6.value;
 
           t();
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError6 = true;
+        _iteratorError6 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion6 && _iterator6.return) {
+            _iterator6.return();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError6) {
+            throw _iteratorError6;
           }
         }
       }
@@ -3575,58 +3945,58 @@ var $sua = {
       } else if (typeof pathname === 'string') {
         return minimatch(window.location.pathname, pathname);
       } else if (Array.isArray(pathname)) {
-        var _iteratorNormalCompletion4 = true;
-        var _didIteratorError4 = false;
-        var _iteratorError4 = undefined;
+        var _iteratorNormalCompletion7 = true;
+        var _didIteratorError7 = false;
+        var _iteratorError7 = undefined;
 
         try {
-          for (var _iterator4 = (0, _getIterator3.default)(pathname), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var item = _step4.value;
+          for (var _iterator7 = (0, _getIterator3.default)(pathname), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+            var item = _step7.value;
 
             if (minimatch(window.location.pathname, item)) {
               return true;
             }
           }
         } catch (err) {
-          _didIteratorError4 = true;
-          _iteratorError4 = err;
+          _didIteratorError7 = true;
+          _iteratorError7 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion4 && _iterator4.return) {
-              _iterator4.return();
+            if (!_iteratorNormalCompletion7 && _iterator7.return) {
+              _iterator7.return();
             }
           } finally {
-            if (_didIteratorError4) {
-              throw _iteratorError4;
+            if (_didIteratorError7) {
+              throw _iteratorError7;
             }
           }
         }
 
         return false;
       } else if ((typeof pathname === 'undefined' ? 'undefined' : (0, _typeof3.default)(pathname)) === 'object') {
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
+        var _iteratorNormalCompletion8 = true;
+        var _didIteratorError8 = false;
+        var _iteratorError8 = undefined;
 
         try {
-          for (var _iterator5 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var _item = _step5.value;
+          for (var _iterator8 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+            var _item = _step8.value;
 
             if (minimatch(window.location.pathname, _item)) {
               return true;
             }
           }
         } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
+          _didIteratorError8 = true;
+          _iteratorError8 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion5 && _iterator5.return) {
-              _iterator5.return();
+            if (!_iteratorNormalCompletion8 && _iterator8.return) {
+              _iterator8.return();
             }
           } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
+            if (_didIteratorError8) {
+              throw _iteratorError8;
             }
           }
         }
@@ -3641,17 +4011,18 @@ var $sua = {
 };
 
 module.exports = $sua;
-},{"babel-runtime/core-js/object/values":12,"babel-runtime/helpers/typeof":13,"babel-runtime/core-js/get-iterator":14,"babel-runtime/core-js/object/assign":15,"minimatch":11,"./plugins/fast-evaluation":5,"./plugins/tooltip":6,"./plugins/remove-evaluation-time-limit":7}],1:[function(require,module,exports) {
+},{"babel-runtime/core-js/object/values":12,"babel-runtime/helpers/typeof":13,"babel-runtime/core-js/get-iterator":14,"babel-runtime/core-js/object/assign":15,"minimatch":11,"./plugins/fast-evaluation":5,"./plugins/tooltip":6,"./plugins/remove-evaluation-time-limit":7,"./plugins/compatibility-legacy":8,"./plugins/fast-evaluation-legacy":9}],1:[function(require,module,exports) {
 'use strict';
 
 // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.7.11
+// @version      0.7.12
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
 // @include      http://zhjw.scu.edu.cn/*
+// @include      http://zhjwwx.scu.edu.cn:8080/*
 // @grant        none
 // ==/UserScript==
 
@@ -3659,8 +4030,9 @@ var sua = require('./sua-core');
 
 (function () {
   // 必须等页面加载完之后再初始化，否则此时页面结构还没加载出来，document里面内容不全
-  window.$(function () {
+  // 必须等页面加载完之后再初始化，否则此时页面结构还没加载出来，document里面内容不全
+  window.onload = function () {
     sua.init();
-  });
+  };
 })();
 },{"./sua-core":3}]},{},[1], null)

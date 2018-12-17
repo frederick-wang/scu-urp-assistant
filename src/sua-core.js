@@ -2,6 +2,8 @@ const minimatch = require('minimatch')
 const fastEvaluation = require('./plugins/fast-evaluation')
 const tooltip = require('./plugins/tooltip')
 const removeEvaluationTimeLimit = require('./plugins/remove-evaluation-time-limit')
+const compatibilityLegacy = require('./plugins/compatibility-legacy')
+const fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy')
 
 // 挂载到 window 上的全局对象
 const $sua = {
@@ -28,6 +30,43 @@ const $sua = {
    * 初始化 SCU URP 助手
    */
   init () {
+    // 旧版教务系统兼容
+    if (window.location.host === 'zhjwwx.scu.edu.cn:8080') {
+      if (window.location.pathname !== '/loginAction.do') {
+        return
+      }
+      let dataLegacy = {
+        topFrame: window.frames.topFrame,
+        bottomFrame: window.frames.bottomFrame,
+        menuFrame: window.frames.bottomFrame.frames.menuFrame,
+        mainFrame: window.frames.bottomFrame.frames.mainFrame
+      }
+
+      let pluginsLegacy = [compatibilityLegacy, fastEvaluationLegacy]
+
+      window.$sua = Object.assign($sua, dataLegacy)
+      for (let plugin of pluginsLegacy) {
+        plugin.$sua = $sua
+        plugin = Object.assign(plugin, dataLegacy)
+        if (plugin.init) {
+          this.initQueue.push(plugin.init.bind(plugin))
+        }
+        if (plugin.task) {
+          this.taskQueue.push(plugin.task.bind(plugin))
+        }
+      }
+      for (let i of this.initQueue) {
+        i()
+      }
+      setInterval(() => {
+        for (let t of this.taskQueue) {
+          t()
+        }
+      }, this.timeInterval)
+
+      return
+    }
+
     // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
     window.$sua = Object.assign($sua, $sua.data)
     // 加载插件

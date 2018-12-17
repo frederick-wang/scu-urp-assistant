@@ -6,7 +6,7 @@ var tooltip = {
   pathname: '/**',
   $loginTooltip: undefined,
   $navTooltip: undefined,
-  version: '0.7.11',
+  version: '0.7.12',
   init: function init() {
     if (window.location.pathname === '/login') {
       this.$loginTooltip = window.$('\n        <span class="sua-tooltip" style="\n          position: absolute;\n          font-size: 12px;\n          top: 10px;\n          right: 15px;\n          color: #909399;\n        ">\n          SCU URP \u52A9\u624B ' + this.version + '\n        </span>');
