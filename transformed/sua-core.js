@@ -24,6 +24,7 @@ var tooltip = require('./plugins/tooltip');
 var removeEvaluationTimeLimit = require('./plugins/remove-evaluation-time-limit');
 var compatibilityLegacy = require('./plugins/compatibility-legacy');
 var fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy');
+var recoverRememberMe = require('./plugins/recover-remember-me');
 
 // 挂载到 window 上的全局对象
 var $sua = {
@@ -37,7 +38,7 @@ var $sua = {
   /**
    * 插件
    */
-  plugins: [tooltip, fastEvaluation, removeEvaluationTimeLimit],
+  plugins: [tooltip, fastEvaluation, removeEvaluationTimeLimit, recoverRememberMe],
   /**
    * 初始化任务的队列
    */
