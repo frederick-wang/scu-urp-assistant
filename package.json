@@ -18,7 +18,7 @@
     "四川大学"
   ],
   "author": "Zhaoji Wang",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
