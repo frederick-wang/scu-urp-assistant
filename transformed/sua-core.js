@@ -49,6 +49,10 @@ var $sua = {
    */
   taskQueue: [],
   /**
+   * 加载样式的队列
+   */
+  styleQueue: [],
+  /**
    * 初始化 SCU URP 助手
    */
   init: function init() {
@@ -171,6 +175,10 @@ var $sua = {
         // 将data中的属性注入plugin对象中，使其内部可以用this直接访问
         _plugin = (0, _assign2.default)(_plugin, $sua.data);
         if (urlTrigger(_plugin)) {
+          // 将样式推入队列中
+          if (_plugin.style) {
+            this.styleQueue.push(_plugin.style);
+          }
           // 将初始化方法推入队列中
           if (_plugin.init) {
             this.initQueue.push(_plugin.init.bind(_plugin));
@@ -181,7 +189,7 @@ var $sua = {
           }
         }
       }
-      // 初始化方法
+      // 加载样式
     } catch (err) {
       _didIteratorError4 = true;
       _iteratorError4 = err;
@@ -202,12 +210,12 @@ var $sua = {
     var _iteratorError5 = undefined;
 
     try {
-      for (var _iterator5 = (0, _getIterator3.default)(this.initQueue), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-        var _i = _step5.value;
+      for (var _iterator5 = (0, _getIterator3.default)(this.styleQueue), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        var s = _step5.value;
 
-        _i();
+        window.$('head').append('\n        <style type="text/css">\n          ' + s + '\n        </style>\n      ');
       }
-      // 定时任务
+      // 初始化方法
     } catch (err) {
       _didIteratorError5 = true;
       _iteratorError5 = err;
@@ -223,28 +231,54 @@ var $sua = {
       }
     }
 
+    var _iteratorNormalCompletion6 = true;
+    var _didIteratorError6 = false;
+    var _iteratorError6 = undefined;
+
+    try {
+      for (var _iterator6 = (0, _getIterator3.default)(this.initQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+        var _i = _step6.value;
+
+        _i();
+      }
+      // 定时任务
+    } catch (err) {
+      _didIteratorError6 = true;
+      _iteratorError6 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion6 && _iterator6.return) {
+          _iterator6.return();
+        }
+      } finally {
+        if (_didIteratorError6) {
+          throw _iteratorError6;
+        }
+      }
+    }
+
     setInterval(function () {
-      var _iteratorNormalCompletion6 = true;
-      var _didIteratorError6 = false;
-      var _iteratorError6 = undefined;
+      var _iteratorNormalCompletion7 = true;
+      var _didIteratorError7 = false;
+      var _iteratorError7 = undefined;
 
       try {
-        for (var _iterator6 = (0, _getIterator3.default)(_this.taskQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-          var t = _step6.value;
+        for (var _iterator7 = (0, _getIterator3.default)(_this.taskQueue), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+          var t = _step7.value;
 
           t();
         }
       } catch (err) {
-        _didIteratorError6 = true;
-        _iteratorError6 = err;
+        _didIteratorError7 = true;
+        _iteratorError7 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion6 && _iterator6.return) {
-            _iterator6.return();
+          if (!_iteratorNormalCompletion7 && _iterator7.return) {
+            _iterator7.return();
           }
         } finally {
-          if (_didIteratorError6) {
-            throw _iteratorError6;
+          if (_didIteratorError7) {
+            throw _iteratorError7;
           }
         }
       }
@@ -268,44 +302,15 @@ var $sua = {
       } else if (typeof pathname === 'string') {
         return minimatch(window.location.pathname, pathname);
       } else if (Array.isArray(pathname)) {
-        var _iteratorNormalCompletion7 = true;
-        var _didIteratorError7 = false;
-        var _iteratorError7 = undefined;
-
-        try {
-          for (var _iterator7 = (0, _getIterator3.default)(pathname), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-            var item = _step7.value;
-
-            if (minimatch(window.location.pathname, item)) {
-              return true;
-            }
-          }
-        } catch (err) {
-          _didIteratorError7 = true;
-          _iteratorError7 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion7 && _iterator7.return) {
-              _iterator7.return();
-            }
-          } finally {
-            if (_didIteratorError7) {
-              throw _iteratorError7;
-            }
-          }
-        }
-
-        return false;
-      } else if ((typeof pathname === 'undefined' ? 'undefined' : (0, _typeof3.default)(pathname)) === 'object') {
         var _iteratorNormalCompletion8 = true;
         var _didIteratorError8 = false;
         var _iteratorError8 = undefined;
 
         try {
-          for (var _iterator8 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-            var _item = _step8.value;
+          for (var _iterator8 = (0, _getIterator3.default)(pathname), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+            var item = _step8.value;
 
-            if (minimatch(window.location.pathname, _item)) {
+            if (minimatch(window.location.pathname, item)) {
               return true;
             }
           }
@@ -320,6 +325,35 @@ var $sua = {
           } finally {
             if (_didIteratorError8) {
               throw _iteratorError8;
+            }
+          }
+        }
+
+        return false;
+      } else if ((typeof pathname === 'undefined' ? 'undefined' : (0, _typeof3.default)(pathname)) === 'object') {
+        var _iteratorNormalCompletion9 = true;
+        var _didIteratorError9 = false;
+        var _iteratorError9 = undefined;
+
+        try {
+          for (var _iterator9 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+            var _item = _step9.value;
+
+            if (minimatch(window.location.pathname, _item)) {
+              return true;
+            }
+          }
+        } catch (err) {
+          _didIteratorError9 = true;
+          _iteratorError9 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion9 && _iterator9.return) {
+              _iterator9.return();
+            }
+          } finally {
+            if (_didIteratorError9) {
+              throw _iteratorError9;
             }
           }
         }

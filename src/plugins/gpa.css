@@ -1,0 +1,37 @@
+/* gpa -> namespace */
+
+/* st -> semester-transcript */
+
+/* tt -> total-transcript */
+
+.gpa-st-item {
+  cursor: pointer;
+}
+
+.gpa-st-item>td {
+  transition: .1s;
+}
+
+.gpa-st-item.selected>td {
+  font-weight: bolder;
+  color: #409eff;
+  background-color: #ecf5ff !important;
+  /* border-color: #b3d8ff; */
+}
+
+.gpa-st-item.selected:hover>td {
+  background-color: #409eff !important;
+  color: #fff;
+  /* border-color: #409eff; */
+}
+
+.gpa-st-item.selected:active>td {
+  background-color: #3a8ee6 !important;
+  color: #fff;
+  outline: none;
+  /* border-color: #3a8ee6; */
+}
+
+.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {
+  display: none;
+}

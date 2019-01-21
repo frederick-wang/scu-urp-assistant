@@ -1,7 +1,10 @@
 // 绩点计算插件
+const fs = require('fs')
+
 const gpa = {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
+  style: fs.readFileSync('src/plugins/gpa.css', 'utf8'),
   templates: {
     indexWidget: `
       <div class="col-sm-12 widget-container-col">
@@ -24,15 +27,77 @@ const gpa = {
   $indexWidget: void 0,
   $indexWidgetMain: void 0,
   indexWidgetMainRow: void 0,
+  historicalList: void 0,
   init () {
     this.initDOM()
     window.$.get('/student/integratedQuery/scoreQuery/allPassingScores/callback')
       .then(({ lnList }) => {
         // lnList -> 历年数据
-        const data = convertHistoricalList(lnList)
-        this.renderSemesterTranscript(data)
-        this.renderTotalTranscript(data)
+        this.historicalList = convertHistoricalList(lnList)
+        this.renderSemesterTranscript()
+        this.renderTotalTranscript()
+
+        const that = this
+        window.$('.gpa-st-item').click(function () {
+          that.toggleTranscriptItemStatus(this)
+          that.renderTagSelected()
+        })
       })
+  },
+  renderTagSelected () {
+    this.historicalList
+      .forEach(({ semester, courses }) => {
+        const selectedCourses = courses.filter(v => v.selected)
+        const $scoreTag = window.$(Array.from(document.getElementsByClassName('gpa-st-tag-selected-score'))
+          .filter(v => v.dataset.semester === semester)[0])
+        const $gpaTag = window.$(Array.from(document.getElementsByClassName('gpa-st-tag-selected-gpa'))
+          .filter(v => v.dataset.semester === semester)[0])
+        if (selectedCourses.length) {
+          $scoreTag.show()
+          $scoreTag.text(`选中课程平均分：${getAllCoursesScore(selectedCourses)}`)
+          $gpaTag.show()
+          $gpaTag.text(`选中课程绩点：${getAllCoursesGPA(selectedCourses)}`)
+        } else {
+          $scoreTag.hide()
+          $gpaTag.hide()
+        }
+      })
+    const selectedCourses = this.historicalList
+      .reduce((acc, cur) => acc.concat(cur.courses), [])
+      .filter(v => v.selected)
+    const $scoreTag = window.$('.gpa-tt-tag-selected-score')
+    const $gpaTag = window.$('.gpa-tt-tag-selected-gpa')
+    if (selectedCourses.length) {
+      $scoreTag.show()
+      $scoreTag.text(`所有选中课程平均分：${getAllCoursesScore(selectedCourses)}`)
+      $gpaTag.show()
+      $gpaTag.text(`所有选中课程绩点：${getAllCoursesGPA(selectedCourses)}`)
+    } else {
+      $scoreTag.hide()
+      $gpaTag.hide()
+    }
+  },
+  toggleTranscriptItemStatus (dom) {
+    window.$(dom).toggleClass('selected')
+    const status = window.$(dom).hasClass('selected')
+    const {
+      name,
+      attribute,
+      semester
+    } = dom.dataset
+    const score = Number(dom.dataset.score)
+    const gpa = Number(dom.dataset.gpa)
+    const credit = Number(dom.dataset.credit)
+    this.historicalList
+      .filter(v => v.semester === semester)[0].courses
+      .filter(v =>
+        v.name === name &&
+        v.attribute === attribute &&
+        v.score === score &&
+        v.gpa === gpa &&
+        v.credit === credit
+      )[0]
+      .selected = status
   },
   initDOM () {
     this.$indexWidget = window.$(this.templates.indexWidget)
@@ -40,8 +105,8 @@ const gpa = {
     this.$indexWidgetMain = this.$indexWidget.find('.widget-main')
     this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row')
   },
-  renderTotalTranscript (data) {
-    const allCourses = data.reduce((acc, cur) => acc.concat(cur.courses), [])
+  renderTotalTranscript () {
+    const allCourses = this.historicalList.reduce((acc, cur) => acc.concat(cur.courses), [])
     const {
       allCoursesGPA,
       allCoursesScore,
@@ -49,7 +114,7 @@ const gpa = {
       compulsoryCoursesScore
     } = getFourTypesValue(allCourses)
     const labels = `
-      <div class="row" style="margin-bottom: 20px;">
+      <div class="gpa-tt row" style="margin-bottom: 20px;">
         <div class="col-sm-12">
           <h4 class="header smaller lighter grey" style="margin-top: 0;">
             <i class="menu-icon fa fa-calendar"></i> 全部成绩
@@ -66,13 +131,19 @@ const gpa = {
           <span class="label label-purple">
             全部绩点：${allCoursesGPA}
           </span>
+          <span class="label label-pink gpa-tt-tag-selected-score">
+            所有选中课程平均分：0
+          </span>
+          <span class="label label-pink gpa-tt-tag-selected-gpa">
+            所有选中课程绩点：0
+          </span>
         </div>
       </div>
     `
     this.$indexWidgetMain.prepend(labels)
   },
-  renderSemesterTranscript (data) {
-    data.forEach(item => {
+  renderSemesterTranscript () {
+    this.historicalList.forEach(item => {
       const { semester, courses } = item
       const {
         allCoursesGPA,
@@ -101,9 +172,17 @@ const gpa = {
             全部绩点：${allCoursesGPA}
           </span>
         </p>
+        <p>
+          <span class="label label-pink gpa-st-tag-selected-score" data-semester="${semester}">
+          选中课程平均分：0
+          </span>
+          <span class="label label-pink gpa-st-tag-selected-gpa" data-semester="${semester}">
+            选中课程绩点：0
+          </span>
+        </p>
       `
       const content = `
-        <table class="table table-striped table-bordered table-hover">
+        <table class="gpa-st-table table table-striped table-bordered table-hover">
           <thead>
             <tr>
               <th>课程名</th>
@@ -115,7 +194,15 @@ const gpa = {
           </thead>
           <tbody>
           ${courses.map(v => `
-            <tr>
+            <tr
+              class="gpa-st-item"
+              data-semester="${semester}"
+              data-name="${v.name}"
+              data-score="${v.score}"
+              data-gpa="${v.gpa}"
+              data-credit="${v.credit}"
+              data-attribute="${v.attribute}"
+            >
               <td>${v.name}</td>
               <td>${v.score}</td>
               <td>${v.gpa}</td>
@@ -126,7 +213,7 @@ const gpa = {
           </tbody>
         </table>
       `
-      this.$indexWidgetMainRow.append(`<div class="col-sm-6">${header + labels + content}</div>`)
+      this.$indexWidgetMainRow.append(`<div class="gpa-st col-sm-6">${header + labels + content}</div>`)
     })
   }
 }
@@ -140,7 +227,8 @@ function convertHistoricalList (historicalList) {
         score: v.courseScore,
         gpa: v.gradePointScore,
         credit: Number(v.credit),
-        attribute: v.courseAttributeName
+        attribute: v.courseAttributeName,
+        selected: false
       }))
     }))
     .reverse()

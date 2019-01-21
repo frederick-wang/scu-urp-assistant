@@ -3434,6 +3434,7 @@ module.exports = {
     "babel-core": "^6.26.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
+    "cssnano": "^4.1.8",
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
@@ -3811,17 +3812,32 @@ var recoverRememberMe = {
 };
 module.exports = recoverRememberMe;
 },{}],"Fqjc":[function(require,module,exports) {
-'use strict'; // 绩点计算插件
+'use strict';
+
+var _from = require('babel-runtime/core-js/array/from');
+
+var _from2 = _interopRequireDefault(_from);
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : {
+    default: obj
+  };
+} // 绩点计算插件
+
+
+var fs = require('fs');
 
 var gpa = {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
+  style: "/* gpa -> namespace */\r\n\r\n/* st -> semester-transcript */\r\n\r\n/* tt -> total-transcript */\r\n\r\n.gpa-st-item {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-item>td {\r\n  transition: .1s;\r\n}\r\n\r\n.gpa-st-item.selected>td {\r\n  font-weight: bolder;\r\n  color: #409eff;\r\n  background-color: #ecf5ff !important;\r\n  /* border-color: #b3d8ff; */\r\n}\r\n\r\n.gpa-st-item.selected:hover>td {\r\n  background-color: #409eff !important;\r\n  color: #fff;\r\n  /* border-color: #409eff; */\r\n}\r\n\r\n.gpa-st-item.selected:active>td {\r\n  background-color: #3a8ee6 !important;\r\n  color: #fff;\r\n  outline: none;\r\n  /* border-color: #3a8ee6; */\r\n}\r\n\r\n.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {\r\n  display: none;\r\n}\r\n",
   templates: {
     indexWidget: "\n      <div class=\"col-sm-12 widget-container-col\">\n        <div class=\"widget-box\">\n          <div class=\"widget-header\">\n            <h5 class=\"widget-title\">\n              \u6211\u7684\u6210\u7EE9\n              <span class=\"badge badge-primary\" style=\"padding-top:3px;position:relative;top:-3px;\">SCU URP \u52A9\u624B</span>\n            </h5>\n          </div>\n          <div class=\"widget-body\">\n            <div class=\"widget-main\">\n              <div class=\"row\"></div>\n            </div>\n          </div>\n        </div>\n      </div>\n    "
   },
   $indexWidget: void 0,
   $indexWidgetMain: void 0,
   indexWidgetMainRow: void 0,
+  historicalList: void 0,
   init: function init() {
     var _this = this;
 
@@ -3829,12 +3845,76 @@ var gpa = {
     window.$.get('/student/integratedQuery/scoreQuery/allPassingScores/callback').then(function (_ref) {
       var lnList = _ref.lnList; // lnList -> 历年数据
 
-      var data = convertHistoricalList(lnList);
+      _this.historicalList = convertHistoricalList(lnList);
 
-      _this.renderSemesterTranscript(data);
+      _this.renderSemesterTranscript();
 
-      _this.renderTotalTranscript(data);
+      _this.renderTotalTranscript();
+
+      var that = _this;
+      window.$('.gpa-st-item').click(function () {
+        that.toggleTranscriptItemStatus(this);
+        that.renderTagSelected();
+      });
     });
+  },
+  renderTagSelected: function renderTagSelected() {
+    this.historicalList.forEach(function (_ref2) {
+      var semester = _ref2.semester,
+          courses = _ref2.courses;
+      var selectedCourses = courses.filter(function (v) {
+        return v.selected;
+      });
+      var $scoreTag = window.$((0, _from2.default)(document.getElementsByClassName('gpa-st-tag-selected-score')).filter(function (v) {
+        return v.dataset.semester === semester;
+      })[0]);
+      var $gpaTag = window.$((0, _from2.default)(document.getElementsByClassName('gpa-st-tag-selected-gpa')).filter(function (v) {
+        return v.dataset.semester === semester;
+      })[0]);
+
+      if (selectedCourses.length) {
+        $scoreTag.show();
+        $scoreTag.text("\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A" + getAllCoursesScore(selectedCourses));
+        $gpaTag.show();
+        $gpaTag.text("\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A" + getAllCoursesGPA(selectedCourses));
+      } else {
+        $scoreTag.hide();
+        $gpaTag.hide();
+      }
+    });
+    var selectedCourses = this.historicalList.reduce(function (acc, cur) {
+      return acc.concat(cur.courses);
+    }, []).filter(function (v) {
+      return v.selected;
+    });
+    var $scoreTag = window.$('.gpa-tt-tag-selected-score');
+    var $gpaTag = window.$('.gpa-tt-tag-selected-gpa');
+
+    if (selectedCourses.length) {
+      $scoreTag.show();
+      $scoreTag.text("\u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A" + getAllCoursesScore(selectedCourses));
+      $gpaTag.show();
+      $gpaTag.text("\u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A" + getAllCoursesGPA(selectedCourses));
+    } else {
+      $scoreTag.hide();
+      $gpaTag.hide();
+    }
+  },
+  toggleTranscriptItemStatus: function toggleTranscriptItemStatus(dom) {
+    window.$(dom).toggleClass('selected');
+    var status = window.$(dom).hasClass('selected');
+    var _dom$dataset = dom.dataset,
+        name = _dom$dataset.name,
+        attribute = _dom$dataset.attribute,
+        semester = _dom$dataset.semester;
+    var score = Number(dom.dataset.score);
+    var gpa = Number(dom.dataset.gpa);
+    var credit = Number(dom.dataset.credit);
+    this.historicalList.filter(function (v) {
+      return v.semester === semester;
+    })[0].courses.filter(function (v) {
+      return v.name === name && v.attribute === attribute && v.score === score && v.gpa === gpa && v.credit === credit;
+    })[0].selected = status;
   },
   initDOM: function initDOM() {
     this.$indexWidget = window.$(this.templates.indexWidget);
@@ -3842,8 +3922,8 @@ var gpa = {
     this.$indexWidgetMain = this.$indexWidget.find('.widget-main');
     this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row');
   },
-  renderTotalTranscript: function renderTotalTranscript(data) {
-    var allCourses = data.reduce(function (acc, cur) {
+  renderTotalTranscript: function renderTotalTranscript() {
+    var allCourses = this.historicalList.reduce(function (acc, cur) {
       return acc.concat(cur.courses);
     }, []);
 
@@ -3853,13 +3933,13 @@ var gpa = {
         compulsoryCoursesGPA = _getFourTypesValue.compulsoryCoursesGPA,
         compulsoryCoursesScore = _getFourTypesValue.compulsoryCoursesScore;
 
-    var labels = "\n      <div class=\"row\" style=\"margin-bottom: 20px;\">\n        <div class=\"col-sm-12\">\n          <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n            <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n          </h4>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n          </span>\n        </div>\n      </div>\n    ';
+    var labels = "\n      <div class=\"gpa-tt row\" style=\"margin-bottom: 20px;\">\n        <div class=\"col-sm-12\">\n          <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n            <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n          </h4>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + "\n          </span>\n          <span class=\"label label-pink gpa-tt-tag-selected-score\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n          </span>\n          <span class=\"label label-pink gpa-tt-tag-selected-gpa\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n          </span>\n        </div>\n      </div>\n    ";
     this.$indexWidgetMain.prepend(labels);
   },
-  renderSemesterTranscript: function renderSemesterTranscript(data) {
+  renderSemesterTranscript: function renderSemesterTranscript() {
     var _this2 = this;
 
-    data.forEach(function (item) {
+    this.historicalList.forEach(function (item) {
       var semester = item.semester,
           courses = item.courses;
 
@@ -3870,12 +3950,12 @@ var gpa = {
           compulsoryCoursesScore = _getFourTypesValue2.compulsoryCoursesScore;
 
       var header = '\n        <h4 class="header smaller lighter grey">\n          <i class="menu-icon fa fa-calendar"></i> ' + semester + '\n        </h4>\n      ';
-      var labels = "\n        <p>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n          </span>\n        </p>\n      ';
-      var content = "\n        <table class=\"table table-striped table-bordered table-hover\">\n          <thead>\n            <tr>\n              <th>\u8BFE\u7A0B\u540D</th>\n              <th>\u5206\u6570</th>\n              <th>\u7EE9\u70B9</th>\n              <th>\u5B66\u5206</th>\n              <th>\u5C5E\u6027</th>\n            </tr>\n          </thead>\n          <tbody>\n          " + courses.map(function (v) {
-        return '\n            <tr>\n              <td>' + v.name + '</td>\n              <td>' + v.score + '</td>\n              <td>' + v.gpa + '</td>\n              <td>' + v.credit + '</td>\n              <td>' + v.attribute + '</td>\n            </tr>\n          ';
+      var labels = "\n        <p>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n          </span>\n        </p>\n        <p>\n          <span class="label label-pink gpa-st-tag-selected-score" data-semester="' + semester + "\">\n          \u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n          </span>\n          <span class=\"label label-pink gpa-st-tag-selected-gpa\" data-semester=\"" + semester + "\">\n            \u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n          </span>\n        </p>\n      ";
+      var content = "\n        <table class=\"gpa-st-table table table-striped table-bordered table-hover\">\n          <thead>\n            <tr>\n              <th>\u8BFE\u7A0B\u540D</th>\n              <th>\u5206\u6570</th>\n              <th>\u7EE9\u70B9</th>\n              <th>\u5B66\u5206</th>\n              <th>\u5C5E\u6027</th>\n            </tr>\n          </thead>\n          <tbody>\n          " + courses.map(function (v) {
+        return '\n            <tr\n              class="gpa-st-item"\n              data-semester="' + semester + '"\n              data-name="' + v.name + '"\n              data-score="' + v.score + '"\n              data-gpa="' + v.gpa + '"\n              data-credit="' + v.credit + '"\n              data-attribute="' + v.attribute + '"\n            >\n              <td>' + v.name + '</td>\n              <td>' + v.score + '</td>\n              <td>' + v.gpa + '</td>\n              <td>' + v.credit + '</td>\n              <td>' + v.attribute + '</td>\n            </tr>\n          ';
       }).join('') + '\n          </tbody>\n        </table>\n      ';
 
-      _this2.$indexWidgetMainRow.append('<div class="col-sm-6">' + (header + labels + content) + '</div>');
+      _this2.$indexWidgetMainRow.append('<div class="gpa-st col-sm-6">' + (header + labels + content) + '</div>');
     });
   }
 };
@@ -3890,7 +3970,8 @@ function convertHistoricalList(historicalList) {
           score: v.courseScore,
           gpa: v.gradePointScore,
           credit: Number(v.credit),
-          attribute: v.courseAttributeName
+          attribute: v.courseAttributeName,
+          selected: false
         };
       })
     };
@@ -3960,7 +4041,7 @@ function getFourTypesValue(arr) {
 }
 
 module.exports = gpa;
-},{}],"287w":[function(require,module,exports) {
+},{"babel-runtime/core-js/array/from":"VuZO","fs":"tuDi"}],"287w":[function(require,module,exports) {
 'use strict';
 
 var _values = require('babel-runtime/core-js/object/values');
@@ -4025,6 +4106,11 @@ var $sua = {
    * 定时执行的任务的队列
    */
   taskQueue: [],
+
+  /**
+   * 加载样式的队列
+   */
+  styleQueue: [],
 
   /**
    * 初始化 SCU URP 助手
@@ -4146,7 +4232,12 @@ var $sua = {
         _plugin = (0, _assign2.default)(_plugin, $sua.data);
 
         if (urlTrigger(_plugin)) {
-          // 将初始化方法推入队列中
+          // 将样式推入队列中
+          if (_plugin.style) {
+            this.styleQueue.push(_plugin.style);
+          } // 将初始化方法推入队列中
+
+
           if (_plugin.init) {
             this.initQueue.push(_plugin.init.bind(_plugin));
           } // 将需要定时执行的任务推入队列中
@@ -4156,7 +4247,7 @@ var $sua = {
             this.taskQueue.push(_plugin.task.bind(_plugin));
           }
         }
-      } // 初始化方法
+      } // 加载样式
 
     } catch (err) {
       _didIteratorError4 = true;
@@ -4178,11 +4269,10 @@ var $sua = {
     var _iteratorError5 = undefined;
 
     try {
-      for (var _iterator5 = (0, _getIterator3.default)(this.initQueue), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-        var _i = _step5.value;
-
-        _i();
-      } // 定时任务
+      for (var _iterator5 = (0, _getIterator3.default)(this.styleQueue), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        var s = _step5.value;
+        window.$('head').append('\n        <style type="text/css">\n          ' + s + '\n        </style>\n      ');
+      } // 初始化方法
 
     } catch (err) {
       _didIteratorError5 = true;
@@ -4199,27 +4289,53 @@ var $sua = {
       }
     }
 
+    var _iteratorNormalCompletion6 = true;
+    var _didIteratorError6 = false;
+    var _iteratorError6 = undefined;
+
+    try {
+      for (var _iterator6 = (0, _getIterator3.default)(this.initQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+        var _i = _step6.value;
+
+        _i();
+      } // 定时任务
+
+    } catch (err) {
+      _didIteratorError6 = true;
+      _iteratorError6 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion6 && _iterator6.return) {
+          _iterator6.return();
+        }
+      } finally {
+        if (_didIteratorError6) {
+          throw _iteratorError6;
+        }
+      }
+    }
+
     setInterval(function () {
-      var _iteratorNormalCompletion6 = true;
-      var _didIteratorError6 = false;
-      var _iteratorError6 = undefined;
+      var _iteratorNormalCompletion7 = true;
+      var _didIteratorError7 = false;
+      var _iteratorError7 = undefined;
 
       try {
-        for (var _iterator6 = (0, _getIterator3.default)(_this.taskQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-          var t = _step6.value;
+        for (var _iterator7 = (0, _getIterator3.default)(_this.taskQueue), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+          var t = _step7.value;
           t();
         }
       } catch (err) {
-        _didIteratorError6 = true;
-        _iteratorError6 = err;
+        _didIteratorError7 = true;
+        _iteratorError7 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion6 && _iterator6.return) {
-            _iterator6.return();
+          if (!_iteratorNormalCompletion7 && _iterator7.return) {
+            _iterator7.return();
           }
         } finally {
-          if (_didIteratorError6) {
-            throw _iteratorError6;
+          if (_didIteratorError7) {
+            throw _iteratorError7;
           }
         }
       }
@@ -4242,44 +4358,15 @@ var $sua = {
       } else if (typeof pathname === 'string') {
         return minimatch(window.location.pathname, pathname);
       } else if (Array.isArray(pathname)) {
-        var _iteratorNormalCompletion7 = true;
-        var _didIteratorError7 = false;
-        var _iteratorError7 = undefined;
-
-        try {
-          for (var _iterator7 = (0, _getIterator3.default)(pathname), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-            var item = _step7.value;
-
-            if (minimatch(window.location.pathname, item)) {
-              return true;
-            }
-          }
-        } catch (err) {
-          _didIteratorError7 = true;
-          _iteratorError7 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion7 && _iterator7.return) {
-              _iterator7.return();
-            }
-          } finally {
-            if (_didIteratorError7) {
-              throw _iteratorError7;
-            }
-          }
-        }
-
-        return false;
-      } else if ((typeof pathname === 'undefined' ? 'undefined' : (0, _typeof3.default)(pathname)) === 'object') {
         var _iteratorNormalCompletion8 = true;
         var _didIteratorError8 = false;
         var _iteratorError8 = undefined;
 
         try {
-          for (var _iterator8 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-            var _item = _step8.value;
+          for (var _iterator8 = (0, _getIterator3.default)(pathname), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+            var item = _step8.value;
 
-            if (minimatch(window.location.pathname, _item)) {
+            if (minimatch(window.location.pathname, item)) {
               return true;
             }
           }
@@ -4294,6 +4381,35 @@ var $sua = {
           } finally {
             if (_didIteratorError8) {
               throw _iteratorError8;
+            }
+          }
+        }
+
+        return false;
+      } else if ((typeof pathname === 'undefined' ? 'undefined' : (0, _typeof3.default)(pathname)) === 'object') {
+        var _iteratorNormalCompletion9 = true;
+        var _didIteratorError9 = false;
+        var _iteratorError9 = undefined;
+
+        try {
+          for (var _iterator9 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+            var _item = _step9.value;
+
+            if (minimatch(window.location.pathname, _item)) {
+              return true;
+            }
+          }
+        } catch (err) {
+          _didIteratorError9 = true;
+          _iteratorError9 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion9 && _iterator9.return) {
+              _iterator9.return();
+            }
+          } finally {
+            if (_didIteratorError9) {
+              throw _iteratorError9;
             }
           }
         }

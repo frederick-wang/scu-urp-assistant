@@ -29,6 +29,10 @@ const $sua = {
    */
   taskQueue: [],
   /**
+   * 加载样式的队列
+   */
+  styleQueue: [],
+  /**
    * 初始化 SCU URP 助手
    */
   init () {
@@ -77,6 +81,10 @@ const $sua = {
       // 将data中的属性注入plugin对象中，使其内部可以用this直接访问
       plugin = Object.assign(plugin, $sua.data)
       if (urlTrigger(plugin)) {
+        // 将样式推入队列中
+        if (plugin.style) {
+          this.styleQueue.push(plugin.style)
+        }
         // 将初始化方法推入队列中
         if (plugin.init) {
           this.initQueue.push(plugin.init.bind(plugin))
@@ -86,6 +94,14 @@ const $sua = {
           this.taskQueue.push(plugin.task.bind(plugin))
         }
       }
+    }
+    // 加载样式
+    for (let s of this.styleQueue) {
+      window.$('head').append(`
+        <style type="text/css">
+          ${s}
+        </style>
+      `)
     }
     // 初始化方法
     for (let i of this.initQueue) {

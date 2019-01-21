@@ -1,15 +1,25 @@
 'use strict';
 
+var _from = require('babel-runtime/core-js/array/from');
+
+var _from2 = _interopRequireDefault(_from);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 // 绩点计算插件
+var fs = require('fs');
+
 var gpa = {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
+  style: fs.readFileSync('src/plugins/gpa.css', 'utf8'),
   templates: {
     indexWidget: '\n      <div class="col-sm-12 widget-container-col">\n        <div class="widget-box">\n          <div class="widget-header">\n            <h5 class="widget-title">\n              \u6211\u7684\u6210\u7EE9\n              <span class="badge badge-primary" style="padding-top:3px;position:relative;top:-3px;">SCU URP \u52A9\u624B</span>\n            </h5>\n          </div>\n          <div class="widget-body">\n            <div class="widget-main">\n              <div class="row"></div>\n            </div>\n          </div>\n        </div>\n      </div>\n    '
   },
   $indexWidget: void 0,
   $indexWidgetMain: void 0,
   indexWidgetMainRow: void 0,
+  historicalList: void 0,
   init: function init() {
     var _this = this;
 
@@ -18,10 +28,74 @@ var gpa = {
       var lnList = _ref.lnList;
 
       // lnList -> 历年数据
-      var data = convertHistoricalList(lnList);
-      _this.renderSemesterTranscript(data);
-      _this.renderTotalTranscript(data);
+      _this.historicalList = convertHistoricalList(lnList);
+      _this.renderSemesterTranscript();
+      _this.renderTotalTranscript();
+
+      var that = _this;
+      window.$('.gpa-st-item').click(function () {
+        that.toggleTranscriptItemStatus(this);
+        that.renderTagSelected();
+      });
     });
+  },
+  renderTagSelected: function renderTagSelected() {
+    this.historicalList.forEach(function (_ref2) {
+      var semester = _ref2.semester,
+          courses = _ref2.courses;
+
+      var selectedCourses = courses.filter(function (v) {
+        return v.selected;
+      });
+      var $scoreTag = window.$((0, _from2.default)(document.getElementsByClassName('gpa-st-tag-selected-score')).filter(function (v) {
+        return v.dataset.semester === semester;
+      })[0]);
+      var $gpaTag = window.$((0, _from2.default)(document.getElementsByClassName('gpa-st-tag-selected-gpa')).filter(function (v) {
+        return v.dataset.semester === semester;
+      })[0]);
+      if (selectedCourses.length) {
+        $scoreTag.show();
+        $scoreTag.text('\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A' + getAllCoursesScore(selectedCourses));
+        $gpaTag.show();
+        $gpaTag.text('\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A' + getAllCoursesGPA(selectedCourses));
+      } else {
+        $scoreTag.hide();
+        $gpaTag.hide();
+      }
+    });
+    var selectedCourses = this.historicalList.reduce(function (acc, cur) {
+      return acc.concat(cur.courses);
+    }, []).filter(function (v) {
+      return v.selected;
+    });
+    var $scoreTag = window.$('.gpa-tt-tag-selected-score');
+    var $gpaTag = window.$('.gpa-tt-tag-selected-gpa');
+    if (selectedCourses.length) {
+      $scoreTag.show();
+      $scoreTag.text('\u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A' + getAllCoursesScore(selectedCourses));
+      $gpaTag.show();
+      $gpaTag.text('\u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A' + getAllCoursesGPA(selectedCourses));
+    } else {
+      $scoreTag.hide();
+      $gpaTag.hide();
+    }
+  },
+  toggleTranscriptItemStatus: function toggleTranscriptItemStatus(dom) {
+    window.$(dom).toggleClass('selected');
+    var status = window.$(dom).hasClass('selected');
+    var _dom$dataset = dom.dataset,
+        name = _dom$dataset.name,
+        attribute = _dom$dataset.attribute,
+        semester = _dom$dataset.semester;
+
+    var score = Number(dom.dataset.score);
+    var gpa = Number(dom.dataset.gpa);
+    var credit = Number(dom.dataset.credit);
+    this.historicalList.filter(function (v) {
+      return v.semester === semester;
+    })[0].courses.filter(function (v) {
+      return v.name === name && v.attribute === attribute && v.score === score && v.gpa === gpa && v.credit === credit;
+    })[0].selected = status;
   },
   initDOM: function initDOM() {
     this.$indexWidget = window.$(this.templates.indexWidget);
@@ -29,8 +103,8 @@ var gpa = {
     this.$indexWidgetMain = this.$indexWidget.find('.widget-main');
     this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row');
   },
-  renderTotalTranscript: function renderTotalTranscript(data) {
-    var allCourses = data.reduce(function (acc, cur) {
+  renderTotalTranscript: function renderTotalTranscript() {
+    var allCourses = this.historicalList.reduce(function (acc, cur) {
       return acc.concat(cur.courses);
     }, []);
 
@@ -40,13 +114,13 @@ var gpa = {
         compulsoryCoursesGPA = _getFourTypesValue.compulsoryCoursesGPA,
         compulsoryCoursesScore = _getFourTypesValue.compulsoryCoursesScore;
 
-    var labels = '\n      <div class="row" style="margin-bottom: 20px;">\n        <div class="col-sm-12">\n          <h4 class="header smaller lighter grey" style="margin-top: 0;">\n            <i class="menu-icon fa fa-calendar"></i> \u5168\u90E8\u6210\u7EE9\n          </h4>\n          <span class="label label-success">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A' + compulsoryCoursesScore + '\n          </span>\n          <span class="label label-success">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A' + compulsoryCoursesGPA + '\n          </span>\n          <span class="label label-purple">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A' + allCoursesScore + '\n          </span>\n          <span class="label label-purple">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A' + allCoursesGPA + '\n          </span>\n        </div>\n      </div>\n    ';
+    var labels = '\n      <div class="gpa-tt row" style="margin-bottom: 20px;">\n        <div class="col-sm-12">\n          <h4 class="header smaller lighter grey" style="margin-top: 0;">\n            <i class="menu-icon fa fa-calendar"></i> \u5168\u90E8\u6210\u7EE9\n          </h4>\n          <span class="label label-success">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A' + compulsoryCoursesScore + '\n          </span>\n          <span class="label label-success">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A' + compulsoryCoursesGPA + '\n          </span>\n          <span class="label label-purple">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A' + allCoursesScore + '\n          </span>\n          <span class="label label-purple">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A' + allCoursesGPA + '\n          </span>\n          <span class="label label-pink gpa-tt-tag-selected-score">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n          </span>\n          <span class="label label-pink gpa-tt-tag-selected-gpa">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n          </span>\n        </div>\n      </div>\n    ';
     this.$indexWidgetMain.prepend(labels);
   },
-  renderSemesterTranscript: function renderSemesterTranscript(data) {
+  renderSemesterTranscript: function renderSemesterTranscript() {
     var _this2 = this;
 
-    data.forEach(function (item) {
+    this.historicalList.forEach(function (item) {
       var semester = item.semester,
           courses = item.courses;
 
@@ -57,11 +131,11 @@ var gpa = {
           compulsoryCoursesScore = _getFourTypesValue2.compulsoryCoursesScore;
 
       var header = '\n        <h4 class="header smaller lighter grey">\n          <i class="menu-icon fa fa-calendar"></i> ' + semester + '\n        </h4>\n      ';
-      var labels = '\n        <p>\n          <span class="label label-success">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A' + compulsoryCoursesScore + '\n          </span>\n          <span class="label label-success">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A' + compulsoryCoursesGPA + '\n          </span>\n          <span class="label label-purple">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A' + allCoursesScore + '\n          </span>\n          <span class="label label-purple">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A' + allCoursesGPA + '\n          </span>\n        </p>\n      ';
-      var content = '\n        <table class="table table-striped table-bordered table-hover">\n          <thead>\n            <tr>\n              <th>\u8BFE\u7A0B\u540D</th>\n              <th>\u5206\u6570</th>\n              <th>\u7EE9\u70B9</th>\n              <th>\u5B66\u5206</th>\n              <th>\u5C5E\u6027</th>\n            </tr>\n          </thead>\n          <tbody>\n          ' + courses.map(function (v) {
-        return '\n            <tr>\n              <td>' + v.name + '</td>\n              <td>' + v.score + '</td>\n              <td>' + v.gpa + '</td>\n              <td>' + v.credit + '</td>\n              <td>' + v.attribute + '</td>\n            </tr>\n          ';
+      var labels = '\n        <p>\n          <span class="label label-success">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A' + compulsoryCoursesScore + '\n          </span>\n          <span class="label label-success">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A' + compulsoryCoursesGPA + '\n          </span>\n          <span class="label label-purple">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A' + allCoursesScore + '\n          </span>\n          <span class="label label-purple">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A' + allCoursesGPA + '\n          </span>\n        </p>\n        <p>\n          <span class="label label-pink gpa-st-tag-selected-score" data-semester="' + semester + '">\n          \u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n          </span>\n          <span class="label label-pink gpa-st-tag-selected-gpa" data-semester="' + semester + '">\n            \u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n          </span>\n        </p>\n      ';
+      var content = '\n        <table class="gpa-st-table table table-striped table-bordered table-hover">\n          <thead>\n            <tr>\n              <th>\u8BFE\u7A0B\u540D</th>\n              <th>\u5206\u6570</th>\n              <th>\u7EE9\u70B9</th>\n              <th>\u5B66\u5206</th>\n              <th>\u5C5E\u6027</th>\n            </tr>\n          </thead>\n          <tbody>\n          ' + courses.map(function (v) {
+        return '\n            <tr\n              class="gpa-st-item"\n              data-semester="' + semester + '"\n              data-name="' + v.name + '"\n              data-score="' + v.score + '"\n              data-gpa="' + v.gpa + '"\n              data-credit="' + v.credit + '"\n              data-attribute="' + v.attribute + '"\n            >\n              <td>' + v.name + '</td>\n              <td>' + v.score + '</td>\n              <td>' + v.gpa + '</td>\n              <td>' + v.credit + '</td>\n              <td>' + v.attribute + '</td>\n            </tr>\n          ';
       }).join('') + '\n          </tbody>\n        </table>\n      ';
-      _this2.$indexWidgetMainRow.append('<div class="col-sm-6">' + (header + labels + content) + '</div>');
+      _this2.$indexWidgetMainRow.append('<div class="gpa-st col-sm-6">' + (header + labels + content) + '</div>');
     });
   }
 };
@@ -76,7 +150,8 @@ function convertHistoricalList(historicalList) {
           score: v.courseScore,
           gpa: v.gradePointScore,
           credit: Number(v.credit),
-          attribute: v.courseAttributeName
+          attribute: v.courseAttributeName,
+          selected: false
         };
       })
     };
