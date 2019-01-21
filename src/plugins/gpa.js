@@ -36,15 +36,58 @@ const templates = {
     compulsoryCoursesScore
   }) {
     return `
-    <div class="gpa-tt row" style="margin-bottom: 20px;">
-      <div class="col-sm-12">
-        <h4 class="header smaller lighter grey" style="margin-top: 0;">
-          <i class="menu-icon fa fa-calendar"></i> 全部成绩
-          <button class="btn btn-white btn-minier gpa-tt-cancel-btn">
-            <i class="ace-icon fa fa-times red2"></i>
-            取消选中所有课程
-          </button>
-        </h4>
+      <div class="gpa-tt row" style="margin-bottom: 20px;">
+        <div class="col-sm-12">
+          <h4 class="header smaller lighter grey" style="margin-top: 0;">
+            <i class="menu-icon fa fa-calendar"></i> 全部成绩
+            <button class="btn btn-white btn-minier gpa-tt-cancel-btn">
+              <i class="ace-icon fa fa-times red2"></i>
+              取消选中所有课程
+            </button>
+          </h4>
+          <span class="label label-success">
+            必修平均分：${compulsoryCoursesScore}
+          </span>
+          <span class="label label-success">
+            必修绩点：${compulsoryCoursesGPA}
+          </span>
+          <span class="label label-purple">
+            全部平均分：${allCoursesScore}
+          </span>
+          <span class="label label-purple">
+            全部绩点：${allCoursesGPA}
+          </span>
+          <span class="label label-pink gpa-tt-tag-selected-score">
+            所有选中课程平均分：0
+          </span>
+          <span class="label label-pink gpa-tt-tag-selected-gpa">
+            所有选中课程绩点：0
+          </span>
+        </div>
+      </div>
+    `
+  },
+  semesterTranscriptHeader (semester) {
+    return `
+      <h4 class="header smaller lighter grey">
+        <i class="menu-icon fa fa-calendar"></i> ${semester}
+        <button class="btn btn-white btn-minier gpa-st-cancel-btn" data-semester="${semester}">
+          <i class="ace-icon fa fa-times red2"></i>
+          取消选中本学期课程
+        </button>
+      </h4>
+    `
+  },
+  semesterTranscriptLabels (
+    semester,
+    {
+      allCoursesGPA,
+      allCoursesScore,
+      compulsoryCoursesGPA,
+      compulsoryCoursesScore
+    }) {
+    return `
+      <p>
         <span class="label label-success">
           必修平均分：${compulsoryCoursesScore}
         </span>
@@ -57,93 +100,50 @@ const templates = {
         <span class="label label-purple">
           全部绩点：${allCoursesGPA}
         </span>
-        <span class="label label-pink gpa-tt-tag-selected-score">
-          所有选中课程平均分：0
+      </p>
+      <p>
+        <span class="label label-pink gpa-st-tag-selected-score" data-semester="${semester}">
+        选中课程平均分：0
         </span>
-        <span class="label label-pink gpa-tt-tag-selected-gpa">
-          所有选中课程绩点：0
+        <span class="label label-pink gpa-st-tag-selected-gpa" data-semester="${semester}">
+          选中课程绩点：0
         </span>
-      </div>
-    </div>
-  `
-  },
-  semesterTranscriptHeader (semester) {
-    return `
-    <h4 class="header smaller lighter grey">
-      <i class="menu-icon fa fa-calendar"></i> ${semester}
-      <button class="btn btn-white btn-minier gpa-st-cancel-btn" data-semester="${semester}">
-        <i class="ace-icon fa fa-times red2"></i>
-        取消选中本学期课程
-      </button>
-    </h4>
-  `
-  },
-  semesterTranscriptLabels (
-    semester,
-    {
-      allCoursesGPA,
-      allCoursesScore,
-      compulsoryCoursesGPA,
-      compulsoryCoursesScore
-    }) {
-    return `
-    <p>
-      <span class="label label-success">
-        必修平均分：${compulsoryCoursesScore}
-      </span>
-      <span class="label label-success">
-        必修绩点：${compulsoryCoursesGPA}
-      </span>
-      <span class="label label-purple">
-        全部平均分：${allCoursesScore}
-      </span>
-      <span class="label label-purple">
-        全部绩点：${allCoursesGPA}
-      </span>
-    </p>
-    <p>
-      <span class="label label-pink gpa-st-tag-selected-score" data-semester="${semester}">
-      选中课程平均分：0
-      </span>
-      <span class="label label-pink gpa-st-tag-selected-gpa" data-semester="${semester}">
-        选中课程绩点：0
-      </span>
-    </p>
-  `
+      </p>
+    `
   },
   semesterTranscriptContent (semester, courses) {
     return `
-    <table class="gpa-st-table table table-striped table-bordered table-hover">
-      <thead>
-        <tr>
-          <th>课程名</th>
-          <th>分数</th>
-          <th>绩点</th>
-          <th>学分</th>
-          <th>属性</th>
-        </tr>
-      </thead>
-      <tbody>
-      ${courses.map(v => `
-        <tr
-          class="gpa-st-item"
-          data-semester="${semester}"
-          data-name="${v.name}"
-          data-score="${v.score}"
-          data-gpa="${v.gpa}"
-          data-credit="${v.credit}"
-          data-attribute="${v.attribute}"
-        >
-          <td>${v.name}</td>
-          <td>${v.score}</td>
-          <td>${v.gpa}</td>
-          <td>${v.credit}</td>
-          <td>${v.attribute}</td>
-        </tr>
-      `).join('')}
-      </tbody>
-    </table>
-  `
+      <table class="gpa-st-table table table-striped table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>课程名</th>
+            <th>分数</th>
+            <th>绩点</th>
+            <th>学分</th>
+            <th>属性</th>
+          </tr>
+        </thead>
+        <tbody>
+        ${courses.map(v => `
+          <tr
+            class="gpa-st-item"
+            data-semester="${semester}"
+            data-name="${v.name}"
+            data-score="${v.score}"
+            data-gpa="${v.gpa}"
+            data-credit="${v.credit}"
+            data-attribute="${v.attribute}"
+          >
+            <td>${v.name}</td>
+            <td>${v.score}</td>
+            <td>${v.gpa}</td>
+            <td>${v.credit}</td>
+            <td>${v.attribute}</td>
+          </tr>
+        `).join('')}
+        </tbody>
+      </table>
+    `
   },
   semesterTranscriptWrapper (header, labels, content) {
     return `<div class="gpa-st col-sm-6">${header + labels + content}</div>`
