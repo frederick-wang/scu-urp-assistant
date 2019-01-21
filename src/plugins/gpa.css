@@ -36,6 +36,11 @@
   display: none;
 }
 
+.gpa-st-cancel-btn, .gpa-tt-cancel-btn {
+  display: none;
+  float: right;
+}
+
 #gpa-toolbar-detail, #gpa-toolbar-reset {
   cursor: pointer;
 }
