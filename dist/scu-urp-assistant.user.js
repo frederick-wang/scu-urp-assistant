@@ -42,6 +42,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
       }
 
       localRequire.resolve = resolve;
+      localRequire.cache = {};
 
       var module = cache[name] = new newRequire.Module(name);
 
@@ -103,7 +104,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   // Override the current require with this new one
   return newRequire;
-})({74:[function(require,module,exports) {
+})({"i1Q6":[function(require,module,exports) {
 
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
@@ -112,17 +113,17 @@ var global = module.exports = typeof window != 'undefined' && window.Math == Mat
   : Function('return this')();
 if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
-},{}],66:[function(require,module,exports) {
+},{}],"zKeE":[function(require,module,exports) {
 var core = module.exports = { version: '2.5.7' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
-},{}],194:[function(require,module,exports) {
+},{}],"g31e":[function(require,module,exports) {
 module.exports = function (it) {
   if (typeof it != 'function') throw TypeError(it + ' is not a function!');
   return it;
 };
 
-},{}],145:[function(require,module,exports) {
+},{}],"3zRh":[function(require,module,exports) {
 // optional / simple context binding
 var aFunction = require('./_a-function');
 module.exports = function (fn, that, length) {
@@ -144,19 +145,19 @@ module.exports = function (fn, that, length) {
   };
 };
 
-},{"./_a-function":194}],117:[function(require,module,exports) {
+},{"./_a-function":"g31e"}],"BxvP":[function(require,module,exports) {
 module.exports = function (it) {
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
 
-},{}],78:[function(require,module,exports) {
+},{}],"zotD":[function(require,module,exports) {
 var isObject = require('./_is-object');
 module.exports = function (it) {
   if (!isObject(it)) throw TypeError(it + ' is not an object!');
   return it;
 };
 
-},{"./_is-object":117}],152:[function(require,module,exports) {
+},{"./_is-object":"BxvP"}],"wLcK":[function(require,module,exports) {
 module.exports = function (exec) {
   try {
     return !!exec();
@@ -165,13 +166,13 @@ module.exports = function (exec) {
   }
 };
 
-},{}],116:[function(require,module,exports) {
+},{}],"6MLN":[function(require,module,exports) {
 // Thank's IE8 for his funny defineProperty
 module.exports = !require('./_fails')(function () {
   return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
 });
 
-},{"./_fails":152}],196:[function(require,module,exports) {
+},{"./_fails":"wLcK"}],"9kxq":[function(require,module,exports) {
 var isObject = require('./_is-object');
 var document = require('./_global').document;
 // typeof document.createElement is 'object' in old IE
@@ -180,12 +181,12 @@ module.exports = function (it) {
   return is ? document.createElement(it) : {};
 };
 
-},{"./_is-object":117,"./_global":74}],189:[function(require,module,exports) {
+},{"./_is-object":"BxvP","./_global":"i1Q6"}],"R6c1":[function(require,module,exports) {
 module.exports = !require('./_descriptors') && !require('./_fails')(function () {
   return Object.defineProperty(require('./_dom-create')('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
-},{"./_descriptors":116,"./_fails":152,"./_dom-create":196}],162:[function(require,module,exports) {
+},{"./_descriptors":"6MLN","./_fails":"wLcK","./_dom-create":"9kxq"}],"EKwp":[function(require,module,exports) {
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = require('./_is-object');
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
@@ -199,7 +200,7 @@ module.exports = function (it, S) {
   throw TypeError("Can't convert object to primitive value");
 };
 
-},{"./_is-object":117}],115:[function(require,module,exports) {
+},{"./_is-object":"BxvP"}],"Gfzd":[function(require,module,exports) {
 var anObject = require('./_an-object');
 var IE8_DOM_DEFINE = require('./_ie8-dom-define');
 var toPrimitive = require('./_to-primitive');
@@ -217,7 +218,7 @@ exports.f = require('./_descriptors') ? Object.defineProperty : function defineP
   return O;
 };
 
-},{"./_an-object":78,"./_ie8-dom-define":189,"./_to-primitive":162,"./_descriptors":116}],114:[function(require,module,exports) {
+},{"./_an-object":"zotD","./_ie8-dom-define":"R6c1","./_to-primitive":"EKwp","./_descriptors":"6MLN"}],"0WCH":[function(require,module,exports) {
 module.exports = function (bitmap, value) {
   return {
     enumerable: !(bitmap & 1),
@@ -227,7 +228,7 @@ module.exports = function (bitmap, value) {
   };
 };
 
-},{}],75:[function(require,module,exports) {
+},{}],"akPY":[function(require,module,exports) {
 var dP = require('./_object-dp');
 var createDesc = require('./_property-desc');
 module.exports = require('./_descriptors') ? function (object, key, value) {
@@ -237,13 +238,13 @@ module.exports = require('./_descriptors') ? function (object, key, value) {
   return object;
 };
 
-},{"./_object-dp":115,"./_property-desc":114,"./_descriptors":116}],146:[function(require,module,exports) {
+},{"./_object-dp":"Gfzd","./_property-desc":"0WCH","./_descriptors":"6MLN"}],"yS17":[function(require,module,exports) {
 var hasOwnProperty = {}.hasOwnProperty;
 module.exports = function (it, key) {
   return hasOwnProperty.call(it, key);
 };
 
-},{}],93:[function(require,module,exports) {
+},{}],"vSO4":[function(require,module,exports) {
 
 var global = require('./_global');
 var core = require('./_core');
@@ -308,14 +309,14 @@ $export.U = 64;  // safe
 $export.R = 128; // real proto method for `library`
 module.exports = $export;
 
-},{"./_global":74,"./_core":66,"./_ctx":145,"./_hide":75,"./_has":146}],190:[function(require,module,exports) {
+},{"./_global":"i1Q6","./_core":"zKeE","./_ctx":"3zRh","./_hide":"akPY","./_has":"yS17"}],"ShN9":[function(require,module,exports) {
 var toString = {}.toString;
 
 module.exports = function (it) {
   return toString.call(it).slice(8, -1);
 };
 
-},{}],151:[function(require,module,exports) {
+},{}],"E5Ce":[function(require,module,exports) {
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = require('./_cof');
 // eslint-disable-next-line no-prototype-builtins
@@ -323,14 +324,14 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
 
-},{"./_cof":190}],127:[function(require,module,exports) {
+},{"./_cof":"ShN9"}],"U72i":[function(require,module,exports) {
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function (it) {
   if (it == undefined) throw TypeError("Can't call method on  " + it);
   return it;
 };
 
-},{}],113:[function(require,module,exports) {
+},{}],"Wyka":[function(require,module,exports) {
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = require('./_iobject');
 var defined = require('./_defined');
@@ -338,7 +339,7 @@ module.exports = function (it) {
   return IObject(defined(it));
 };
 
-},{"./_iobject":151,"./_defined":127}],126:[function(require,module,exports) {
+},{"./_iobject":"E5Ce","./_defined":"U72i"}],"MpYs":[function(require,module,exports) {
 // 7.1.4 ToInteger
 var ceil = Math.ceil;
 var floor = Math.floor;
@@ -346,7 +347,7 @@ module.exports = function (it) {
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
 
-},{}],155:[function(require,module,exports) {
+},{}],"S7IM":[function(require,module,exports) {
 // 7.1.15 ToLength
 var toInteger = require('./_to-integer');
 var min = Math.min;
@@ -354,7 +355,7 @@ module.exports = function (it) {
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
 
-},{"./_to-integer":126}],199:[function(require,module,exports) {
+},{"./_to-integer":"MpYs"}],"Zwq5":[function(require,module,exports) {
 var toInteger = require('./_to-integer');
 var max = Math.max;
 var min = Math.min;
@@ -363,7 +364,7 @@ module.exports = function (index, length) {
   return index < 0 ? max(index + length, 0) : min(index, length);
 };
 
-},{"./_to-integer":126}],198:[function(require,module,exports) {
+},{"./_to-integer":"MpYs"}],"LNnS":[function(require,module,exports) {
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = require('./_to-iobject');
@@ -388,10 +389,10 @@ module.exports = function (IS_INCLUDES) {
   };
 };
 
-},{"./_to-iobject":113,"./_to-length":155,"./_to-absolute-index":199}],121:[function(require,module,exports) {
+},{"./_to-iobject":"Wyka","./_to-length":"S7IM","./_to-absolute-index":"Zwq5"}],"1kq3":[function(require,module,exports) {
 module.exports = true;
 
-},{}],118:[function(require,module,exports) {
+},{}],"NB7d":[function(require,module,exports) {
 
 var core = require('./_core');
 var global = require('./_global');
@@ -406,21 +407,21 @@ var store = global[SHARED] || (global[SHARED] = {});
   copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
 });
 
-},{"./_core":66,"./_global":74,"./_library":121}],119:[function(require,module,exports) {
+},{"./_core":"zKeE","./_global":"i1Q6","./_library":"1kq3"}],"X6va":[function(require,module,exports) {
 var id = 0;
 var px = Math.random();
 module.exports = function (key) {
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
 
-},{}],191:[function(require,module,exports) {
+},{}],"/wuY":[function(require,module,exports) {
 var shared = require('./_shared')('keys');
 var uid = require('./_uid');
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
 };
 
-},{"./_shared":118,"./_uid":119}],192:[function(require,module,exports) {
+},{"./_shared":"NB7d","./_uid":"X6va"}],"B9Lq":[function(require,module,exports) {
 var has = require('./_has');
 var toIObject = require('./_to-iobject');
 var arrayIndexOf = require('./_array-includes')(false);
@@ -439,13 +440,13 @@ module.exports = function (object, names) {
   return result;
 };
 
-},{"./_has":146,"./_to-iobject":113,"./_array-includes":198,"./_shared-key":191}],193:[function(require,module,exports) {
+},{"./_has":"yS17","./_to-iobject":"Wyka","./_array-includes":"LNnS","./_shared-key":"/wuY"}],"KxjL":[function(require,module,exports) {
 // IE 8- don't enum bug keys
 module.exports = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
 
-},{}],147:[function(require,module,exports) {
+},{}],"knrM":[function(require,module,exports) {
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys = require('./_object-keys-internal');
 var enumBugKeys = require('./_enum-bug-keys');
@@ -454,10 +455,10 @@ module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
 };
 
-},{"./_object-keys-internal":192,"./_enum-bug-keys":193}],149:[function(require,module,exports) {
+},{"./_object-keys-internal":"B9Lq","./_enum-bug-keys":"KxjL"}],"z7R8":[function(require,module,exports) {
 exports.f = {}.propertyIsEnumerable;
 
-},{}],95:[function(require,module,exports) {
+},{}],"d/AR":[function(require,module,exports) {
 var getKeys = require('./_object-keys');
 var toIObject = require('./_to-iobject');
 var isEnum = require('./_object-pie').f;
@@ -475,7 +476,7 @@ module.exports = function (isEntries) {
   };
 };
 
-},{"./_object-keys":147,"./_to-iobject":113,"./_object-pie":149}],67:[function(require,module,exports) {
+},{"./_object-keys":"knrM","./_to-iobject":"Wyka","./_object-pie":"z7R8"}],"wbaH":[function(require,module,exports) {
 // https://github.com/tc39/proposal-object-values-entries
 var $export = require('./_export');
 var $values = require('./_object-to-array')(false);
@@ -486,13 +487,13 @@ $export($export.S, 'Object', {
   }
 });
 
-},{"./_export":93,"./_object-to-array":95}],38:[function(require,module,exports) {
+},{"./_export":"vSO4","./_object-to-array":"d/AR"}],"P+rg":[function(require,module,exports) {
 require('../../modules/es7.object.values');
 module.exports = require('../../modules/_core').Object.values;
 
-},{"../../modules/es7.object.values":67,"../../modules/_core":66}],20:[function(require,module,exports) {
+},{"../../modules/es7.object.values":"wbaH","../../modules/_core":"zKeE"}],"Qujq":[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/object/values"), __esModule: true };
-},{"core-js/library/fn/object/values":38}],80:[function(require,module,exports) {
+},{"core-js/library/fn/object/values":"P+rg"}],"lytE":[function(require,module,exports) {
 var toInteger = require('./_to-integer');
 var defined = require('./_defined');
 // true  -> String#at
@@ -511,13 +512,13 @@ module.exports = function (TO_STRING) {
   };
 };
 
-},{"./_to-integer":126,"./_defined":127}],122:[function(require,module,exports) {
+},{"./_to-integer":"MpYs","./_defined":"U72i"}],"gojl":[function(require,module,exports) {
 module.exports = require('./_hide');
 
-},{"./_hide":75}],76:[function(require,module,exports) {
+},{"./_hide":"akPY"}],"dhak":[function(require,module,exports) {
 module.exports = {};
 
-},{}],195:[function(require,module,exports) {
+},{}],"gjjs":[function(require,module,exports) {
 var dP = require('./_object-dp');
 var anObject = require('./_an-object');
 var getKeys = require('./_object-keys');
@@ -532,11 +533,11 @@ module.exports = require('./_descriptors') ? Object.defineProperties : function 
   return O;
 };
 
-},{"./_object-dp":115,"./_an-object":78,"./_object-keys":147,"./_descriptors":116}],197:[function(require,module,exports) {
+},{"./_object-dp":"Gfzd","./_an-object":"zotD","./_object-keys":"knrM","./_descriptors":"6MLN"}],"ebIA":[function(require,module,exports) {
 var document = require('./_global').document;
 module.exports = document && document.documentElement;
 
-},{"./_global":74}],163:[function(require,module,exports) {
+},{"./_global":"i1Q6"}],"TNJq":[function(require,module,exports) {
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject = require('./_an-object');
 var dPs = require('./_object-dps');
@@ -579,7 +580,7 @@ module.exports = Object.create || function create(O, Properties) {
   return Properties === undefined ? result : dPs(result, Properties);
 };
 
-},{"./_an-object":78,"./_object-dps":195,"./_enum-bug-keys":193,"./_shared-key":191,"./_dom-create":196,"./_html":197}],77:[function(require,module,exports) {
+},{"./_an-object":"zotD","./_object-dps":"gjjs","./_enum-bug-keys":"KxjL","./_shared-key":"/wuY","./_dom-create":"9kxq","./_html":"ebIA"}],"Ug9I":[function(require,module,exports) {
 var store = require('./_shared')('wks');
 var uid = require('./_uid');
 var Symbol = require('./_global').Symbol;
@@ -592,7 +593,7 @@ var $exports = module.exports = function (name) {
 
 $exports.store = store;
 
-},{"./_shared":118,"./_uid":119,"./_global":74}],124:[function(require,module,exports) {
+},{"./_shared":"NB7d","./_uid":"X6va","./_global":"i1Q6"}],"11Ut":[function(require,module,exports) {
 var def = require('./_object-dp').f;
 var has = require('./_has');
 var TAG = require('./_wks')('toStringTag');
@@ -601,7 +602,7 @@ module.exports = function (it, tag, stat) {
   if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
 };
 
-},{"./_object-dp":115,"./_has":146,"./_wks":77}],123:[function(require,module,exports) {
+},{"./_object-dp":"Gfzd","./_has":"yS17","./_wks":"Ug9I"}],"b7Q2":[function(require,module,exports) {
 'use strict';
 var create = require('./_object-create');
 var descriptor = require('./_property-desc');
@@ -616,14 +617,14 @@ module.exports = function (Constructor, NAME, next) {
   setToStringTag(Constructor, NAME + ' Iterator');
 };
 
-},{"./_object-create":163,"./_property-desc":114,"./_set-to-string-tag":124,"./_hide":75,"./_wks":77}],150:[function(require,module,exports) {
+},{"./_object-create":"TNJq","./_property-desc":"0WCH","./_set-to-string-tag":"11Ut","./_hide":"akPY","./_wks":"Ug9I"}],"mbLO":[function(require,module,exports) {
 // 7.1.13 ToObject(argument)
 var defined = require('./_defined');
 module.exports = function (it) {
   return Object(defined(it));
 };
 
-},{"./_defined":127}],125:[function(require,module,exports) {
+},{"./_defined":"U72i"}],"HHE0":[function(require,module,exports) {
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = require('./_has');
 var toObject = require('./_to-object');
@@ -638,7 +639,7 @@ module.exports = Object.getPrototypeOf || function (O) {
   } return O instanceof Object ? ObjectProto : null;
 };
 
-},{"./_has":146,"./_to-object":150,"./_shared-key":191}],81:[function(require,module,exports) {
+},{"./_has":"yS17","./_to-object":"mbLO","./_shared-key":"/wuY"}],"uRfg":[function(require,module,exports) {
 'use strict';
 var LIBRARY = require('./_library');
 var $export = require('./_export');
@@ -709,7 +710,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
   return methods;
 };
 
-},{"./_library":121,"./_export":93,"./_redefine":122,"./_hide":75,"./_iterators":76,"./_iter-create":123,"./_set-to-string-tag":124,"./_object-gpo":125,"./_wks":77}],56:[function(require,module,exports) {
+},{"./_library":"1kq3","./_export":"vSO4","./_redefine":"gojl","./_hide":"akPY","./_iterators":"dhak","./_iter-create":"b7Q2","./_set-to-string-tag":"11Ut","./_object-gpo":"HHE0","./_wks":"Ug9I"}],"i+u+":[function(require,module,exports) {
 'use strict';
 var $at = require('./_string-at')(true);
 
@@ -728,15 +729,15 @@ require('./_iter-define')(String, 'String', function (iterated) {
   return { value: point, done: false };
 });
 
-},{"./_string-at":80,"./_iter-define":81}],111:[function(require,module,exports) {
+},{"./_string-at":"lytE","./_iter-define":"uRfg"}],"ID6i":[function(require,module,exports) {
 module.exports = function () { /* empty */ };
 
-},{}],112:[function(require,module,exports) {
+},{}],"xwD+":[function(require,module,exports) {
 module.exports = function (done, value) {
   return { value: value, done: !!done };
 };
 
-},{}],73:[function(require,module,exports) {
+},{}],"OYXR":[function(require,module,exports) {
 'use strict';
 var addToUnscopables = require('./_add-to-unscopables');
 var step = require('./_iter-step');
@@ -772,7 +773,7 @@ addToUnscopables('keys');
 addToUnscopables('values');
 addToUnscopables('entries');
 
-},{"./_add-to-unscopables":111,"./_iter-step":112,"./_iterators":76,"./_to-iobject":113,"./_iter-define":81}],55:[function(require,module,exports) {
+},{"./_add-to-unscopables":"ID6i","./_iter-step":"xwD+","./_iterators":"dhak","./_to-iobject":"Wyka","./_iter-define":"uRfg"}],"COf8":[function(require,module,exports) {
 
 require('./es6.array.iterator');
 var global = require('./_global');
@@ -794,17 +795,17 @@ for (var i = 0; i < DOMIterables.length; i++) {
   Iterators[NAME] = Iterators.Array;
 }
 
-},{"./es6.array.iterator":73,"./_global":74,"./_hide":75,"./_iterators":76,"./_wks":77}],82:[function(require,module,exports) {
+},{"./es6.array.iterator":"OYXR","./_global":"i1Q6","./_hide":"akPY","./_iterators":"dhak","./_wks":"Ug9I"}],"ZxII":[function(require,module,exports) {
 exports.f = require('./_wks');
 
-},{"./_wks":77}],52:[function(require,module,exports) {
+},{"./_wks":"Ug9I"}],"nFDa":[function(require,module,exports) {
 require('../../modules/es6.string.iterator');
 require('../../modules/web.dom.iterable');
 module.exports = require('../../modules/_wks-ext').f('iterator');
 
-},{"../../modules/es6.string.iterator":56,"../../modules/web.dom.iterable":55,"../../modules/_wks-ext":82}],30:[function(require,module,exports) {
+},{"../../modules/es6.string.iterator":"i+u+","../../modules/web.dom.iterable":"COf8","../../modules/_wks-ext":"ZxII"}],"6t7t":[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/symbol/iterator"), __esModule: true };
-},{"core-js/library/fn/symbol/iterator":52}],159:[function(require,module,exports) {
+},{"core-js/library/fn/symbol/iterator":"nFDa"}],"e8vu":[function(require,module,exports) {
 var META = require('./_uid')('meta');
 var isObject = require('./_is-object');
 var has = require('./_has');
@@ -859,7 +860,7 @@ var meta = module.exports = {
   onFreeze: onFreeze
 };
 
-},{"./_uid":119,"./_is-object":117,"./_has":146,"./_object-dp":115,"./_fails":152}],158:[function(require,module,exports) {
+},{"./_uid":"X6va","./_is-object":"BxvP","./_has":"yS17","./_object-dp":"Gfzd","./_fails":"wLcK"}],"c2zY":[function(require,module,exports) {
 
 var global = require('./_global');
 var core = require('./_core');
@@ -871,10 +872,10 @@ module.exports = function (name) {
   if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
 };
 
-},{"./_global":74,"./_core":66,"./_library":121,"./_wks-ext":82,"./_object-dp":115}],148:[function(require,module,exports) {
+},{"./_global":"i1Q6","./_core":"zKeE","./_library":"1kq3","./_wks-ext":"ZxII","./_object-dp":"Gfzd"}],"Ocr3":[function(require,module,exports) {
 exports.f = Object.getOwnPropertySymbols;
 
-},{}],160:[function(require,module,exports) {
+},{}],"ycyv":[function(require,module,exports) {
 // all enumerable object keys, includes symbols
 var getKeys = require('./_object-keys');
 var gOPS = require('./_object-gops');
@@ -891,14 +892,14 @@ module.exports = function (it) {
   } return result;
 };
 
-},{"./_object-keys":147,"./_object-gops":148,"./_object-pie":149}],161:[function(require,module,exports) {
+},{"./_object-keys":"knrM","./_object-gops":"Ocr3","./_object-pie":"z7R8"}],"ayXv":[function(require,module,exports) {
 // 7.2.2 IsArray(argument)
 var cof = require('./_cof');
 module.exports = Array.isArray || function isArray(arg) {
   return cof(arg) == 'Array';
 };
 
-},{"./_cof":190}],166:[function(require,module,exports) {
+},{"./_cof":"ShN9"}],"Ni5N":[function(require,module,exports) {
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 var $keys = require('./_object-keys-internal');
 var hiddenKeys = require('./_enum-bug-keys').concat('length', 'prototype');
@@ -907,7 +908,7 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
   return $keys(O, hiddenKeys);
 };
 
-},{"./_object-keys-internal":192,"./_enum-bug-keys":193}],164:[function(require,module,exports) {
+},{"./_object-keys-internal":"B9Lq","./_enum-bug-keys":"KxjL"}],"rMkZ":[function(require,module,exports) {
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
 var toIObject = require('./_to-iobject');
 var gOPN = require('./_object-gopn').f;
@@ -928,7 +929,7 @@ module.exports.f = function getOwnPropertyNames(it) {
   return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
 };
 
-},{"./_to-iobject":113,"./_object-gopn":166}],165:[function(require,module,exports) {
+},{"./_to-iobject":"Wyka","./_object-gopn":"Ni5N"}],"sxPs":[function(require,module,exports) {
 var pIE = require('./_object-pie');
 var createDesc = require('./_property-desc');
 var toIObject = require('./_to-iobject');
@@ -946,7 +947,7 @@ exports.f = require('./_descriptors') ? gOPD : function getOwnPropertyDescriptor
   if (has(O, P)) return createDesc(!pIE.f.call(O, P), O[P]);
 };
 
-},{"./_object-pie":149,"./_property-desc":114,"./_to-iobject":113,"./_to-primitive":162,"./_has":146,"./_ie8-dom-define":189,"./_descriptors":116}],97:[function(require,module,exports) {
+},{"./_object-pie":"z7R8","./_property-desc":"0WCH","./_to-iobject":"Wyka","./_to-primitive":"EKwp","./_has":"yS17","./_ie8-dom-define":"R6c1","./_descriptors":"6MLN"}],"Aa2f":[function(require,module,exports) {
 
 'use strict';
 // ECMAScript 6 symbols shim
@@ -1183,24 +1184,24 @@ setToStringTag(Math, 'Math', true);
 // 24.3.3 JSON[@@toStringTag]
 setToStringTag(global.JSON, 'JSON', true);
 
-},{"./_global":74,"./_has":146,"./_descriptors":116,"./_export":93,"./_redefine":122,"./_meta":159,"./_fails":152,"./_shared":118,"./_set-to-string-tag":124,"./_uid":119,"./_wks":77,"./_wks-ext":82,"./_wks-define":158,"./_enum-keys":160,"./_is-array":161,"./_an-object":78,"./_is-object":117,"./_to-iobject":113,"./_to-primitive":162,"./_property-desc":114,"./_object-create":163,"./_object-gopn-ext":164,"./_object-gopd":165,"./_object-dp":115,"./_object-keys":147,"./_object-gopn":166,"./_object-pie":149,"./_object-gops":148,"./_library":121,"./_hide":75}],98:[function(require,module,exports) {
+},{"./_global":"i1Q6","./_has":"yS17","./_descriptors":"6MLN","./_export":"vSO4","./_redefine":"gojl","./_meta":"e8vu","./_fails":"wLcK","./_shared":"NB7d","./_set-to-string-tag":"11Ut","./_uid":"X6va","./_wks":"Ug9I","./_wks-ext":"ZxII","./_wks-define":"c2zY","./_enum-keys":"ycyv","./_is-array":"ayXv","./_an-object":"zotD","./_is-object":"BxvP","./_to-iobject":"Wyka","./_to-primitive":"EKwp","./_property-desc":"0WCH","./_object-create":"TNJq","./_object-gopn-ext":"rMkZ","./_object-gopd":"sxPs","./_object-dp":"Gfzd","./_object-keys":"knrM","./_object-gopn":"Ni5N","./_object-pie":"z7R8","./_object-gops":"Ocr3","./_library":"1kq3","./_hide":"akPY"}],"tuDi":[function(require,module,exports) {
 
-},{}],99:[function(require,module,exports) {
+},{}],"c6mp":[function(require,module,exports) {
 require('./_wks-define')('asyncIterator');
 
-},{"./_wks-define":158}],100:[function(require,module,exports) {
+},{"./_wks-define":"c2zY"}],"2mwf":[function(require,module,exports) {
 require('./_wks-define')('observable');
 
-},{"./_wks-define":158}],62:[function(require,module,exports) {
+},{"./_wks-define":"c2zY"}],"Ky5l":[function(require,module,exports) {
 require('../../modules/es6.symbol');
 require('../../modules/es6.object.to-string');
 require('../../modules/es7.symbol.async-iterator');
 require('../../modules/es7.symbol.observable');
 module.exports = require('../../modules/_core').Symbol;
 
-},{"../../modules/es6.symbol":97,"../../modules/es6.object.to-string":98,"../../modules/es7.symbol.async-iterator":99,"../../modules/es7.symbol.observable":100,"../../modules/_core":66}],29:[function(require,module,exports) {
+},{"../../modules/es6.symbol":"Aa2f","../../modules/es6.object.to-string":"tuDi","../../modules/es7.symbol.async-iterator":"c6mp","../../modules/es7.symbol.observable":"2mwf","../../modules/_core":"zKeE"}],"ibPW":[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/symbol"), __esModule: true };
-},{"core-js/library/fn/symbol":62}],18:[function(require,module,exports) {
+},{"core-js/library/fn/symbol":"Ky5l"}],"GyB/":[function(require,module,exports) {
 "use strict";
 
 exports.__esModule = true;
@@ -1222,7 +1223,7 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 } : function (obj) {
   return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
 };
-},{"../core-js/symbol/iterator":30,"../core-js/symbol":29}],120:[function(require,module,exports) {
+},{"../core-js/symbol/iterator":"6t7t","../core-js/symbol":"ibPW"}],"ZHvQ":[function(require,module,exports) {
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = require('./_cof');
 var TAG = require('./_wks')('toStringTag');
@@ -1247,7 +1248,7 @@ module.exports = function (it) {
     : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
 };
 
-},{"./_cof":190,"./_wks":77}],79:[function(require,module,exports) {
+},{"./_cof":"ShN9","./_wks":"Ug9I"}],"7AqT":[function(require,module,exports) {
 var classof = require('./_classof');
 var ITERATOR = require('./_wks')('iterator');
 var Iterators = require('./_iterators');
@@ -1257,7 +1258,7 @@ module.exports = require('./_core').getIteratorMethod = function (it) {
     || Iterators[classof(it)];
 };
 
-},{"./_classof":120,"./_wks":77,"./_iterators":76,"./_core":66}],57:[function(require,module,exports) {
+},{"./_classof":"ZHvQ","./_wks":"Ug9I","./_iterators":"dhak","./_core":"zKeE"}],"ugM7":[function(require,module,exports) {
 var anObject = require('./_an-object');
 var get = require('./core.get-iterator-method');
 module.exports = require('./_core').getIterator = function (it) {
@@ -1266,14 +1267,14 @@ module.exports = require('./_core').getIterator = function (it) {
   return anObject(iterFn.call(it));
 };
 
-},{"./_an-object":78,"./core.get-iterator-method":79,"./_core":66}],35:[function(require,module,exports) {
+},{"./_an-object":"zotD","./core.get-iterator-method":"7AqT","./_core":"zKeE"}],"Lvd3":[function(require,module,exports) {
 require('../modules/web.dom.iterable');
 require('../modules/es6.string.iterator');
 module.exports = require('../modules/core.get-iterator');
 
-},{"../modules/web.dom.iterable":55,"../modules/es6.string.iterator":56,"../modules/core.get-iterator":57}],19:[function(require,module,exports) {
+},{"../modules/web.dom.iterable":"COf8","../modules/es6.string.iterator":"i+u+","../modules/core.get-iterator":"ugM7"}],"X9RM":[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/get-iterator"), __esModule: true };
-},{"core-js/library/fn/get-iterator":35}],94:[function(require,module,exports) {
+},{"core-js/library/fn/get-iterator":"Lvd3"}],"uj5A":[function(require,module,exports) {
 'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys = require('./_object-keys');
@@ -1309,24 +1310,22 @@ module.exports = !$assign || require('./_fails')(function () {
   } return T;
 } : $assign;
 
-},{"./_object-keys":147,"./_object-gops":148,"./_object-pie":149,"./_to-object":150,"./_iobject":151,"./_fails":152}],65:[function(require,module,exports) {
+},{"./_object-keys":"knrM","./_object-gops":"Ocr3","./_object-pie":"z7R8","./_to-object":"mbLO","./_iobject":"E5Ce","./_fails":"wLcK"}],"YD0x":[function(require,module,exports) {
 // 19.1.3.1 Object.assign(target, source)
 var $export = require('./_export');
 
 $export($export.S + $export.F, 'Object', { assign: require('./_object-assign') });
 
-},{"./_export":93,"./_object-assign":94}],39:[function(require,module,exports) {
+},{"./_export":"vSO4","./_object-assign":"uj5A"}],"vcHl":[function(require,module,exports) {
 require('../../modules/es6.object.assign');
 module.exports = require('../../modules/_core').Object.assign;
 
-},{"../../modules/es6.object.assign":65,"../../modules/_core":66}],21:[function(require,module,exports) {
+},{"../../modules/es6.object.assign":"YD0x","../../modules/_core":"zKeE"}],"gc0D":[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/object/assign"), __esModule: true };
-},{"core-js/library/fn/object/assign":39}],45:[function(require,module,exports) {
+},{"core-js/library/fn/object/assign":"vcHl"}],"R3IB":[function(require,module,exports) {
 
 // shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
+var process = module.exports = {}; // cached from whatever global is present so that test runners that stub it
 // don't break things.  But we need to wrap it in a try catch in case it is
 // wrapped in strict mode code which doesn't define any globals.  It's inside a
 // function because try/catches deoptimize in certain engines.
@@ -1335,148 +1334,171 @@ var cachedSetTimeout;
 var cachedClearTimeout;
 
 function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
+  throw new Error('setTimeout has not been defined');
 }
+
 function defaultClearTimeout() {
-    throw new Error('clearTimeout has not been defined');
+  throw new Error('clearTimeout has not been defined');
 }
+
 (function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
+  try {
+    if (typeof setTimeout === 'function') {
+      cachedSetTimeout = setTimeout;
+    } else {
+      cachedSetTimeout = defaultSetTimout;
     }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
+  } catch (e) {
+    cachedSetTimeout = defaultSetTimout;
+  }
+
+  try {
+    if (typeof clearTimeout === 'function') {
+      cachedClearTimeout = clearTimeout;
+    } else {
+      cachedClearTimeout = defaultClearTimeout;
     }
+  } catch (e) {
+    cachedClearTimeout = defaultClearTimeout;
+  }
 })();
+
 function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
+  if (cachedSetTimeout === setTimeout) {
+    //normal enviroments in sane situations
+    return setTimeout(fun, 0);
+  } // if setTimeout wasn't available but was latter defined
+
+
+  if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+    cachedSetTimeout = setTimeout;
+    return setTimeout(fun, 0);
+  }
+
+  try {
+    // when when somebody has screwed with setTimeout but no I.E. maddness
+    return cachedSetTimeout(fun, 0);
+  } catch (e) {
     try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
+      // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+      return cachedSetTimeout.call(null, fun, 0);
     } catch (e) {
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch (e) {
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
+      // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+      return cachedSetTimeout.call(this, fun, 0);
     }
+  }
 }
+
 function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
+  if (cachedClearTimeout === clearTimeout) {
+    //normal enviroments in sane situations
+    return clearTimeout(marker);
+  } // if clearTimeout wasn't available but was latter defined
+
+
+  if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+    cachedClearTimeout = clearTimeout;
+    return clearTimeout(marker);
+  }
+
+  try {
+    // when when somebody has screwed with setTimeout but no I.E. maddness
+    return cachedClearTimeout(marker);
+  } catch (e) {
     try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
+      // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+      return cachedClearTimeout.call(null, marker);
     } catch (e) {
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e) {
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
+      // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+      // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+      return cachedClearTimeout.call(this, marker);
     }
+  }
 }
+
 var queue = [];
 var draining = false;
 var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
+  if (!draining || !currentQueue) {
+    return;
+  }
+
+  draining = false;
+
+  if (currentQueue.length) {
+    queue = currentQueue.concat(queue);
+  } else {
+    queueIndex = -1;
+  }
+
+  if (queue.length) {
+    drainQueue();
+  }
 }
 
 function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
+  if (draining) {
+    return;
+  }
 
-    var len = queue.length;
-    while (len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
+  var timeout = runTimeout(cleanUpNextTick);
+  draining = true;
+  var len = queue.length;
+
+  while (len) {
+    currentQueue = queue;
+    queue = [];
+
+    while (++queueIndex < len) {
+      if (currentQueue) {
+        currentQueue[queueIndex].run();
+      }
     }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
+
+    queueIndex = -1;
+    len = queue.length;
+  }
+
+  currentQueue = null;
+  draining = false;
+  runClearTimeout(timeout);
 }
 
 process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
+  var args = new Array(arguments.length - 1);
+
+  if (arguments.length > 1) {
+    for (var i = 1; i < arguments.length; i++) {
+      args[i - 1] = arguments[i];
     }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
+  }
+
+  queue.push(new Item(fun, args));
+
+  if (queue.length === 1 && !draining) {
+    runTimeout(drainQueue);
+  }
+}; // v8 likes predictible objects
+
+
+function Item(fun, array) {
+  this.fun = fun;
+  this.array = array;
+}
+
+Item.prototype.run = function () {
+  this.fun.apply(null, this.array);
 };
 
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
 process.title = 'browser';
 process.browser = true;
 process.env = {};
 process.argv = [];
 process.version = ''; // empty string to avoid regexp issues
+
 process.versions = {};
 
 function noop() {}
@@ -1492,23 +1514,25 @@ process.prependListener = noop;
 process.prependOnceListener = noop;
 
 process.listeners = function (name) {
-    return [];
+  return [];
 };
 
 process.binding = function (name) {
-    throw new Error('process.binding is not supported');
+  throw new Error('process.binding is not supported');
 };
 
 process.cwd = function () {
-    return '/';
+  return '/';
 };
+
 process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
+  throw new Error('process.chdir is not supported');
 };
+
 process.umask = function () {
-    return 0;
+  return 0;
 };
-},{}],27:[function(require,module,exports) {
+},{}],"bqst":[function(require,module,exports) {
 var process = require("process");
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1735,7 +1759,7 @@ var substr = 'ab'.substr(-1) === 'b'
     }
 ;
 
-},{"process":45}],46:[function(require,module,exports) {
+},{"process":"R3IB"}],"bQx9":[function(require,module,exports) {
 module.exports = function (xs, fn) {
     var res = [];
     for (var i = 0; i < xs.length; i++) {
@@ -1750,7 +1774,7 @@ var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],47:[function(require,module,exports) {
+},{}],"6D9y":[function(require,module,exports) {
 'use strict';
 module.exports = balanced;
 function balanced(a, b, str) {
@@ -1811,7 +1835,7 @@ function range(a, b, str) {
   return result;
 }
 
-},{}],28:[function(require,module,exports) {
+},{}],"dwX/":[function(require,module,exports) {
 var concatMap = require('concat-map');
 var balanced = require('balanced-match');
 
@@ -2014,7 +2038,7 @@ function expand(str, isTop) {
 }
 
 
-},{"concat-map":46,"balanced-match":47}],17:[function(require,module,exports) {
+},{"concat-map":"bQx9","balanced-match":"6D9y"}],"Nt/K":[function(require,module,exports) {
 module.exports = minimatch
 minimatch.Minimatch = Minimatch
 
@@ -2939,7 +2963,7 @@ function regExpEscape (s) {
   return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-},{"path":27,"brace-expansion":28}],109:[function(require,module,exports) {
+},{"path":"bqst","brace-expansion":"dwX/"}],"By4a":[function(require,module,exports) {
 var classof = require('./_classof');
 var ITERATOR = require('./_wks')('iterator');
 var Iterators = require('./_iterators');
@@ -2951,14 +2975,14 @@ module.exports = require('./_core').isIterable = function (it) {
     || Iterators.hasOwnProperty(classof(O));
 };
 
-},{"./_classof":120,"./_wks":77,"./_iterators":76,"./_core":66}],71:[function(require,module,exports) {
+},{"./_classof":"ZHvQ","./_wks":"Ug9I","./_iterators":"dhak","./_core":"zKeE"}],"TEgB":[function(require,module,exports) {
 require('../modules/web.dom.iterable');
 require('../modules/es6.string.iterator');
 module.exports = require('../modules/core.is-iterable');
 
-},{"../modules/web.dom.iterable":55,"../modules/es6.string.iterator":56,"../modules/core.is-iterable":109}],51:[function(require,module,exports) {
+},{"../modules/web.dom.iterable":"COf8","../modules/es6.string.iterator":"i+u+","../modules/core.is-iterable":"By4a"}],"gkZy":[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/is-iterable"), __esModule: true };
-},{"core-js/library/fn/is-iterable":71}],36:[function(require,module,exports) {
+},{"core-js/library/fn/is-iterable":"TEgB"}],"m8OI":[function(require,module,exports) {
 "use strict";
 
 exports.__esModule = true;
@@ -3010,7 +3034,7 @@ exports.default = function () {
     }
   };
 }();
-},{"../core-js/is-iterable":51,"../core-js/get-iterator":19}],153:[function(require,module,exports) {
+},{"../core-js/is-iterable":"gkZy","../core-js/get-iterator":"X9RM"}],"hEIm":[function(require,module,exports) {
 // call something on iterator step with safe closing on error
 var anObject = require('./_an-object');
 module.exports = function (iterator, fn, value, entries) {
@@ -3024,7 +3048,7 @@ module.exports = function (iterator, fn, value, entries) {
   }
 };
 
-},{"./_an-object":78}],154:[function(require,module,exports) {
+},{"./_an-object":"zotD"}],"af0K":[function(require,module,exports) {
 // check on default Array iterator
 var Iterators = require('./_iterators');
 var ITERATOR = require('./_wks')('iterator');
@@ -3034,7 +3058,7 @@ module.exports = function (it) {
   return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
 };
 
-},{"./_iterators":76,"./_wks":77}],156:[function(require,module,exports) {
+},{"./_iterators":"dhak","./_wks":"Ug9I"}],"vUQk":[function(require,module,exports) {
 'use strict';
 var $defineProperty = require('./_object-dp');
 var createDesc = require('./_property-desc');
@@ -3044,7 +3068,7 @@ module.exports = function (object, index, value) {
   else object[index] = value;
 };
 
-},{"./_object-dp":115,"./_property-desc":114}],157:[function(require,module,exports) {
+},{"./_object-dp":"Gfzd","./_property-desc":"0WCH"}],"Lli7":[function(require,module,exports) {
 var ITERATOR = require('./_wks')('iterator');
 var SAFE_CLOSING = false;
 
@@ -3068,7 +3092,7 @@ module.exports = function (exec, skipClosing) {
   return safe;
 };
 
-},{"./_wks":77}],96:[function(require,module,exports) {
+},{"./_wks":"Ug9I"}],"N484":[function(require,module,exports) {
 'use strict';
 var ctx = require('./_ctx');
 var $export = require('./_export');
@@ -3107,14 +3131,14 @@ $export($export.S + $export.F * !require('./_iter-detect')(function (iter) { Arr
   }
 });
 
-},{"./_ctx":145,"./_export":93,"./_to-object":150,"./_iter-call":153,"./_is-array-iter":154,"./_to-length":155,"./_create-property":156,"./core.get-iterator-method":79,"./_iter-detect":157}],58:[function(require,module,exports) {
+},{"./_ctx":"3zRh","./_export":"vSO4","./_to-object":"mbLO","./_iter-call":"hEIm","./_is-array-iter":"af0K","./_to-length":"S7IM","./_create-property":"vUQk","./core.get-iterator-method":"7AqT","./_iter-detect":"Lli7"}],"O35A":[function(require,module,exports) {
 require('../../modules/es6.string.iterator');
 require('../../modules/es6.array.from');
 module.exports = require('../../modules/_core').Array.from;
 
-},{"../../modules/es6.string.iterator":56,"../../modules/es6.array.from":96,"../../modules/_core":66}],37:[function(require,module,exports) {
+},{"../../modules/es6.string.iterator":"i+u+","../../modules/es6.array.from":"N484","../../modules/_core":"zKeE"}],"VuZO":[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/array/from"), __esModule: true };
-},{"core-js/library/fn/array/from":58}],5:[function(require,module,exports) {
+},{"core-js/library/fn/array/from":"O35A"}],"eunL":[function(require,module,exports) {
 'use strict';
 
 var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
@@ -3126,10 +3150,12 @@ var _from = require('babel-runtime/core-js/array/from');
 var _from2 = _interopRequireDefault(_from);
 
 function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+  return obj && obj.__esModule ? obj : {
+    default: obj
+  };
+} // 一键评教插件
 
-// 一键评教插件
+
 var fastEvaluation = {
   name: 'fast-evaluation',
   pathname: '/student/teachingEvaluation/evaluation/index',
@@ -3169,20 +3195,19 @@ var fastEvaluation = {
   templates: {
     btn: '<button class="btn btn-xs btn-round btn-light" id="fast_evaluation_btn" style="margin-left: 5px;">点此开始一键评教!</button>',
     prompt: '<span id="fast_evaluation_prompt" style="margin-left: 10px;"></span>',
-    selectionModal: '\n      <div id="selection-modal">\n        <style>\n          #selection-modal {\n            padding: 10px 20px;\n          }\n\n          .selection-modal-introduction>p {\n            font-size: 14px;\n            margin-bottom: 10px;\n          }\n\n          .selection-modal-introduction>p:last-child {\n            margin-bottom: 0;\n          }\n\n          .checkbox-wrapper {\n            display: flex;\n            flex-wrap: wrap;\n            margin-bottom: 10px;\n          }\n\n          .checkbox-wrapper:last-child {\n            margin-bottom: 0;\n          }\n\n          #selection-checkbox-wrapper>.checkbox {\n            padding-bottom: 7px;\n          }\n\n        </style>\n        <form id="selection-form" class="form-horizontal" role="form">\n          <div class="row">\n            <div class="col-xs-12">\n              <div class="selection-modal-introduction">\n                <p>\u6240\u6709\u9009\u4E2D\u7684\u8001\u5E08\u90FD\u5C06\u88AB\u4E00\u952E\u6EE1\u5206\u597D\u8BC4\uFF0C\u4E3B\u89C2\u8BC4\u4EF7\u4F1A\u4ECE25\u6761\u8BED\u53E5\u5E93\u91CC\u968F\u673A\u62BD\u53D6\u3002</p>\n                <p>\u9ED8\u8BA4\u6240\u6709\u8001\u5E08\u90FD\u662F\u9009\u4E2D\u72B6\u6001\uFF0C\u60A8\u53EA\u9700\u8981\u53D6\u6D88\u52FE\u9009\u60A8\u60F3\u624B\u52A8\u8BC4\u4EF7\u7684\u8001\u5E08\u5373\u53EF\u3002</p>\n              </div>\n              <hr>\n              <h4 class="lighter blue">\u5B66\u751F\u8BC4\u6559\uFF08\u8BFE\u5802\u6559\u5B66\uFF09</h4>\n              <div id="ktjx-checkbox-wrapper" class="checkbox-wrapper"></div>\n              <h4 class="lighter blue">\u5B66\u751F\u8BC4\u6559\uFF08\u5B9E\u9A8C\u6559\u5B66\uFF09</h4>\n              <div id="syjx-checkbox-wrapper" class="checkbox-wrapper"></div>\n              <h4 class="lighter blue">\u5B66\u751F\u8BC4\u6559\uFF08\u5B9E\u8DF5\u6559\u5B66\uFF09</h4>\n              <div id="sjjx-checkbox-wrapper" class="checkbox-wrapper"></div>\n              <h4 class="lighter blue">\u5B66\u751F\u8BC4\u6559\uFF08\u4F53\u80B2\u6559\u5B66\uFF09</h4>\n              <div id="tyjx-checkbox-wrapper" class="checkbox-wrapper"></div>\n              <h4 class="lighter blue">\u7814\u7A76\u751F\u52A9\u6559\u8BC4\u4EF7</h4>\n              <div id="yjs-checkbox-wrapper" class="checkbox-wrapper"></div>\n            </div>\n          </div>\n        </form>\n      </div>\n    '
+    selectionModal: "\n      <div id=\"selection-modal\">\n        <style>\n          #selection-modal {\n            padding: 10px 20px;\n          }\n\n          .selection-modal-introduction>p {\n            font-size: 14px;\n            margin-bottom: 10px;\n          }\n\n          .selection-modal-introduction>p:last-child {\n            margin-bottom: 0;\n          }\n\n          .checkbox-wrapper {\n            display: flex;\n            flex-wrap: wrap;\n            margin-bottom: 10px;\n          }\n\n          .checkbox-wrapper:last-child {\n            margin-bottom: 0;\n          }\n\n          #selection-checkbox-wrapper>.checkbox {\n            padding-bottom: 7px;\n          }\n\n        </style>\n        <form id=\"selection-form\" class=\"form-horizontal\" role=\"form\">\n          <div class=\"row\">\n            <div class=\"col-xs-12\">\n              <div class=\"selection-modal-introduction\">\n                <p>\u6240\u6709\u9009\u4E2D\u7684\u8001\u5E08\u90FD\u5C06\u88AB\u4E00\u952E\u6EE1\u5206\u597D\u8BC4\uFF0C\u4E3B\u89C2\u8BC4\u4EF7\u4F1A\u4ECE25\u6761\u8BED\u53E5\u5E93\u91CC\u968F\u673A\u62BD\u53D6\u3002</p>\n                <p>\u9ED8\u8BA4\u6240\u6709\u8001\u5E08\u90FD\u662F\u9009\u4E2D\u72B6\u6001\uFF0C\u60A8\u53EA\u9700\u8981\u53D6\u6D88\u52FE\u9009\u60A8\u60F3\u624B\u52A8\u8BC4\u4EF7\u7684\u8001\u5E08\u5373\u53EF\u3002</p>\n              </div>\n              <hr>\n              <h4 class=\"lighter blue\">\u5B66\u751F\u8BC4\u6559\uFF08\u8BFE\u5802\u6559\u5B66\uFF09</h4>\n              <div id=\"ktjx-checkbox-wrapper\" class=\"checkbox-wrapper\"></div>\n              <h4 class=\"lighter blue\">\u5B66\u751F\u8BC4\u6559\uFF08\u5B9E\u9A8C\u6559\u5B66\uFF09</h4>\n              <div id=\"syjx-checkbox-wrapper\" class=\"checkbox-wrapper\"></div>\n              <h4 class=\"lighter blue\">\u5B66\u751F\u8BC4\u6559\uFF08\u5B9E\u8DF5\u6559\u5B66\uFF09</h4>\n              <div id=\"sjjx-checkbox-wrapper\" class=\"checkbox-wrapper\"></div>\n              <h4 class=\"lighter blue\">\u5B66\u751F\u8BC4\u6559\uFF08\u4F53\u80B2\u6559\u5B66\uFF09</h4>\n              <div id=\"tyjx-checkbox-wrapper\" class=\"checkbox-wrapper\"></div>\n              <h4 class=\"lighter blue\">\u7814\u7A76\u751F\u52A9\u6559\u8BC4\u4EF7</h4>\n              <div id=\"yjs-checkbox-wrapper\" class=\"checkbox-wrapper\"></div>\n            </div>\n          </div>\n        </form>\n      </div>\n    "
   },
   comments: ['老师是很好的，平时课堂上讲课风趣又不失严谨，课下也对同学们的问题有求必应，帮助了我很多。', '老师挺不错的，对问题分析的透彻，讲课能切中要害，很喜欢老师的讲课风格。', '老师讲课很用心，给我们划定了学习目标，班里同学都学得不错，给分也好。', '老师经验很丰富，平时要求适中，注重与我们沟通交流，把知识真正的传递给了我们。', '老师讲的内容紧追时代步伐，不过时，讲课风格详实生动，大家都很喜欢。', '老师的讲课节奏安排的不错，最后大家对知识掌握的都比较好，复习也比较充分，考试情况不错。', '该课程教学目标目标清楚明白、具体，易激发兴趣，引导自主探究、合作交流、练习设计体现知识的综合运用，形式多样，分量与难度适中，学法指导得当，是一门很不错的课', '该课程教学重难点把握准确，教学内容主次分明，抓住关键；结构合理，衔接自然紧凑，从情感、态度与价值观三个维度出发，符合学段教学要求、教材特点与我们实际，是一门成熟的课', '该课程能以旧引新，寻找新旧知识的关联和生长点，注重知识的发生发展过程，能找到教材特点及本课的疑点，并恰当处理，在课堂上设疑问难，引导点拨，是一门很有个性特点的课', '本门课程各种学习活动设计具体、充分注意我们学习习惯的培养，因材施教，调动我们自主学习的积极性，遵循常规但不拘泥，根据我们的差异和特点，从具体到抽象对教材进行处理，是一门很成功的课', '该课程教学过程设计完整有序，既体现知识结构，知识点，又注意突出我们活动设计，体现教学民主、培养我们良好的学习品质，课堂结构完整，密度恰当。', '该课程教学程序设计巧妙，在教学过程中能运用上新颖独特教学方法、言简意胲，引导点拨我们，我们动口、动手、动脑，主动参与教学过程，使我们的作业完善而有美感，让大家学到了很多东西。', '该课程很有艺术，教学安排清晰有序，科学规范。在教材处理上从具体到抽象，化难为易，以简驾繁突破难点。各环节有详细的练习，科学合理有效地培养我们自主，探究，创新能力的发展。', '本门课程非常成功，设计突出了以我们为本的理念、全面培养我们素养、自主合作探究学习的理念。老师配以亲切活泼的教态，能较为恰当地运用丰富的表扬手段，让我们在学习中感受到成功的快乐。', '该课程教学重难点把握准确，教学内容主次分明，抓住关键；结构合理，衔接自然紧凑，组织严密，采用有效的教学手段，引导自主探究、合作交流，成功地教我们“会学”。', '该课程结构层次清楚、运用恰当的教学方法和手段启迪我们思维、解决重点、突出难点。精心设计练习，并在整个教学过程中注重我们能力的培养，是一门优秀的课。', '该课程很有创意，对教材把握透彻、挖掘深入、处理新颖，针对我们基础和我们发展性目标，设计各种教学活动，引导我们自主学习，有条理地将旧知识综合进行运用。', '老师在教学过程中，不仅重视知识要求，也注重思想教育，在课堂教学中孜孜不倦的帮助我们学习，做到对我们动之以情，爱之以诚，使我们的学习取得完美的成果。', '该课程教学设计非常巧妙，结合教材特点，我们、老师实际，一法为主，多法配合，优化组合。练习提供了我们喜闻乐见的资料，课堂练习紧扣重点，并注意在“趣”字上下功夫。', '该课程教学环节清晰、完整具体，能活化教学内容，使之生活化，课堂教学的开放性、师生关系的民主性、教学模式的多样性，培养我们良好的学习品质，体显出该老师教学能力非常强。', '该课程很有特色，创设情景，让我们在学习中、体验实践、感悟，收集、整理、筛选资料，突出体现了以人为本、以我们发展为本的教育理念。是一门很成功的课。', '本门课程很有艺术，在教材内容的基础上作了适当的必要的扩展，精心安排我们自主学习、质疑、操作实践等活动以启发式、讨论式为主。我们在完成任务的过和程中学会合作。', '该课程重点突出，目标全面、准确、具体，整体现知识与能力、方法与过程、情感态度与价值观三个维度，布局合理，设计各种教学活动，引导我们自主学习，有条理地将旧知识综合进行运用。', '该课程结构清晰、运用恰当的教学方法和手段启迪我们思维、解决重点、突出难点。根据班级实际情况，精心设计练习，并在整个教学过程中注重因材施教，是一门优秀的课。', '该课程十分有创意，教学目的明确，方法得当、语言清晰，具有感染力，习题典型，题量适当，激发我们兴趣，引导自主探究、合作交流完成任务，整个课堂效率非常高。', '本门课程对教学内容把握透彻、挖掘深入、处理新颖，在课堂教学中，对重难点言简意赅，分析透彻。对练习以思维训练为核心，落实双基，是一门非常成功的课'],
   init: function init() {
     this.$btn = window.$(this.templates.btn);
     this.$prompt = window.$(this.templates.prompt);
-
     window.$('#close > h4').append(this.$btn, this.$prompt);
-
     this.$btn.click(this.onClickBtn.bind(this));
   },
   onClickBtn: function onClickBtn(e) {
     e.preventDefault();
     var hasUnevaluatedQuestionnaire = this.collectData();
+
     if (hasUnevaluatedQuestionnaire) {
       this.showSelectionModal();
     } else {
@@ -3213,8 +3238,10 @@ var fastEvaluation = {
             console.log('无效的问卷名称：' + type);
           }
         });
+
         for (var key in _this.checkboxWrapperSelectors) {
           var selector = _this.checkboxWrapperSelectors[key];
+
           if (!window.$(selector).children().length) {
             window.$(selector).prev().remove();
             window.$(selector).remove();
@@ -3226,8 +3253,10 @@ var fastEvaluation = {
           return _this.list[Number(v.name.replace('selection-checkbox-', ''))];
         });
         window.layer.close(layerIndex);
+
         if (_this.list.length) {
           _this.$btn.remove();
+
           _this.evaluate(0);
         }
       }
@@ -3239,16 +3268,17 @@ var fastEvaluation = {
     var collectingMsgIndex = window.layer.msg('正在收集本页问卷数据……');
     var items = (0, _from2.default)(document.getElementById('jxpgtbody').getElementsByTagName('button')).filter(function (item) {
       return item.innerText === '评估';
-    })
-    // 2018-8-31 20:21:20
+    }) // 2018-8-31 20:21:20
     // 今天发现 urp 代码有修改，把 evaluationContentContent 从 onClick 函数调用里删除了。
     // 临时这样补上，尽量不做大修改，防止出错。
     .map(function (item) {
       return item.getAttribute('onClick').replace(/evaluationResult\("|evaluation\("|"\);return false;/ig, '') + ('","' + item.parentElement.parentElement.children[3].innerText);
     });
+
     if (!items.length) {
       return false;
     }
+
     this.list = items.map(function (item) {
       return _this2.parseName(item);
     });
@@ -3270,7 +3300,14 @@ var fastEvaluation = {
         evaluationContentNumber = _data2[4],
         evaluationContentContent = _data2[5];
 
-    var result = { questionnaireCode: questionnaireCode, questionnaireName: questionnaireName, evaluatedPeopleNumber: evaluatedPeopleNumber, evaluatedPeople: evaluatedPeople, evaluationContentNumber: evaluationContentNumber, evaluationContentContent: evaluationContentContent };
+    var result = {
+      questionnaireCode: questionnaireCode,
+      questionnaireName: questionnaireName,
+      evaluatedPeopleNumber: evaluatedPeopleNumber,
+      evaluatedPeople: evaluatedPeople,
+      evaluationContentNumber: evaluationContentNumber,
+      evaluationContentContent: evaluationContentContent
+    };
     return result;
   },
   getComment: function getComment() {
@@ -3280,11 +3317,13 @@ var fastEvaluation = {
     var _this3 = this;
 
     var origin = window.location.origin;
+
     if (index >= this.list.length) {
-      this.changePrompt('\u672C\u9875\u4E0A\u7684\u8001\u5E08\u5DF2\u7ECF\u5168\u90E8\u8BC4\u4EF7\u5B8C\u6BD5\uFF01\u6B63\u5728\u5237\u65B0\u2026\u2026');
+      this.changePrompt("\u672C\u9875\u4E0A\u7684\u8001\u5E08\u5DF2\u7ECF\u5168\u90E8\u8BC4\u4EF7\u5B8C\u6BD5\uFF01\u6B63\u5728\u5237\u65B0\u2026\u2026");
       window.location.href = origin + '/student/teachingEvaluation/evaluation/index';
       return;
     }
+
     var _list$index = this.list[index],
         evaluatedPeopleNumber = _list$index.evaluatedPeopleNumber,
         evaluatedPeople = _list$index.evaluatedPeople,
@@ -3292,11 +3331,8 @@ var fastEvaluation = {
         evaluationContentContent = _list$index.evaluationContentContent,
         questionnaireCode = _list$index.questionnaireCode,
         questionnaireName = _list$index.questionnaireName;
-
     var tokenValue = void 0;
-
-    this.changePrompt('\u6B63\u5728\u8BC4\u4EF7' + evaluationContentContent + '\u8BFE\u7A0B\u7684' + evaluatedPeople + '\u8001\u5E08\uFF08' + (index + 1) + '/' + this.list.length + '\uFF09');
-
+    this.changePrompt("\u6B63\u5728\u8BC4\u4EF7" + evaluationContentContent + "\u8BFE\u7A0B\u7684" + evaluatedPeople + "\u8001\u5E08\uFF08" + (index + 1) + '/' + this.list.length + "\uFF09");
     window.$.ajax({
       type: 'POST',
       url: '/student/teachingEvaluation/teachingEvaluation/evaluationPage',
@@ -3314,7 +3350,7 @@ var fastEvaluation = {
         });
       },
       error: function error(xhr) {
-        window.urp.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
+        window.urp.alert("\u9519\u8BEF\u4EE3\u7801[" + xhr.readyState + '-' + xhr.status + "]:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01");
       },
       success: function success(data) {
         tokenValue = data.match(/<input.+tokenValue.+value="(.+)"\/>/i)[1];
@@ -3323,14 +3359,14 @@ var fastEvaluation = {
           var _questionsNumberRange = _this3.questionsNumberRange[questionnaireName],
               begin = _questionsNumberRange.begin,
               end = _questionsNumberRange.end;
-
           var bodyStr = 'tokenValue=' + tokenValue + '&questionnaireCode=' + questionnaireCode + '&evaluationContentNumber=' + evaluationContentNumber + '&evaluatedPeopleNumber=' + evaluatedPeopleNumber;
+
           for (var i = begin; i <= end; i++) {
             var num = ('0000000000' + i).substr(-10);
             bodyStr += '&' + num + '=10_1';
           }
-          bodyStr += '&zgpj=' + _this3.getComment();
 
+          bodyStr += '&zgpj=' + _this3.getComment();
           window.$.ajax({
             cache: true,
             type: 'POST',
@@ -3338,26 +3374,31 @@ var fastEvaluation = {
             url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
             data: bodyStr,
             error: function error(xhr) {
-              window.urp.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
-              _this3.changePrompt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length);
+              window.urp.alert("\u9519\u8BEF\u4EE3\u7801[" + xhr.readyState + '-' + xhr.status + "]:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01");
+
+              _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length);
             },
             success: function success(data) {
               if (data['result'].indexOf('/') !== -1) {
                 console.log(data);
               } else if (data['result'] === 'success') {
-                _this3.changePrompt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length + '\uFF0C\u5C06\u57282\u5206\u949F\u540E\u81EA\u52A8\u5F00\u59CB\u8BC4\u4EF7\u4E0B\u4E00\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~');
+                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length + "\uFF0C\u5C06\u57282\u5206\u949F\u540E\u81EA\u52A8\u5F00\u59CB\u8BC4\u4EF7\u4E0B\u4E00\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
+
                 setTimeout(function () {
                   _this3.evaluate(++index);
                 }, _this3.evaluationInterval);
               } else if (data['result'] === 'notEnoughTime') {
                 tokenValue = data['token'];
-                _this3.changePrompt(evaluatedPeople + '\uFF08' + evaluationContentContent + ' \u8DDD\u79BB\u4E0A\u4E00\u6B21\u63D0\u4EA4\u672A\u52302\u5206\u949F QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length + '\uFF0C\u5C06\u57282\u5206\u949F\u540E\u81EA\u52A8\u91CD\u65B0\u8BC4\u4EF7\u8FD9\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~');
+
+                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + " \u8DDD\u79BB\u4E0A\u4E00\u6B21\u63D0\u4EA4\u672A\u52302\u5206\u949F QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length + "\uFF0C\u5C06\u57282\u5206\u949F\u540E\u81EA\u52A8\u91CD\u65B0\u8BC4\u4EF7\u8FD9\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
+
                 setTimeout(function () {
                   _this3.evaluate(index);
                 }, _this3.evaluationInterval);
               } else {
                 window.urp.alert('保存失败');
-                _this3.changePrompt(evaluatedPeople + '\uFF08' + evaluationContentContent + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this3.list.length);
+
+                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length);
               }
             }
           });
@@ -3368,35 +3409,29 @@ var fastEvaluation = {
     });
   }
 };
-
 module.exports = fastEvaluation;
-},{"babel-runtime/helpers/slicedToArray":36,"babel-runtime/core-js/array/from":37}],6:[function(require,module,exports) {
-'use strict';
-
-// 提示信息插件
+},{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"IHPy":[function(require,module,exports) {
+'use strict'; // 提示信息插件
 
 var tooltip = {
   name: 'tooltip',
   pathname: '/**',
   $loginTooltip: undefined,
   $navTooltip: undefined,
-  version: '0.7.13',
+  version: '0.8.0',
   init: function init() {
     if (window.location.pathname === '/login') {
-      this.$loginTooltip = window.$('\n        <span class="sua-tooltip" style="\n          position: absolute;\n          font-size: 12px;\n          top: 10px;\n          right: 15px;\n          color: #909399;\n        ">\n          SCU URP \u52A9\u624B ' + this.version + '\n        </span>');
+      this.$loginTooltip = window.$("\n        <span class=\"sua-tooltip\" style=\"\n          position: absolute;\n          font-size: 12px;\n          top: 10px;\n          right: 15px;\n          color: #909399;\n        \">\n          SCU URP \u52A9\u624B " + this.version + '\n        </span>');
       window.$('#formContent').prepend(this.$loginTooltip);
     } else {
-      this.$navTooltip = window.$('\n        <li class="light-orange" style="text-align: center">\n            <a href="#"\n              onclick="javascript:window.open(\'https://zhaoji.wang/sichuan-university-urp-assistant/\');\n            ">\n              <i class="ace-icon fa fa-gavel"></i> SCU URP \u52A9\u624B ' + this.version + '\n            </a>\n        </li>');
+      this.$navTooltip = window.$("\n        <li class=\"light-orange\" style=\"text-align: center\">\n            <a href=\"#\"\n              onclick=\"javascript:window.open('https://zhaoji.wang/sichuan-university-urp-assistant/');\n            \">\n              <i class=\"ace-icon fa fa-gavel\"></i> SCU URP \u52A9\u624B " + this.version + '\n            </a>\n        </li>');
       window.$('#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul').prepend(this.$navTooltip);
     }
   }
 };
-
 module.exports = tooltip;
-},{}],7:[function(require,module,exports) {
-'use strict';
-
-// 删除手动评教的时间限制插件
+},{}],"5usv":[function(require,module,exports) {
+'use strict'; // 删除手动评教的时间限制插件
 
 var removeEvaluationTimeLimit = {
   name: 'remove-evaluation-time-limit',
@@ -3406,12 +3441,9 @@ var removeEvaluationTimeLimit = {
     window.flag = true;
   }
 };
-
 module.exports = removeEvaluationTimeLimit;
-},{}],8:[function(require,module,exports) {
-'use strict';
-
-// 修复兼容性插件(旧版教务系统)
+},{}],"BZ5J":[function(require,module,exports) {
+'use strict'; // 修复兼容性插件(旧版教务系统)
 
 var compatibilityLegacy = {
   init: function init() {
@@ -3420,10 +3452,13 @@ var compatibilityLegacy = {
     this.topFrame.changeLeftMenu = function () {
       if (_this.bottomFrame && _this.menuFrame && _this.menuFrame.menus) {
         _this.menuFrame.menus.index = _this.topFrame.moduleNum;
+
         _this.menuFrame.menus.show();
+
         _this.menuFrame.menus.click();
       }
     };
+
     this.topFrame.changeLeftMenu();
   },
   task: function task() {
@@ -3434,21 +3469,25 @@ var compatibilityLegacy = {
   showModalDialog: function showModalDialog(arg1, arg2, arg3) {
     var w = void 0;
     var h = void 0;
-    var resizable = 'no';
-    // 默认窗口需要可以滚动，不然课程表之类的都只能显示一半
+    var resizable = 'no'; // 默认窗口需要可以滚动，不然课程表之类的都只能显示一半
+
     var scroll = 'yes';
     var status = 'no';
     var mdattrs = arg3.split(';');
+
     for (var i = 0; i < mdattrs.length; i++) {
       var mdattr = mdattrs[i].split(':');
       var n = mdattr[0];
       var v = mdattr[1];
+
       if (n) {
         n = n.trim().toLowerCase();
       }
+
       if (v) {
         v = v.trim().toLowerCase();
       }
+
       if (n === 'dialogheight') {
         h = v.replace('px', '');
       } else if (n === 'dialogwidth') {
@@ -3461,15 +3500,15 @@ var compatibilityLegacy = {
         status = v;
       }
     }
+
     var left = window.screenX + window.outerWidth / 2 - w / 2;
     var top = window.screenY + window.outerHeight / 2 - h / 2;
     var targetWin = window.open(arg1, arg1, 'toolbar=no, location=no, directories=no, status=' + status + ', menubar=no, scrollbars=' + scroll + ', resizable=' + resizable + ', copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
     targetWin.focus();
   }
 };
-
 module.exports = compatibilityLegacy;
-},{}],9:[function(require,module,exports) {
+},{}],"wAV6":[function(require,module,exports) {
 'use strict';
 
 var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
@@ -3481,10 +3520,12 @@ var _from = require('babel-runtime/core-js/array/from');
 var _from2 = _interopRequireDefault(_from);
 
 function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+  return obj && obj.__esModule ? obj : {
+    default: obj
+  };
+} // 一键评教插件(旧版教务系统)
 
-// 一键评教插件(旧版教务系统)
+
 var fastEvaluationLegacy = {
   list: [],
   btn: void 0,
@@ -3527,11 +3568,13 @@ var fastEvaluationLegacy = {
     }).filter(function (item) {
       return item && item !== 'goto';
     });
+
     if (!names.length) {
       window.alert('本页上的所有教师都已经评教过了，您可以换一页再使用。');
       this.changePrompt('本页上的所有教师都已经评教过了，您可以换一页再使用。');
       return;
     }
+
     this.list = names.map(function (item) {
       return _this.parseName(item);
     });
@@ -3550,6 +3593,7 @@ var fastEvaluationLegacy = {
         pgnr = _data2[5];
 
     var oper = void 0;
+
     switch (wjmc) {
       case '研究生助教评价':
       case '学生评教（体育教学）':
@@ -3558,11 +3602,21 @@ var fastEvaluationLegacy = {
       case '学生评教（实验教学）':
         oper = 'wjShow';
         break;
+
       default:
         console.log('无效的问卷名称：' + wjmc);
         return;
     }
-    var result = { wjbm: wjbm, bpr: bpr, bprm: bprm, wjmc: wjmc, pgnrm: pgnrm, pgnr: pgnr, oper: oper };
+
+    var result = {
+      wjbm: wjbm,
+      bpr: bpr,
+      bprm: bprm,
+      wjmc: wjmc,
+      pgnrm: pgnrm,
+      pgnr: pgnr,
+      oper: oper
+    };
     return result;
   },
   getComment: function getComment() {
@@ -3576,28 +3630,36 @@ var fastEvaluationLegacy = {
     if (this.mainFrame.location.pathname.indexOf('jxpgXsAction') === -1) {
       return false;
     }
+
     var text = '';
+
     if (this.mainFrame.document.getElementsByTagName('body').length) {
       text = this.mainFrame.document.getElementsByTagName('body')[0].innerHTML;
     }
+
     if (text.indexOf('每页显示的记录数') !== -1) {
       return true;
     }
+
     return false;
   },
   evaluate: function evaluate(index) {
     var _this2 = this;
 
     var origin = window.location.origin;
+
     if (index >= this.list.length) {
       var page = '1';
+
       if (this.mainFrame.location.search.indexOf('page=') !== -1) {
         page = this.mainFrame.location.search.match(/page=(\d+)/)[1];
       }
-      this.changePrompt('\u7B2C' + page + '\u9875\u4E0A\u7684\u8001\u5E08\u5DF2\u7ECF\u5168\u90E8\u8BC4\u4EF7\u5B8C\u6BD5\uFF01\u6B63\u5728\u5237\u65B0\u2026\u2026');
+
+      this.changePrompt("\u7B2C" + page + "\u9875\u4E0A\u7684\u8001\u5E08\u5DF2\u7ECF\u5168\u90E8\u8BC4\u4EF7\u5B8C\u6BD5\uFF01\u6B63\u5728\u5237\u65B0\u2026\u2026");
       this.mainFrame.location.href = origin + '/jxpgXsAction.do?oper=listWj&page=' + page;
       return;
     }
+
     var item = this.list[index];
     var teacher = item.bpr;
     var teacherName = item.bprm;
@@ -3606,7 +3668,7 @@ var fastEvaluationLegacy = {
     var questionnaire = item.wjbm;
     var questionnaireName = item.wjmc;
     var oper = item.oper;
-    this.changePrompt('\u6B63\u5728\u8BC4\u4EF7' + subjectName + '\u8BFE\u7A0B\u7684' + teacherName + '\u8001\u5E08\uFF08' + (index + 1) + '/' + this.list.length + '\uFF09');
+    this.changePrompt("\u6B63\u5728\u8BC4\u4EF7" + subjectName + "\u8BFE\u7A0B\u7684" + teacherName + "\u8001\u5E08\uFF08" + (index + 1) + '/' + this.list.length + "\uFF09");
     window.$.ajax({
       type: 'POST',
       url: origin + '/jxpgXsAction.do',
@@ -3620,41 +3682,50 @@ var fastEvaluationLegacy = {
         });
       },
       error: function error(xhr) {
-        window.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
+        window.alert("\u9519\u8BEF\u4EE3\u7801[" + xhr.readyState + '-' + xhr.status + "]:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01");
       },
       success: function success() {
         var begin = void 0;
         var end = void 0;
+
         switch (questionnaireName) {
           case '研究生助教评价':
             begin = 28;
             end = 33;
             break;
+
           case '学生评教（课堂教学）':
             begin = 36;
             end = 42;
             break;
+
           case '学生评教（实验教学）':
             begin = 82;
             end = 88;
             break;
+
           case '学生评教（实践教学）':
             begin = 89;
             end = 95;
             break;
+
           case '学生评教（体育教学）':
             begin = 96;
             end = 102;
             break;
+
           default:
             console.log('无效的问卷名称：' + questionnaireName);
             return;
         }
+
         var bodyStr = 'wjbm=' + questionnaire + '&bpr=' + teacher + '&pgnr=' + subject;
+
         for (var i = begin; i <= end; i++) {
           var num = ('0000000000' + i).substr(-10);
           bodyStr += '&' + num + '=10_1';
         }
+
         bodyStr += '&zgpj=' + _this2.getComment();
         window.$.ajax({
           type: 'POST',
@@ -3662,15 +3733,17 @@ var fastEvaluationLegacy = {
           headers: _this2.headers,
           data: bodyStr,
           error: function error(xhr) {
-            window.urp.alert('\u9519\u8BEF\u4EE3\u7801[' + xhr.readyState + '-' + xhr.status + ']:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01');
-            _this2.changePrompt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
+            window.urp.alert("\u9519\u8BEF\u4EE3\u7801[" + xhr.readyState + '-' + xhr.status + "]:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01");
+
+            _this2.changePrompt(teacherName + "\uFF08" + subjectName + "\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this2.list.length);
           },
           success: function success(res) {
             if (res.indexOf('location.href=') !== -1) {
-              _this2.changePrompt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
+              _this2.changePrompt(teacherName + "\uFF08" + subjectName + "\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this2.list.length);
             } else if (res.indexOf('history.back(-1);') !== -1) {
-              _this2.changePrompt(teacherName + '\uFF08' + subjectName + '\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A' + (index + 1) + '/' + _this2.list.length);
+              _this2.changePrompt(teacherName + "\uFF08" + subjectName + "\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this2.list.length);
             }
+
             setTimeout(function () {
               _this2.evaluate(++index);
             }, _this2.evaluationInterval);
@@ -3680,25 +3753,127 @@ var fastEvaluationLegacy = {
     });
   }
 };
-
 module.exports = fastEvaluationLegacy;
-},{"babel-runtime/helpers/slicedToArray":36,"babel-runtime/core-js/array/from":37}],10:[function(require,module,exports) {
-'use strict';
-
-// 恢复登录页面的「两周之内不必登录」选项插件
+},{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"Gbn9":[function(require,module,exports) {
+'use strict'; // 恢复登录页面的「两周之内不必登录」选项插件
 
 var recoverRememberMe = {
   name: 'recover-remember-me',
   pathname: '/login',
   $rememberMe: void 0,
   init: function init() {
-    this.$rememberMe = window.$('\n      <div style="margin: 5px 0;">\n        <input\n          type="checkbox"\n          name="_spring_security_remember_me"\n          class="fadeIn third"\n          style="margin-bottom: 5px;text-align: left;"\n        >\n        &nbsp;\u4E24\u5468\u4E4B\u5185\u4E0D\u5FC5\u767B\u5F55\n      </div>');
+    this.$rememberMe = window.$("\n      <div style=\"margin: 5px 0;\">\n        <input\n          type=\"checkbox\"\n          name=\"_spring_security_remember_me\"\n          class=\"fadeIn third\"\n          style=\"margin-bottom: 5px;text-align: left;\"\n        >\n        &nbsp;\u4E24\u5468\u4E4B\u5185\u4E0D\u5FC5\u767B\u5F55\n      </div>");
     window.$('#loginButton').before(this.$rememberMe);
   }
 };
-
 module.exports = recoverRememberMe;
-},{}],3:[function(require,module,exports) {
+},{}],"Fqjc":[function(require,module,exports) {
+'use strict'; // 绩点计算插件
+
+var gpa = {
+  name: 'gpa',
+  pathname: '/',
+  templates: {
+    indexWidget: "\n      <div class=\"col-sm-12 widget-container-col\">\n        <div class=\"widget-box\">\n          <div class=\"widget-header\">\n            <h5 class=\"widget-title\">\n              \u6211\u7684\u6210\u7EE9\n              <span class=\"badge badge-primary\" style=\"padding-top:3px;position:relative;top:-3px;\">SCU URP \u52A9\u624B</span>\n            </h5>\n          </div>\n          <div class=\"widget-body\">\n            <div class=\"widget-main\">\n              <div class=\"row\"></div>\n            </div>\n          </div>\n        </div>\n      </div>\n    "
+  },
+  init: function init() {
+    var $indexWidget = window.$(this.templates.indexWidget);
+    window.$('.page-content').children('.row').append($indexWidget);
+    var $indexWidgetMain = $indexWidget.find('.widget-main');
+    var $indexWidgetMainRow = $indexWidget.find('.widget-main .row');
+
+    var getWeightedAverage = function getWeightedAverage(arr) {
+      return arr.reduce(function (acc, cur) {
+        return [acc[0] + cur.value * cur.weight, acc[1] + cur.weight];
+      }, [0, 0]).reduce(function (valueSum, weightSum) {
+        return valueSum / weightSum;
+      });
+    };
+
+    var getCompulsoryCourse = function getCompulsoryCourse(arr) {
+      return arr.filter(function (v) {
+        return v.attribute === '必修';
+      });
+    };
+
+    var mapGPA = function mapGPA(arr) {
+      return arr.map(function (v) {
+        return {
+          value: v.gpa,
+          weight: v.credit
+        };
+      });
+    };
+
+    var mapScore = function mapScore(arr) {
+      return arr.map(function (v) {
+        return {
+          value: v.score,
+          weight: v.credit
+        };
+      });
+    };
+
+    var reserveDigits = function reserveDigits(num) {
+      var fractionDigits = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
+      return Number(num.toFixed(fractionDigits));
+    };
+
+    var getCompulsoryCoursesGPA = function getCompulsoryCoursesGPA(arr) {
+      return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))));
+    };
+
+    var getCompulsoryCoursesScore = function getCompulsoryCoursesScore(arr) {
+      return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))));
+    };
+
+    var getAllCoursesGPA = function getAllCoursesGPA(arr) {
+      return reserveDigits(getWeightedAverage(mapGPA(arr)));
+    };
+
+    var getAllCoursesScore = function getAllCoursesScore(arr) {
+      return reserveDigits(getWeightedAverage(mapScore(arr)));
+    };
+
+    window.$.get('http://zhjw.scu.edu.cn/student/integratedQuery/scoreQuery/allPassingScores/callback').then(function (_ref) {
+      var lnList = _ref.lnList;
+      var allCourses = lnList.map(function (v) {
+        return {
+          semester: v.cjbh.replace('秋(两学期)', ' 秋季学期').replace('春(两学期)', ' 春季学期'),
+          courses: v.cjList.map(function (v) {
+            return {
+              name: v.courseName,
+              score: v.courseScore,
+              gpa: v.gradePointScore,
+              credit: Number(v.credit),
+              attribute: v.courseAttributeName
+            };
+          })
+        };
+      }).reverse().filter(function (item) {
+        var semester = item.semester,
+            courses = item.courses;
+        var header = '\n            <h4 class="header smaller lighter grey">\n              <i class="menu-icon fa fa-calendar"></i> ' + semester + '\n            </h4>\n          ';
+        var labels = "\n            <p>\n              <span class=\"label label-success\">\n                \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + getCompulsoryCoursesScore(courses) + "\n              </span>\n              <span class=\"label label-success\">\n                \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + getCompulsoryCoursesGPA(courses) + "\n              </span>\n              <span class=\"label label-purple\">\n                \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + getAllCoursesScore(courses) + "\n              </span>\n              <span class=\"label label-purple\">\n                \u5168\u90E8\u7EE9\u70B9\uFF1A" + getAllCoursesGPA(courses) + '\n              </span>\n            </p>\n          ';
+        var content = "\n            <table class=\"table table-striped table-bordered table-hover\">\n              <thead>\n                <tr>\n                  <th>\u8BFE\u7A0B\u540D</th>\n                  <th>\u5206\u6570</th>\n                  <th>\u7EE9\u70B9</th>\n                  <th>\u5B66\u5206</th>\n                  <th>\u5C5E\u6027</th>\n                </tr>\n              </thead>\n              <tbody>\n              " + courses.map(function (v) {
+          return '\n                <tr>\n                  <td>' + v.name + '</td>\n                  <td>' + v.score + '</td>\n                  <td>' + v.gpa + '</td>\n                  <td>' + v.credit + '</td>\n                  <td>' + v.attribute + '</td>\n                </tr>\n              ';
+        }).join('') + '\n              </tbody>\n            </table>\n          ';
+        $indexWidgetMainRow.append('<div class="col-sm-6">' + (header + labels + content) + '</div>');
+        return true;
+      }).reduce(function (acc, cur) {
+        return acc.concat(cur.courses);
+      }, []);
+      var compulsoryCoursesGPA = getCompulsoryCoursesScore(allCourses);
+      var compulsoryCoursesScore = getCompulsoryCoursesGPA(allCourses);
+      var allCoursesGPA = getAllCoursesGPA(allCourses);
+      var allCoursesScore = getAllCoursesScore(allCourses);
+      var labels = "\n          <div class=\"row\" style=\"margin-bottom: 20px;\">\n            <div class=\"col-sm-12\">\n              <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n                <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n              </h4>\n              <span class=\"label label-success\">\n                \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n              </span>\n              <span class=\"label label-success\">\n                \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n              </span>\n              <span class=\"label label-purple\">\n                \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n              </span>\n              <span class=\"label label-purple\">\n                \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n              </span>\n            </div>\n          </div>\n        ';
+      $indexWidgetMain.prepend(labels);
+    });
+  }
+};
+module.exports = gpa;
+},{}],"287w":[function(require,module,exports) {
 'use strict';
 
 var _values = require('babel-runtime/core-js/object/values');
@@ -3718,18 +3893,28 @@ var _assign = require('babel-runtime/core-js/object/assign');
 var _assign2 = _interopRequireDefault(_assign);
 
 function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
+  return obj && obj.__esModule ? obj : {
+    default: obj
+  };
 }
 
 var minimatch = require('minimatch');
+
 var fastEvaluation = require('./plugins/fast-evaluation');
+
 var tooltip = require('./plugins/tooltip');
+
 var removeEvaluationTimeLimit = require('./plugins/remove-evaluation-time-limit');
+
 var compatibilityLegacy = require('./plugins/compatibility-legacy');
+
 var fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy');
+
 var recoverRememberMe = require('./plugins/recover-remember-me');
 
-// 挂载到 window 上的全局对象
+var gpa = require('./plugins/gpa'); // 挂载到 window 上的全局对象
+
+
 var $sua = {
   // 属性值的存放处
   data: {
@@ -3738,38 +3923,41 @@ var $sua = {
      */
     taskTimeInterval: 100
   },
+
   /**
    * 插件
    */
-  plugins: [tooltip, fastEvaluation, removeEvaluationTimeLimit, recoverRememberMe],
+  plugins: [tooltip, fastEvaluation, removeEvaluationTimeLimit, recoverRememberMe, gpa],
+
   /**
    * 初始化任务的队列
    */
   initQueue: [],
+
   /**
    * 定时执行的任务的队列
    */
   taskQueue: [],
+
   /**
    * 初始化 SCU URP 助手
    */
   init: function init() {
-    var _this = this;
+    var _this = this; // 旧版教务系统兼容
 
-    // 旧版教务系统兼容
+
     if (window.location.host === 'zhjwwx.scu.edu.cn:8080') {
       if (window.location.pathname !== '/loginAction.do') {
         return;
       }
+
       var dataLegacy = {
         topFrame: window.frames.topFrame,
         bottomFrame: window.frames.bottomFrame,
         menuFrame: window.frames.bottomFrame.frames.menuFrame,
         mainFrame: window.frames.bottomFrame.frames.mainFrame
       };
-
       var pluginsLegacy = [compatibilityLegacy, fastEvaluationLegacy];
-
       window.$sua = (0, _assign2.default)($sua, dataLegacy);
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -3778,12 +3966,13 @@ var $sua = {
       try {
         for (var _iterator = (0, _getIterator3.default)(pluginsLegacy), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var plugin = _step.value;
-
           plugin.$sua = $sua;
           plugin = (0, _assign2.default)(plugin, dataLegacy);
+
           if (plugin.init) {
             this.initQueue.push(plugin.init.bind(plugin));
           }
+
           if (plugin.task) {
             this.taskQueue.push(plugin.task.bind(plugin));
           }
@@ -3810,7 +3999,6 @@ var $sua = {
       try {
         for (var _iterator2 = (0, _getIterator3.default)(this.initQueue), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
           var i = _step2.value;
-
           i();
         }
       } catch (err) {
@@ -3836,7 +4024,6 @@ var $sua = {
         try {
           for (var _iterator3 = (0, _getIterator3.default)(_this.taskQueue), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
             var t = _step3.value;
-
             t();
           }
         } catch (err) {
@@ -3854,13 +4041,12 @@ var $sua = {
           }
         }
       }, this.timeInterval);
-
       return;
-    }
+    } // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
 
-    // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
-    window.$sua = (0, _assign2.default)($sua, $sua.data);
-    // 加载插件
+
+    window.$sua = (0, _assign2.default)($sua, $sua.data); // 加载插件
+
     var _iteratorNormalCompletion4 = true;
     var _didIteratorError4 = false;
     var _iteratorError4 = undefined;
@@ -3868,22 +4054,23 @@ var $sua = {
     try {
       for (var _iterator4 = (0, _getIterator3.default)(this.plugins), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
         var _plugin = _step4.value;
+        _plugin.$sua = $sua; // 将data中的属性注入plugin对象中，使其内部可以用this直接访问
 
-        _plugin.$sua = $sua;
-        // 将data中的属性注入plugin对象中，使其内部可以用this直接访问
         _plugin = (0, _assign2.default)(_plugin, $sua.data);
+
         if (urlTrigger(_plugin)) {
           // 将初始化方法推入队列中
           if (_plugin.init) {
             this.initQueue.push(_plugin.init.bind(_plugin));
-          }
-          // 将需要定时执行的任务推入队列中
+          } // 将需要定时执行的任务推入队列中
+
+
           if (_plugin.task) {
             this.taskQueue.push(_plugin.task.bind(_plugin));
           }
         }
-      }
-      // 初始化方法
+      } // 初始化方法
+
     } catch (err) {
       _didIteratorError4 = true;
       _iteratorError4 = err;
@@ -3908,8 +4095,8 @@ var $sua = {
         var _i = _step5.value;
 
         _i();
-      }
-      // 定时任务
+      } // 定时任务
+
     } catch (err) {
       _didIteratorError5 = true;
       _iteratorError5 = err;
@@ -3933,7 +4120,6 @@ var $sua = {
       try {
         for (var _iterator6 = (0, _getIterator3.default)(_this.taskQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
           var t = _step6.value;
-
           t();
         }
       } catch (err) {
@@ -3951,7 +4137,6 @@ var $sua = {
         }
       }
     }, this.taskTimeInterval);
-
     /**
      * 检测当前的location.pathname是否满足插件触发要求
      *
@@ -3959,9 +4144,9 @@ var $sua = {
      * 如果 pathname 属性不存在，则默认对全体 url 均生效
      * @returns 检测的结果
      */
+
     function urlTrigger(plugin) {
-      var pathname = plugin.pathname;
-      // 如果pathname不存在，默认对全部url生效
+      var pathname = plugin.pathname; // 如果pathname不存在，默认对全部url生效
 
       if (!pathname) {
         return true;
@@ -4030,20 +4215,18 @@ var $sua = {
       } else if (typeof pathname === 'function') {
         return pathname.bind(plugin)();
       }
+
       return false;
     }
   }
 };
-
 module.exports = $sua;
-},{"babel-runtime/core-js/object/values":20,"babel-runtime/helpers/typeof":18,"babel-runtime/core-js/get-iterator":19,"babel-runtime/core-js/object/assign":21,"minimatch":17,"./plugins/fast-evaluation":5,"./plugins/tooltip":6,"./plugins/remove-evaluation-time-limit":7,"./plugins/compatibility-legacy":8,"./plugins/fast-evaluation-legacy":9,"./plugins/recover-remember-me":10}],1:[function(require,module,exports) {
-'use strict';
-
-// ==UserScript==
+},{"babel-runtime/core-js/object/values":"Qujq","babel-runtime/helpers/typeof":"GyB/","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/core-js/object/assign":"gc0D","minimatch":"Nt/K","./plugins/fast-evaluation":"eunL","./plugins/tooltip":"IHPy","./plugins/remove-evaluation-time-limit":"5usv","./plugins/compatibility-legacy":"BZ5J","./plugins/fast-evaluation-legacy":"wAV6","./plugins/recover-remember-me":"Gbn9","./plugins/gpa":"Fqjc"}],"9TYs":[function(require,module,exports) {
+'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.7.13
-// @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项
+// @version      0.8.0
+// @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
 // @include      http://zhjw.scu.edu.cn/*
@@ -4059,12 +4242,14 @@ var sua = require('./sua-core');
     var src = 'https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js';
     var script = document.createElement('script');
     script.setAttribute('type', 'text/javascript');
+
     script.onload = function () {
       // 必须等页面加载完之后再初始化，否则此时页面结构还没加载出来，document里面内容不全
       window.$(function () {
         sua.init();
       });
     };
+
     script.setAttribute('src', src);
     HEAD.appendChild(script);
   } else {
@@ -4074,4 +4259,4 @@ var sua = require('./sua-core');
     });
   }
 })();
-},{"./sua-core":3}]},{},[1], null)
+},{"./sua-core":"287w"}]},{},["9TYs"], null)

@@ -1,6 +1,6 @@
 {
   "name": "scu-urp-assistant",
-  "version": "0.7.13",
+  "version": "0.8.0",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -21,8 +21,10 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
+    "cz-conventional-changelog": "^2.1.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.14.0",
@@ -34,5 +36,10 @@
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "minimatch": "^3.0.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
