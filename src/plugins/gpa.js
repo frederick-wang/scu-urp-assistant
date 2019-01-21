@@ -48,6 +48,7 @@ const gpa = {
 
     window.$.get('http://zhjw.scu.edu.cn/student/integratedQuery/scoreQuery/allPassingScores/callback')
       .then(({ lnList }) => {
+        // 这里的实现不优雅……原生方法在这里无法实现直接把处理后的数组本身作为参数……只能加了一个中间变量
         let allCourses = lnList
           .map(v => ({
             semester: v.cjbh.replace('秋(两学期)', ' 秋季学期').replace('春(两学期)', ' 春季学期'),
