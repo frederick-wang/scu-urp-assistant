@@ -112,8 +112,8 @@ const gpa = {
             return true
           })
           .reduce((acc, cur) => acc.concat(cur.courses), [])
-        const compulsoryCoursesGPA = getCompulsoryCoursesScore(allCourses)
-        const compulsoryCoursesScore = getCompulsoryCoursesGPA(allCourses)
+        const compulsoryCoursesGPA = getCompulsoryCoursesGPA(allCourses)
+        const compulsoryCoursesScore = getCompulsoryCoursesScore(allCourses)
         const allCoursesGPA = getAllCoursesGPA(allCourses)
         const allCoursesScore = getAllCoursesScore(allCourses)
         const labels = `

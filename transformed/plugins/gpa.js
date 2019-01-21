@@ -84,8 +84,8 @@ var gpa = {
       }).reduce(function (acc, cur) {
         return acc.concat(cur.courses);
       }, []);
-      var compulsoryCoursesGPA = getCompulsoryCoursesScore(allCourses);
-      var compulsoryCoursesScore = getCompulsoryCoursesGPA(allCourses);
+      var compulsoryCoursesGPA = getCompulsoryCoursesGPA(allCourses);
+      var compulsoryCoursesScore = getCompulsoryCoursesScore(allCourses);
       var allCoursesGPA = getAllCoursesGPA(allCourses);
       var allCoursesScore = getAllCoursesScore(allCourses);
       var labels = '\n          <div class="row" style="margin-bottom: 20px;">\n            <div class="col-sm-12">\n              <h4 class="header smaller lighter grey" style="margin-top: 0;">\n                <i class="menu-icon fa fa-calendar"></i> \u5168\u90E8\u6210\u7EE9\n              </h4>\n              <span class="label label-success">\n                \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A' + compulsoryCoursesScore + '\n              </span>\n              <span class="label label-success">\n                \u5FC5\u4FEE\u7EE9\u70B9\uFF1A' + compulsoryCoursesGPA + '\n              </span>\n              <span class="label label-purple">\n                \u5168\u90E8\u5E73\u5747\u5206\uFF1A' + allCoursesScore + '\n              </span>\n              <span class="label label-purple">\n                \u5168\u90E8\u7EE9\u70B9\uFF1A' + allCoursesGPA + '\n              </span>\n            </div>\n          </div>\n        ';
