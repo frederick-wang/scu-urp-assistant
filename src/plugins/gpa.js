@@ -14,6 +14,16 @@ const gpa = {
               我的成绩
               <span class="badge badge-primary" style="padding-top:3px;position:relative;top:-3px;">SCU URP 助手</span>
             </h5>
+            <div class="widget-toolbar">
+              <div class="widget-menu">
+                  <a id="gpa-toolbar-detail" data-action="settings" data-toggle="dropdown">
+                      <i class="ace-icon fa fa-bars"></i>
+                  </a>
+                  <a id="gpa-toolbar-reset" data-action="reload"">
+                      <i class="ace-icon fa fa-refresh"></i>
+                  </a>
+              </div>
+            </div>
           </div>
           <div class="widget-body">
             <div class="widget-main">
@@ -24,10 +34,12 @@ const gpa = {
       </div>
     `
   },
-  $indexWidget: void 0,
-  $indexWidgetMain: void 0,
-  indexWidgetMainRow: void 0,
-  historicalList: void 0,
+  $indexWidget: null,
+  $indexWidgetMain: null,
+  $indexWidgetMainRow: null,
+  $toolbarDetail: null,
+  $toolbarReset: null,
+  historicalList: null,
   init () {
     this.initDOM()
     window.$.get('/student/integratedQuery/scoreQuery/allPassingScores/callback')
@@ -36,13 +48,30 @@ const gpa = {
         this.historicalList = convertHistoricalList(lnList)
         this.renderSemesterTranscript()
         this.renderTotalTranscript()
-
-        const that = this
-        window.$('.gpa-st-item').click(function () {
-          that.toggleTranscriptItemStatus(this)
-          that.renderTagSelected()
-        })
+        this.initEvent()
       })
+  },
+  initDOM () {
+    this.$indexWidget = window.$(this.templates.indexWidget)
+    window.$('.page-content').children('.row').append(this.$indexWidget)
+    this.$indexWidgetMain = this.$indexWidget.find('.widget-main')
+    this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row')
+    this.$toolbarDetail = window.$('#gpa-toolbar-detail')
+    this.$toolbarReset = window.$('#gpa-toolbar-reset')
+  },
+  initEvent () {
+    const that = this
+    window.$('.gpa-st-item').click(function () {
+      that.toggleTranscriptItemStatus(this)
+      that.renderTagSelected()
+    })
+    this.$toolbarDetail.click(() => {
+      window.toSelect(document.getElementById('1379870'))
+      window.location = '/student/integratedQuery/scoreQuery/allPassingScores/index'
+    })
+    this.$toolbarReset.click(() => {
+      this.reset()
+    })
   },
   renderTagSelected () {
     this.historicalList
@@ -98,12 +127,6 @@ const gpa = {
         v.credit === credit
       )[0]
       .selected = status
-  },
-  initDOM () {
-    this.$indexWidget = window.$(this.templates.indexWidget)
-    window.$('.page-content').children('.row').append(this.$indexWidget)
-    this.$indexWidgetMain = this.$indexWidget.find('.widget-main')
-    this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row')
   },
   renderTotalTranscript () {
     const allCourses = this.historicalList.reduce((acc, cur) => acc.concat(cur.courses), [])
@@ -215,6 +238,25 @@ const gpa = {
       `
       this.$indexWidgetMainRow.append(`<div class="gpa-st col-sm-6">${header + labels + content}</div>`)
     })
+  },
+  destroy () {
+    this.$indexWidgetMainRow.remove()
+    this.$indexWidgetMain.remove()
+    this.$toolbarDetail.remove()
+    this.$toolbarReset.remove()
+    this.$indexWidget.remove()
+
+    this.$indexWidget = null
+    this.$toolbarReset = null
+    this.$toolbarDetail = null
+    this.$indexWidgetMain = null
+    this.$indexWidgetMainRow = null
+
+    this.historicalList = null
+  },
+  reset () {
+    this.destroy()
+    this.init()
   }
 }
 

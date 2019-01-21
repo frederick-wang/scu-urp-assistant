@@ -35,3 +35,7 @@
 .gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {
   display: none;
 }
+
+#gpa-toolbar-detail, #gpa-toolbar-reset {
+  cursor: pointer;
+}

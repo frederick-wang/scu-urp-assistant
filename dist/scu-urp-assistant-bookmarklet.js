@@ -3830,14 +3830,16 @@ var fs = require('fs');
 var gpa = {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
-  style: "/* gpa -> namespace */\r\n\r\n/* st -> semester-transcript */\r\n\r\n/* tt -> total-transcript */\r\n\r\n.gpa-st-item {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-item>td {\r\n  transition: .1s;\r\n}\r\n\r\n.gpa-st-item.selected>td {\r\n  font-weight: bolder;\r\n  color: #409eff;\r\n  background-color: #ecf5ff !important;\r\n  /* border-color: #b3d8ff; */\r\n}\r\n\r\n.gpa-st-item.selected:hover>td {\r\n  background-color: #409eff !important;\r\n  color: #fff;\r\n  /* border-color: #409eff; */\r\n}\r\n\r\n.gpa-st-item.selected:active>td {\r\n  background-color: #3a8ee6 !important;\r\n  color: #fff;\r\n  outline: none;\r\n  /* border-color: #3a8ee6; */\r\n}\r\n\r\n.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {\r\n  display: none;\r\n}\r\n",
+  style: "/* gpa -> namespace */\r\n\r\n/* st -> semester-transcript */\r\n\r\n/* tt -> total-transcript */\r\n\r\n.gpa-st-item {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-item>td {\r\n  transition: .1s;\r\n}\r\n\r\n.gpa-st-item.selected>td {\r\n  font-weight: bolder;\r\n  color: #409eff;\r\n  background-color: #ecf5ff !important;\r\n  /* border-color: #b3d8ff; */\r\n}\r\n\r\n.gpa-st-item.selected:hover>td {\r\n  background-color: #409eff !important;\r\n  color: #fff;\r\n  /* border-color: #409eff; */\r\n}\r\n\r\n.gpa-st-item.selected:active>td {\r\n  background-color: #3a8ee6 !important;\r\n  color: #fff;\r\n  outline: none;\r\n  /* border-color: #3a8ee6; */\r\n}\r\n\r\n.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {\r\n  display: none;\r\n}\r\n\r\n#gpa-toolbar-detail, #gpa-toolbar-reset {\r\n  cursor: pointer;\r\n}\r\n",
   templates: {
-    indexWidget: "\n      <div class=\"col-sm-12 widget-container-col\">\n        <div class=\"widget-box\">\n          <div class=\"widget-header\">\n            <h5 class=\"widget-title\">\n              \u6211\u7684\u6210\u7EE9\n              <span class=\"badge badge-primary\" style=\"padding-top:3px;position:relative;top:-3px;\">SCU URP \u52A9\u624B</span>\n            </h5>\n          </div>\n          <div class=\"widget-body\">\n            <div class=\"widget-main\">\n              <div class=\"row\"></div>\n            </div>\n          </div>\n        </div>\n      </div>\n    "
+    indexWidget: "\n      <div class=\"col-sm-12 widget-container-col\">\n        <div class=\"widget-box\">\n          <div class=\"widget-header\">\n            <h5 class=\"widget-title\">\n              \u6211\u7684\u6210\u7EE9\n              <span class=\"badge badge-primary\" style=\"padding-top:3px;position:relative;top:-3px;\">SCU URP \u52A9\u624B</span>\n            </h5>\n            <div class=\"widget-toolbar\">\n              <div class=\"widget-menu\">\n                  <a id=\"gpa-toolbar-detail\" data-action=\"settings\" data-toggle=\"dropdown\">\n                      <i class=\"ace-icon fa fa-bars\"></i>\n                  </a>\n                  <a id=\"gpa-toolbar-reset\" data-action=\"reload\"\">\n                      <i class=\"ace-icon fa fa-refresh\"></i>\n                  </a>\n              </div>\n            </div>\n          </div>\n          <div class=\"widget-body\">\n            <div class=\"widget-main\">\n              <div class=\"row\"></div>\n            </div>\n          </div>\n        </div>\n      </div>\n    "
   },
-  $indexWidget: void 0,
-  $indexWidgetMain: void 0,
-  indexWidgetMainRow: void 0,
-  historicalList: void 0,
+  $indexWidget: null,
+  $indexWidgetMain: null,
+  $indexWidgetMainRow: null,
+  $toolbarDetail: null,
+  $toolbarReset: null,
+  historicalList: null,
   init: function init() {
     var _this = this;
 
@@ -3851,11 +3853,31 @@ var gpa = {
 
       _this.renderTotalTranscript();
 
-      var that = _this;
-      window.$('.gpa-st-item').click(function () {
-        that.toggleTranscriptItemStatus(this);
-        that.renderTagSelected();
-      });
+      _this.initEvent();
+    });
+  },
+  initDOM: function initDOM() {
+    this.$indexWidget = window.$(this.templates.indexWidget);
+    window.$('.page-content').children('.row').append(this.$indexWidget);
+    this.$indexWidgetMain = this.$indexWidget.find('.widget-main');
+    this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row');
+    this.$toolbarDetail = window.$('#gpa-toolbar-detail');
+    this.$toolbarReset = window.$('#gpa-toolbar-reset');
+  },
+  initEvent: function initEvent() {
+    var _this2 = this;
+
+    var that = this;
+    window.$('.gpa-st-item').click(function () {
+      that.toggleTranscriptItemStatus(this);
+      that.renderTagSelected();
+    });
+    this.$toolbarDetail.click(function () {
+      window.toSelect(document.getElementById('1379870'));
+      window.location = '/student/integratedQuery/scoreQuery/allPassingScores/index';
+    });
+    this.$toolbarReset.click(function () {
+      _this2.reset();
     });
   },
   renderTagSelected: function renderTagSelected() {
@@ -3916,12 +3938,6 @@ var gpa = {
       return v.name === name && v.attribute === attribute && v.score === score && v.gpa === gpa && v.credit === credit;
     })[0].selected = status;
   },
-  initDOM: function initDOM() {
-    this.$indexWidget = window.$(this.templates.indexWidget);
-    window.$('.page-content').children('.row').append(this.$indexWidget);
-    this.$indexWidgetMain = this.$indexWidget.find('.widget-main');
-    this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row');
-  },
   renderTotalTranscript: function renderTotalTranscript() {
     var allCourses = this.historicalList.reduce(function (acc, cur) {
       return acc.concat(cur.courses);
@@ -3937,7 +3953,7 @@ var gpa = {
     this.$indexWidgetMain.prepend(labels);
   },
   renderSemesterTranscript: function renderSemesterTranscript() {
-    var _this2 = this;
+    var _this3 = this;
 
     this.historicalList.forEach(function (item) {
       var semester = item.semester,
@@ -3955,8 +3971,25 @@ var gpa = {
         return '\n            <tr\n              class="gpa-st-item"\n              data-semester="' + semester + '"\n              data-name="' + v.name + '"\n              data-score="' + v.score + '"\n              data-gpa="' + v.gpa + '"\n              data-credit="' + v.credit + '"\n              data-attribute="' + v.attribute + '"\n            >\n              <td>' + v.name + '</td>\n              <td>' + v.score + '</td>\n              <td>' + v.gpa + '</td>\n              <td>' + v.credit + '</td>\n              <td>' + v.attribute + '</td>\n            </tr>\n          ';
       }).join('') + '\n          </tbody>\n        </table>\n      ';
 
-      _this2.$indexWidgetMainRow.append('<div class="gpa-st col-sm-6">' + (header + labels + content) + '</div>');
+      _this3.$indexWidgetMainRow.append('<div class="gpa-st col-sm-6">' + (header + labels + content) + '</div>');
     });
+  },
+  destroy: function destroy() {
+    this.$indexWidgetMainRow.remove();
+    this.$indexWidgetMain.remove();
+    this.$toolbarDetail.remove();
+    this.$toolbarReset.remove();
+    this.$indexWidget.remove();
+    this.$indexWidget = null;
+    this.$toolbarReset = null;
+    this.$toolbarDetail = null;
+    this.$indexWidgetMain = null;
+    this.$indexWidgetMainRow = null;
+    this.historicalList = null;
+  },
+  reset: function reset() {
+    this.destroy();
+    this.init();
   }
 };
 
