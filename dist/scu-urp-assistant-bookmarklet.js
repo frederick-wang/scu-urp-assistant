@@ -3410,7 +3410,50 @@ var fastEvaluation = {
   }
 };
 module.exports = fastEvaluation;
-},{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"IHPy":[function(require,module,exports) {
+},{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
+module.exports = {
+  "name": "scu-urp-assistant",
+  "version": "0.8.4",
+  "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
+  "main": "main.js",
+  "scripts": {
+    "start": "npm run transform && npm run userscript && npm run bookmarklet",
+    "transform": "babel --plugins transform-runtime src --out-dir transformed",
+    "userscript": "parcel build transformed/scu-urp-assistant.user.js --no-minify --no-source-maps",
+    "bookmarklet": "parcel build transformed/scu-urp-assistant-bookmarklet.js --no-minify --no-source-maps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitee.com:zhaoji/scu-urp-assistant.git"
+  },
+  "keywords": ["SCU", "四川大学"],
+  "author": "Zhaoji Wang",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "cz-conventional-changelog": "^2.1.0",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-runtime": "^6.26.0",
+    "minimatch": "^3.0.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+};
+},{}],"IHPy":[function(require,module,exports) {
 'use strict'; // 提示信息插件
 
 var tooltip = {
@@ -3418,7 +3461,7 @@ var tooltip = {
   pathname: '/**',
   $loginTooltip: undefined,
   $navTooltip: undefined,
-  version: '0.8.3',
+  version: require('../../package.json').version,
   init: function init() {
     if (window.location.pathname === '/login') {
       this.$loginTooltip = window.$("\n        <span class=\"sua-tooltip\" style=\"\n          position: absolute;\n          font-size: 12px;\n          top: 10px;\n          right: 15px;\n          color: #909399;\n        \">\n          SCU URP \u52A9\u624B " + this.version + '\n        </span>');
@@ -3430,7 +3473,7 @@ var tooltip = {
   }
 };
 module.exports = tooltip;
-},{}],"5usv":[function(require,module,exports) {
+},{"../../package.json":"EHrm"}],"5usv":[function(require,module,exports) {
 'use strict'; // 删除手动评教的时间限制插件
 
 var removeEvaluationTimeLimit = {
@@ -3776,103 +3819,146 @@ var gpa = {
   templates: {
     indexWidget: "\n      <div class=\"col-sm-12 widget-container-col\">\n        <div class=\"widget-box\">\n          <div class=\"widget-header\">\n            <h5 class=\"widget-title\">\n              \u6211\u7684\u6210\u7EE9\n              <span class=\"badge badge-primary\" style=\"padding-top:3px;position:relative;top:-3px;\">SCU URP \u52A9\u624B</span>\n            </h5>\n          </div>\n          <div class=\"widget-body\">\n            <div class=\"widget-main\">\n              <div class=\"row\"></div>\n            </div>\n          </div>\n        </div>\n      </div>\n    "
   },
+  $indexWidget: void 0,
+  $indexWidgetMain: void 0,
+  indexWidgetMainRow: void 0,
   init: function init() {
-    var $indexWidget = window.$(this.templates.indexWidget);
-    window.$('.page-content').children('.row').append($indexWidget);
-    var $indexWidgetMain = $indexWidget.find('.widget-main');
-    var $indexWidgetMainRow = $indexWidget.find('.widget-main .row');
+    var _this = this;
 
-    var getWeightedAverage = function getWeightedAverage(arr) {
-      return arr.reduce(function (acc, cur) {
-        return [acc[0] + cur.value * cur.weight, acc[1] + cur.weight];
-      }, [0, 0]).reduce(function (valueSum, weightSum) {
-        return valueSum / weightSum;
-      });
-    };
+    this.initDOM();
+    window.$.get('/student/integratedQuery/scoreQuery/allPassingScores/callback').then(function (_ref) {
+      var lnList = _ref.lnList; // lnList -> 历年数据
 
-    var getCompulsoryCourse = function getCompulsoryCourse(arr) {
-      return arr.filter(function (v) {
-        return v.attribute === '必修';
-      });
-    };
+      var data = convertHistoricalList(lnList);
 
-    var mapGPA = function mapGPA(arr) {
-      return arr.map(function (v) {
-        return {
-          value: v.gpa,
-          weight: v.credit
-        };
-      });
-    };
+      _this.renderSemesterTranscript(data);
 
-    var mapScore = function mapScore(arr) {
-      return arr.map(function (v) {
-        return {
-          value: v.score,
-          weight: v.credit
-        };
-      });
-    };
+      _this.renderTotalTranscript(data);
+    });
+  },
+  initDOM: function initDOM() {
+    this.$indexWidget = window.$(this.templates.indexWidget);
+    window.$('.page-content').children('.row').append(this.$indexWidget);
+    this.$indexWidgetMain = this.$indexWidget.find('.widget-main');
+    this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row');
+  },
+  renderTotalTranscript: function renderTotalTranscript(data) {
+    var allCourses = data.reduce(function (acc, cur) {
+      return acc.concat(cur.courses);
+    }, []);
 
-    var reserveDigits = function reserveDigits(num) {
-      var fractionDigits = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
-      return Number(num.toFixed(fractionDigits));
-    };
+    var _getFourTypesValue = getFourTypesValue(allCourses),
+        allCoursesGPA = _getFourTypesValue.allCoursesGPA,
+        allCoursesScore = _getFourTypesValue.allCoursesScore,
+        compulsoryCoursesGPA = _getFourTypesValue.compulsoryCoursesGPA,
+        compulsoryCoursesScore = _getFourTypesValue.compulsoryCoursesScore;
 
-    var getCompulsoryCoursesGPA = function getCompulsoryCoursesGPA(arr) {
-      return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))));
-    };
+    var labels = "\n      <div class=\"row\" style=\"margin-bottom: 20px;\">\n        <div class=\"col-sm-12\">\n          <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n            <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n          </h4>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n          </span>\n        </div>\n      </div>\n    ';
+    this.$indexWidgetMain.prepend(labels);
+  },
+  renderSemesterTranscript: function renderSemesterTranscript(data) {
+    var _this2 = this;
 
-    var getCompulsoryCoursesScore = function getCompulsoryCoursesScore(arr) {
-      return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))));
-    };
+    data.forEach(function (item) {
+      var semester = item.semester,
+          courses = item.courses;
 
-    var getAllCoursesGPA = function getAllCoursesGPA(arr) {
-      return reserveDigits(getWeightedAverage(mapGPA(arr)));
-    };
+      var _getFourTypesValue2 = getFourTypesValue(courses),
+          allCoursesGPA = _getFourTypesValue2.allCoursesGPA,
+          allCoursesScore = _getFourTypesValue2.allCoursesScore,
+          compulsoryCoursesGPA = _getFourTypesValue2.compulsoryCoursesGPA,
+          compulsoryCoursesScore = _getFourTypesValue2.compulsoryCoursesScore;
 
-    var getAllCoursesScore = function getAllCoursesScore(arr) {
-      return reserveDigits(getWeightedAverage(mapScore(arr)));
-    };
+      var header = '\n        <h4 class="header smaller lighter grey">\n          <i class="menu-icon fa fa-calendar"></i> ' + semester + '\n        </h4>\n      ';
+      var labels = "\n        <p>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n          </span>\n        </p>\n      ';
+      var content = "\n        <table class=\"table table-striped table-bordered table-hover\">\n          <thead>\n            <tr>\n              <th>\u8BFE\u7A0B\u540D</th>\n              <th>\u5206\u6570</th>\n              <th>\u7EE9\u70B9</th>\n              <th>\u5B66\u5206</th>\n              <th>\u5C5E\u6027</th>\n            </tr>\n          </thead>\n          <tbody>\n          " + courses.map(function (v) {
+        return '\n            <tr>\n              <td>' + v.name + '</td>\n              <td>' + v.score + '</td>\n              <td>' + v.gpa + '</td>\n              <td>' + v.credit + '</td>\n              <td>' + v.attribute + '</td>\n            </tr>\n          ';
+      }).join('') + '\n          </tbody>\n        </table>\n      ';
 
-    window.$.get('http://zhjw.scu.edu.cn/student/integratedQuery/scoreQuery/allPassingScores/callback').then(function (_ref) {
-      var lnList = _ref.lnList; // 这里的实现不优雅……原生方法在这里无法实现直接把处理后的数组本身作为参数……只能加了一个中间变量
-
-      var allCourses = lnList.map(function (v) {
-        return {
-          semester: v.cjbh.replace('秋(两学期)', ' 秋季学期').replace('春(两学期)', ' 春季学期'),
-          courses: v.cjList.map(function (v) {
-            return {
-              name: v.courseName,
-              score: v.courseScore,
-              gpa: v.gradePointScore,
-              credit: Number(v.credit),
-              attribute: v.courseAttributeName
-            };
-          })
-        };
-      }).reverse().filter(function (item) {
-        var semester = item.semester,
-            courses = item.courses;
-        var header = '\n            <h4 class="header smaller lighter grey">\n              <i class="menu-icon fa fa-calendar"></i> ' + semester + '\n            </h4>\n          ';
-        var labels = "\n            <p>\n              <span class=\"label label-success\">\n                \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + getCompulsoryCoursesScore(courses) + "\n              </span>\n              <span class=\"label label-success\">\n                \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + getCompulsoryCoursesGPA(courses) + "\n              </span>\n              <span class=\"label label-purple\">\n                \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + getAllCoursesScore(courses) + "\n              </span>\n              <span class=\"label label-purple\">\n                \u5168\u90E8\u7EE9\u70B9\uFF1A" + getAllCoursesGPA(courses) + '\n              </span>\n            </p>\n          ';
-        var content = "\n            <table class=\"table table-striped table-bordered table-hover\">\n              <thead>\n                <tr>\n                  <th>\u8BFE\u7A0B\u540D</th>\n                  <th>\u5206\u6570</th>\n                  <th>\u7EE9\u70B9</th>\n                  <th>\u5B66\u5206</th>\n                  <th>\u5C5E\u6027</th>\n                </tr>\n              </thead>\n              <tbody>\n              " + courses.map(function (v) {
-          return '\n                <tr>\n                  <td>' + v.name + '</td>\n                  <td>' + v.score + '</td>\n                  <td>' + v.gpa + '</td>\n                  <td>' + v.credit + '</td>\n                  <td>' + v.attribute + '</td>\n                </tr>\n              ';
-        }).join('') + '\n              </tbody>\n            </table>\n          ';
-        $indexWidgetMainRow.append('<div class="col-sm-6">' + (header + labels + content) + '</div>');
-        return true;
-      }).reduce(function (acc, cur) {
-        return acc.concat(cur.courses);
-      }, []);
-      var compulsoryCoursesGPA = getCompulsoryCoursesGPA(allCourses);
-      var compulsoryCoursesScore = getCompulsoryCoursesScore(allCourses);
-      var allCoursesGPA = getAllCoursesGPA(allCourses);
-      var allCoursesScore = getAllCoursesScore(allCourses);
-      var labels = "\n          <div class=\"row\" style=\"margin-bottom: 20px;\">\n            <div class=\"col-sm-12\">\n              <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n                <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n              </h4>\n              <span class=\"label label-success\">\n                \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n              </span>\n              <span class=\"label label-success\">\n                \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n              </span>\n              <span class=\"label label-purple\">\n                \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n              </span>\n              <span class=\"label label-purple\">\n                \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n              </span>\n            </div>\n          </div>\n        ';
-      $indexWidgetMain.prepend(labels);
+      _this2.$indexWidgetMainRow.append('<div class="col-sm-6">' + (header + labels + content) + '</div>');
     });
   }
 };
+
+function convertHistoricalList(historicalList) {
+  return historicalList.map(function (v) {
+    return {
+      semester: v.cjbh.replace('秋(两学期)', ' 秋季学期').replace('春(两学期)', ' 春季学期'),
+      courses: v.cjList.map(function (v) {
+        return {
+          name: v.courseName,
+          score: v.courseScore,
+          gpa: v.gradePointScore,
+          credit: Number(v.credit),
+          attribute: v.courseAttributeName
+        };
+      })
+    };
+  }).reverse();
+}
+
+function getWeightedAverage(arr) {
+  return arr.reduce(function (acc, cur) {
+    return [acc[0] + cur.value * cur.weight, acc[1] + cur.weight];
+  }, [0, 0]).reduce(function (valueSum, weightSum) {
+    return valueSum / weightSum;
+  });
+}
+
+function getCompulsoryCourse(arr) {
+  return arr.filter(function (v) {
+    return v.attribute === '必修';
+  });
+}
+
+function mapGPA(arr) {
+  return arr.map(function (v) {
+    return {
+      value: v.gpa,
+      weight: v.credit
+    };
+  });
+}
+
+function mapScore(arr) {
+  return arr.map(function (v) {
+    return {
+      value: v.score,
+      weight: v.credit
+    };
+  });
+}
+
+function reserveDigits(num) {
+  var fractionDigits = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
+  return Number(num.toFixed(fractionDigits));
+}
+
+function getCompulsoryCoursesGPA(arr) {
+  return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))));
+}
+
+function getCompulsoryCoursesScore(arr) {
+  return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))));
+}
+
+function getAllCoursesGPA(arr) {
+  return reserveDigits(getWeightedAverage(mapGPA(arr)));
+}
+
+function getAllCoursesScore(arr) {
+  return reserveDigits(getWeightedAverage(mapScore(arr)));
+}
+
+function getFourTypesValue(arr) {
+  return {
+    compulsoryCoursesGPA: getCompulsoryCoursesGPA(arr),
+    compulsoryCoursesScore: getCompulsoryCoursesScore(arr),
+    allCoursesGPA: getAllCoursesGPA(arr),
+    allCoursesScore: getAllCoursesScore(arr)
+  };
+}
+
 module.exports = gpa;
 },{}],"287w":[function(require,module,exports) {
 'use strict';
@@ -4226,7 +4312,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.3
+// @version      0.8.4
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*

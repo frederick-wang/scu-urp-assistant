@@ -21,124 +21,181 @@ const gpa = {
       </div>
     `
   },
+  $indexWidget: void 0,
+  $indexWidgetMain: void 0,
+  indexWidgetMainRow: void 0,
   init () {
-    let $indexWidget = window.$(this.templates.indexWidget)
-    window.$('.page-content').children('.row').append($indexWidget)
-    let $indexWidgetMain = $indexWidget.find('.widget-main')
-    let $indexWidgetMainRow = $indexWidget.find('.widget-main .row')
-
-    const getWeightedAverage = arr => arr
-      .reduce(
-        (acc, cur) => [
-          acc[0] + cur.value * cur.weight,
-          acc[1] + cur.weight
-        ],
-        [0, 0]
-      )
-      .reduce((valueSum, weightSum) => valueSum / weightSum)
-    const getCompulsoryCourse = arr => arr.filter(v => v.attribute === '必修')
-    const mapGPA = arr => arr.map(v => ({ value: v.gpa, weight: v.credit }))
-    const mapScore = arr => arr.map(v => ({ value: v.score, weight: v.credit }))
-    const reserveDigits = (num, fractionDigits = 3) => Number(num.toFixed(fractionDigits))
-
-    const getCompulsoryCoursesGPA = arr => reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))))
-    const getCompulsoryCoursesScore = arr => reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))))
-    const getAllCoursesGPA = arr => reserveDigits(getWeightedAverage(mapGPA(arr)))
-    const getAllCoursesScore = arr => reserveDigits(getWeightedAverage(mapScore(arr)))
-
-    window.$.get('http://zhjw.scu.edu.cn/student/integratedQuery/scoreQuery/allPassingScores/callback')
+    this.initDOM()
+    window.$.get('/student/integratedQuery/scoreQuery/allPassingScores/callback')
       .then(({ lnList }) => {
-        // 这里的实现不优雅……原生方法在这里无法实现直接把处理后的数组本身作为参数……只能加了一个中间变量
-        let allCourses = lnList
-          .map(v => ({
-            semester: v.cjbh.replace('秋(两学期)', ' 秋季学期').replace('春(两学期)', ' 春季学期'),
-            courses: v.cjList.map(v => ({
-              name: v.courseName,
-              score: v.courseScore,
-              gpa: v.gradePointScore,
-              credit: Number(v.credit),
-              attribute: v.courseAttributeName
-            }))
-          }))
-          .reverse()
-          .filter(item => {
-            const { semester, courses } = item
-            const header = `
-            <h4 class="header smaller lighter grey">
-              <i class="menu-icon fa fa-calendar"></i> ${semester}
-            </h4>
-          `
-            const labels = `
-            <p>
-              <span class="label label-success">
-                必修平均分：${getCompulsoryCoursesScore(courses)}
-              </span>
-              <span class="label label-success">
-                必修绩点：${getCompulsoryCoursesGPA(courses)}
-              </span>
-              <span class="label label-purple">
-                全部平均分：${getAllCoursesScore(courses)}
-              </span>
-              <span class="label label-purple">
-                全部绩点：${getAllCoursesGPA(courses)}
-              </span>
-            </p>
-          `
-            const content = `
-            <table class="table table-striped table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th>课程名</th>
-                  <th>分数</th>
-                  <th>绩点</th>
-                  <th>学分</th>
-                  <th>属性</th>
-                </tr>
-              </thead>
-              <tbody>
-              ${courses.map(v => `
-                <tr>
-                  <td>${v.name}</td>
-                  <td>${v.score}</td>
-                  <td>${v.gpa}</td>
-                  <td>${v.credit}</td>
-                  <td>${v.attribute}</td>
-                </tr>
-              `).join('')}
-              </tbody>
-            </table>
-          `
-            $indexWidgetMainRow.append(`<div class="col-sm-6">${header + labels + content}</div>`)
-            return true
-          })
-          .reduce((acc, cur) => acc.concat(cur.courses), [])
-        const compulsoryCoursesGPA = getCompulsoryCoursesGPA(allCourses)
-        const compulsoryCoursesScore = getCompulsoryCoursesScore(allCourses)
-        const allCoursesGPA = getAllCoursesGPA(allCourses)
-        const allCoursesScore = getAllCoursesScore(allCourses)
-        const labels = `
-          <div class="row" style="margin-bottom: 20px;">
-            <div class="col-sm-12">
-              <h4 class="header smaller lighter grey" style="margin-top: 0;">
-                <i class="menu-icon fa fa-calendar"></i> 全部成绩
-              </h4>
-              <span class="label label-success">
-                必修平均分：${compulsoryCoursesScore}
-              </span>
-              <span class="label label-success">
-                必修绩点：${compulsoryCoursesGPA}
-              </span>
-              <span class="label label-purple">
-                全部平均分：${allCoursesScore}
-              </span>
-              <span class="label label-purple">
-                全部绩点：${allCoursesGPA}
-              </span>
-            </div>
-          </div>
-        `
-        $indexWidgetMain.prepend(labels)
+        // lnList -> 历年数据
+        const data = convertHistoricalList(lnList)
+        this.renderSemesterTranscript(data)
+        this.renderTotalTranscript(data)
       })
+  },
+  initDOM () {
+    this.$indexWidget = window.$(this.templates.indexWidget)
+    window.$('.page-content').children('.row').append(this.$indexWidget)
+    this.$indexWidgetMain = this.$indexWidget.find('.widget-main')
+    this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row')
+  },
+  renderTotalTranscript (data) {
+    const allCourses = data.reduce((acc, cur) => acc.concat(cur.courses), [])
+    const {
+      allCoursesGPA,
+      allCoursesScore,
+      compulsoryCoursesGPA,
+      compulsoryCoursesScore
+    } = getFourTypesValue(allCourses)
+    const labels = `
+      <div class="row" style="margin-bottom: 20px;">
+        <div class="col-sm-12">
+          <h4 class="header smaller lighter grey" style="margin-top: 0;">
+            <i class="menu-icon fa fa-calendar"></i> 全部成绩
+          </h4>
+          <span class="label label-success">
+            必修平均分：${compulsoryCoursesScore}
+          </span>
+          <span class="label label-success">
+            必修绩点：${compulsoryCoursesGPA}
+          </span>
+          <span class="label label-purple">
+            全部平均分：${allCoursesScore}
+          </span>
+          <span class="label label-purple">
+            全部绩点：${allCoursesGPA}
+          </span>
+        </div>
+      </div>
+    `
+    this.$indexWidgetMain.prepend(labels)
+  },
+  renderSemesterTranscript (data) {
+    data.forEach(item => {
+      const { semester, courses } = item
+      const {
+        allCoursesGPA,
+        allCoursesScore,
+        compulsoryCoursesGPA,
+        compulsoryCoursesScore
+      } = getFourTypesValue(courses)
+
+      const header = `
+        <h4 class="header smaller lighter grey">
+          <i class="menu-icon fa fa-calendar"></i> ${semester}
+        </h4>
+      `
+      const labels = `
+        <p>
+          <span class="label label-success">
+            必修平均分：${compulsoryCoursesScore}
+          </span>
+          <span class="label label-success">
+            必修绩点：${compulsoryCoursesGPA}
+          </span>
+          <span class="label label-purple">
+            全部平均分：${allCoursesScore}
+          </span>
+          <span class="label label-purple">
+            全部绩点：${allCoursesGPA}
+          </span>
+        </p>
+      `
+      const content = `
+        <table class="table table-striped table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>课程名</th>
+              <th>分数</th>
+              <th>绩点</th>
+              <th>学分</th>
+              <th>属性</th>
+            </tr>
+          </thead>
+          <tbody>
+          ${courses.map(v => `
+            <tr>
+              <td>${v.name}</td>
+              <td>${v.score}</td>
+              <td>${v.gpa}</td>
+              <td>${v.credit}</td>
+              <td>${v.attribute}</td>
+            </tr>
+          `).join('')}
+          </tbody>
+        </table>
+      `
+      this.$indexWidgetMainRow.append(`<div class="col-sm-6">${header + labels + content}</div>`)
+    })
+  }
+}
+
+function convertHistoricalList (historicalList) {
+  return historicalList
+    .map(v => ({
+      semester: v.cjbh.replace('秋(两学期)', ' 秋季学期').replace('春(两学期)', ' 春季学期'),
+      courses: v.cjList.map(v => ({
+        name: v.courseName,
+        score: v.courseScore,
+        gpa: v.gradePointScore,
+        credit: Number(v.credit),
+        attribute: v.courseAttributeName
+      }))
+    }))
+    .reverse()
+}
+
+function getWeightedAverage (arr) {
+  return arr
+    .reduce(
+      (acc, cur) => [
+        acc[0] + cur.value * cur.weight,
+        acc[1] + cur.weight
+      ],
+      [0, 0]
+    )
+    .reduce((valueSum, weightSum) => valueSum / weightSum)
+}
+
+function getCompulsoryCourse (arr) {
+  return arr.filter(v => v.attribute === '必修')
+}
+
+function mapGPA (arr) {
+  return arr.map(v => ({ value: v.gpa, weight: v.credit }))
+}
+
+function mapScore (arr) {
+  return arr.map(v => ({ value: v.score, weight: v.credit }))
+}
+
+function reserveDigits (num, fractionDigits = 3) {
+  return Number(num.toFixed(fractionDigits))
+}
+
+function getCompulsoryCoursesGPA (arr) {
+  return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))))
+}
+
+function getCompulsoryCoursesScore (arr) {
+  return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))))
+}
+
+function getAllCoursesGPA (arr) {
+  return reserveDigits(getWeightedAverage(mapGPA(arr)))
+}
+
+function getAllCoursesScore (arr) {
+  return reserveDigits(getWeightedAverage(mapScore(arr)))
+}
+
+function getFourTypesValue (arr) {
+  return {
+    compulsoryCoursesGPA: getCompulsoryCoursesGPA(arr),
+    compulsoryCoursesScore: getCompulsoryCoursesScore(arr),
+    allCoursesGPA: getAllCoursesGPA(arr),
+    allCoursesScore: getAllCoursesScore(arr)
   }
 }
 

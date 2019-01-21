@@ -4,7 +4,7 @@ const tooltip = {
   pathname: '/**',
   $loginTooltip: undefined,
   $navTooltip: undefined,
-  version: '0.8.3',
+  version: require('../../package.json').version,
   init () {
     if (window.location.pathname === '/login') {
       this.$loginTooltip = window.$(`
