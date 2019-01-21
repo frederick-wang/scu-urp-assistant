@@ -1,7 +1,7 @@
 // 绩点计算插件
 const gpa = {
   name: 'gpa',
-  pathname: '/',
+  pathname: ['/', '/index.jsp'],
   templates: {
     indexWidget: `
       <div class="col-sm-12 widget-container-col">

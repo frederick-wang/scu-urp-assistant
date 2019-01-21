@@ -4,7 +4,7 @@ const tooltip = {
   pathname: '/**',
   $loginTooltip: undefined,
   $navTooltip: undefined,
-  version: '0.8.1',
+  version: '0.8.2',
   init () {
     if (window.location.pathname === '/login') {
       this.$loginTooltip = window.$(`

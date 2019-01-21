@@ -3,7 +3,7 @@
 // 绩点计算插件
 var gpa = {
   name: 'gpa',
-  pathname: '/',
+  pathname: ['/', '/index.jsp'],
   templates: {
     indexWidget: '\n      <div class="col-sm-12 widget-container-col">\n        <div class="widget-box">\n          <div class="widget-header">\n            <h5 class="widget-title">\n              \u6211\u7684\u6210\u7EE9\n              <span class="badge badge-primary" style="padding-top:3px;position:relative;top:-3px;">SCU URP \u52A9\u624B</span>\n            </h5>\n          </div>\n          <div class="widget-body">\n            <div class="widget-main">\n              <div class="row"></div>\n            </div>\n          </div>\n        </div>\n      </div>\n    '
   },
