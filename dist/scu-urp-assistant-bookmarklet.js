@@ -3834,7 +3834,7 @@ var templates = {
         allCoursesScore = _ref.allCoursesScore,
         compulsoryCoursesGPA = _ref.compulsoryCoursesGPA,
         compulsoryCoursesScore = _ref.compulsoryCoursesScore;
-    return "\n      <div class=\"gpa-tt row\" style=\"margin-bottom: 20px;\">\n        <div class=\"col-sm-12\">\n          <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n            <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n            <button class=\"btn btn-white btn-minier gpa-tt-cancel-btn\">\n              <i class=\"ace-icon fa fa-times red2\"></i>\n              \u53D6\u6D88\u9009\u4E2D\u6240\u6709\u8BFE\u7A0B\n            </button>\n          </h4>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span class=\"label label-success\">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span class=\"label label-purple\">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + "\n          </span>\n          <span class=\"label label-pink gpa-tt-tag-selected-score\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n          </span>\n          <span class=\"label label-pink gpa-tt-tag-selected-gpa\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n          </span>\n        </div>\n      </div>\n    ";
+    return "\n      <div class=\"gpa-tt row\" style=\"margin-bottom: 20px;\">\n        <div class=\"col-sm-12\">\n          <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n            <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n            <button class=\"btn btn-white btn-minier gpa-tt-cancel-btn\">\n              <i class=\"ace-icon fa fa-times red2\"></i>\n              \u53D6\u6D88\u9009\u4E2D\u6240\u6709\u8BFE\u7A0B\n            </button>\n          </h4>\n          <span class=\"gpa-tt-tag label label-success\">\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span class=\"gpa-tt-tag label label-success\">\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span class=\"gpa-tt-tag label label-purple\">\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span class=\"gpa-tt-tag label label-purple\">\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + "\n          </span>\n          <span class=\"gpa-tt-tag gpa-tt-tag-selected-score label label-pink\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n          </span>\n          <span class=\"gpa-tt-tag gpa-tt-tag-selected-gpa label label-pink\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n          </span>\n        </div>\n      </div>\n    ";
   },
   semesterTranscriptHeader: function semesterTranscriptHeader(semester) {
     return '\n      <h4 class="header smaller lighter grey">\n        <i class="menu-icon fa fa-calendar"></i> ' + semester + '\n        <button class="btn btn-white btn-minier gpa-st-cancel-btn" data-semester="' + semester + "\">\n          <i class=\"ace-icon fa fa-times red2\"></i>\n          \u53D6\u6D88\u9009\u4E2D\u672C\u5B66\u671F\u8BFE\u7A0B\n        </button>\n      </h4>\n    ";
@@ -3844,7 +3844,7 @@ var templates = {
         allCoursesScore = _ref2.allCoursesScore,
         compulsoryCoursesGPA = _ref2.compulsoryCoursesGPA,
         compulsoryCoursesScore = _ref2.compulsoryCoursesScore;
-    return "\n      <p>\n        <span class=\"label label-success\">\n          \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n        </span>\n        <span class=\"label label-success\">\n          \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n        </span>\n        <span class=\"label label-purple\">\n          \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n        </span>\n        <span class=\"label label-purple\">\n          \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n        </span>\n      </p>\n      <p>\n        <span class="label label-pink gpa-st-tag-selected-score" data-semester="' + semester + "\">\n        \u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n        </span>\n        <span class=\"label label-pink gpa-st-tag-selected-gpa\" data-semester=\"" + semester + "\">\n          \u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n        </span>\n      </p>\n    ";
+    return "\n      <p>\n        <span class=\"gpa-st-tag label label-success\">\n          \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n        </span>\n        <span class=\"gpa-st-tag label label-success\">\n          \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n        </span>\n        <span class=\"gpa-st-tag label label-purple\">\n          \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n        </span>\n        <span class=\"gpa-st-tag label label-purple\">\n          \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n        </span>\n      </p>\n      <p>\n        <span class="gpa-st-tag gpa-st-tag-selected-score label label-pink" data-semester="' + semester + "\">\n        \u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n        </span>\n        <span class=\"gpa-st-tag gpa-st-tag-selected-gpa label label-pink\" data-semester=\"" + semester + "\">\n          \u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n        </span>\n      </p>\n    ";
   },
   semesterTranscriptContent: function semesterTranscriptContent(semester, courses) {
     return "\n      <table class=\"gpa-st-table table table-striped table-bordered table-hover\">\n        <thead>\n          <tr>\n            <th>\u8BFE\u7A0B\u540D</th>\n            <th>\u5206\u6570</th>\n            <th>\u7EE9\u70B9</th>\n            <th>\u5B66\u5206</th>\n            <th>\u5C5E\u6027</th>\n          </tr>\n        </thead>\n        <tbody>\n        " + courses.map(function (v) {
@@ -3858,12 +3858,10 @@ var templates = {
 var gpa = {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
-  style: "/* gpa -> namespace */\r\n\r\n/* st -> semester-transcript */\r\n\r\n/* tt -> total-transcript */\r\n\r\n.gpa-st-item {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-item>td {\r\n  transition: .1s;\r\n}\r\n\r\n.gpa-st-item.selected>td {\r\n  font-weight: bolder;\r\n  color: #409eff;\r\n  background-color: #ecf5ff !important;\r\n  /* border-color: #b3d8ff; */\r\n}\r\n\r\n.gpa-st-item.selected:hover>td {\r\n  background-color: #409eff !important;\r\n  color: #fff;\r\n  /* border-color: #409eff; */\r\n}\r\n\r\n.gpa-st-item.selected:active>td {\r\n  background-color: #3a8ee6 !important;\r\n  color: #fff;\r\n  outline: none;\r\n  /* border-color: #3a8ee6; */\r\n}\r\n\r\n.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {\r\n  display: none;\r\n}\r\n\r\n.gpa-st-cancel-btn, .gpa-tt-cancel-btn {\r\n  display: none;\r\n  float: right;\r\n}\r\n\r\n#gpa-toolbar-detail, #gpa-toolbar-reset {\r\n  cursor: pointer;\r\n}\r\n",
+  style: "/* gpa -> namespace */\r\n\r\n/* st -> semester-transcript */\r\n\r\n/* tt -> total-transcript */\r\n\r\n.gpa-st-item {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-item>td {\r\n  transition: .1s;\r\n}\r\n\r\n.gpa-st-item.selected>td {\r\n  font-weight: bolder;\r\n  color: #409eff;\r\n  background-color: #ecf5ff !important;\r\n  /* border-color: #b3d8ff; */\r\n}\r\n\r\n.gpa-st-item.selected:hover>td {\r\n  background-color: #409eff !important;\r\n  color: #fff;\r\n  /* border-color: #409eff; */\r\n}\r\n\r\n.gpa-st-item.selected:active>td {\r\n  background-color: #3a8ee6 !important;\r\n  color: #fff;\r\n  outline: none;\r\n  /* border-color: #3a8ee6; */\r\n}\r\n\r\n.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {\r\n  display: none;\r\n}\r\n\r\n.gpa-st-cancel-btn, .gpa-tt-cancel-btn {\r\n  display: none;\r\n  float: right;\r\n}\r\n\r\n#gpa-toolbar-detail, #gpa-toolbar-reset {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-tag, .gpa-tt-tag {\r\n  cursor: pointer;\r\n}\r\n",
   $indexWidget: null,
   $indexWidgetMain: null,
   $indexWidgetMainRow: null,
-  $toolbarDetail: null,
-  $toolbarReset: null,
   historicalList: null,
   init: function init() {
     var _this = this;
@@ -3886,8 +3884,6 @@ var gpa = {
     window.$('.page-content').children('.row').append(this.$indexWidget);
     this.$indexWidgetMain = this.$indexWidget.find('.widget-main');
     this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row');
-    this.$toolbarDetail = window.$('#gpa-toolbar-detail');
-    this.$toolbarReset = window.$('#gpa-toolbar-reset');
   },
   initEvent: function initEvent() {
     var _this2 = this;
@@ -3897,11 +3893,11 @@ var gpa = {
       that.toggleTranscriptItemStatus(this);
       that.renderTagSelected();
     });
-    this.$toolbarDetail.click(function () {
+    window.$('#gpa-toolbar-detail').click(function () {
       window.toSelect(document.getElementById('1379870'));
       window.location = '/student/integratedQuery/scoreQuery/allPassingScores/index';
     });
-    this.$toolbarReset.click(function () {
+    window.$('#gpa-toolbar-reset').click(function () {
       _this2.reset();
     });
     window.$('.gpa-st-cancel-btn').click(function () {

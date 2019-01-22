@@ -44,3 +44,7 @@
 #gpa-toolbar-detail, #gpa-toolbar-reset {
   cursor: pointer;
 }
+
+.gpa-st-tag, .gpa-tt-tag {
+  cursor: pointer;
+}

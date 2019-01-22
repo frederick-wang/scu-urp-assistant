@@ -45,22 +45,22 @@ const templates = {
               取消选中所有课程
             </button>
           </h4>
-          <span class="label label-success">
+          <span class="gpa-tt-tag label label-success">
             必修平均分：${compulsoryCoursesScore}
           </span>
-          <span class="label label-success">
+          <span class="gpa-tt-tag label label-success">
             必修绩点：${compulsoryCoursesGPA}
           </span>
-          <span class="label label-purple">
+          <span class="gpa-tt-tag label label-purple">
             全部平均分：${allCoursesScore}
           </span>
-          <span class="label label-purple">
+          <span class="gpa-tt-tag label label-purple">
             全部绩点：${allCoursesGPA}
           </span>
-          <span class="label label-pink gpa-tt-tag-selected-score">
+          <span class="gpa-tt-tag gpa-tt-tag-selected-score label label-pink">
             所有选中课程平均分：0
           </span>
-          <span class="label label-pink gpa-tt-tag-selected-gpa">
+          <span class="gpa-tt-tag gpa-tt-tag-selected-gpa label label-pink">
             所有选中课程绩点：0
           </span>
         </div>
@@ -88,24 +88,24 @@ const templates = {
     }) {
     return `
       <p>
-        <span class="label label-success">
+        <span class="gpa-st-tag label label-success">
           必修平均分：${compulsoryCoursesScore}
         </span>
-        <span class="label label-success">
+        <span class="gpa-st-tag label label-success">
           必修绩点：${compulsoryCoursesGPA}
         </span>
-        <span class="label label-purple">
+        <span class="gpa-st-tag label label-purple">
           全部平均分：${allCoursesScore}
         </span>
-        <span class="label label-purple">
+        <span class="gpa-st-tag label label-purple">
           全部绩点：${allCoursesGPA}
         </span>
       </p>
       <p>
-        <span class="label label-pink gpa-st-tag-selected-score" data-semester="${semester}">
+        <span class="gpa-st-tag gpa-st-tag-selected-score label label-pink" data-semester="${semester}">
         选中课程平均分：0
         </span>
-        <span class="label label-pink gpa-st-tag-selected-gpa" data-semester="${semester}">
+        <span class="gpa-st-tag gpa-st-tag-selected-gpa label label-pink" data-semester="${semester}">
           选中课程绩点：0
         </span>
       </p>
@@ -157,8 +157,6 @@ const gpa = {
   $indexWidget: null,
   $indexWidgetMain: null,
   $indexWidgetMainRow: null,
-  $toolbarDetail: null,
-  $toolbarReset: null,
   historicalList: null,
   init () {
     this.initDOM()
@@ -176,8 +174,6 @@ const gpa = {
     window.$('.page-content').children('.row').append(this.$indexWidget)
     this.$indexWidgetMain = this.$indexWidget.find('.widget-main')
     this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row')
-    this.$toolbarDetail = window.$('#gpa-toolbar-detail')
-    this.$toolbarReset = window.$('#gpa-toolbar-reset')
   },
   initEvent () {
     const that = this
@@ -187,12 +183,12 @@ const gpa = {
       that.renderTagSelected()
     })
 
-    this.$toolbarDetail.click(() => {
+    window.$('#gpa-toolbar-detail').click(() => {
       window.toSelect(document.getElementById('1379870'))
       window.location = '/student/integratedQuery/scoreQuery/allPassingScores/index'
     })
 
-    this.$toolbarReset.click(() => {
+    window.$('#gpa-toolbar-reset').click(() => {
       this.reset()
     })
 
