@@ -298,13 +298,9 @@ const gpa = {
   destroy () {
     this.$indexWidgetMainRow.remove()
     this.$indexWidgetMain.remove()
-    this.$toolbarDetail.remove()
-    this.$toolbarReset.remove()
     this.$indexWidget.remove()
 
     this.$indexWidget = null
-    this.$toolbarReset = null
-    this.$toolbarDetail = null
     this.$indexWidgetMain = null
     this.$indexWidgetMainRow = null
 
