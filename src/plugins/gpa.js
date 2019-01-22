@@ -67,10 +67,14 @@ const templates = {
       </div>
     `
   },
-  semesterTranscriptHeader (semester) {
+  semesterTranscriptHeader (semester, courses) {
+    const coursesQuantity = courses.length
+    const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
     return `
       <h4 class="header smaller lighter grey">
         <i class="menu-icon fa fa-calendar"></i> ${semester}
+        <span class="gpa-info-badge badge badge-yellow" title="在${semester}，您一共修读了 ${coursesQuantity} 门课程">${coursesQuantity} 门</span>
+        <span class="gpa-info-badge badge badge-yellow" title="在${semester}，您一共修读了 ${totalCourseCredits} 学分">${totalCourseCredits} 学分</span>
         <button class="btn btn-white btn-minier gpa-st-cancel-btn" data-semester="${semester}">
           <i class="ace-icon fa fa-times red2"></i>
           取消选中本学期课程
@@ -285,7 +289,7 @@ const gpa = {
   },
   renderSemesterTranscript () {
     this.historicalList.forEach(({ semester, courses }) => {
-      const header = templates.semesterTranscriptHeader(semester)
+      const header = templates.semesterTranscriptHeader(semester, courses)
       const labels = templates.semesterTranscriptLabels(semester, getFourTypesValue(courses))
       const content = templates.semesterTranscriptContent(semester, courses)
       this.$indexWidgetMainRow.append(templates.semesterTranscriptWrapper(header, labels, content))

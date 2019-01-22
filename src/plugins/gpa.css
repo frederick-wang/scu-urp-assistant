@@ -48,3 +48,9 @@
 .gpa-st-tag, .gpa-tt-tag {
   cursor: pointer;
 }
+
+.gpa-info-badge {
+  cursor: pointer;
+  position: relative;
+  top: -7.5px;
+}
