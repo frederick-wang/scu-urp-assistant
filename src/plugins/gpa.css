@@ -54,3 +54,7 @@
   position: relative;
   top: -7.5px;
 }
+
+.gpa-info-badge-tt-selected-course-quantity, .gpa-info-badge-tt-selected-course-credits, .gpa-info-badge-st-selected-course-quantity, .gpa-info-badge-st-selected-course-credits {
+  display: none;
+}
