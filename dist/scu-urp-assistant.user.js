@@ -3413,7 +3413,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -3875,7 +3875,7 @@ var templates = {
 var gpa = {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
-  style: "/* gpa -> namespace */\r\n\r\n/* st -> semester-transcript */\r\n\r\n/* tt -> total-transcript */\r\n\r\n.gpa-st-item {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-item>td {\r\n  transition: .1s;\r\n}\r\n\r\n.gpa-st-item.selected>td {\r\n  font-weight: bolder;\r\n  color: #409eff;\r\n  background-color: #ecf5ff !important;\r\n  /* border-color: #b3d8ff; */\r\n}\r\n\r\n.gpa-st-item.selected:hover>td {\r\n  background-color: #409eff !important;\r\n  color: #fff;\r\n  /* border-color: #409eff; */\r\n}\r\n\r\n.gpa-st-item.selected:active>td {\r\n  background-color: #3a8ee6 !important;\r\n  color: #fff;\r\n  outline: none;\r\n  /* border-color: #3a8ee6; */\r\n}\r\n\r\n.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {\r\n  display: none;\r\n}\r\n\r\n.gpa-st-select-all-btn, .gpa-tt-select-all-btn {\r\n  position: relative;\r\n  top: 2.5px;\r\n  float: right;\r\n}\r\n\r\n.gpa-st-cancel-btn, .gpa-tt-cancel-btn {\r\n  display: none;\r\n  position: relative;\r\n  top: -2.5px;\r\n  float: right;\r\n}\r\n\r\n#gpa-toolbar-detail, #gpa-toolbar-reset {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-tag, .gpa-tt-tag {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-info-badge {\r\n  cursor: pointer;\r\n  position: relative;\r\n  top: -7.5px;\r\n}\r\n\r\n.gpa-info-badge-tt-selected-course-quantity, .gpa-info-badge-tt-selected-course-credits, .gpa-info-badge-st-selected-course-quantity, .gpa-info-badge-st-selected-course-credits {\r\n  display: none;\r\n}\r\n",
+  style: "/* gpa -> namespace */\r\n\r\n/* st -> semester-transcript */\r\n\r\n/* tt -> total-transcript */\r\n\r\n.gpa-st-item {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-item>td {\r\n  transition: .1s;\r\n}\r\n\r\n.gpa-st-item.selected>td {\r\n  font-weight: bolder;\r\n  color: #409eff;\r\n  background-color: #ecf5ff !important;\r\n  /* border-color: #b3d8ff; */\r\n}\r\n\r\n.gpa-st-item.selected:hover>td {\r\n  background-color: #409eff !important;\r\n  color: #fff;\r\n  /* border-color: #409eff; */\r\n}\r\n\r\n.gpa-st-item.selected:active>td {\r\n  background-color: #3a8ee6 !important;\r\n  color: #fff;\r\n  outline: none;\r\n  /* border-color: #3a8ee6; */\r\n}\r\n\r\n.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {\r\n  display: none;\r\n}\r\n\r\n.gpa-st-select-all-btn, .gpa-tt-select-all-btn {\r\n  position: relative;\r\n  top: 2.5px;\r\n  float: right;\r\n}\r\n\r\n.gpa-st-cancel-btn, .gpa-tt-cancel-btn {\r\n  display: none;\r\n  position: relative;\r\n  top: 2.5px;\r\n  float: right;\r\n}\r\n\r\n#gpa-toolbar-detail, #gpa-toolbar-reset {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-tag, .gpa-tt-tag {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-info-badge {\r\n  cursor: pointer;\r\n  position: relative;\r\n  top: -7.5px;\r\n}\r\n\r\n.gpa-info-badge-tt-selected-course-quantity, .gpa-info-badge-tt-selected-course-credits, .gpa-info-badge-st-selected-course-quantity, .gpa-info-badge-st-selected-course-credits {\r\n  display: none;\r\n}\r\n",
   $indexWidget: null,
   $indexWidgetMain: null,
   $indexWidgetMainRow: null,
@@ -4582,7 +4582,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.10
+// @version      0.8.11
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*

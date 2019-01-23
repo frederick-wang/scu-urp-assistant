@@ -45,7 +45,7 @@
 .gpa-st-cancel-btn, .gpa-tt-cancel-btn {
   display: none;
   position: relative;
-  top: -2.5px;
+  top: 2.5px;
   float: right;
 }
 
