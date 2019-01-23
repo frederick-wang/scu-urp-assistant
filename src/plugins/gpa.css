@@ -38,7 +38,7 @@
 
 .gpa-st-select-all-btn, .gpa-tt-select-all-btn {
   position: relative;
-  top: -2.5px;
+  top: 2.5px;
   float: right;
 }
 
