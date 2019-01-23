@@ -462,7 +462,7 @@ function convertHistoricalList (historicalList) {
       courses: v.cjList.map(v => ({
         name: v.courseName,
         score: v.courseScore,
-        gpa: v.gradePointScore,
+        gpa: v.gradePointScore || getPointByScore(v.courseScore),
         credit: Number(v.credit),
         attribute: v.courseAttributeName,
         selected: false
@@ -521,6 +521,32 @@ function getFourTypesValue (arr) {
     compulsoryCoursesScore: getCompulsoryCoursesScore(arr),
     allCoursesGPA: getAllCoursesGPA(arr),
     allCoursesScore: getAllCoursesScore(arr)
+  }
+}
+
+function getPointByScore (score) {
+  if (score >= 90) {
+    return 4
+  } else if (score >= 85) {
+    return 3.7
+  } else if (score >= 80) {
+    return 3.3
+  } else if (score >= 76) {
+    return 3
+  } else if (score >= 73) {
+    return 2.7
+  } else if (score >= 70) {
+    return 2.3
+  } else if (score >= 66) {
+    return 2
+  } else if (score >= 63) {
+    return 1.7
+  } else if (score >= 61) {
+    return 1.3
+  } else if (score >= 60) {
+    return 1
+  } else {
+    return 0
   }
 }
 

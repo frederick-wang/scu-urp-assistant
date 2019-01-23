@@ -3413,7 +3413,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.11",
+  "version": "0.8.12",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -4122,7 +4122,7 @@ function convertHistoricalList(historicalList) {
         return {
           name: v.courseName,
           score: v.courseScore,
-          gpa: v.gradePointScore,
+          gpa: v.gradePointScore || getPointByScore(v.courseScore),
           credit: Number(v.credit),
           attribute: v.courseAttributeName,
           selected: false
@@ -4192,6 +4192,32 @@ function getFourTypesValue(arr) {
     allCoursesGPA: getAllCoursesGPA(arr),
     allCoursesScore: getAllCoursesScore(arr)
   };
+}
+
+function getPointByScore(score) {
+  if (score >= 90) {
+    return 4;
+  } else if (score >= 85) {
+    return 3.7;
+  } else if (score >= 80) {
+    return 3.3;
+  } else if (score >= 76) {
+    return 3;
+  } else if (score >= 73) {
+    return 2.7;
+  } else if (score >= 70) {
+    return 2.3;
+  } else if (score >= 66) {
+    return 2;
+  } else if (score >= 63) {
+    return 1.7;
+  } else if (score >= 61) {
+    return 1.3;
+  } else if (score >= 60) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 module.exports = gpa;
@@ -4582,7 +4608,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.11
+// @version      0.8.12
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
