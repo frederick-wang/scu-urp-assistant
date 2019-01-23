@@ -70,7 +70,7 @@ const templates = {
               0 学分
             </span>
             <button class="btn btn-white btn-minier gpa-tt-select-all-btn">
-              <i class="ace-icon fa fa-times red2"></i>
+              <i class="ace-icon fa fa-check green"></i>
               全选
             </button>
             <button class="btn btn-white btn-minier gpa-tt-cancel-btn">
@@ -135,7 +135,7 @@ const templates = {
           0 学分
         </span>
         <button class="btn btn-white btn-minier gpa-st-select-all-btn" data-semester="${semester}">
-          <i class="ace-icon fa fa-times red2"></i>
+          <i class="ace-icon fa fa-check green"></i>
           全选
         </button>
         <button class="btn btn-white btn-minier gpa-st-cancel-btn" data-semester="${semester}">
