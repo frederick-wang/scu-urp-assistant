@@ -29,32 +29,61 @@ const templates = {
       </div>
     </div>
   `,
-  totalTranscript ({
-    allCoursesGPA,
-    allCoursesScore,
-    compulsoryCoursesGPA,
-    compulsoryCoursesScore
-  }) {
+  totalTranscript (semestersQuantity, courses) {
+    const {
+      allCoursesGPA,
+      allCoursesScore,
+      compulsoryCoursesGPA,
+      compulsoryCoursesScore
+    } = getFourTypesValue(courses)
+    const compulsoryCourses = getCompulsoryCourse(courses)
+    const coursesQuantity = courses.length
+    const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
+    const compulsoryCoursesQuantity = compulsoryCourses.length
     return `
       <div class="gpa-tt row" style="margin-bottom: 20px;">
         <div class="col-sm-12">
           <h4 class="header smaller lighter grey" style="margin-top: 0;">
             <i class="menu-icon fa fa-calendar"></i> 全部成绩
+            <span
+              class="gpa-info-badge badge badge-yellow"
+              title="在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程"
+            >
+              ${coursesQuantity} 门
+            </span>
+            <span
+              class="gpa-info-badge badge badge-yellow"
+              title="在 ${semestersQuantity} 个学期中，您一共修读了 ${totalCourseCredits} 学分"
+            >
+              ${totalCourseCredits} 学分
+            </span>
             <button class="btn btn-white btn-minier gpa-tt-cancel-btn">
               <i class="ace-icon fa fa-times red2"></i>
               取消选中所有课程
             </button>
           </h4>
-          <span class="gpa-tt-tag label label-success">
+          <span
+            class="gpa-tt-tag label label-success"
+            title="在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均分为 ${compulsoryCoursesScore}"
+          >
             必修平均分：${compulsoryCoursesScore}
           </span>
-          <span class="gpa-tt-tag label label-success">
+          <span
+            class="gpa-tt-tag label label-success"
+            title="在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均绩点为 ${compulsoryCoursesGPA}"
+          >
             必修绩点：${compulsoryCoursesGPA}
           </span>
-          <span class="gpa-tt-tag label label-purple">
+          <span
+            class="gpa-tt-tag label label-purple"
+            title="在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程，全部加权平均分为 ${allCoursesScore}"
+          >
             全部平均分：${allCoursesScore}
           </span>
-          <span class="gpa-tt-tag label label-purple">
+          <span
+            class="gpa-st-tag label label-purple"
+            title="在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程，全部加权平均绩点为 ${allCoursesGPA}"
+          >
             全部绩点：${allCoursesGPA}
           </span>
           <span class="gpa-tt-tag gpa-tt-tag-selected-score label label-pink">
@@ -82,26 +111,40 @@ const templates = {
       </h4>
     `
   },
-  semesterTranscriptLabels (
-    semester,
-    {
+  semesterTranscriptLabels (semester, courses) {
+    const {
       allCoursesGPA,
       allCoursesScore,
       compulsoryCoursesGPA,
       compulsoryCoursesScore
-    }) {
+    } = getFourTypesValue(courses)
+    const compulsoryCourses = getCompulsoryCourse(courses)
+    const coursesQuantity = courses.length
+    const compulsoryCoursesQuantity = compulsoryCourses.length
     return `
       <p>
-        <span class="gpa-st-tag label label-success">
+        <span
+          class="gpa-st-tag label label-success"
+          title="在${semester}，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均分为 ${compulsoryCoursesScore}"
+        >
           必修平均分：${compulsoryCoursesScore}
         </span>
-        <span class="gpa-st-tag label label-success">
+        <span
+          class="gpa-st-tag label label-success"
+          title="在${semester}，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均绩点为 ${compulsoryCoursesGPA}"
+        >
           必修绩点：${compulsoryCoursesGPA}
         </span>
-        <span class="gpa-st-tag label label-purple">
+        <span
+          class="gpa-st-tag label label-purple"
+          title="在${semester}，您一共修读了 ${coursesQuantity} 门课程，加权平均分为 ${allCoursesScore}"
+        >
           全部平均分：${allCoursesScore}
         </span>
-        <span class="gpa-st-tag label label-purple">
+        <span
+          class="gpa-st-tag label label-purple"
+          title="在${semester}，您一共修读了 ${coursesQuantity} 门课程，加权平均绩点为 ${allCoursesGPA}"
+        >
           全部绩点：${allCoursesGPA}
         </span>
       </p>
@@ -231,10 +274,15 @@ const gpa = {
         const $gpaTag = getSemester$Element('gpa-st-tag-selected-gpa')
         const $cancelBtn = getSemester$Element('gpa-st-cancel-btn')
         if (selectedCourses.length) {
+          const selectedCoursesQuantity = selectedCourses.length
+          const selectedCoursesScore = getAllCoursesScore(selectedCourses)
+          const selectedCoursesGPA = getAllCoursesGPA(selectedCourses)
           $scoreTag.show()
-          $scoreTag.text(`选中课程平均分：${getAllCoursesScore(selectedCourses)}`)
+          $scoreTag.attr('title', `在${semester}，您当前选出了 ${selectedCoursesQuantity} 门课程进行计算，选中课程的加权平均分为 ${selectedCoursesScore}`)
+          $scoreTag.text(`选中课程平均分：${selectedCoursesScore}`)
           $gpaTag.show()
-          $gpaTag.text(`选中课程绩点：${getAllCoursesGPA(selectedCourses)}`)
+          $gpaTag.attr('title', `在${semester}，您当前选出了 ${selectedCoursesQuantity} 门课程进行计算，选中课程的加权平均绩点为 ${selectedCoursesGPA}`)
+          $gpaTag.text(`选中课程绩点：${selectedCoursesGPA}`)
           $cancelBtn.show()
         } else {
           $scoreTag.hide()
@@ -249,10 +297,16 @@ const gpa = {
     const $gpaTag = window.$('.gpa-tt-tag-selected-gpa')
     const $cancelBtn = window.$('.gpa-tt-cancel-btn')
     if (selectedCourses.length) {
+      const semestersQuantity = this.historicalList.length
+      const selectedCoursesQuantity = selectedCourses.length
+      const selectedCoursesScore = getAllCoursesScore(selectedCourses)
+      const selectedCoursesGPA = getAllCoursesGPA(selectedCourses)
       $scoreTag.show()
-      $scoreTag.text(`所有选中课程平均分：${getAllCoursesScore(selectedCourses)}`)
+      $scoreTag.attr('title', `在 ${semestersQuantity} 个学期中，您当前一共选出了 ${selectedCoursesQuantity} 门课程进行计算，全部选中课程的加权平均分为 ${selectedCoursesScore}`)
+      $scoreTag.text(`所有选中课程平均分：${selectedCoursesScore}`)
       $gpaTag.show()
-      $gpaTag.text(`所有选中课程绩点：${getAllCoursesGPA(selectedCourses)}`)
+      $gpaTag.attr('title', `在 ${semestersQuantity} 个学期中，您当前一共选出了 ${selectedCoursesQuantity} 门课程进行计算，全部选中课程的加权平均绩点为 ${selectedCoursesGPA}`)
+      $gpaTag.text(`所有选中课程绩点：${selectedCoursesGPA}`)
       $cancelBtn.show()
     } else {
       $scoreTag.hide()
@@ -283,14 +337,15 @@ const gpa = {
       .selected = status
   },
   renderTotalTranscript () {
+    const semestersQuantity = this.historicalList.length
     const allCourses = this.historicalList.reduce((acc, cur) => acc.concat(cur.courses), [])
-    const labels = templates.totalTranscript(getFourTypesValue(allCourses))
+    const labels = templates.totalTranscript(semestersQuantity, allCourses)
     this.$indexWidgetMain.prepend(labels)
   },
   renderSemesterTranscript () {
     this.historicalList.forEach(({ semester, courses }) => {
       const header = templates.semesterTranscriptHeader(semester, courses)
-      const labels = templates.semesterTranscriptLabels(semester, getFourTypesValue(courses))
+      const labels = templates.semesterTranscriptLabels(semester, courses)
       const content = templates.semesterTranscriptContent(semester, courses)
       this.$indexWidgetMainRow.append(templates.semesterTranscriptWrapper(header, labels, content))
     })
