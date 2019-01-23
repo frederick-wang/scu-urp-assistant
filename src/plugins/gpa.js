@@ -69,6 +69,10 @@ const templates = {
             >
               0 学分
             </span>
+            <button class="btn btn-white btn-minier gpa-tt-select-all-btn">
+              <i class="ace-icon fa fa-times red2"></i>
+              全选
+            </button>
             <button class="btn btn-white btn-minier gpa-tt-cancel-btn">
               <i class="ace-icon fa fa-times red2"></i>
               全不选
@@ -130,6 +134,10 @@ const templates = {
         >
           0 学分
         </span>
+        <button class="btn btn-white btn-minier gpa-st-select-all-btn" data-semester="${semester}">
+          <i class="ace-icon fa fa-times red2"></i>
+          全选
+        </button>
         <button class="btn btn-white btn-minier gpa-st-cancel-btn" data-semester="${semester}">
           <i class="ace-icon fa fa-times red2"></i>
           全不选
@@ -265,6 +273,20 @@ const gpa = {
       this.reset()
     })
 
+    window.$('.gpa-st-select-all-btn').click(function () {
+      const semester = this.dataset.semester
+      that.historicalList.filter(v => v.semester === semester)[0].courses
+        .forEach(item => {
+          item.selected = true
+        })
+      window.$('.gpa-st-item').each(function () {
+        if (this.dataset.semester === semester) {
+          window.$(this).addClass('selected')
+        }
+      })
+      that.renderTagSelected()
+    })
+
     window.$('.gpa-st-cancel-btn').click(function () {
       const semester = this.dataset.semester
       that.historicalList.filter(v => v.semester === semester)[0].courses
@@ -275,6 +297,16 @@ const gpa = {
         if (this.dataset.semester === semester) {
           window.$(this).removeClass('selected')
         }
+      })
+      that.renderTagSelected()
+    })
+
+    window.$('.gpa-tt-select-all-btn').click(function () {
+      that.historicalList.forEach(list => list.courses.forEach(item => {
+        item.selected = true
+      }))
+      window.$('.gpa-st-item').each(function () {
+        window.$(this).addClass('selected')
       })
       that.renderTagSelected()
     })
@@ -300,6 +332,7 @@ const gpa = {
         const $selectedCourseCreditsBadge = getSemester$Element('gpa-info-badge-st-selected-course-credits')
         const $scoreTag = getSemester$Element('gpa-st-tag-selected-score')
         const $gpaTag = getSemester$Element('gpa-st-tag-selected-gpa')
+        const $selectAllBtn = getSemester$Element('gpa-st-select-all-btn')
         const $cancelBtn = getSemester$Element('gpa-st-cancel-btn')
         if (selectedCourses.length) {
           const selectedCoursesQuantity = selectedCourses.length
@@ -319,12 +352,14 @@ const gpa = {
           $gpaTag.show()
           $gpaTag.attr('title', `在${semester}，您当前选出了 ${selectedCoursesQuantity} 门课程进行计算，选中课程的加权平均绩点为 ${selectedCoursesGPA}`)
           $gpaTag.text(`选中课程绩点：${selectedCoursesGPA}`)
+          $selectAllBtn.hide()
           $cancelBtn.show()
         } else {
           $selectedCourseQuantityBadge.hide()
           $selectedCourseCreditsBadge.hide()
           $scoreTag.hide()
           $gpaTag.hide()
+          $selectAllBtn.show()
           $cancelBtn.hide()
         }
       })
@@ -335,6 +370,7 @@ const gpa = {
     const $selectedCourseCreditsBadge = window.$('.gpa-info-badge-tt-selected-course-credits')
     const $scoreTag = window.$('.gpa-tt-tag-selected-score')
     const $gpaTag = window.$('.gpa-tt-tag-selected-gpa')
+    const $selectAllBtn = window.$('.gpa-tt-select-all-btn')
     const $cancelBtn = window.$('.gpa-tt-cancel-btn')
     if (selectedCourses.length) {
       const semestersQuantity = this.historicalList.length
@@ -355,12 +391,14 @@ const gpa = {
       $gpaTag.show()
       $gpaTag.attr('title', `在 ${semestersQuantity} 个学期中，您当前一共选出了 ${selectedCoursesQuantity} 门课程进行计算，全部选中课程的加权平均绩点为 ${selectedCoursesGPA}`)
       $gpaTag.text(`所有选中课程绩点：${selectedCoursesGPA}`)
+      $selectAllBtn.hide()
       $cancelBtn.show()
     } else {
       $selectedCourseQuantityBadge.hide()
       $selectedCourseCreditsBadge.hide()
       $scoreTag.hide()
       $gpaTag.hide()
+      $selectAllBtn.show()
       $cancelBtn.hide()
     }
   },
