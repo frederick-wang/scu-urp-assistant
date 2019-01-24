@@ -455,6 +455,12 @@ const gpa = {
   }
 }
 
+/**
+ * 将元素数据列表映射为需要的数据列表
+ *
+ * @param {*} historicalList 原始数据
+ * @returns 处理后的数据
+ */
 function convertHistoricalList (historicalList) {
   return historicalList
     .map(v => ({
@@ -471,6 +477,12 @@ function convertHistoricalList (historicalList) {
     .reverse()
 }
 
+/**
+ * 计算加权平均数
+ *
+ * @param {*} arr 一个数组，每个对象包括数值value和权值weight
+ * @returns 计算好的加权平均数
+ */
 function getWeightedAverage (arr) {
   return arr
     .reduce(
@@ -483,38 +495,93 @@ function getWeightedAverage (arr) {
     .reduce((valueSum, weightSum) => valueSum / weightSum)
 }
 
+/**
+ * 从一个课程数组里筛选出所有的必修课程
+ *
+ * @param {*} arr 一个课程数组
+ * @returns 筛选出的只包括必修课程的数组
+ */
 function getCompulsoryCourse (arr) {
   return arr.filter(v => v.attribute === '必修')
 }
 
+/**
+ * 将课程数组映射为只包含gpa作为数值，学分作为权值的对象数组，用于加权平均数计算
+ *
+ * @param {*} arr 一个课程数组
+ * @returns 一个只包含gpa作为数值，学分作为权值的对象数组
+ */
 function mapGPA (arr) {
   return arr.map(v => ({ value: v.gpa, weight: v.credit }))
 }
 
+/**
+ * 将课程数组映射为只包含分数作为数值，学分作为权值的对象数组，用于加权平均数计算
+ *
+ * @param {*} arr 一个课程数组
+ * @returns 一个只包含分数作为数值，学分作为权值的对象数组
+ */
 function mapScore (arr) {
   return arr.map(v => ({ value: v.score, weight: v.credit }))
 }
 
+/**
+ * 将数值保留3位小数，再作为number返回
+ *
+ * @param {*} num 待处理的数字
+ * @param {number} [fractionDigits=3] 保留小数位数
+ * @returns 保留对应位数后的小数
+ */
 function reserveDigits (num, fractionDigits = 3) {
   return Number(num.toFixed(fractionDigits))
 }
 
+/**
+ * 输入课程数组，得到必修加权平均绩点
+ *
+ * @param {*} arr 课程数组
+ * @returns 必修加权平均绩点
+ */
 function getCompulsoryCoursesGPA (arr) {
   return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))))
 }
 
+/**
+ * 输入课程数组，得到必修加权平均分
+ *
+ * @param {*} arr 课程数组
+ * @returns 必修加权平均分
+ */
 function getCompulsoryCoursesScore (arr) {
   return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))))
 }
 
+/**
+ * 输入课程数组，得到全部课程加权平均绩点
+ *
+ * @param {*} arr 课程数组
+ * @returns 全部课程加权平均绩点
+ */
 function getAllCoursesGPA (arr) {
   return reserveDigits(getWeightedAverage(mapGPA(arr)))
 }
 
+/**
+ * 输入课程数组，得到全部课程加权平均分
+ *
+ * @param {*} arr 课程数组
+ * @returns 全部课程加权平均分
+ */
 function getAllCoursesScore (arr) {
   return reserveDigits(getWeightedAverage(mapScore(arr)))
 }
 
+/**
+ * 一次性获得必修加权平均分、必修加权平均绩点、全部课程加权平均分、全部课程加权平均绩点4个值
+ *
+ * @param {*} arr 一个由课程对象组成的数组
+ * @returns 必修加权平均分、必修加权平均绩点、全部课程加权平均分、全部课程加权平均绩点4个值
+ */
 function getFourTypesValue (arr) {
   return {
     compulsoryCoursesGPA: getCompulsoryCoursesGPA(arr),
@@ -524,6 +591,12 @@ function getFourTypesValue (arr) {
   }
 }
 
+/**
+ * 根据分数返回对应的绩点
+ *
+ * @param {*} score 分数
+ * @returns 绩点
+ */
 function getPointByScore (score) {
   if (score >= 90) {
     return 4
