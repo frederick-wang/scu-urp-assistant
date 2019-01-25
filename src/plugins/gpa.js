@@ -321,6 +321,9 @@ const gpa = {
       that.renderTagSelected()
     })
   },
+  /**
+   * 渲染与「选择」有关的元素
+   */
   renderTagSelected () {
     this.historicalList
       .forEach(({ semester, courses }) => {
