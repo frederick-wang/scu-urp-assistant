@@ -250,12 +250,20 @@ const gpa = {
         this.initEvent()
       })
   },
+
+  /**
+   * 初始化最初的界面
+   */
   initDOM () {
     this.$indexWidget = window.$(templates.indexWidget)
     window.$('.page-content').children('.row').append(this.$indexWidget)
     this.$indexWidgetMain = this.$indexWidget.find('.widget-main')
     this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row')
   },
+
+  /**
+   * 初始化按钮与「课程块」的鼠标事件
+   */
   initEvent () {
     const that = this
 
@@ -405,6 +413,10 @@ const gpa = {
       $cancelBtn.hide()
     }
   },
+
+  /**
+   * 当「课程块」被点击时，做出相应的反应
+   */
   toggleTranscriptItemStatus (dom) {
     window.$(dom).toggleClass('selected')
     const status = window.$(dom).hasClass('selected')
@@ -427,12 +439,20 @@ const gpa = {
       )[0]
       .selected = status
   },
+
+  /**
+   * 渲染「总成绩」部分的界面
+   */
   renderTotalTranscript () {
     const semestersQuantity = this.historicalList.length
     const allCourses = this.historicalList.reduce((acc, cur) => acc.concat(cur.courses), [])
     const labels = templates.totalTranscript(semestersQuantity, allCourses)
     this.$indexWidgetMain.prepend(labels)
   },
+
+  /**
+   * 渲染「学期成绩」部分的界面
+   */
   renderSemesterTranscript () {
     this.historicalList.forEach(({ semester, courses }) => {
       const header = templates.semesterTranscriptHeader(semester, courses)
@@ -441,6 +461,10 @@ const gpa = {
       this.$indexWidgetMainRow.append(templates.semesterTranscriptWrapper(header, labels, content))
     })
   },
+
+  /**
+   * 销毁页面元素
+   */
   destroy () {
     this.$indexWidgetMainRow.remove()
     this.$indexWidgetMain.remove()
@@ -452,6 +476,9 @@ const gpa = {
 
     this.historicalList = null
   },
+  /**
+   * 重置页面，销毁页面元素，重新获取数据并渲染界面
+   */
   reset () {
     this.destroy()
     this.init()
