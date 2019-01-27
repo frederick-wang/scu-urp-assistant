@@ -333,6 +333,10 @@ const gpa = {
    * 渲染与「选择」有关的元素
    */
   renderTagSelected () {
+    /**
+     * 2019-1-27 23:50:57
+     * TODO: 这里是先循环渲染学期成绩，再渲染总成绩的，有些丑，之后需要修改
+     */
     this.historicalList
       .forEach(({ semester, courses }) => {
         const selectedCourses = courses.filter(v => v.selected)
