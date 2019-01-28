@@ -297,6 +297,11 @@ const gpa = {
 
     window.$('.gpa-st-cancel-btn').click(function () {
       const semester = this.dataset.semester
+
+      /**
+       * 2019-1-28 23:56:37
+       * TODO: 这里的过滤很奇怪，需要优化
+       */
       that.historicalList.filter(v => v.semester === semester)[0].courses
         .forEach(item => {
           item.selected = false
