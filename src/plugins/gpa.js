@@ -241,6 +241,12 @@ const gpa = {
   historicalList: null,
   init () {
     this.initDOM()
+    /**
+     * 2019-1-29 22:23:22
+     * TODO: 这里只考虑了根据全部及格成绩来计算绩点，没有考虑不及格成绩
+     * 但是，不及格的成绩会如何计算我并不清楚……
+     * 目前只能先假设所有不及格且理由非「申请缓考」的同学都是0绩点均匀到各个学期了……
+     */
     window.$.get('/student/integratedQuery/scoreQuery/allPassingScores/callback')
       .then(({ lnList }) => {
         // lnList -> 历年数据
