@@ -291,6 +291,10 @@ const gpa = {
 
     window.$('.gpa-st-select-all-btn').click(function () {
       const semester = this.dataset.semester
+      /**
+       * 2019-1-31 23:56:56
+       * TODO: 这种过滤筛选出结果的方式需要重构，将其封装起来
+       */
       that.historicalList.filter(v => v.semester === semester)[0].courses
         .forEach(item => {
           item.selected = true
