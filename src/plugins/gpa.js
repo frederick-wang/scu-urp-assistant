@@ -450,6 +450,7 @@ const gpa = {
     const gpa = Number(dom.dataset.gpa)
     const credit = Number(dom.dataset.credit)
     this.historicalList
+    // 这里的过滤比较丑陋，需要修改
       .filter(v => v.semester === semester)[0].courses
       .filter(v =>
         v.name === name &&
