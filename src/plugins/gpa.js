@@ -138,14 +138,19 @@ const gpa = {
       that.renderTagSelected()
     })
   },
+
   /**
    * 渲染与「选择」有关的元素
    */
   renderTagSelected() {
-    /**
-     * 2019-1-27 23:50:57
-     * TODO: 这里是先循环渲染学期成绩，再渲染总成绩的，有些丑，之后需要修改
-     */
+    this.renderSemesterTagSelected()
+    this.renderTotalTagSelected()
+  },
+
+  /**
+   * 渲染与「选择」有关的「分学期」元素
+   */
+  renderSemesterTagSelected() {
     this.records.forEach(({ semester, courses }) => {
       const selectedCourses = courses.filter(v => v.selected)
       const getSemester$Element = className =>
@@ -208,6 +213,12 @@ const gpa = {
         $cancelBtn.hide()
       }
     })
+  },
+
+  /**
+   * 渲染与「选择」有关的「全部成绩」元素
+   */
+  renderTotalTagSelected() {
     const selectedCourses = this.records
       .reduce((acc, cur) => acc.concat(cur.courses), [])
       .filter(v => v.selected)
