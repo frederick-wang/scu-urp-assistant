@@ -248,6 +248,7 @@ const gpa = {
      * 目前只能先假设所有不及格且理由非「申请缓考」的同学都是0绩点均匀到各个学期了……
      * 不及格成绩的接口为：http://zhjw.scu.edu.cn/student/integratedQuery/scoreQuery/unpassedScores/callback
      * 格式与全部及格成绩一致
+     * 明天测试一下babel打包后的Promise是否支持IE……不支持的话还得回调函数嵌套
      */
     window.$.get('/student/integratedQuery/scoreQuery/allPassingScores/callback')
       .then(({ lnList }) => {
