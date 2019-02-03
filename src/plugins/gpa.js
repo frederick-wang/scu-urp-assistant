@@ -8,7 +8,7 @@ const gpa = {
   $indexWidget: null,
   $indexWidgetMain: null,
   $indexWidgetMainRow: null,
-  historicalList: null,
+  records: null,
   init() {
     this.initDOM()
     window.$.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
@@ -47,7 +47,7 @@ const gpa = {
         }, [])
       )
       .then(list => {
-        this.historicalList = convertHistoricalList(list)
+        this.records = convertHistoricalList(list)
         this.renderSemesterTranscript()
         this.renderTotalTranscript()
         this.initEvent()
@@ -90,15 +90,9 @@ const gpa = {
 
     window.$('.gpa-st-select-all-btn').click(function() {
       const semester = this.dataset.semester
-      /**
-       * 2019-1-31 23:56:56
-       * TODO: 这种过滤筛选出结果的方式需要重构，将其封装起来
-       */
-      that.historicalList
-        .filter(v => v.semester === semester)[0]
-        .courses.forEach(item => {
-          item.selected = true
-        })
+      getSemesterCourses(that.records, semester).forEach(item => {
+        item.selected = true
+      })
       window.$('.gpa-st-item').each(function() {
         if (this.dataset.semester === semester) {
           window.$(this).addClass('selected')
@@ -109,16 +103,9 @@ const gpa = {
 
     window.$('.gpa-st-cancel-btn').click(function() {
       const semester = this.dataset.semester
-
-      /**
-       * 2019-1-28 23:56:37
-       * TODO: 这里的过滤很奇怪，需要优化
-       */
-      that.historicalList
-        .filter(v => v.semester === semester)[0]
-        .courses.forEach(item => {
-          item.selected = false
-        })
+      getSemesterCourses(that.records, semester).forEach(item => {
+        item.selected = false
+      })
       window.$('.gpa-st-item').each(function() {
         if (this.dataset.semester === semester) {
           window.$(this).removeClass('selected')
@@ -128,7 +115,7 @@ const gpa = {
     })
 
     window.$('.gpa-tt-select-all-btn').click(function() {
-      that.historicalList.forEach(list =>
+      that.records.forEach(list =>
         list.courses.forEach(item => {
           item.selected = true
         })
@@ -140,7 +127,7 @@ const gpa = {
     })
 
     window.$('.gpa-tt-cancel-btn').click(function() {
-      that.historicalList.forEach(list =>
+      that.records.forEach(list =>
         list.courses.forEach(item => {
           item.selected = false
         })
@@ -159,7 +146,7 @@ const gpa = {
      * 2019-1-27 23:50:57
      * TODO: 这里是先循环渲染学期成绩，再渲染总成绩的，有些丑，之后需要修改
      */
-    this.historicalList.forEach(({ semester, courses }) => {
+    this.records.forEach(({ semester, courses }) => {
       const selectedCourses = courses.filter(v => v.selected)
       const getSemester$Element = className =>
         window.$(
@@ -221,7 +208,7 @@ const gpa = {
         $cancelBtn.hide()
       }
     })
-    const selectedCourses = this.historicalList
+    const selectedCourses = this.records
       .reduce((acc, cur) => acc.concat(cur.courses), [])
       .filter(v => v.selected)
     const $selectedCourseQuantityBadge = window.$(
@@ -235,7 +222,7 @@ const gpa = {
     const $selectAllBtn = window.$('.gpa-tt-select-all-btn')
     const $cancelBtn = window.$('.gpa-tt-cancel-btn')
     if (selectedCourses.length) {
-      const semestersQuantity = this.historicalList.length
+      const semestersQuantity = this.records.length
       const selectedCoursesQuantity = selectedCourses.length
       const selectedCourseCredits = selectedCourses.reduce(
         (acc, cur) => acc + cur.credit,
@@ -290,25 +277,22 @@ const gpa = {
     const score = Number(dom.dataset.score)
     const gpa = Number(dom.dataset.gpa)
     const credit = Number(dom.dataset.credit)
-    this.historicalList
-      // 这里的过滤比较丑陋，需要修改
-      .filter(v => v.semester === semester)[0]
-      .courses.filter(
-        v =>
-          v.name === name &&
-          v.attribute === attribute &&
-          v.score === score &&
-          v.gpa === gpa &&
-          v.credit === credit
-      )[0].selected = status
+    getSemesterCourses(this.records, semester).filter(
+      v =>
+        v.name === name &&
+        v.attribute === attribute &&
+        v.score === score &&
+        v.gpa === gpa &&
+        v.credit === credit
+    )[0].selected = status
   },
 
   /**
    * 渲染「总成绩」部分的界面
    */
   renderTotalTranscript() {
-    const semestersQuantity = this.historicalList.length
-    const allCourses = this.historicalList.reduce(
+    const semestersQuantity = this.records.length
+    const allCourses = this.records.reduce(
       (acc, cur) => acc.concat(cur.courses),
       []
     )
@@ -320,7 +304,7 @@ const gpa = {
    * 渲染「学期成绩」部分的界面
    */
   renderSemesterTranscript() {
-    this.historicalList.forEach(({ semester, courses }) => {
+    this.records.forEach(({ semester, courses }) => {
       const header = templates.semesterTranscriptHeader(semester, courses)
       const labels = templates.semesterTranscriptLabels(semester, courses)
       const content = templates.semesterTranscriptContent(semester, courses)
@@ -342,7 +326,7 @@ const gpa = {
     this.$indexWidgetMain = null
     this.$indexWidgetMainRow = null
 
-    this.historicalList = null
+    this.records = null
   },
   /**
    * 重置页面，销毁页面元素，重新获取数据并渲染界面
@@ -376,6 +360,17 @@ function convertHistoricalList(historicalList) {
       }))
     }))
     .reverse()
+}
+
+/**
+ * 从总记录中提取出对应学期的课程列表
+ *
+ * @param {*} records 总记录
+ * @param {*} semester 学期名称
+ * @returns 课程列表
+ */
+function getSemesterCourses(records, semester) {
+  return records.filter(v => v.semester === semester)[0].courses
 }
 
 /**

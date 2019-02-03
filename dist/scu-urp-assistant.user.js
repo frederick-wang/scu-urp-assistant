@@ -3837,7 +3837,7 @@ var gpa = {
   $indexWidget: null,
   $indexWidgetMain: null,
   $indexWidgetMainRow: null,
-  historicalList: null,
+  records: null,
   init: function init() {
     var _this = this;
 
@@ -3877,7 +3877,7 @@ var gpa = {
         return acc;
       }, []);
     }).then(function (list) {
-      _this.historicalList = convertHistoricalList(list);
+      _this.records = convertHistoricalList(list);
 
       _this.renderSemesterTranscript();
 
@@ -3922,9 +3922,7 @@ var gpa = {
        * TODO: 这种过滤筛选出结果的方式需要重构，将其封装起来
        */
 
-      that.historicalList.filter(function (v) {
-        return v.semester === semester;
-      })[0].courses.forEach(function (item) {
+      getSemesterCourses(that.records, semester).forEach(function (item) {
         item.selected = true;
       });
       window.$('.gpa-st-item').each(function () {
@@ -3941,9 +3939,7 @@ var gpa = {
        * TODO: 这里的过滤很奇怪，需要优化
        */
 
-      that.historicalList.filter(function (v) {
-        return v.semester === semester;
-      })[0].courses.forEach(function (item) {
+      getSemesterCourses(that.records, semester).forEach(function (item) {
         item.selected = false;
       });
       window.$('.gpa-st-item').each(function () {
@@ -3954,7 +3950,7 @@ var gpa = {
       that.renderTagSelected();
     });
     window.$('.gpa-tt-select-all-btn').click(function () {
-      that.historicalList.forEach(function (list) {
+      that.records.forEach(function (list) {
         return list.courses.forEach(function (item) {
           item.selected = true;
         });
@@ -3965,7 +3961,7 @@ var gpa = {
       that.renderTagSelected();
     });
     window.$('.gpa-tt-cancel-btn').click(function () {
-      that.historicalList.forEach(function (list) {
+      that.records.forEach(function (list) {
         return list.courses.forEach(function (item) {
           item.selected = false;
         });
@@ -3985,7 +3981,7 @@ var gpa = {
      * 2019-1-27 23:50:57
      * TODO: 这里是先循环渲染学期成绩，再渲染总成绩的，有些丑，之后需要修改
      */
-    this.historicalList.forEach(function (_ref2) {
+    this.records.forEach(function (_ref2) {
       var semester = _ref2.semester,
           courses = _ref2.courses;
       var selectedCourses = courses.filter(function (v) {
@@ -4035,7 +4031,7 @@ var gpa = {
         $cancelBtn.hide();
       }
     });
-    var selectedCourses = this.historicalList.reduce(function (acc, cur) {
+    var selectedCourses = this.records.reduce(function (acc, cur) {
       return acc.concat(cur.courses);
     }, []).filter(function (v) {
       return v.selected;
@@ -4048,7 +4044,7 @@ var gpa = {
     var $cancelBtn = window.$('.gpa-tt-cancel-btn');
 
     if (selectedCourses.length) {
-      var semestersQuantity = this.historicalList.length;
+      var semestersQuantity = this.records.length;
       var selectedCoursesQuantity = selectedCourses.length;
       var selectedCourseCredits = selectedCourses.reduce(function (acc, cur) {
         return acc + cur.credit;
@@ -4092,10 +4088,7 @@ var gpa = {
     var score = Number(dom.dataset.score);
     var gpa = Number(dom.dataset.gpa);
     var credit = Number(dom.dataset.credit);
-    this.historicalList // 这里的过滤比较丑陋，需要修改
-    .filter(function (v) {
-      return v.semester === semester;
-    })[0].courses.filter(function (v) {
+    getSemesterCourses(this.records, semester).filter(function (v) {
       return v.name === name && v.attribute === attribute && v.score === score && v.gpa === gpa && v.credit === credit;
     })[0].selected = status;
   },
@@ -4104,8 +4097,8 @@ var gpa = {
    * 渲染「总成绩」部分的界面
    */
   renderTotalTranscript: function renderTotalTranscript() {
-    var semestersQuantity = this.historicalList.length;
-    var allCourses = this.historicalList.reduce(function (acc, cur) {
+    var semestersQuantity = this.records.length;
+    var allCourses = this.records.reduce(function (acc, cur) {
       return acc.concat(cur.courses);
     }, []);
     var labels = templates.totalTranscript(semestersQuantity, allCourses);
@@ -4118,7 +4111,7 @@ var gpa = {
   renderSemesterTranscript: function renderSemesterTranscript() {
     var _this3 = this;
 
-    this.historicalList.forEach(function (_ref3) {
+    this.records.forEach(function (_ref3) {
       var semester = _ref3.semester,
           courses = _ref3.courses;
       var header = templates.semesterTranscriptHeader(semester, courses);
@@ -4139,7 +4132,7 @@ var gpa = {
     this.$indexWidget = null;
     this.$indexWidgetMain = null;
     this.$indexWidgetMainRow = null;
-    this.historicalList = null;
+    this.records = null;
   },
 
   /**
@@ -4173,6 +4166,20 @@ function convertHistoricalList(historicalList) {
       })
     };
   }).reverse();
+}
+/**
+ * 从总记录中提取出对应学期的课程列表
+ *
+ * @param {*} records 总记录
+ * @param {*} semester 学期名称
+ * @returns 课程列表
+ */
+
+
+function getSemesterCourses(records, semester) {
+  return records.filter(function (v) {
+    return v.semester === semester;
+  })[0].courses;
 }
 /**
  * 计算加权平均数
