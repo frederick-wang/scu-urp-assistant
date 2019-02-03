@@ -1,6 +1,6 @@
 // 修复兼容性插件(旧版教务系统)
 const compatibilityLegacy = {
-  init () {
+  init() {
     this.topFrame.changeLeftMenu = () => {
       if (this.bottomFrame && this.menuFrame && this.menuFrame.menus) {
         this.menuFrame.menus.index = this.topFrame.moduleNum
@@ -10,12 +10,12 @@ const compatibilityLegacy = {
     }
     this.topFrame.changeLeftMenu()
   },
-  task () {
+  task() {
     if (!this.mainFrame.showModalDialog) {
       this.mainFrame.showModalDialog = this.showModalDialog
     }
   },
-  showModalDialog (arg1, arg2, arg3) {
+  showModalDialog(arg1, arg2, arg3) {
     let w
     let h
     let resizable = 'no'
@@ -47,7 +47,11 @@ const compatibilityLegacy = {
     }
     let left = window.screenX + window.outerWidth / 2 - w / 2
     let top = window.screenY + window.outerHeight / 2 - h / 2
-    let targetWin = window.open(arg1, arg1, `toolbar=no, location=no, directories=no, status=${status}, menubar=no, scrollbars=${scroll}, resizable=${resizable}, copyhistory=no, width=${w}, height=${h}, top=${top}, left=${left}`)
+    let targetWin = window.open(
+      arg1,
+      arg1,
+      `toolbar=no, location=no, directories=no, status=${status}, menubar=no, scrollbars=${scroll}, resizable=${resizable}, copyhistory=no, width=${w}, height=${h}, top=${top}, left=${left}`
+    )
     targetWin.focus()
   }
 }

@@ -3,7 +3,7 @@ const recoverRememberMe = {
   name: 'recover-remember-me',
   pathname: '/login',
   $rememberMe: void 0,
-  init () {
+  init() {
     this.$rememberMe = window.$(`
       <div style="margin: 5px 0;">
         <input

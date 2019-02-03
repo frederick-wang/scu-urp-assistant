@@ -3164,14 +3164,14 @@ var fastEvaluation = {
   list: [],
   evaluationInterval: 1000 * 121,
   checkboxWrapperSelectors: {
-    '研究生助教评价': '#yjs-checkbox-wrapper',
+    研究生助教评价: '#yjs-checkbox-wrapper',
     '学生评教（课堂教学）': '#ktjx-checkbox-wrapper',
     '学生评教（实验教学）': '#syjx-checkbox-wrapper',
     '学生评教（实践教学）': '#sjjx-checkbox-wrapper',
     '学生评教（体育教学）': '#tyjx-checkbox-wrapper'
   },
   questionsNumberRange: {
-    '研究生助教评价': {
+    研究生助教评价: {
       begin: 28,
       end: 33
     },
@@ -3272,7 +3272,7 @@ var fastEvaluation = {
     // 今天发现 urp 代码有修改，把 evaluationContentContent 从 onClick 函数调用里删除了。
     // 临时这样补上，尽量不做大修改，防止出错。
     .map(function (item) {
-      return item.getAttribute('onClick').replace(/evaluationResult\("|evaluation\("|"\);return false;/ig, '') + ('","' + item.parentElement.parentElement.children[3].innerText);
+      return item.getAttribute('onClick').replace(/evaluationResult\("|evaluation\("|"\);return false;/gi, '') + ('","' + item.parentElement.parentElement.children[3].innerText);
     });
 
     if (!items.length) {
@@ -3337,7 +3337,7 @@ var fastEvaluation = {
       type: 'POST',
       url: '/student/teachingEvaluation/teachingEvaluation/evaluationPage',
       headers: {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
         'Cache-Control': 'max-age=0',
         'Upgrade-Insecure-Requests': 1
       },
@@ -3413,14 +3413,16 @@ module.exports = fastEvaluation;
 },{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.12",
+  "version": "0.8.13",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
-    "start": "npm run transform && npm run userscript && npm run bookmarklet",
-    "transform": "babel --plugins transform-runtime src --out-dir transformed",
+    "start": "npm run transform && npm run userscript && npm run bookmarklet && rm -rf transformed/",
     "userscript": "parcel build transformed/scu-urp-assistant.user.js --no-minify --no-source-maps",
-    "bookmarklet": "parcel build transformed/scu-urp-assistant-bookmarklet.js --no-minify --no-source-maps"
+    "bookmarklet": "parcel build transformed/scu-urp-assistant-bookmarklet.js --no-minify --no-source-maps",
+    "transform": "npm run transform:js && npm run transform:scss",
+    "transform:js": "babel --plugins transform-runtime src --out-dir transformed",
+    "transform:scss": "node-sass src/plugins/ -o transformed/plugins/ --output-style compressed"
   },
   "repository": {
     "type": "git",
@@ -3438,10 +3440,11 @@ module.exports = {
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.1.0"
+    "eslint-plugin-standard": "^3.1.0",
+    "node-sass": "^4.11.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -3576,7 +3579,7 @@ var fastEvaluationLegacy = {
   span: void 0,
   evaluationInterval: 500,
   headers: {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     'Cache-Control': 'max-age=0',
     'Content-Type': 'application/x-www-form-urlencoded',
     'Upgrade-Insecure-Requests': '1'
@@ -3827,55 +3830,10 @@ function _interopRequireDefault(obj) {
 
 var fs = require('fs');
 
-var templates = {
-  indexWidget: "\n    <div class=\"col-sm-12 widget-container-col\">\n      <div class=\"widget-box\">\n        <div class=\"widget-header\">\n          <h5 class=\"widget-title\">\n            \u6211\u7684\u6210\u7EE9\n            <span class=\"badge badge-primary\" style=\"padding-top:3px;position:relative;top:-3px;\">SCU URP \u52A9\u624B</span>\n          </h5>\n          <div class=\"widget-toolbar\">\n            <div class=\"widget-menu\">\n                <a id=\"gpa-toolbar-detail\" data-action=\"settings\" data-toggle=\"dropdown\">\n                    <i class=\"ace-icon fa fa-bars\"></i>\n                </a>\n                <a id=\"gpa-toolbar-reset\" data-action=\"reload\"\">\n                    <i class=\"ace-icon fa fa-refresh\"></i>\n                </a>\n            </div>\n          </div>\n        </div>\n        <div class=\"widget-body\">\n          <div class=\"widget-main\">\n            <div class=\"row\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  ",
-  totalTranscript: function totalTranscript(semestersQuantity, courses) {
-    var _getFourTypesValue = getFourTypesValue(courses),
-        allCoursesGPA = _getFourTypesValue.allCoursesGPA,
-        allCoursesScore = _getFourTypesValue.allCoursesScore,
-        compulsoryCoursesGPA = _getFourTypesValue.compulsoryCoursesGPA,
-        compulsoryCoursesScore = _getFourTypesValue.compulsoryCoursesScore;
-
-    var compulsoryCourses = getCompulsoryCourse(courses);
-    var coursesQuantity = courses.length;
-    var totalCourseCredits = courses.reduce(function (acc, cur) {
-      return acc + cur.credit;
-    }, 0);
-    var compulsoryCoursesQuantity = compulsoryCourses.length;
-    return "\n      <div class=\"gpa-tt row\" style=\"margin-bottom: 20px;\">\n        <div class=\"col-sm-12\">\n          <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n            <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n            <span\n              class=\"gpa-info-badge badge badge-yellow\"\n              title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\"\n            >\n              " + coursesQuantity + " \u95E8\n            </span>\n            <span\n              class=\"gpa-info-badge badge badge-yellow\"\n              title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + totalCourseCredits + " \u5B66\u5206\"\n            >\n              " + totalCourseCredits + " \u5B66\u5206\n            </span>\n            <span\n              class=\"gpa-info-badge gpa-info-badge-tt-selected-course-quantity badge badge-pink\"\n              title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u5F53\u524D\u4E00\u5171\u9009\u4E2D\u4E86 0 \u95E8\u8BFE\u7A0B\"\n            >\n              0 \u95E8\n            </span>\n            <span\n              class=\"gpa-info-badge gpa-info-badge-tt-selected-course-credits badge badge-pink\"\n              title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u5F53\u524D\u9009\u4E2D\u7684\u5168\u90E8\u8BFE\u7A0B\u603B\u5B66\u5206\u4E3A 0\"\n            >\n              0 \u5B66\u5206\n            </span>\n            <button class=\"btn btn-white btn-minier gpa-tt-select-all-btn\">\n              <i class=\"ace-icon fa fa-check green\"></i>\n              \u5168\u9009\n            </button>\n            <button class=\"btn btn-white btn-minier gpa-tt-cancel-btn\">\n              <i class=\"ace-icon fa fa-times red2\"></i>\n              \u5168\u4E0D\u9009\n            </button>\n          </h4>\n          <span\n            class=\"gpa-tt-tag label label-success\"\n            title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + compulsoryCoursesQuantity + " \u95E8\u5FC5\u4FEE\u8BFE\u7A0B\uFF0C\u5FC5\u4FEE\u52A0\u6743\u5E73\u5747\u5206\u4E3A " + compulsoryCoursesScore + "\"\n          >\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span\n            class=\"gpa-tt-tag label label-success\"\n            title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + compulsoryCoursesQuantity + " \u95E8\u5FC5\u4FEE\u8BFE\u7A0B\uFF0C\u5FC5\u4FEE\u52A0\u6743\u5E73\u5747\u7EE9\u70B9\u4E3A " + compulsoryCoursesGPA + "\"\n          >\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span\n            class=\"gpa-tt-tag label label-purple\"\n            title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\uFF0C\u5168\u90E8\u52A0\u6743\u5E73\u5747\u5206\u4E3A " + allCoursesScore + "\"\n          >\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span\n            class=\"gpa-st-tag label label-purple\"\n            title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\uFF0C\u5168\u90E8\u52A0\u6743\u5E73\u5747\u7EE9\u70B9\u4E3A " + allCoursesGPA + "\"\n          >\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + "\n          </span>\n          <span class=\"gpa-tt-tag gpa-tt-tag-selected-score label label-pink\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n          </span>\n          <span class=\"gpa-tt-tag gpa-tt-tag-selected-gpa label label-pink\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n          </span>\n        </div>\n      </div>\n    ";
-  },
-  semesterTranscriptHeader: function semesterTranscriptHeader(semester, courses) {
-    var coursesQuantity = courses.length;
-    var totalCourseCredits = courses.reduce(function (acc, cur) {
-      return acc + cur.credit;
-    }, 0);
-    return '\n      <h4 class="header smaller lighter grey">\n        <i class="menu-icon fa fa-calendar"></i> ' + semester + "\n        <span class=\"gpa-info-badge badge badge-yellow\" title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\">" + coursesQuantity + " \u95E8</span>\n        <span class=\"gpa-info-badge badge badge-yellow\" title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + totalCourseCredits + " \u5B66\u5206\">" + totalCourseCredits + " \u5B66\u5206</span>\n        <span\n          class=\"gpa-info-badge gpa-info-badge-st-selected-course-quantity badge badge-pink\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u5F53\u524D\u9009\u4E2D\u4E86 0 \u95E8\u8BFE\u7A0B\"\n          data-semester=\"" + semester + "\"\n        >\n          0 \u95E8\n        </span>\n        <span\n          class=\"gpa-info-badge gpa-info-badge-st-selected-course-credits badge badge-pink\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u5F53\u524D\u9009\u4E2D\u7684\u8BFE\u7A0B\u603B\u5B66\u5206\u4E3A 0\"\n          data-semester=\"" + semester + "\"\n        >\n          0 \u5B66\u5206\n        </span>\n        <button class=\"btn btn-white btn-minier gpa-st-select-all-btn\" data-semester=\"" + semester + "\">\n          <i class=\"ace-icon fa fa-check green\"></i>\n          \u5168\u9009\n        </button>\n        <button class=\"btn btn-white btn-minier gpa-st-cancel-btn\" data-semester=\"" + semester + "\">\n          <i class=\"ace-icon fa fa-times red2\"></i>\n          \u5168\u4E0D\u9009\n        </button>\n      </h4>\n    ";
-  },
-  semesterTranscriptLabels: function semesterTranscriptLabels(semester, courses) {
-    var _getFourTypesValue2 = getFourTypesValue(courses),
-        allCoursesGPA = _getFourTypesValue2.allCoursesGPA,
-        allCoursesScore = _getFourTypesValue2.allCoursesScore,
-        compulsoryCoursesGPA = _getFourTypesValue2.compulsoryCoursesGPA,
-        compulsoryCoursesScore = _getFourTypesValue2.compulsoryCoursesScore;
-
-    var compulsoryCourses = getCompulsoryCourse(courses);
-    var coursesQuantity = courses.length;
-    var compulsoryCoursesQuantity = compulsoryCourses.length;
-    return "\n      <p>\n        <span\n          class=\"gpa-st-tag label label-success\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + compulsoryCoursesQuantity + " \u95E8\u5FC5\u4FEE\u8BFE\u7A0B\uFF0C\u5FC5\u4FEE\u52A0\u6743\u5E73\u5747\u5206\u4E3A " + compulsoryCoursesScore + "\"\n        >\n          \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n        </span>\n        <span\n          class=\"gpa-st-tag label label-success\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + compulsoryCoursesQuantity + " \u95E8\u5FC5\u4FEE\u8BFE\u7A0B\uFF0C\u5FC5\u4FEE\u52A0\u6743\u5E73\u5747\u7EE9\u70B9\u4E3A " + compulsoryCoursesGPA + "\"\n        >\n          \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n        </span>\n        <span\n          class=\"gpa-st-tag label label-purple\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\uFF0C\u52A0\u6743\u5E73\u5747\u5206\u4E3A " + allCoursesScore + "\"\n        >\n          \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n        </span>\n        <span\n          class=\"gpa-st-tag label label-purple\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\uFF0C\u52A0\u6743\u5E73\u5747\u7EE9\u70B9\u4E3A " + allCoursesGPA + "\"\n        >\n          \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n        </span>\n      </p>\n      <p>\n        <span class="gpa-st-tag gpa-st-tag-selected-score label label-pink" data-semester="' + semester + "\">\n        \u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n        </span>\n        <span class=\"gpa-st-tag gpa-st-tag-selected-gpa label label-pink\" data-semester=\"" + semester + "\">\n          \u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n        </span>\n      </p>\n    ";
-  },
-  semesterTranscriptContent: function semesterTranscriptContent(semester, courses) {
-    return "\n      <table class=\"gpa-st-table table table-striped table-bordered table-hover\">\n        <thead>\n          <tr>\n            <th>\u8BFE\u7A0B\u540D</th>\n            <th>\u5206\u6570</th>\n            <th>\u7EE9\u70B9</th>\n            <th>\u5B66\u5206</th>\n            <th>\u5C5E\u6027</th>\n          </tr>\n        </thead>\n        <tbody>\n        " + courses.map(function (v) {
-      return '\n          <tr\n            class="gpa-st-item"\n            data-semester="' + semester + '"\n            data-name="' + v.name + '"\n            data-score="' + v.score + '"\n            data-gpa="' + v.gpa + '"\n            data-credit="' + v.credit + '"\n            data-attribute="' + v.attribute + '"\n          >\n            <td>' + v.name + '</td>\n            <td>' + v.score + '</td>\n            <td>' + v.gpa + '</td>\n            <td>' + v.credit + '</td>\n            <td>' + v.attribute + '</td>\n          </tr>\n        ';
-    }).join('') + '\n        </tbody>\n      </table>\n    ';
-  },
-  semesterTranscriptWrapper: function semesterTranscriptWrapper(header, labels, content) {
-    return '<div class="gpa-st col-sm-6">' + (header + labels + content) + '</div>';
-  }
-};
 var gpa = {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
-  style: "/* gpa -> namespace */\r\n\r\n/* st -> semester-transcript */\r\n\r\n/* tt -> total-transcript */\r\n\r\n.gpa-st-item {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-item>td {\r\n  transition: .1s;\r\n}\r\n\r\n.gpa-st-item.selected>td {\r\n  font-weight: bolder;\r\n  color: #409eff;\r\n  background-color: #ecf5ff !important;\r\n  /* border-color: #b3d8ff; */\r\n}\r\n\r\n.gpa-st-item.selected:hover>td {\r\n  background-color: #409eff !important;\r\n  color: #fff;\r\n  /* border-color: #409eff; */\r\n}\r\n\r\n.gpa-st-item.selected:active>td {\r\n  background-color: #3a8ee6 !important;\r\n  color: #fff;\r\n  outline: none;\r\n  /* border-color: #3a8ee6; */\r\n}\r\n\r\n.gpa-st-tag-selected-score, .gpa-st-tag-selected-gpa, .gpa-tt-tag-selected-score, .gpa-tt-tag-selected-gpa {\r\n  display: none;\r\n}\r\n\r\n.gpa-st-select-all-btn, .gpa-tt-select-all-btn {\r\n  position: relative;\r\n  top: 2.5px;\r\n  float: right;\r\n}\r\n\r\n.gpa-st-cancel-btn, .gpa-tt-cancel-btn {\r\n  display: none;\r\n  position: relative;\r\n  top: 2.5px;\r\n  float: right;\r\n}\r\n\r\n#gpa-toolbar-detail, #gpa-toolbar-reset {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-st-tag, .gpa-tt-tag {\r\n  cursor: pointer;\r\n}\r\n\r\n.gpa-info-badge {\r\n  cursor: pointer;\r\n  position: relative;\r\n  top: -7.5px;\r\n}\r\n\r\n.gpa-info-badge-tt-selected-course-quantity, .gpa-info-badge-tt-selected-course-credits, .gpa-info-badge-st-selected-course-quantity, .gpa-info-badge-st-selected-course-credits {\r\n  display: none;\r\n}\r\n",
+  style: ".gpa-st-item{cursor:pointer}.gpa-st-item>td{transition:0.1s}.gpa-st-item.selected>td{font-weight:bolder;color:#409eff;background-color:#ecf5ff !important}.gpa-st-item.selected:hover>td{background-color:#6a7681 !important;color:#fff}.gpa-st-item:active>td{background-color:#3a8ee6 !important;color:#fff;outline:none}.gpa-st-tag-selected-score,.gpa-st-tag-selected-gpa,.gpa-tt-tag-selected-score,.gpa-tt-tag-selected-gpa{display:none}.gpa-st-select-all-btn,.gpa-tt-select-all-btn{position:relative;top:2.5px;float:right}.gpa-st-cancel-btn,.gpa-tt-cancel-btn{display:none;position:relative;top:2.5px;float:right}#gpa-toolbar-detail,#gpa-toolbar-reset{cursor:pointer}.gpa-st-tag,.gpa-tt-tag{cursor:pointer}.gpa-info-badge{cursor:pointer;position:relative;top:-7.5px}.gpa-info-badge-tt-selected-course-quantity,.gpa-info-badge-tt-selected-course-credits,.gpa-info-badge-st-selected-course-quantity,.gpa-info-badge-st-selected-course-credits{display:none}\n",
   $indexWidget: null,
   $indexWidgetMain: null,
   $indexWidgetMainRow: null,
@@ -3884,6 +3842,15 @@ var gpa = {
     var _this = this;
 
     this.initDOM();
+    /**
+     * 2019-1-29 22:23:22
+     * TODO: 这里只考虑了根据全部及格成绩来计算绩点，没有考虑不及格成绩
+     * 但是，不及格的成绩会如何计算我并不清楚……
+     * 目前只能先假设所有不及格且理由非「申请缓考」的同学都是0绩点均匀到各个学期了……
+     * 不及格成绩的接口为：http://zhjw.scu.edu.cn/student/integratedQuery/scoreQuery/unpassedScores/callback
+     * 格式与全部及格成绩一致
+     */
+
     window.$.get('/student/integratedQuery/scoreQuery/allPassingScores/callback').then(function (_ref) {
       var lnList = _ref.lnList; // lnList -> 历年数据
 
@@ -3896,12 +3863,20 @@ var gpa = {
       _this.initEvent();
     });
   },
+
+  /**
+   * 初始化最初的界面
+   */
   initDOM: function initDOM() {
     this.$indexWidget = window.$(templates.indexWidget);
     window.$('.page-content').children('.row').append(this.$indexWidget);
     this.$indexWidgetMain = this.$indexWidget.find('.widget-main');
     this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row');
   },
+
+  /**
+   * 初始化按钮与「课程块」的鼠标事件
+   */
   initEvent: function initEvent() {
     var _this2 = this;
 
@@ -3919,6 +3894,11 @@ var gpa = {
     });
     window.$('.gpa-st-select-all-btn').click(function () {
       var semester = this.dataset.semester;
+      /**
+       * 2019-1-31 23:56:56
+       * TODO: 这种过滤筛选出结果的方式需要重构，将其封装起来
+       */
+
       that.historicalList.filter(function (v) {
         return v.semester === semester;
       })[0].courses.forEach(function (item) {
@@ -3933,6 +3913,11 @@ var gpa = {
     });
     window.$('.gpa-st-cancel-btn').click(function () {
       var semester = this.dataset.semester;
+      /**
+       * 2019-1-28 23:56:37
+       * TODO: 这里的过滤很奇怪，需要优化
+       */
+
       that.historicalList.filter(function (v) {
         return v.semester === semester;
       })[0].courses.forEach(function (item) {
@@ -3968,7 +3953,15 @@ var gpa = {
       that.renderTagSelected();
     });
   },
+
+  /**
+   * 渲染与「选择」有关的元素
+   */
   renderTagSelected: function renderTagSelected() {
+    /**
+     * 2019-1-27 23:50:57
+     * TODO: 这里是先循环渲染学期成绩，再渲染总成绩的，有些丑，之后需要修改
+     */
     this.historicalList.forEach(function (_ref2) {
       var semester = _ref2.semester,
           courses = _ref2.courses;
@@ -4062,6 +4055,10 @@ var gpa = {
       $cancelBtn.hide();
     }
   },
+
+  /**
+   * 当「课程块」被点击时，做出相应的反应
+   */
   toggleTranscriptItemStatus: function toggleTranscriptItemStatus(dom) {
     window.$(dom).toggleClass('selected');
     var status = window.$(dom).hasClass('selected');
@@ -4072,12 +4069,17 @@ var gpa = {
     var score = Number(dom.dataset.score);
     var gpa = Number(dom.dataset.gpa);
     var credit = Number(dom.dataset.credit);
-    this.historicalList.filter(function (v) {
+    this.historicalList // 这里的过滤比较丑陋，需要修改
+    .filter(function (v) {
       return v.semester === semester;
     })[0].courses.filter(function (v) {
       return v.name === name && v.attribute === attribute && v.score === score && v.gpa === gpa && v.credit === credit;
     })[0].selected = status;
   },
+
+  /**
+   * 渲染「总成绩」部分的界面
+   */
   renderTotalTranscript: function renderTotalTranscript() {
     var semestersQuantity = this.historicalList.length;
     var allCourses = this.historicalList.reduce(function (acc, cur) {
@@ -4086,6 +4088,10 @@ var gpa = {
     var labels = templates.totalTranscript(semestersQuantity, allCourses);
     this.$indexWidgetMain.prepend(labels);
   },
+
+  /**
+   * 渲染「学期成绩」部分的界面
+   */
   renderSemesterTranscript: function renderSemesterTranscript() {
     var _this3 = this;
 
@@ -4099,6 +4105,10 @@ var gpa = {
       _this3.$indexWidgetMainRow.append(templates.semesterTranscriptWrapper(header, labels, content));
     });
   },
+
+  /**
+   * 销毁页面元素
+   */
   destroy: function destroy() {
     this.$indexWidgetMainRow.remove();
     this.$indexWidgetMain.remove();
@@ -4108,11 +4118,21 @@ var gpa = {
     this.$indexWidgetMainRow = null;
     this.historicalList = null;
   },
+
+  /**
+   * 重置页面，销毁页面元素，重新获取数据并渲染界面
+   */
   reset: function reset() {
     this.destroy();
     this.init();
   }
 };
+/**
+ * 将元素数据列表映射为需要的数据列表
+ *
+ * @param {*} historicalList 原始数据
+ * @returns 处理后的数据
+ */
 
 function convertHistoricalList(historicalList) {
   return historicalList.map(function (v) {
@@ -4131,6 +4151,13 @@ function convertHistoricalList(historicalList) {
     };
   }).reverse();
 }
+/**
+ * 计算加权平均数
+ *
+ * @param {*} arr 一个数组，每个对象包括数值(value)和权值(weight)
+ * @returns 计算好的加权平均数
+ */
+
 
 function getWeightedAverage(arr) {
   return arr.reduce(function (acc, cur) {
@@ -4139,12 +4166,26 @@ function getWeightedAverage(arr) {
     return valueSum / weightSum;
   });
 }
+/**
+ * 从一个课程数组里筛选出所有的必修课程
+ *
+ * @param {*} arr 一个课程数组
+ * @returns 筛选出的只包括必修课程的数组
+ */
+
 
 function getCompulsoryCourse(arr) {
   return arr.filter(function (v) {
     return v.attribute === '必修';
   });
 }
+/**
+ * 将课程数组映射为只包含gpa作为数值，学分作为权值的对象数组，用于加权平均数计算
+ *
+ * @param {*} arr 一个课程数组
+ * @returns 一个只包含gpa作为数值，学分作为权值的对象数组
+ */
+
 
 function mapGPA(arr) {
   return arr.map(function (v) {
@@ -4154,6 +4195,13 @@ function mapGPA(arr) {
     };
   });
 }
+/**
+ * 将课程数组映射为只包含分数作为数值，学分作为权值的对象数组，用于加权平均数计算
+ *
+ * @param {*} arr 一个课程数组
+ * @returns 一个只包含分数作为数值，学分作为权值的对象数组
+ */
+
 
 function mapScore(arr) {
   return arr.map(function (v) {
@@ -4163,27 +4211,70 @@ function mapScore(arr) {
     };
   });
 }
+/**
+ * 将数值保留3位小数，再作为number返回
+ *
+ * @param {*} num 待处理的数字
+ * @param {number} [fractionDigits=3] 保留小数位数
+ * @returns 保留对应位数后的小数
+ */
+
 
 function reserveDigits(num) {
   var fractionDigits = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
   return Number(num.toFixed(fractionDigits));
 }
+/**
+ * 输入课程数组，得到必修加权平均绩点
+ *
+ * @param {*} arr 课程数组
+ * @returns 必修加权平均绩点
+ */
+
 
 function getCompulsoryCoursesGPA(arr) {
   return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))));
 }
+/**
+ * 输入课程数组，得到必修加权平均分
+ *
+ * @param {*} arr 课程数组
+ * @returns 必修加权平均分
+ */
+
 
 function getCompulsoryCoursesScore(arr) {
   return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))));
 }
+/**
+ * 输入课程数组，得到全部课程加权平均绩点
+ *
+ * @param {*} arr 课程数组
+ * @returns 全部课程加权平均绩点
+ */
+
 
 function getAllCoursesGPA(arr) {
   return reserveDigits(getWeightedAverage(mapGPA(arr)));
 }
+/**
+ * 输入课程数组，得到全部课程加权平均分
+ *
+ * @param {*} arr 课程数组
+ * @returns 全部课程加权平均分
+ */
+
 
 function getAllCoursesScore(arr) {
   return reserveDigits(getWeightedAverage(mapScore(arr)));
 }
+/**
+ * 一次性获得必修加权平均分、必修加权平均绩点、全部课程加权平均分、全部课程加权平均绩点4个值
+ *
+ * @param {*} arr 一个由课程对象组成的数组
+ * @returns 必修加权平均分、必修加权平均绩点、全部课程加权平均分、全部课程加权平均绩点4个值
+ */
+
 
 function getFourTypesValue(arr) {
   return {
@@ -4193,6 +4284,13 @@ function getFourTypesValue(arr) {
     allCoursesScore: getAllCoursesScore(arr)
   };
 }
+/**
+ * 根据分数返回对应的绩点
+ *
+ * @param {*} score 分数
+ * @returns 绩点
+ */
+
 
 function getPointByScore(score) {
   if (score >= 90) {
@@ -4220,6 +4318,55 @@ function getPointByScore(score) {
   }
 }
 
+var templates = {
+  indexWidget: "\n    <div class=\"col-sm-12 widget-container-col\">\n      <div class=\"widget-box\">\n        <div class=\"widget-header\">\n          <h5 class=\"widget-title\">\n            \u6211\u7684\u6210\u7EE9\n            <span class=\"badge badge-primary\" style=\"padding-top:3px;position:relative;top:-3px;\">SCU URP \u52A9\u624B</span>\n          </h5>\n          <div class=\"widget-toolbar\">\n            <div class=\"widget-menu\">\n                <a id=\"gpa-toolbar-detail\" data-action=\"settings\" data-toggle=\"dropdown\">\n                    <i class=\"ace-icon fa fa-bars\"></i>\n                </a>\n                <a id=\"gpa-toolbar-reset\" data-action=\"reload\"\">\n                    <i class=\"ace-icon fa fa-refresh\"></i>\n                </a>\n            </div>\n          </div>\n        </div>\n        <div class=\"widget-body\">\n          <div class=\"widget-main\">\n            <div class=\"row\"></div>\n          </div>\n        </div>\n      </div>\n    </div>\n  ",
+  totalTranscript: function totalTranscript(semestersQuantity, courses) {
+    var _getFourTypesValue = getFourTypesValue(courses),
+        allCoursesGPA = _getFourTypesValue.allCoursesGPA,
+        allCoursesScore = _getFourTypesValue.allCoursesScore,
+        compulsoryCoursesGPA = _getFourTypesValue.compulsoryCoursesGPA,
+        compulsoryCoursesScore = _getFourTypesValue.compulsoryCoursesScore;
+
+    var compulsoryCourses = getCompulsoryCourse(courses);
+    var coursesQuantity = courses.length;
+    var totalCourseCredits = courses.reduce(function (acc, cur) {
+      return acc + cur.credit;
+    }, 0);
+    var compulsoryCoursesQuantity = compulsoryCourses.length;
+    return "\n      <div class=\"gpa-tt row\" style=\"margin-bottom: 20px;\">\n        <div class=\"col-sm-12\">\n          <h4 class=\"header smaller lighter grey\" style=\"margin-top: 0;\">\n            <i class=\"menu-icon fa fa-calendar\"></i> \u5168\u90E8\u6210\u7EE9\n            <span\n              class=\"gpa-info-badge badge badge-yellow\"\n              title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\"\n            >\n              " + coursesQuantity + " \u95E8\n            </span>\n            <span\n              class=\"gpa-info-badge badge badge-yellow\"\n              title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + totalCourseCredits + " \u5B66\u5206\"\n            >\n              " + totalCourseCredits + " \u5B66\u5206\n            </span>\n            <span\n              class=\"gpa-info-badge gpa-info-badge-tt-selected-course-quantity badge badge-pink\"\n              title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u5F53\u524D\u4E00\u5171\u9009\u4E2D\u4E86 0 \u95E8\u8BFE\u7A0B\"\n            >\n              0 \u95E8\n            </span>\n            <span\n              class=\"gpa-info-badge gpa-info-badge-tt-selected-course-credits badge badge-pink\"\n              title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u5F53\u524D\u9009\u4E2D\u7684\u5168\u90E8\u8BFE\u7A0B\u603B\u5B66\u5206\u4E3A 0\"\n            >\n              0 \u5B66\u5206\n            </span>\n            <button class=\"btn btn-white btn-minier gpa-tt-select-all-btn\">\n              <i class=\"ace-icon fa fa-check green\"></i>\n              \u5168\u9009\n            </button>\n            <button class=\"btn btn-white btn-minier gpa-tt-cancel-btn\">\n              <i class=\"ace-icon fa fa-times red2\"></i>\n              \u5168\u4E0D\u9009\n            </button>\n          </h4>\n          <span\n            class=\"gpa-tt-tag label label-success\"\n            title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + compulsoryCoursesQuantity + " \u95E8\u5FC5\u4FEE\u8BFE\u7A0B\uFF0C\u5FC5\u4FEE\u52A0\u6743\u5E73\u5747\u5206\u4E3A " + compulsoryCoursesScore + "\"\n          >\n            \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n          </span>\n          <span\n            class=\"gpa-tt-tag label label-success\"\n            title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + compulsoryCoursesQuantity + " \u95E8\u5FC5\u4FEE\u8BFE\u7A0B\uFF0C\u5FC5\u4FEE\u52A0\u6743\u5E73\u5747\u7EE9\u70B9\u4E3A " + compulsoryCoursesGPA + "\"\n          >\n            \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n          </span>\n          <span\n            class=\"gpa-tt-tag label label-purple\"\n            title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\uFF0C\u5168\u90E8\u52A0\u6743\u5E73\u5747\u5206\u4E3A " + allCoursesScore + "\"\n          >\n            \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n          </span>\n          <span\n            class=\"gpa-st-tag label label-purple\"\n            title=\"\u5728 " + semestersQuantity + " \u4E2A\u5B66\u671F\u4E2D\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\uFF0C\u5168\u90E8\u52A0\u6743\u5E73\u5747\u7EE9\u70B9\u4E3A " + allCoursesGPA + "\"\n          >\n            \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + "\n          </span>\n          <span class=\"gpa-tt-tag gpa-tt-tag-selected-score label label-pink\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n          </span>\n          <span class=\"gpa-tt-tag gpa-tt-tag-selected-gpa label label-pink\">\n            \u6240\u6709\u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n          </span>\n        </div>\n      </div>\n    ";
+  },
+  semesterTranscriptHeader: function semesterTranscriptHeader(semester, courses) {
+    var coursesQuantity = courses.length;
+    var totalCourseCredits = courses.reduce(function (acc, cur) {
+      return acc + cur.credit;
+    }, 0);
+    return '\n      <h4 class="header smaller lighter grey">\n        <i class="menu-icon fa fa-calendar"></i> ' + semester + "\n        <span class=\"gpa-info-badge badge badge-yellow\" title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\">" + coursesQuantity + " \u95E8</span>\n        <span class=\"gpa-info-badge badge badge-yellow\" title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + totalCourseCredits + " \u5B66\u5206\">" + totalCourseCredits + " \u5B66\u5206</span>\n        <span\n          class=\"gpa-info-badge gpa-info-badge-st-selected-course-quantity badge badge-pink\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u5F53\u524D\u9009\u4E2D\u4E86 0 \u95E8\u8BFE\u7A0B\"\n          data-semester=\"" + semester + "\"\n        >\n          0 \u95E8\n        </span>\n        <span\n          class=\"gpa-info-badge gpa-info-badge-st-selected-course-credits badge badge-pink\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u5F53\u524D\u9009\u4E2D\u7684\u8BFE\u7A0B\u603B\u5B66\u5206\u4E3A 0\"\n          data-semester=\"" + semester + "\"\n        >\n          0 \u5B66\u5206\n        </span>\n        <button class=\"btn btn-white btn-minier gpa-st-select-all-btn\" data-semester=\"" + semester + "\">\n          <i class=\"ace-icon fa fa-check green\"></i>\n          \u5168\u9009\n        </button>\n        <button class=\"btn btn-white btn-minier gpa-st-cancel-btn\" data-semester=\"" + semester + "\">\n          <i class=\"ace-icon fa fa-times red2\"></i>\n          \u5168\u4E0D\u9009\n        </button>\n      </h4>\n    ";
+  },
+  semesterTranscriptLabels: function semesterTranscriptLabels(semester, courses) {
+    var _getFourTypesValue2 = getFourTypesValue(courses),
+        allCoursesGPA = _getFourTypesValue2.allCoursesGPA,
+        allCoursesScore = _getFourTypesValue2.allCoursesScore,
+        compulsoryCoursesGPA = _getFourTypesValue2.compulsoryCoursesGPA,
+        compulsoryCoursesScore = _getFourTypesValue2.compulsoryCoursesScore;
+
+    var compulsoryCourses = getCompulsoryCourse(courses);
+    var coursesQuantity = courses.length;
+    var compulsoryCoursesQuantity = compulsoryCourses.length;
+    return "\n      <p>\n        <span\n          class=\"gpa-st-tag label label-success\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + compulsoryCoursesQuantity + " \u95E8\u5FC5\u4FEE\u8BFE\u7A0B\uFF0C\u5FC5\u4FEE\u52A0\u6743\u5E73\u5747\u5206\u4E3A " + compulsoryCoursesScore + "\"\n        >\n          \u5FC5\u4FEE\u5E73\u5747\u5206\uFF1A" + compulsoryCoursesScore + "\n        </span>\n        <span\n          class=\"gpa-st-tag label label-success\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + compulsoryCoursesQuantity + " \u95E8\u5FC5\u4FEE\u8BFE\u7A0B\uFF0C\u5FC5\u4FEE\u52A0\u6743\u5E73\u5747\u7EE9\u70B9\u4E3A " + compulsoryCoursesGPA + "\"\n        >\n          \u5FC5\u4FEE\u7EE9\u70B9\uFF1A" + compulsoryCoursesGPA + "\n        </span>\n        <span\n          class=\"gpa-st-tag label label-purple\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\uFF0C\u52A0\u6743\u5E73\u5747\u5206\u4E3A " + allCoursesScore + "\"\n        >\n          \u5168\u90E8\u5E73\u5747\u5206\uFF1A" + allCoursesScore + "\n        </span>\n        <span\n          class=\"gpa-st-tag label label-purple\"\n          title=\"\u5728" + semester + "\uFF0C\u60A8\u4E00\u5171\u4FEE\u8BFB\u4E86 " + coursesQuantity + " \u95E8\u8BFE\u7A0B\uFF0C\u52A0\u6743\u5E73\u5747\u7EE9\u70B9\u4E3A " + allCoursesGPA + "\"\n        >\n          \u5168\u90E8\u7EE9\u70B9\uFF1A" + allCoursesGPA + '\n        </span>\n      </p>\n      <p>\n        <span class="gpa-st-tag gpa-st-tag-selected-score label label-pink" data-semester="' + semester + "\">\n        \u9009\u4E2D\u8BFE\u7A0B\u5E73\u5747\u5206\uFF1A0\n        </span>\n        <span class=\"gpa-st-tag gpa-st-tag-selected-gpa label label-pink\" data-semester=\"" + semester + "\">\n          \u9009\u4E2D\u8BFE\u7A0B\u7EE9\u70B9\uFF1A0\n        </span>\n      </p>\n    ";
+  },
+  semesterTranscriptContent: function semesterTranscriptContent(semester, courses) {
+    var courseList = function courseList() {
+      return courses.map(function (v) {
+        return '\n            <tr\n              class="gpa-st-item"\n              data-semester="' + semester + '"\n              data-name="' + v.name + '"\n              data-score="' + v.score + '"\n              data-gpa="' + v.gpa + '"\n              data-credit="' + v.credit + '"\n              data-attribute="' + v.attribute + '"\n            >\n              <td>' + v.name + '</td>\n              <td>' + v.score + '</td>\n              <td>' + v.gpa + '</td>\n              <td>' + v.credit + '</td>\n              <td>' + v.attribute + '</td>\n            </tr>\n          ';
+      }).join('');
+    };
+
+    return "\n      <table class=\"gpa-st-table table table-striped table-bordered table-hover\">\n        <thead>\n          <tr>\n            <th>\u8BFE\u7A0B\u540D</th>\n            <th>\u5206\u6570</th>\n            <th>\u7EE9\u70B9</th>\n            <th>\u5B66\u5206</th>\n            <th>\u5C5E\u6027</th>\n          </tr>\n        </thead>\n        <tbody>\n        " + courseList() + '\n        </tbody>\n      </table>\n    ';
+  },
+  semesterTranscriptWrapper: function semesterTranscriptWrapper(header, labels, content) {
+    return '<div class="gpa-st col-sm-6">' + (header + labels + content) + '</div>';
+  }
+};
 module.exports = gpa;
 },{"babel-runtime/core-js/array/from":"VuZO","fs":"tuDi"}],"287w":[function(require,module,exports) {
 'use strict';
@@ -4608,7 +4755,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.12
+// @version      0.8.13
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*

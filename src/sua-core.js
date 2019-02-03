@@ -19,7 +19,13 @@ const $sua = {
   /**
    * 插件
    */
-  plugins: [tooltip, fastEvaluation, removeEvaluationTimeLimit, recoverRememberMe, gpa],
+  plugins: [
+    tooltip,
+    fastEvaluation,
+    removeEvaluationTimeLimit,
+    recoverRememberMe,
+    gpa
+  ],
   /**
    * 初始化任务的队列
    */
@@ -35,7 +41,7 @@ const $sua = {
   /**
    * 初始化 SCU URP 助手
    */
-  init () {
+  init() {
     // 旧版教务系统兼容
     if (window.location.host === 'zhjwwx.scu.edu.cn:8080') {
       if (window.location.pathname !== '/loginAction.do') {
@@ -121,7 +127,7 @@ const $sua = {
      * 如果 pathname 属性不存在，则默认对全体 url 均生效
      * @returns 检测的结果
      */
-    function urlTrigger (plugin) {
+    function urlTrigger(plugin) {
       let { pathname } = plugin
       // 如果pathname不存在，默认对全部url生效
       if (!pathname) {

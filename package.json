@@ -1,13 +1,15 @@
 {
   "name": "scu-urp-assistant",
-  "version": "0.8.12",
+  "version": "0.8.13",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
-    "start": "npm run transform && npm run userscript && npm run bookmarklet",
-    "transform": "babel --plugins transform-runtime src --out-dir transformed",
+    "start": "npm run transform && npm run userscript && npm run bookmarklet && rm -rf transformed/",
     "userscript": "parcel build transformed/scu-urp-assistant.user.js --no-minify --no-source-maps",
-    "bookmarklet": "parcel build transformed/scu-urp-assistant-bookmarklet.js --no-minify --no-source-maps"
+    "bookmarklet": "parcel build transformed/scu-urp-assistant-bookmarklet.js --no-minify --no-source-maps",
+    "transform": "npm run transform:js && npm run transform:scss",
+    "transform:js": "babel --plugins transform-runtime src --out-dir transformed",
+    "transform:scss": "node-sass src/plugins/ -o transformed/plugins/ --output-style compressed"
   },
   "repository": {
     "type": "git",
@@ -28,10 +30,11 @@
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "^4.19.1",
     "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.1.0"
+    "eslint-plugin-standard": "^3.1.0",
+    "node-sass": "^4.11.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

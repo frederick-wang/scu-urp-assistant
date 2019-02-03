@@ -5,7 +5,7 @@ const tooltip = {
   $loginTooltip: undefined,
   $navTooltip: undefined,
   version: require('../../package.json').version,
-  init () {
+  init() {
     if (window.location.pathname === '/login') {
       this.$loginTooltip = window.$(`
         <span class="sua-tooltip" style="
@@ -27,7 +27,11 @@ const tooltip = {
               <i class="ace-icon fa fa-gavel"></i> SCU URP 助手 ${this.version}
             </a>
         </li>`)
-      window.$('#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul').prepend(this.$navTooltip)
+      window
+        .$(
+          '#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul'
+        )
+        .prepend(this.$navTooltip)
     }
   }
 }
