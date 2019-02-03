@@ -3413,7 +3413,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.13",
+  "version": "0.8.14",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -3877,7 +3877,7 @@ var gpa = {
         return acc;
       }, []);
     }).then(function (list) {
-      _this.records = convertHistoricalList(list);
+      _this.records = convertRecords(list);
 
       _this.renderSemesterTranscript();
 
@@ -3917,11 +3917,6 @@ var gpa = {
     });
     window.$('.gpa-st-select-all-btn').click(function () {
       var semester = this.dataset.semester;
-      /**
-       * 2019-1-31 23:56:56
-       * TODO: 这种过滤筛选出结果的方式需要重构，将其封装起来
-       */
-
       getSemesterCourses(that.records, semester).forEach(function (item) {
         item.selected = true;
       });
@@ -3934,11 +3929,6 @@ var gpa = {
     });
     window.$('.gpa-st-cancel-btn').click(function () {
       var semester = this.dataset.semester;
-      /**
-       * 2019-1-28 23:56:37
-       * TODO: 这里的过滤很奇怪，需要优化
-       */
-
       getSemesterCourses(that.records, semester).forEach(function (item) {
         item.selected = false;
       });
@@ -3977,10 +3967,14 @@ var gpa = {
    * 渲染与「选择」有关的元素
    */
   renderTagSelected: function renderTagSelected() {
-    /**
-     * 2019-1-27 23:50:57
-     * TODO: 这里是先循环渲染学期成绩，再渲染总成绩的，有些丑，之后需要修改
-     */
+    this.renderSemesterTagSelected();
+    this.renderTotalTagSelected();
+  },
+
+  /**
+   * 渲染与「选择」有关的「分学期」元素
+   */
+  renderSemesterTagSelected: function renderSemesterTagSelected() {
     this.records.forEach(function (_ref2) {
       var semester = _ref2.semester,
           courses = _ref2.courses;
@@ -4031,6 +4025,12 @@ var gpa = {
         $cancelBtn.hide();
       }
     });
+  },
+
+  /**
+   * 渲染与「选择」有关的「全部成绩」元素
+   */
+  renderTotalTagSelected: function renderTotalTagSelected() {
     var selectedCourses = this.records.reduce(function (acc, cur) {
       return acc.concat(cur.courses);
     }, []).filter(function (v) {
@@ -4146,12 +4146,12 @@ var gpa = {
 /**
  * 将元素数据列表映射为需要的数据列表
  *
- * @param {*} historicalList 原始数据
+ * @param {*} rawList 原始数据
  * @returns 处理后的数据
  */
 
-function convertHistoricalList(historicalList) {
-  return historicalList.map(function (s) {
+function convertRecords(rawList) {
+  return rawList.map(function (s) {
     return {
       semester: s.semester.replace(/^(\d+-\d+)-(.+)$/, '$1学年 $2学期').replace('1-1学期', '秋季学期').replace('2-1学期', '春季学期'),
       courses: s.courses.map(function (v) {
@@ -4171,7 +4171,7 @@ function convertHistoricalList(historicalList) {
  * 从总记录中提取出对应学期的课程列表
  *
  * @param {*} records 总记录
- * @param {*} semester 学期名称
+ * @param {string} semester 学期名称
  * @returns 课程列表
  */
 
@@ -4811,7 +4811,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.13
+// @version      0.8.14
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
