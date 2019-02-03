@@ -11,23 +11,47 @@ const gpa = {
   historicalList: null,
   init() {
     this.initDOM()
-    /**
-     * 2019-1-29 22:23:22
-     * TODO: 这里只考虑了根据全部及格成绩来计算绩点，没有考虑不及格成绩
-     * 但是，不及格的成绩会如何计算我并不清楚……
-     * 目前只能先假设所有不及格且理由非「申请缓考」的同学都是0绩点均匀到各个学期了……
-     * 不及格成绩的接口为：http://zhjw.scu.edu.cn/student/integratedQuery/scoreQuery/unpassedScores/callback
-     * 格式与全部及格成绩一致
-     */
-    window.$.get(
-      '/student/integratedQuery/scoreQuery/allPassingScores/callback'
-    ).then(({ lnList }) => {
-      // lnList -> 历年数据
-      this.historicalList = convertHistoricalList(lnList)
-      this.renderSemesterTranscript()
-      this.renderTotalTranscript()
-      this.initEvent()
+    window.$.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
+      zxjxjhh: '',
+      kch: '',
+      kcm: '',
+      pageNum: 1,
+      pageSize: 1
     })
+      .then(({ list: { pageContext: { totalCount } } }) => {
+        return window.$.post(
+          '/student/integratedQuery/scoreQuery/allTermScores/data',
+          {
+            zxjxjhh: '',
+            kch: '',
+            kcm: '',
+            pageNum: 1,
+            pageSize: totalCount
+          }
+        )
+      })
+      .then(data =>
+        data.list.records.reduce((acc, cur) => {
+          if (!cur[18] || cur[18].indexOf('缓考') === -1) {
+            const s = acc.filter(v => v.semester === cur[0])
+            if (s.length) {
+              s[0].courses.push(cur)
+            } else {
+              acc.push({
+                semester: cur[0],
+                courses: [cur]
+              })
+            }
+          }
+          return acc
+        }, [])
+      )
+      .then(list => {
+        this.historicalList = convertHistoricalList(list)
+        this.renderSemesterTranscript()
+        this.renderTotalTranscript()
+        this.initEvent()
+      })
   },
 
   /**
@@ -337,16 +361,17 @@ const gpa = {
  */
 function convertHistoricalList(historicalList) {
   return historicalList
-    .map(v => ({
-      semester: v.cjbh
-        .replace('秋(两学期)', ' 秋季学期')
-        .replace('春(两学期)', ' 春季学期'),
-      courses: v.cjList.map(v => ({
-        name: v.courseName,
-        score: v.courseScore,
-        gpa: v.gradePointScore || getPointByScore(v.courseScore),
-        credit: Number(v.credit),
-        attribute: v.courseAttributeName,
+    .map(s => ({
+      semester: s.semester
+        .replace(/^(\d+-\d+)-(.+)$/, '$1学年 $2学期')
+        .replace('1-1学期', '秋季学期')
+        .replace('2-1学期', '春季学期'),
+      courses: s.courses.map(v => ({
+        name: v[11],
+        score: v[8],
+        gpa: getPointByScore(v[8], s.semester),
+        credit: v[13],
+        attribute: v[15],
         selected: false
       }))
     }))
@@ -470,29 +495,54 @@ function getFourTypesValue(arr) {
  * @param {*} score 分数
  * @returns 绩点
  */
-function getPointByScore(score) {
-  if (score >= 90) {
-    return 4
-  } else if (score >= 85) {
-    return 3.7
-  } else if (score >= 80) {
-    return 3.3
-  } else if (score >= 76) {
-    return 3
-  } else if (score >= 73) {
-    return 2.7
-  } else if (score >= 70) {
-    return 2.3
-  } else if (score >= 66) {
-    return 2
-  } else if (score >= 63) {
-    return 1.7
-  } else if (score >= 61) {
-    return 1.3
-  } else if (score >= 60) {
-    return 1
+function getPointByScore(score, semester) {
+  const enrollmentYear = Number(semester.match(/^\d+/)[0])
+  if (enrollmentYear >= 2017) {
+    // 2017-2018秋季学期起使用如下标准（Fall Term 2017-2018~Present）
+    if (score >= 90) {
+      return 4
+    } else if (score >= 85) {
+      return 3.7
+    } else if (score >= 80) {
+      return 3.3
+    } else if (score >= 76) {
+      return 3
+    } else if (score >= 73) {
+      return 2.7
+    } else if (score >= 70) {
+      return 2.3
+    } else if (score >= 66) {
+      return 2
+    } else if (score >= 63) {
+      return 1.7
+    } else if (score >= 61) {
+      return 1.3
+    } else if (score >= 60) {
+      return 1
+    } else {
+      return 0
+    }
   } else {
-    return 0
+    // 2017-2018秋季学期以前使用如下标准（Before Fall Term 2017-2018）
+    if (score >= 95) {
+      return 4
+    } else if (score >= 90) {
+      return 3.8
+    } else if (score >= 85) {
+      return 3.6
+    } else if (score >= 80) {
+      return 3.2
+    } else if (score >= 75) {
+      return 2.7
+    } else if (score >= 70) {
+      return 2.2
+    } else if (score >= 65) {
+      return 1.7
+    } else if (score >= 60) {
+      return 1
+    } else {
+      return 0
+    }
   }
 }
 
