@@ -47,7 +47,7 @@ const gpa = {
         }, [])
       )
       .then(list => {
-        this.records = convertHistoricalList(list)
+        this.records = convertRecords(list)
         this.renderSemesterTranscript()
         this.renderTotalTranscript()
         this.initEvent()
@@ -340,11 +340,11 @@ const gpa = {
 /**
  * 将元素数据列表映射为需要的数据列表
  *
- * @param {*} historicalList 原始数据
+ * @param {*} rawList 原始数据
  * @returns 处理后的数据
  */
-function convertHistoricalList(historicalList) {
-  return historicalList
+function convertRecords(rawList) {
+  return rawList
     .map(s => ({
       semester: s.semester
         .replace(/^(\d+-\d+)-(.+)$/, '$1学年 $2学期')
@@ -366,7 +366,7 @@ function convertHistoricalList(historicalList) {
  * 从总记录中提取出对应学期的课程列表
  *
  * @param {*} records 总记录
- * @param {*} semester 学期名称
+ * @param {string} semester 学期名称
  * @returns 课程列表
  */
 function getSemesterCourses(records, semester) {
