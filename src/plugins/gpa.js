@@ -11,6 +11,7 @@ const gpa = {
   records: null,
   init() {
     this.initDOM()
+    // 第一次请求只是为了获得课程总数 totalCount
     window.$.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
       zxjxjhh: '',
       kch: '',
@@ -19,6 +20,7 @@ const gpa = {
       pageSize: 1
     })
       .then(({ list: { pageContext: { totalCount } } }) => {
+        // 用拿到的课程总数再次请求，获得全部课程成绩列表
         return window.$.post(
           '/student/integratedQuery/scoreQuery/allTermScores/data',
           {
@@ -31,7 +33,10 @@ const gpa = {
         )
       })
       .then(data =>
+        // 将获取的全部课程成绩列表按照学期分组
         data.list.records.reduce((acc, cur) => {
+          // 如果没有挂科，那么 cur[18] ≡ null
+          // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
           if (!cur[18] || cur[18].indexOf('缓考') === -1) {
             const s = acc.filter(v => v.semester === cur[0])
             if (s.length) {
@@ -502,6 +507,7 @@ function getFourTypesValue(arr) {
  * @returns 绩点
  */
 function getPointByScore(score, semester) {
+  // 2017年起，川大修改了绩点政策，因此要检测学期的年份
   const enrollmentYear = Number(semester.match(/^\d+/)[0])
   if (enrollmentYear >= 2017) {
     // 2017-2018秋季学期起使用如下标准（Fall Term 2017-2018~Present）
