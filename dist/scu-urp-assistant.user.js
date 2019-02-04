@@ -3413,7 +3413,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.14",
+  "version": "0.8.15",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -3841,7 +3841,8 @@ var gpa = {
   init: function init() {
     var _this = this;
 
-    this.initDOM();
+    this.initDOM(); // 第一次请求只是为了获得课程总数 totalCount
+
     window.$.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
       zxjxjhh: '',
       kch: '',
@@ -3849,7 +3850,8 @@ var gpa = {
       pageNum: 1,
       pageSize: 1
     }).then(function (_ref) {
-      var totalCount = _ref.list.pageContext.totalCount;
+      var totalCount = _ref.list.pageContext.totalCount; // 用拿到的课程总数再次请求，获得全部课程成绩列表
+
       return window.$.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
         zxjxjhh: '',
         kch: '',
@@ -3858,24 +3860,28 @@ var gpa = {
         pageSize: totalCount
       });
     }).then(function (data) {
-      return data.list.records.reduce(function (acc, cur) {
-        if (!cur[18] || cur[18].indexOf('缓考') === -1) {
-          var s = acc.filter(function (v) {
-            return v.semester === cur[0];
-          });
-
-          if (s.length) {
-            s[0].courses.push(cur);
-          } else {
-            acc.push({
-              semester: cur[0],
-              courses: [cur]
+      return (// 将获取的全部课程成绩列表按照学期分组
+        data.list.records.reduce(function (acc, cur) {
+          // 如果没有挂科，那么 cur[18] ≡ null
+          // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
+          if (!cur[18] || cur[18].indexOf('缓考') === -1) {
+            var s = acc.filter(function (v) {
+              return v.semester === cur[0];
             });
-          }
-        }
 
-        return acc;
-      }, []);
+            if (s.length) {
+              s[0].courses.push(cur);
+            } else {
+              acc.push({
+                semester: cur[0],
+                courses: [cur]
+              });
+            }
+          }
+
+          return acc;
+        }, [])
+      );
     }).then(function (list) {
       _this.records = convertRecords(list);
 
@@ -3909,8 +3915,8 @@ var gpa = {
       that.renderTagSelected();
     });
     window.$('#gpa-toolbar-detail').click(function () {
-      window.toSelect(document.getElementById('1379870'));
-      window.location = '/student/integratedQuery/scoreQuery/allPassingScores/index';
+      window.toSelect(document.getElementById('125803405'));
+      window.location = '/student/integratedQuery/scoreQuery/allTermScores/index';
     });
     window.$('#gpa-toolbar-reset').click(function () {
       _this2.reset();
@@ -4323,6 +4329,7 @@ function getFourTypesValue(arr) {
 
 
 function getPointByScore(score, semester) {
+  // 2017年起，川大修改了绩点政策，因此要检测学期的年份
   var enrollmentYear = Number(semester.match(/^\d+/)[0]);
 
   if (enrollmentYear >= 2017) {
@@ -4811,7 +4818,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.14
+// @version      0.8.15
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*

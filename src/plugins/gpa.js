@@ -84,9 +84,9 @@ const gpa = {
     })
 
     window.$('#gpa-toolbar-detail').click(() => {
-      window.toSelect(document.getElementById('1379870'))
+      window.toSelect(document.getElementById('125803405'))
       window.location =
-        '/student/integratedQuery/scoreQuery/allPassingScores/index'
+        '/student/integratedQuery/scoreQuery/allTermScores/index'
     })
 
     window.$('#gpa-toolbar-reset').click(() => {
