@@ -366,14 +366,17 @@ function convertRecords(rawList) {
         .replace(/^(\d+-\d+)-(.+)$/, '$1学年 $2学期')
         .replace('1-1学期', '秋季学期')
         .replace('2-1学期', '春季学期'),
-      courses: s.courses.map(v => ({
-        name: v[11],
-        score: v[8],
-        gpa: getPointByScore(v[8], s.semester),
-        credit: v[13],
-        attribute: v[15],
-        selected: false
-      }))
+      courses: s.courses
+        .map(v => ({
+          name: v[11],
+          score: v[8],
+          gpa: getPointByScore(v[8], s.semester),
+          credit: v[13],
+          attribute: v[15],
+          selected: false
+        }))
+        // 分数可能为null
+        .filter(v => v.score)
     }))
     .reverse()
 }
