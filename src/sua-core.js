@@ -6,6 +6,10 @@ const compatibilityLegacy = require('./plugins/compatibility-legacy')
 const fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy')
 const recoverRememberMe = require('./plugins/recover-remember-me')
 const gpa = require('./plugins/gpa')
+/**
+ * 2019-2-17 23:57:16
+ * TODO: 考虑在指导性教学计划里加入秋季学期和春季学期的显示
+ */
 
 // 挂载到 window 上的全局对象
 const $sua = {
