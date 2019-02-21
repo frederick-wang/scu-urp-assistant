@@ -9,8 +9,9 @@ const gpa = require('./plugins/gpa')
 /**
  * 2019-2-17 23:57:16
  * TODO: 考虑在指导性教学计划里加入秋季学期和春季学期的显示
- * 可以研究一下「本学期课程安排」那里能不能调出来其他学期的数据……
- * 找不到其他接口啊……
+ * 可以使用 http://zhjw.scu.edu.cn/student/integratedQuery/course/courseSchdule/courseInfo
+ * 只需要修改参数 zxjxjhh 为所需要的学期（如2018-2019-1-1），就可以查询任意学期了
+ * 如果一门课在当前学年的春季学期和秋季学期都没有，则显示为「未知」。
  */
 
 // 挂载到 window 上的全局对象
