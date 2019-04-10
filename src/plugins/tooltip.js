@@ -31,7 +31,7 @@ const tooltip = {
         .$(
           '#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul'
         )
-        .prepend(this.$navTooltip)
+        .children('li').eq(1).before(this.$navTooltip)
     }
   }
 }

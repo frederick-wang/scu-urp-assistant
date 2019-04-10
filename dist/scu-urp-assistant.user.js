@@ -5,8 +5,6 @@
 //
 // anything defined in a previous bundle is accessed via the
 // orig method which is the require for previous bundles
-
-// eslint-disable-next-line no-global-assign
 parcelRequire = (function (modules, cache, entry, globalName) {
   // Save the require from previous bundle to this closure if any
   var previousRequire = typeof parcelRequire === 'function' && parcelRequire;
@@ -77,8 +75,16 @@ parcelRequire = (function (modules, cache, entry, globalName) {
     }, {}];
   };
 
+  var error;
   for (var i = 0; i < entry.length; i++) {
-    newRequire(entry[i]);
+    try {
+      newRequire(entry[i]);
+    } catch (e) {
+      // Save first error but execute all entries
+      if (!error) {
+        error = e;
+      }
+    }
   }
 
   if (entry.length) {
@@ -103,6 +109,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   // Override the current require with this new one
+  parcelRequire = newRequire;
+
+  if (error) {
+    // throw error from earlier, _after updating parcelRequire_
+    throw error;
+  }
+
   return newRequire;
 })({"i1Q6":[function(require,module,exports) {
 
@@ -1322,7 +1335,7 @@ module.exports = require('../../modules/_core').Object.assign;
 
 },{"../../modules/es6.object.assign":"YD0x","../../modules/_core":"zKeE"}],"gc0D":[function(require,module,exports) {
 module.exports = { "default": require("core-js/library/fn/object/assign"), __esModule: true };
-},{"core-js/library/fn/object/assign":"vcHl"}],"R3IB":[function(require,module,exports) {
+},{"core-js/library/fn/object/assign":"vcHl"}],"0nx4":[function(require,module,exports) {
 
 // shim for using process in browser
 var process = module.exports = {}; // cached from whatever global is present so that test runners that stub it
@@ -1494,7 +1507,6 @@ Item.prototype.run = function () {
 };
 
 process.title = 'browser';
-process.browser = true;
 process.env = {};
 process.argv = [];
 process.version = ''; // empty string to avoid regexp issues
@@ -1532,7 +1544,7 @@ process.chdir = function (dir) {
 process.umask = function () {
   return 0;
 };
-},{}],"bqst":[function(require,module,exports) {
+},{}],"d0NU":[function(require,module,exports) {
 var process = require("process");
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1759,7 +1771,7 @@ var substr = 'ab'.substr(-1) === 'b'
     }
 ;
 
-},{"process":"R3IB"}],"bQx9":[function(require,module,exports) {
+},{"process":"0nx4"}],"bQx9":[function(require,module,exports) {
 module.exports = function (xs, fn) {
     var res = [];
     for (var i = 0; i < xs.length; i++) {
@@ -2963,7 +2975,7 @@ function regExpEscape (s) {
   return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
 
-},{"path":"bqst","brace-expansion":"dwX/"}],"By4a":[function(require,module,exports) {
+},{"path":"d0NU","brace-expansion":"dwX/"}],"By4a":[function(require,module,exports) {
 var classof = require('./_classof');
 var ITERATOR = require('./_wks')('iterator');
 var Iterators = require('./_iterators');
@@ -3413,7 +3425,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.16",
+  "version": "0.8.17",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -3436,14 +3448,14 @@ module.exports = {
     "babel-core": "^6.26.3",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
-    "cssnano": "^4.1.8",
+    "cssnano": "^4.1.10",
     "cz-conventional-changelog": "^2.1.0",
-    "eslint": "^4.19.1",
-    "eslint-config-standard": "^11.0.0",
+    "eslint": "^5.16.0",
+    "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.1.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-standard": "^4.0.0",
     "node-sass": "^4.11.0"
   },
   "dependencies": {
@@ -3472,7 +3484,7 @@ var tooltip = {
       window.$('#formContent').prepend(this.$loginTooltip);
     } else {
       this.$navTooltip = window.$("\n        <li class=\"light-orange\" style=\"text-align: center\">\n            <a href=\"#\"\n              onclick=\"javascript:window.open('https://zhaoji.wang/sichuan-university-urp-assistant/');\n            \">\n              <i class=\"ace-icon fa fa-gavel\"></i> SCU URP \u52A9\u624B " + this.version + '\n            </a>\n        </li>');
-      window.$('#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul').prepend(this.$navTooltip);
+      window.$('#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul').children('li').eq(1).before(this.$navTooltip);
     }
   }
 };
@@ -4473,7 +4485,15 @@ var fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy');
 
 var recoverRememberMe = require('./plugins/recover-remember-me');
 
-var gpa = require('./plugins/gpa'); // 挂载到 window 上的全局对象
+var gpa = require('./plugins/gpa');
+/**
+ * 2019-2-17 23:57:16
+ * TODO: 考虑在指导性教学计划里加入秋季学期和春季学期的显示
+ * 可以使用 http://zhjw.scu.edu.cn/student/integratedQuery/course/courseSchdule/courseInfo
+ * 只需要修改参数 zxjxjhh 为所需要的学期（如2018-2019-1-1），就可以查询任意学期了
+ * 如果一门课在当前学年的春季学期和秋季学期都没有，则显示为「未知」。
+ */
+// 挂载到 window 上的全局对象
 
 
 var $sua = {
@@ -4821,7 +4841,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.16
+// @version      0.8.17
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
