@@ -7,11 +7,9 @@ const fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy')
 const recoverRememberMe = require('./plugins/recover-remember-me')
 const gpa = require('./plugins/gpa')
 /**
- * 2019-2-17 23:57:16
- * TODO: 考虑在指导性教学计划里加入秋季学期和春季学期的显示
- * 可以使用 http://zhjw.scu.edu.cn/student/integratedQuery/course/courseSchdule/courseInfo
- * 只需要修改参数 zxjxjhh 为所需要的学期（如2018-2019-1-1），就可以查询任意学期了
- * 如果一门课在当前学年的春季学期和秋季学期都没有，则显示为「未知」。
+ * 2019-5-27 23:43:26
+ * TODO: 加入更友好的查看培养方案（分学期）的功能，以及查询全校所有专业的培养方案的功能。
+ * 使用接口：http://zhjw.scu.edu.cn/student/rollManagement/project/3623/1/detail
  */
 
 // 挂载到 window 上的全局对象
