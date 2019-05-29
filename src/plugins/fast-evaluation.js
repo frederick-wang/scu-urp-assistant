@@ -7,33 +7,20 @@ const fastEvaluation = {
   list: [],
   evaluationInterval: 1000 * 121,
   checkboxWrapperSelectors: {
-    研究生助教评价: '#yjs-checkbox-wrapper',
     '学生评教（课堂教学）': '#ktjx-checkbox-wrapper',
     '学生评教（实验教学）': '#syjx-checkbox-wrapper',
     '学生评教（实践教学）': '#sjjx-checkbox-wrapper',
-    '学生评教（体育教学）': '#tyjx-checkbox-wrapper'
+    '学生评教（实验实践）': '#sysj-checkbox-wrapper',
+    '学生评教（体育教学）': '#tyjx-checkbox-wrapper',
+    '研究生助教评价': '#yjs-checkbox-wrapper'
   },
   questionsNumberRange: {
-    研究生助教评价: {
-      begin: 28,
-      end: 33
-    },
-    '学生评教（课堂教学）': {
-      begin: 36,
-      end: 42
-    },
-    '学生评教（实验教学）': {
-      begin: 82,
-      end: 88
-    },
-    '学生评教（实践教学）': {
-      begin: 89,
-      end: 95
-    },
-    '学生评教（体育教学）': {
-      begin: 96,
-      end: 102
-    }
+    '学生评教（课堂教学）': [107, 108, 123, 127, 128, 129, 131],
+    '学生评教（实验教学）': [82, 83, 84, 85, 86, 87, 88],
+    '学生评教（实践教学）': [89, 90, 91, 92, 93, 94, 95],
+    '学生评教（实验实践）': [132, 133, 134, 135, 136, 137, 138],
+    '学生评教（体育教学）': [96, 97, 98, 99, 100, 101, 102],
+    '研究生助教评价': [28, 29, 30, 31, 32, 33]
   },
   templates: {
     btn:
@@ -85,6 +72,8 @@ const fastEvaluation = {
               <div id="syjx-checkbox-wrapper" class="checkbox-wrapper"></div>
               <h4 class="lighter blue">学生评教（实践教学）</h4>
               <div id="sjjx-checkbox-wrapper" class="checkbox-wrapper"></div>
+              <h4 class="lighter blue">学生评教（实验实践）</h4>
+              <div id="sysj-checkbox-wrapper" class="checkbox-wrapper"></div>
               <h4 class="lighter blue">学生评教（体育教学）</h4>
               <div id="tyjx-checkbox-wrapper" class="checkbox-wrapper"></div>
               <h4 class="lighter blue">研究生助教评价</h4>
@@ -123,7 +112,7 @@ const fastEvaluation = {
     '该课程十分有创意，教学目的明确，方法得当、语言清晰，具有感染力，习题典型，题量适当，激发我们兴趣，引导自主探究、合作交流完成任务，整个课堂效率非常高。',
     '本门课程对教学内容把握透彻、挖掘深入、处理新颖，在课堂教学中，对重难点言简意赅，分析透彻。对练习以思维训练为核心，落实双基，是一门非常成功的课'
   ],
-  init() {
+  init () {
     this.$btn = window.$(this.templates.btn)
     this.$prompt = window.$(this.templates.prompt)
 
@@ -131,7 +120,7 @@ const fastEvaluation = {
 
     this.$btn.click(this.onClickBtn.bind(this))
   },
-  onClickBtn(e) {
+  onClickBtn (e) {
     e.preventDefault()
     let hasUnevaluatedQuestionnaire = this.collectData()
     if (hasUnevaluatedQuestionnaire) {
@@ -139,11 +128,11 @@ const fastEvaluation = {
     } else {
       window.urp.confirm(
         '本页上的所有教师都已经评教过了，您可以换一页再使用。',
-        () => {}
+        () => { }
       )
     }
   },
-  showSelectionModal() {
+  showSelectionModal () {
     window.layer.open({
       type: 1,
       area: '90%',
@@ -203,7 +192,7 @@ const fastEvaluation = {
       }
     })
   },
-  collectData() {
+  collectData () {
     let collectingMsgIndex = window.layer.msg('正在收集本页问卷数据……')
     let items = Array.from(
       document.getElementById('jxpgtbody').getElementsByTagName('button')
@@ -228,10 +217,10 @@ const fastEvaluation = {
     window.layer.close(collectingMsgIndex)
     return true
   },
-  changePrompt(str) {
+  changePrompt (str) {
     this.$prompt.text(str)
   },
-  parseName(data) {
+  parseName (data) {
     data = data.split(`","`)
     let [
       questionnaireCode,
@@ -251,12 +240,12 @@ const fastEvaluation = {
     }
     return result
   },
-  getComment() {
+  getComment () {
     return encodeURIComponent(
       this.comments[Math.floor(Math.random() * this.comments.length)]
     )
   },
-  evaluate(index) {
+  evaluate (index) {
     let origin = window.location.origin
     if (index >= this.list.length) {
       this.changePrompt(`本页上的老师已经全部评价完毕！正在刷新……`)
@@ -272,10 +261,11 @@ const fastEvaluation = {
       questionnaireName
     } = this.list[index]
     let tokenValue
+    let count
 
     this.changePrompt(
       `正在评价${evaluationContentContent}课程的${evaluatedPeople}老师（${index +
-        1}/${this.list.length}）`
+      1}/${this.list.length}）`
     )
 
     window.$.ajax({
@@ -292,7 +282,7 @@ const fastEvaluation = {
       ),
       beforeSend: xhr => {
         xhr.setRequestHeader('X-Requested-With', {
-          toString: function() {
+          toString: function () {
             return ''
           }
         })
@@ -303,15 +293,16 @@ const fastEvaluation = {
         )
       },
       success: data => {
-        tokenValue = data.match(/<input.+tokenValue.+value="(.+)"\/>/i)[1]
+        tokenValue = data.match(/<input.+tokenValue(?:(?:.|\r|\n)+?)value="(.+?)" \/>/i)[1]
+        count = data.match(/<input.+count.+value="(.+?)">/i)[1]
 
         if (this.questionsNumberRange[questionnaireName]) {
-          let { begin, end } = this.questionsNumberRange[questionnaireName]
+          let range = this.questionsNumberRange[questionnaireName]
 
-          let bodyStr = `tokenValue=${tokenValue}&questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}`
-          for (let i = begin; i <= end; i++) {
-            let num = ('0000000000' + i).substr(-10)
-            bodyStr += `&${num}=10_1`
+          let bodyStr = `tokenValue=${tokenValue}&questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}&count=${count}`
+          for (let number of range) {
+            let numberString = ('0000000000' + number).substr(-10)
+            bodyStr += `&${numberString}=10_1`
           }
           bodyStr += `&zgpj=${this.getComment()}`
 
@@ -327,7 +318,7 @@ const fastEvaluation = {
               )
               this.changePrompt(
                 `${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index +
-                  1}/${this.list.length}`
+                1}/${this.list.length}`
               )
             },
             success: data => {
@@ -336,9 +327,7 @@ const fastEvaluation = {
               } else if (data['result'] === 'success') {
                 this.changePrompt(
                   `${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index +
-                    1}/${
-                    this.list.length
-                  }，将在2分钟后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+                  1}/${this.list.length}，将在2分钟后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
                 )
                 setTimeout(() => {
                   this.evaluate(++index)
@@ -347,9 +336,7 @@ const fastEvaluation = {
                 tokenValue = data['token']
                 this.changePrompt(
                   `${evaluatedPeople}（${evaluationContentContent} 距离上一次提交未到2分钟 QAQ，进度：${index +
-                    1}/${
-                    this.list.length
-                  }，将在2分钟后自动重新评价这位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+                  1}/${this.list.length}，将在2分钟后自动重新评价这位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
                 )
                 setTimeout(() => {
                   this.evaluate(index)
@@ -358,7 +345,7 @@ const fastEvaluation = {
                 window.urp.alert('保存失败')
                 this.changePrompt(
                   `${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index +
-                    1}/${this.list.length}`
+                  1}/${this.list.length}`
                 )
               }
             }

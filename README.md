@@ -5,4 +5,6 @@
 
 介绍主页为：https://zhaoji.wang/sichuan-university-urp-assistant/
 
+编译前，需要首先全局安装 Parcel：npm install -g parcel-bundler
+然后，别忘了用 npm install 安装依赖
 编译命令为：npm start
