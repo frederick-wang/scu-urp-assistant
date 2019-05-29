@@ -3462,11 +3462,11 @@ module.exports = {
     "cz-conventional-changelog": "^2.1.0",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
-    "node-sass": "^4.11.0"
+    "node-sass": "^4.12.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
