@@ -3357,8 +3357,13 @@ var fastEvaluation = {
         window.urp.alert("\u9519\u8BEF\u4EE3\u7801[" + xhr.readyState + '-' + xhr.status + "]:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01");
       },
       success: function success(data) {
-        tokenValue = data.match(/<input.+tokenValue(?:(?:.|\r|\n)+?)value="(.+?)" \/>/i)[1];
-        count = data.match(/<input.+count.+value="(.+?)">/i)[1];
+        tokenValue = data.match(/<input.+tokenValue(?:(?:.|\r|\n)+?)value="(.*?)" \/>/i)[1];
+        count = data.match(/<input.+count.+value="(.*?)">/i)[1];
+
+        if (!tokenValue || !count) {
+          window.urp.confirm("\u56E0\u6559\u52A1\u7CFB\u7EDF\u4E0D\u7A33\u5B9A\uFF0C\u5F53\u524D\u6682\u65F6\u65E0\u6CD5\u8BC4\u6559\uFF0C\u8BF7\u7A0D\u7B49\u4E00\u6BB5\u65F6\u95F4\u540E\uFF0C\u5237\u65B0\u7F51\u9875\u518D\u5C1D\u8BD5\u3002\u5982\u679C\u8FD8\u662F\u65E0\u6CD5\u8BC4\u6559\uFF0C\u60A8\u53EF\u4EE5\u66F4\u6362\u6D4F\u89C8\u5668\u6216\u7535\u8111\u540E\u518D\u5C1D\u8BD5\u3002", function () {});
+          return;
+        }
 
         if (_this3.questionsNumberRange[questionnaireName]) {
           var range = _this3.questionsNumberRange[questionnaireName];
@@ -3435,7 +3440,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.18",
+  "version": "0.8.19",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -4849,7 +4854,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.18
+// @version      0.8.19
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
