@@ -3440,7 +3440,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.19",
+  "version": "0.8.20",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -4187,7 +4187,12 @@ function convertRecords(rawList) {
   return rawList.map(function (s) {
     return {
       semester: s.semester.replace(/^(\d+-\d+)-(.+)$/, '$1学年 $2学期').replace('1-1学期', '秋季学期').replace('2-1学期', '春季学期'),
-      courses: s.courses.map(function (v) {
+      courses: s.courses // 根据 http://jwc.scu.edu.cn/detail/122/6891.htm 《网上登录成绩的通知》 的说明
+      // 教师「暂存」的成绩学生不应看到
+      // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
+      .filter(function (v) {
+        return v[4] === '05';
+      }).map(function (v) {
         return {
           name: v[11],
           score: v[8],
@@ -4201,7 +4206,10 @@ function convertRecords(rawList) {
         return v.score;
       })
     };
-  }).reverse();
+  }) // 不显示还没有课程成绩的学期
+  .filter(function (v) {
+    return v.courses && v.courses.length;
+  }); // .reverse()
 }
 /**
  * 从总记录中提取出对应学期的课程列表
@@ -4854,7 +4862,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.19
+// @version      0.8.20
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
