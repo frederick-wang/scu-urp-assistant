@@ -370,6 +370,7 @@ function convertRecords (rawList) {
         // 根据 http://jwc.scu.edu.cn/detail/122/6891.htm 《网上登录成绩的通知》 的说明
         // 教师「暂存」的成绩学生不应看到
         // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
+        // TODO: 考虑做开关，让用户决定看不看
         .filter(v => v[4] === '05')
         .map(v => ({
           name: v[11],
