@@ -1,7 +1,6 @@
 const minimatch = require('minimatch')
 const fastEvaluation = require('./plugins/fast-evaluation')
 const tooltip = require('./plugins/tooltip')
-const removeEvaluationTimeLimit = require('./plugins/remove-evaluation-time-limit')
 const compatibilityLegacy = require('./plugins/compatibility-legacy')
 const fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy')
 const recoverRememberMe = require('./plugins/recover-remember-me')
@@ -27,7 +26,6 @@ const $sua = {
   plugins: [
     tooltip,
     fastEvaluation,
-    removeEvaluationTimeLimit,
     recoverRememberMe,
     gpa
   ],
