@@ -194,7 +194,8 @@ const fastEvaluation = {
           this.changePrompt(
             `即将在1分钟后开始评价${evaluatedPeople}（${evaluationContentContent}），请耐心等待，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
           )
-          setTimeout(() => this.evaluate(0), this.evaluationInterval)
+          this.evaluate(0)
+          // setTimeout(() => this.evaluate(0), this.evaluationInterval)
         }
       }
     })
@@ -270,10 +271,10 @@ const fastEvaluation = {
     let tokenValue
     let count
 
-    this.changePrompt(
-      `正在评价${evaluationContentContent}课程的${evaluatedPeople}老师（${index +
-      1}/${this.list.length}）`
-    )
+    // this.changePrompt(
+    //   `正在评价${evaluationContentContent}课程的${evaluatedPeople}老师（${index +
+    //   1}/${this.list.length}）`
+    // )
 
     window.$.ajax({
       type: 'POST',
@@ -314,59 +315,69 @@ const fastEvaluation = {
         if (this.questionsNumberRange[questionnaireName]) {
           let range = this.questionsNumberRange[questionnaireName]
 
-          let bodyStr = `tokenValue=${tokenValue}&questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}&count=${count}`
+          let bodyStr = `questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}&count=${count}`
           for (let number of range) {
             let numberString = ('0000000000' + number).substr(-10)
             bodyStr += `&${numberString}=10_1`
           }
           bodyStr += `&zgpj=${this.getComment()}`
-
-          window.$.ajax({
-            cache: true,
-            type: 'POST',
-            async: true,
-            url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
-            data: bodyStr,
-            error: xhr => {
-              window.urp.alert(
-                `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
-              )
-              this.changePrompt(
-                `${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index +
-                1}/${this.list.length}`
-              )
-            },
-            success: data => {
-              if (data['result'].indexOf('/') !== -1) {
-                console.log(data)
-              } else if (data['result'] === 'success') {
-                this.changePrompt(
-                  `${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index +
-                  1}/${this.list.length}，将在1分钟后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
-                )
-                setTimeout(() => {
-                  this.evaluate(++index)
-                }, this.evaluationInterval)
-              } else if (data['result'] === 'notEnoughTime') {
-                tokenValue = data['token']
-                this.changePrompt(
-                  `${evaluatedPeople}（${evaluationContentContent} 距离上一次提交未到2分钟 QAQ，进度：${index +
-                  1}/${this.list.length}，将在1分钟后自动重新评价这位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
-                )
-                setTimeout(() => {
-                  this.evaluate(index)
-                }, this.evaluationInterval)
-              } else {
-                window.urp.alert('保存失败')
-                this.changePrompt(
-                  `${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index +
-                  1}/${this.list.length}`
-                )
-              }
-            }
-          })
+          this.evaluate2ndStage(index, bodyStr, evaluatedPeople, evaluationContentContent, tokenValue)
         } else {
           console.log('无效的问卷名称：' + questionnaireName)
+        }
+      }
+    })
+  },
+  evaluate2ndStage (index, bodyStr, evaluatedPeople, evaluationContentContent, tokenValue) {
+    window.$.ajax({
+      cache: true,
+      type: 'POST',
+      async: true,
+      url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
+      data: `tokenValue=${tokenValue}&${bodyStr}`,
+      error: xhr => {
+        window.urp.alert(
+          `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
+        )
+        this.changePrompt(
+          `${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index +
+          1}/${this.list.length}`
+        )
+      },
+      success: data => {
+        if (data['result'].indexOf('/') !== -1) {
+          window.urp.alert('登陆过期，将在3秒后自动刷新页面')
+          this.changePrompt(
+            `${evaluatedPeople}（${evaluationContentContent}）登陆过期 QAQ，进度：${index +
+            1}/${this.list.length}，将在3秒后自动刷新页面~`
+          )
+          setTimeout(() => {
+            window.location.reload()
+          }, 3000)
+        } else if (data['result'] === 'success') {
+          this.changePrompt(
+            `${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index +
+            1}/${this.list.length}，将在1分钟后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+          )
+          this.evaluate(++index)
+          // setTimeout(() => {
+          // }, this.evaluationInterval)
+        } else {
+          if (data['token'] !== tokenValue) {
+            tokenValue = data['token']
+            setTimeout(() => {
+              this.evaluate2ndStage(index, bodyStr, evaluatedPeople, evaluationContentContent, tokenValue)
+            }, this.evaluationInterval)
+          } else {
+            window.urp.alert('保存失败')
+            this.changePrompt(
+              `${evaluatedPeople}（${evaluationContentContent}）遭遇未知错误 QAQ，进度：${index +
+              1}/${this.list.length}，将在1分钟后自动重新评价这位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+            )
+            setTimeout(() => {
+              this.evaluate(index)
+            }, this.evaluationInterval)
+          }
         }
       }
     })

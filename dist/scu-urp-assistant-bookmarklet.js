@@ -3266,9 +3266,8 @@ var fastEvaluation = {
 
           _this.changePrompt("\u5373\u5C06\u57281\u5206\u949F\u540E\u5F00\u59CB\u8BC4\u4EF7" + evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\uFF0C\u8BF7\u8010\u5FC3\u7B49\u5F85\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
 
-          setTimeout(function () {
-            return _this.evaluate(0);
-          }, _this.evaluationInterval);
+          _this.evaluate(0); // setTimeout(() => this.evaluate(0), this.evaluationInterval)
+
         }
       }
     });
@@ -3343,8 +3342,11 @@ var fastEvaluation = {
         questionnaireCode = _list$index.questionnaireCode,
         questionnaireName = _list$index.questionnaireName;
     var tokenValue = void 0;
-    var count = void 0;
-    this.changePrompt("\u6B63\u5728\u8BC4\u4EF7" + evaluationContentContent + "\u8BFE\u7A0B\u7684" + evaluatedPeople + "\u8001\u5E08\uFF08" + (index + 1) + '/' + this.list.length + "\uFF09");
+    var count = void 0; // this.changePrompt(
+    //   `正在评价${evaluationContentContent}课程的${evaluatedPeople}老师（${index +
+    //   1}/${this.list.length}）`
+    // )
+
     window.$.ajax({
       type: 'POST',
       url: '/student/teachingEvaluation/teachingEvaluation/evaluationPage',
@@ -3375,7 +3377,7 @@ var fastEvaluation = {
 
         if (_this3.questionsNumberRange[questionnaireName]) {
           var range = _this3.questionsNumberRange[questionnaireName];
-          var bodyStr = 'tokenValue=' + tokenValue + '&questionnaireCode=' + questionnaireCode + '&evaluationContentNumber=' + evaluationContentNumber + '&evaluatedPeopleNumber=' + evaluatedPeopleNumber + '&count=' + count;
+          var bodyStr = 'questionnaireCode=' + questionnaireCode + '&evaluationContentNumber=' + evaluationContentNumber + '&evaluatedPeopleNumber=' + evaluatedPeopleNumber + '&count=' + count;
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
@@ -3402,43 +3404,58 @@ var fastEvaluation = {
           }
 
           bodyStr += '&zgpj=' + _this3.getComment();
-          window.$.ajax({
-            cache: true,
-            type: 'POST',
-            async: true,
-            url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
-            data: bodyStr,
-            error: function error(xhr) {
-              window.urp.alert("\u9519\u8BEF\u4EE3\u7801[" + xhr.readyState + '-' + xhr.status + "]:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01");
 
-              _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length);
-            },
-            success: function success(data) {
-              if (data['result'].indexOf('/') !== -1) {
-                console.log(data);
-              } else if (data['result'] === 'success') {
-                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length + "\uFF0C\u5C06\u57281\u5206\u949F\u540E\u81EA\u52A8\u5F00\u59CB\u8BC4\u4EF7\u4E0B\u4E00\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
-
-                setTimeout(function () {
-                  _this3.evaluate(++index);
-                }, _this3.evaluationInterval);
-              } else if (data['result'] === 'notEnoughTime') {
-                tokenValue = data['token'];
-
-                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + " \u8DDD\u79BB\u4E0A\u4E00\u6B21\u63D0\u4EA4\u672A\u52302\u5206\u949F QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length + "\uFF0C\u5C06\u57281\u5206\u949F\u540E\u81EA\u52A8\u91CD\u65B0\u8BC4\u4EF7\u8FD9\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
-
-                setTimeout(function () {
-                  _this3.evaluate(index);
-                }, _this3.evaluationInterval);
-              } else {
-                window.urp.alert('保存失败');
-
-                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length);
-              }
-            }
-          });
+          _this3.evaluate2ndStage(index, bodyStr, evaluatedPeople, evaluationContentContent, tokenValue);
         } else {
           console.log('无效的问卷名称：' + questionnaireName);
+        }
+      }
+    });
+  },
+  evaluate2ndStage: function evaluate2ndStage(index, bodyStr, evaluatedPeople, evaluationContentContent, tokenValue) {
+    var _this4 = this;
+
+    window.$.ajax({
+      cache: true,
+      type: 'POST',
+      async: true,
+      url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
+      data: 'tokenValue=' + tokenValue + '&' + bodyStr,
+      error: function error(xhr) {
+        window.urp.alert("\u9519\u8BEF\u4EE3\u7801[" + xhr.readyState + '-' + xhr.status + "]:\u83B7\u53D6\u6570\u636E\u5931\u8D25\uFF01");
+
+        _this4.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u5931\u8D25 QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this4.list.length);
+      },
+      success: function success(data) {
+        if (data['result'].indexOf('/') !== -1) {
+          window.urp.alert('登陆过期，将在3秒后自动刷新页面');
+
+          _this4.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u767B\u9646\u8FC7\u671F QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this4.list.length + "\uFF0C\u5C06\u57283\u79D2\u540E\u81EA\u52A8\u5237\u65B0\u9875\u9762~");
+
+          setTimeout(function () {
+            window.location.reload();
+          }, 3000);
+        } else if (data['result'] === 'success') {
+          _this4.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this4.list.length + "\uFF0C\u5C06\u57281\u5206\u949F\u540E\u81EA\u52A8\u5F00\u59CB\u8BC4\u4EF7\u4E0B\u4E00\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
+
+          _this4.evaluate(++index); // setTimeout(() => {
+          // }, this.evaluationInterval)
+
+        } else {
+          if (data['token'] !== tokenValue) {
+            tokenValue = data['token'];
+            setTimeout(function () {
+              _this4.evaluate2ndStage(index, bodyStr, evaluatedPeople, evaluationContentContent, tokenValue);
+            }, _this4.evaluationInterval);
+          } else {
+            window.urp.alert('保存失败');
+
+            _this4.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u906D\u9047\u672A\u77E5\u9519\u8BEF QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this4.list.length + "\uFF0C\u5C06\u57281\u5206\u949F\u540E\u81EA\u52A8\u91CD\u65B0\u8BC4\u4EF7\u8FD9\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
+
+            setTimeout(function () {
+              _this4.evaluate(index);
+            }, _this4.evaluationInterval);
+          }
         }
       }
     });
@@ -3448,7 +3465,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.20",
+  "version": "0.8.21",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -3473,11 +3490,11 @@ module.exports = {
     "babel-preset-env": "^1.7.0",
     "cssnano": "^4.1.10",
     "cz-conventional-changelog": "^2.1.0",
-    "eslint": "^5.16.0",
+    "eslint": "^6.0.1",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "node-sass": "^4.12.0"
   },
@@ -4186,6 +4203,7 @@ function convertRecords(rawList) {
       courses: s.courses // 根据 http://jwc.scu.edu.cn/detail/122/6891.htm 《网上登录成绩的通知》 的说明
       // 教师「暂存」的成绩学生不应看到
       // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
+      // TODO: 考虑做开关，让用户决定看不看
       .filter(function (v) {
         return v[4] === '05';
       }).map(function (v) {
@@ -4856,7 +4874,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.20
+// @version      0.8.21
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 恢复登陆页面的「两周之内不必登录」选项。3. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
