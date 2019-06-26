@@ -3178,7 +3178,7 @@ var fastEvaluation = {
   $btn: undefined,
   $prompt: undefined,
   list: [],
-  evaluationInterval: 1000 * 121,
+  evaluationInterval: 1000 * 61,
   checkboxWrapperSelectors: {
     '学生评教（课堂教学）': '#ktjx-checkbox-wrapper',
     '学生评教（实验教学）': '#syjx-checkbox-wrapper',
@@ -3260,7 +3260,15 @@ var fastEvaluation = {
         if (_this.list.length) {
           _this.$btn.remove();
 
-          _this.evaluate(0);
+          var _list$ = _this.list[0],
+              evaluatedPeople = _list$.evaluatedPeople,
+              evaluationContentContent = _list$.evaluationContentContent;
+
+          _this.changePrompt("\u5373\u5C06\u57281\u5206\u949F\u540E\u5F00\u59CB\u8BC4\u4EF7" + evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\uFF0C\u8BF7\u8010\u5FC3\u7B49\u5F85\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
+
+          setTimeout(function () {
+            return _this.evaluate(0);
+          }, _this.evaluationInterval);
         }
       }
     });
@@ -3404,7 +3412,7 @@ var fastEvaluation = {
               if (data['result'].indexOf('/') !== -1) {
                 console.log(data);
               } else if (data['result'] === 'success') {
-                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length + "\uFF0C\u5C06\u57282\u5206\u949F\u540E\u81EA\u52A8\u5F00\u59CB\u8BC4\u4EF7\u4E0B\u4E00\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
+                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + "\uFF09\u8BC4\u4EF7\u6210\u529F\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length + "\uFF0C\u5C06\u57281\u5206\u949F\u540E\u81EA\u52A8\u5F00\u59CB\u8BC4\u4EF7\u4E0B\u4E00\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
 
                 setTimeout(function () {
                   _this3.evaluate(++index);
@@ -3412,7 +3420,7 @@ var fastEvaluation = {
               } else if (data['result'] === 'notEnoughTime') {
                 tokenValue = data['token'];
 
-                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + " \u8DDD\u79BB\u4E0A\u4E00\u6B21\u63D0\u4EA4\u672A\u52302\u5206\u949F QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length + "\uFF0C\u5C06\u57282\u5206\u949F\u540E\u81EA\u52A8\u91CD\u65B0\u8BC4\u4EF7\u8FD9\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
+                _this3.changePrompt(evaluatedPeople + "\uFF08" + evaluationContentContent + " \u8DDD\u79BB\u4E0A\u4E00\u6B21\u63D0\u4EA4\u672A\u52302\u5206\u949F QAQ\uFF0C\u8FDB\u5EA6\uFF1A" + (index + 1) + '/' + _this3.list.length + "\uFF0C\u5C06\u57281\u5206\u949F\u540E\u81EA\u52A8\u91CD\u65B0\u8BC4\u4EF7\u8FD9\u4F4D\u8001\u5E08\uFF0C\u8BC4\u6559\u8FC7\u7A0B\u4E2D\u60A8\u53EF\u4EE5\u53BB\u505A\u4E9B\u5176\u4ED6\u4E8B\u60C5\uFF0C\u53EA\u8981\u4E0D\u5173\u95ED\u6B64\u7F51\u9875\u5C31\u53EF\u4EE5~");
 
                 setTimeout(function () {
                   _this3.evaluate(index);
@@ -3499,19 +3507,7 @@ var tooltip = {
   }
 };
 module.exports = tooltip;
-},{"../../package.json":"EHrm"}],"5usv":[function(require,module,exports) {
-'use strict'; // 删除手动评教的时间限制插件
-
-var removeEvaluationTimeLimit = {
-  name: 'remove-evaluation-time-limit',
-  pathname: '/student/teachingEvaluation/teachingEvaluation/evaluationPage',
-  init: function init() {
-    window.$('#RemainM').parent().parent().html('<h4 class="green">时间限制已移除</h4>');
-    window.flag = true;
-  }
-};
-module.exports = removeEvaluationTimeLimit;
-},{}],"BZ5J":[function(require,module,exports) {
+},{"../../package.json":"EHrm"}],"BZ5J":[function(require,module,exports) {
 'use strict'; // 修复兼容性插件(旧版教务系统)
 
 var compatibilityLegacy = {
@@ -4487,8 +4483,6 @@ var fastEvaluation = require('./plugins/fast-evaluation');
 
 var tooltip = require('./plugins/tooltip');
 
-var removeEvaluationTimeLimit = require('./plugins/remove-evaluation-time-limit');
-
 var compatibilityLegacy = require('./plugins/compatibility-legacy');
 
 var fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy');
@@ -4516,7 +4510,7 @@ var $sua = {
   /**
    * 插件
    */
-  plugins: [tooltip, fastEvaluation, removeEvaluationTimeLimit, recoverRememberMe, gpa],
+  plugins: [tooltip, fastEvaluation, recoverRememberMe, gpa],
 
   /**
    * 初始化任务的队列
@@ -4845,12 +4839,12 @@ var $sua = {
   }
 };
 module.exports = $sua;
-},{"babel-runtime/core-js/object/values":"Qujq","babel-runtime/helpers/typeof":"GyB/","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/core-js/object/assign":"gc0D","minimatch":"Nt/K","./plugins/fast-evaluation":"eunL","./plugins/tooltip":"IHPy","./plugins/remove-evaluation-time-limit":"5usv","./plugins/compatibility-legacy":"BZ5J","./plugins/fast-evaluation-legacy":"wAV6","./plugins/recover-remember-me":"Gbn9","./plugins/gpa":"Fqjc"}],"9TYs":[function(require,module,exports) {
+},{"babel-runtime/core-js/object/values":"Qujq","babel-runtime/helpers/typeof":"GyB/","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/core-js/object/assign":"gc0D","minimatch":"Nt/K","./plugins/fast-evaluation":"eunL","./plugins/tooltip":"IHPy","./plugins/compatibility-legacy":"BZ5J","./plugins/fast-evaluation-legacy":"wAV6","./plugins/recover-remember-me":"Gbn9","./plugins/gpa":"Fqjc"}],"9TYs":[function(require,module,exports) {
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
 // @version      0.8.18
-// @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 为手动评教页面「去除 2 分钟时间限制」。3. 恢复登陆页面的「两周之内不必登录」选项。4. 增强绩点与均分的计算功能。
+// @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 恢复登陆页面的「两周之内不必登录」选项。3. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
 // @include      http://zhjw.scu.edu.cn/*

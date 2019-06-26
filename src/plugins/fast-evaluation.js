@@ -5,7 +5,7 @@ const fastEvaluation = {
   $btn: undefined,
   $prompt: undefined,
   list: [],
-  evaluationInterval: 1000 * 121,
+  evaluationInterval: 1000 * 61,
   checkboxWrapperSelectors: {
     '学生评教（课堂教学）': '#ktjx-checkbox-wrapper',
     '学生评教（实验教学）': '#syjx-checkbox-wrapper',
@@ -187,7 +187,14 @@ const fastEvaluation = {
         window.layer.close(layerIndex)
         if (this.list.length) {
           this.$btn.remove()
-          this.evaluate(0)
+          let {
+            evaluatedPeople,
+            evaluationContentContent
+          } = this.list[0]
+          this.changePrompt(
+            `即将在1分钟后开始评价${evaluatedPeople}（${evaluationContentContent}），请耐心等待，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+          )
+          setTimeout(() => this.evaluate(0), this.evaluationInterval)
         }
       }
     })
@@ -327,7 +334,7 @@ const fastEvaluation = {
               } else if (data['result'] === 'success') {
                 this.changePrompt(
                   `${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index +
-                  1}/${this.list.length}，将在2分钟后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+                  1}/${this.list.length}，将在1分钟后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
                 )
                 setTimeout(() => {
                   this.evaluate(++index)
@@ -336,7 +343,7 @@ const fastEvaluation = {
                 tokenValue = data['token']
                 this.changePrompt(
                   `${evaluatedPeople}（${evaluationContentContent} 距离上一次提交未到2分钟 QAQ，进度：${index +
-                  1}/${this.list.length}，将在2分钟后自动重新评价这位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+                  1}/${this.list.length}，将在1分钟后自动重新评价这位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
                 )
                 setTimeout(() => {
                   this.evaluate(index)
