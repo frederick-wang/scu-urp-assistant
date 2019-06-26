@@ -9,7 +9,7 @@ const gpa = {
   $indexWidgetMain: null,
   $indexWidgetMainRow: null,
   records: null,
-  init() {
+  init () {
     this.initDOM()
     // 第一次请求只是为了获得课程总数 totalCount
     window.$.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
@@ -62,7 +62,7 @@ const gpa = {
   /**
    * 初始化最初的界面
    */
-  initDOM() {
+  initDOM () {
     this.$indexWidget = window.$(templates.indexWidget)
     window
       .$('.page-content')
@@ -75,10 +75,10 @@ const gpa = {
   /**
    * 初始化按钮与「课程块」的鼠标事件
    */
-  initEvent() {
+  initEvent () {
     const that = this
 
-    window.$('.gpa-st-item').click(function() {
+    window.$('.gpa-st-item').click(function () {
       that.toggleTranscriptItemStatus(this)
       that.renderTagSelected()
     })
@@ -93,12 +93,12 @@ const gpa = {
       this.reset()
     })
 
-    window.$('.gpa-st-select-all-btn').click(function() {
+    window.$('.gpa-st-select-all-btn').click(function () {
       const semester = this.dataset.semester
       getSemesterCourses(that.records, semester).forEach(item => {
         item.selected = true
       })
-      window.$('.gpa-st-item').each(function() {
+      window.$('.gpa-st-item').each(function () {
         if (this.dataset.semester === semester) {
           window.$(this).addClass('selected')
         }
@@ -106,12 +106,12 @@ const gpa = {
       that.renderTagSelected()
     })
 
-    window.$('.gpa-st-cancel-btn').click(function() {
+    window.$('.gpa-st-cancel-btn').click(function () {
       const semester = this.dataset.semester
       getSemesterCourses(that.records, semester).forEach(item => {
         item.selected = false
       })
-      window.$('.gpa-st-item').each(function() {
+      window.$('.gpa-st-item').each(function () {
         if (this.dataset.semester === semester) {
           window.$(this).removeClass('selected')
         }
@@ -119,25 +119,25 @@ const gpa = {
       that.renderTagSelected()
     })
 
-    window.$('.gpa-tt-select-all-btn').click(function() {
+    window.$('.gpa-tt-select-all-btn').click(function () {
       that.records.forEach(list =>
         list.courses.forEach(item => {
           item.selected = true
         })
       )
-      window.$('.gpa-st-item').each(function() {
+      window.$('.gpa-st-item').each(function () {
         window.$(this).addClass('selected')
       })
       that.renderTagSelected()
     })
 
-    window.$('.gpa-tt-cancel-btn').click(function() {
+    window.$('.gpa-tt-cancel-btn').click(function () {
       that.records.forEach(list =>
         list.courses.forEach(item => {
           item.selected = false
         })
       )
-      window.$('.gpa-st-item').each(function() {
+      window.$('.gpa-st-item').each(function () {
         window.$(this).removeClass('selected')
       })
       that.renderTagSelected()
@@ -147,7 +147,7 @@ const gpa = {
   /**
    * 渲染与「选择」有关的元素
    */
-  renderTagSelected() {
+  renderTagSelected () {
     this.renderSemesterTagSelected()
     this.renderTotalTagSelected()
   },
@@ -155,7 +155,7 @@ const gpa = {
   /**
    * 渲染与「选择」有关的「分学期」元素
    */
-  renderSemesterTagSelected() {
+  renderSemesterTagSelected () {
     this.records.forEach(({ semester, courses }) => {
       const selectedCourses = courses.filter(v => v.selected)
       const getSemester$Element = className =>
@@ -223,7 +223,7 @@ const gpa = {
   /**
    * 渲染与「选择」有关的「全部成绩」元素
    */
-  renderTotalTagSelected() {
+  renderTotalTagSelected () {
     const selectedCourses = this.records
       .reduce((acc, cur) => acc.concat(cur.courses), [])
       .filter(v => v.selected)
@@ -286,7 +286,7 @@ const gpa = {
   /**
    * 当「课程块」被点击时，做出相应的反应
    */
-  toggleTranscriptItemStatus(dom) {
+  toggleTranscriptItemStatus (dom) {
     window.$(dom).toggleClass('selected')
     const status = window.$(dom).hasClass('selected')
     const { name, attribute, semester } = dom.dataset
@@ -306,7 +306,7 @@ const gpa = {
   /**
    * 渲染「总成绩」部分的界面
    */
-  renderTotalTranscript() {
+  renderTotalTranscript () {
     const semestersQuantity = this.records.length
     const allCourses = this.records.reduce(
       (acc, cur) => acc.concat(cur.courses),
@@ -319,7 +319,7 @@ const gpa = {
   /**
    * 渲染「学期成绩」部分的界面
    */
-  renderSemesterTranscript() {
+  renderSemesterTranscript () {
     this.records.forEach(({ semester, courses }) => {
       const header = templates.semesterTranscriptHeader(semester, courses)
       const labels = templates.semesterTranscriptLabels(semester, courses)
@@ -333,7 +333,7 @@ const gpa = {
   /**
    * 销毁页面元素
    */
-  destroy() {
+  destroy () {
     this.$indexWidgetMainRow.remove()
     this.$indexWidgetMain.remove()
     this.$indexWidget.remove()
@@ -347,7 +347,7 @@ const gpa = {
   /**
    * 重置页面，销毁页面元素，重新获取数据并渲染界面
    */
-  reset() {
+  reset () {
     this.destroy()
     this.init()
   }
@@ -359,7 +359,7 @@ const gpa = {
  * @param {*} rawList 原始数据
  * @returns 处理后的数据
  */
-function convertRecords(rawList) {
+function convertRecords (rawList) {
   return rawList
     .map(s => ({
       semester: s.semester
@@ -367,6 +367,11 @@ function convertRecords(rawList) {
         .replace('1-1学期', '秋季学期')
         .replace('2-1学期', '春季学期'),
       courses: s.courses
+        // 根据 http://jwc.scu.edu.cn/detail/122/6891.htm 《网上登录成绩的通知》 的说明
+        // 教师「暂存」的成绩学生不应看到
+        // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
+        // TODO: 考虑做开关，让用户决定看不看
+        .filter(v => v[4] === '05')
         .map(v => ({
           name: v[11],
           score: v[8],
@@ -378,7 +383,9 @@ function convertRecords(rawList) {
         // 分数可能为null
         .filter(v => v.score)
     }))
-    .reverse()
+    // 不显示还没有课程成绩的学期
+    .filter(v => v.courses && v.courses.length)
+  // .reverse()
 }
 
 /**
@@ -388,7 +395,7 @@ function convertRecords(rawList) {
  * @param {string} semester 学期名称
  * @returns 课程列表
  */
-function getSemesterCourses(records, semester) {
+function getSemesterCourses (records, semester) {
   return records.filter(v => v.semester === semester)[0].courses
 }
 
@@ -398,7 +405,7 @@ function getSemesterCourses(records, semester) {
  * @param {*} arr 一个数组，每个对象包括数值(value)和权值(weight)
  * @returns 计算好的加权平均数
  */
-function getWeightedAverage(arr) {
+function getWeightedAverage (arr) {
   return arr
     .reduce(
       (acc, cur) => [acc[0] + cur.value * cur.weight, acc[1] + cur.weight],
@@ -413,7 +420,7 @@ function getWeightedAverage(arr) {
  * @param {*} arr 一个课程数组
  * @returns 筛选出的只包括必修课程的数组
  */
-function getCompulsoryCourse(arr) {
+function getCompulsoryCourse (arr) {
   return arr.filter(v => v.attribute === '必修')
 }
 
@@ -423,7 +430,7 @@ function getCompulsoryCourse(arr) {
  * @param {*} arr 一个课程数组
  * @returns 一个只包含gpa作为数值，学分作为权值的对象数组
  */
-function mapGPA(arr) {
+function mapGPA (arr) {
   return arr.map(v => ({ value: v.gpa, weight: v.credit }))
 }
 
@@ -433,7 +440,7 @@ function mapGPA(arr) {
  * @param {*} arr 一个课程数组
  * @returns 一个只包含分数作为数值，学分作为权值的对象数组
  */
-function mapScore(arr) {
+function mapScore (arr) {
   return arr.map(v => ({ value: v.score, weight: v.credit }))
 }
 
@@ -444,7 +451,7 @@ function mapScore(arr) {
  * @param {number} [fractionDigits=3] 保留小数位数
  * @returns 保留对应位数后的小数
  */
-function reserveDigits(num, fractionDigits = 3) {
+function reserveDigits (num, fractionDigits = 3) {
   return Number(num.toFixed(fractionDigits))
 }
 
@@ -454,7 +461,7 @@ function reserveDigits(num, fractionDigits = 3) {
  * @param {*} arr 课程数组
  * @returns 必修加权平均绩点
  */
-function getCompulsoryCoursesGPA(arr) {
+function getCompulsoryCoursesGPA (arr) {
   return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))))
 }
 
@@ -464,7 +471,7 @@ function getCompulsoryCoursesGPA(arr) {
  * @param {*} arr 课程数组
  * @returns 必修加权平均分
  */
-function getCompulsoryCoursesScore(arr) {
+function getCompulsoryCoursesScore (arr) {
   return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))))
 }
 
@@ -474,7 +481,7 @@ function getCompulsoryCoursesScore(arr) {
  * @param {*} arr 课程数组
  * @returns 全部课程加权平均绩点
  */
-function getAllCoursesGPA(arr) {
+function getAllCoursesGPA (arr) {
   return reserveDigits(getWeightedAverage(mapGPA(arr)))
 }
 
@@ -484,7 +491,7 @@ function getAllCoursesGPA(arr) {
  * @param {*} arr 课程数组
  * @returns 全部课程加权平均分
  */
-function getAllCoursesScore(arr) {
+function getAllCoursesScore (arr) {
   return reserveDigits(getWeightedAverage(mapScore(arr)))
 }
 
@@ -494,7 +501,7 @@ function getAllCoursesScore(arr) {
  * @param {*} arr 一个由课程对象组成的数组
  * @returns 必修加权平均分、必修加权平均绩点、全部课程加权平均分、全部课程加权平均绩点4个值
  */
-function getFourTypesValue(arr) {
+function getFourTypesValue (arr) {
   return {
     compulsoryCoursesGPA: getCompulsoryCoursesGPA(arr),
     compulsoryCoursesScore: getCompulsoryCoursesScore(arr),
@@ -509,7 +516,7 @@ function getFourTypesValue(arr) {
  * @param {*} score 分数
  * @returns 绩点
  */
-function getPointByScore(score, semester) {
+function getPointByScore (score, semester) {
   // 2017年起，川大修改了绩点政策，因此要检测学期的年份
   const enrollmentYear = Number(semester.match(/^\d+/)[0])
   if (enrollmentYear >= 2017) {
@@ -589,7 +596,7 @@ const templates = {
       </div>
     </div>
   `,
-  totalTranscript(semestersQuantity, courses) {
+  totalTranscript (semestersQuantity, courses) {
     const {
       allCoursesGPA,
       allCoursesScore,
@@ -672,7 +679,7 @@ const templates = {
       </div>
     `
   },
-  semesterTranscriptHeader(semester, courses) {
+  semesterTranscriptHeader (semester, courses) {
     const coursesQuantity = courses.length
     const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
     return `
@@ -705,7 +712,7 @@ const templates = {
       </h4>
     `
   },
-  semesterTranscriptLabels(semester, courses) {
+  semesterTranscriptLabels (semester, courses) {
     const {
       allCoursesGPA,
       allCoursesScore,
@@ -752,7 +759,7 @@ const templates = {
       </p>
     `
   },
-  semesterTranscriptContent(semester, courses) {
+  semesterTranscriptContent (semester, courses) {
     const courseList = () =>
       courses
         .map(
@@ -792,7 +799,7 @@ const templates = {
       </table>
     `
   },
-  semesterTranscriptWrapper(header, labels, content) {
+  semesterTranscriptWrapper (header, labels, content) {
     return `<div class="gpa-st col-sm-6">${header + labels + content}</div>`
   }
 }

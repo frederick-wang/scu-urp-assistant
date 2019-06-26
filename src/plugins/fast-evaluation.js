@@ -300,8 +300,16 @@ const fastEvaluation = {
         )
       },
       success: data => {
-        tokenValue = data.match(/<input.+tokenValue(?:(?:.|\r|\n)+?)value="(.+?)" \/>/i)[1]
-        count = data.match(/<input.+count.+value="(.+?)">/i)[1]
+        tokenValue = data.match(/<input.+tokenValue(?:(?:.|\r|\n)+?)value="(.*?)" \/>/i)[1]
+        count = data.match(/<input.+count.+value="(.*?)">/i)[1]
+
+        if (!tokenValue || !count) {
+          window.urp.confirm(
+            `因教务系统不稳定，当前暂时无法评教，请稍等一段时间后，刷新网页再尝试。如果还是无法评教，您可以更换浏览器或电脑后再尝试。`,
+            function () { }
+          )
+          return
+        }
 
         if (this.questionsNumberRange[questionnaireName]) {
           let range = this.questionsNumberRange[questionnaireName]
