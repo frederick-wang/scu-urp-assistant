@@ -12,7 +12,8 @@ const fastEvaluation = {
     '学生评教（实践教学）': '#sjjx-checkbox-wrapper',
     '学生评教（实验实践）': '#sysj-checkbox-wrapper',
     '学生评教（体育教学）': '#tyjx-checkbox-wrapper',
-    '研究生助教评价': '#yjs-checkbox-wrapper'
+    '研究生助教评价': '#yjs-checkbox-wrapper',
+    'UIP国际课程学生评教': '#uip-checkbox-wrapper'
   },
   questionsNumberRange: {
     '学生评教（课堂教学）': [107, 108, 123, 127, 128, 129, 131],
@@ -20,7 +21,8 @@ const fastEvaluation = {
     '学生评教（实践教学）': [89, 90, 91, 92, 93, 94, 95],
     '学生评教（实验实践）': [132, 133, 134, 135, 136, 137, 138],
     '学生评教（体育教学）': [96, 97, 98, 99, 100, 101, 102],
-    '研究生助教评价': [28, 29, 30, 31, 32, 33]
+    '研究生助教评价': [28, 29, 30, 31, 32, 33],
+    'UIP国际课程学生评教': [53, 54, 55, 56, 57, 58, 59, 60, 61, 105]
   },
   templates: {
     btn:
@@ -78,6 +80,8 @@ const fastEvaluation = {
               <div id="tyjx-checkbox-wrapper" class="checkbox-wrapper"></div>
               <h4 class="lighter blue">研究生助教评价</h4>
               <div id="yjs-checkbox-wrapper" class="checkbox-wrapper"></div>
+              <h4 class="lighter blue">UIP国际课程学生评教</h4>
+              <div id="uip-checkbox-wrapper" class="checkbox-wrapper"></div>
             </div>
           </div>
         </form>
