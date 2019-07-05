@@ -375,6 +375,7 @@ function convertRecords (rawList) {
         .map(v => ({
           name: v[11],
           score: v[8],
+          level: v[17],
           gpa: getPointByScore(v[8], s.semester),
           credit: v[13],
           attribute: v[15],
@@ -769,15 +770,17 @@ const templates = {
               data-semester="${semester}"
               data-name="${v.name}"
               data-score="${v.score}"
+              data-level="${v.level}"
               data-gpa="${v.gpa}"
               data-credit="${v.credit}"
               data-attribute="${v.attribute}"
             >
               <td>${v.name}</td>
-              <td>${v.score}</td>
-              <td>${v.gpa}</td>
-              <td>${v.credit}</td>
-              <td>${v.attribute}</td>
+              <td class="center">${v.score}</td>
+              <td class="center">${v.level}</td>
+              <td class="center">${v.gpa}</td>
+              <td class="center">${v.credit}</td>
+              <td class="center">${v.attribute}</td>
             </tr>
           `
         )
@@ -787,10 +790,11 @@ const templates = {
         <thead>
           <tr>
             <th>课程名</th>
-            <th>分数</th>
-            <th>绩点</th>
-            <th>学分</th>
-            <th>属性</th>
+            <th class="center">分数</th>
+            <th class="center">等级</th>
+            <th class="center">绩点</th>
+            <th class="center">学分</th>
+            <th class="center">属性</th>
           </tr>
         </thead>
         <tbody>

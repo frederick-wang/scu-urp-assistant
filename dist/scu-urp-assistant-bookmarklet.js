@@ -3467,7 +3467,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.8.22",
+  "version": "0.8.23",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -4212,6 +4212,7 @@ function convertRecords(rawList) {
         return {
           name: v[11],
           score: v[8],
+          level: v[17],
           gpa: getPointByScore(v[8], s.semester),
           credit: v[13],
           attribute: v[15],
@@ -4474,11 +4475,11 @@ var templates = {
   semesterTranscriptContent: function semesterTranscriptContent(semester, courses) {
     var courseList = function courseList() {
       return courses.map(function (v) {
-        return '\n            <tr\n              class="gpa-st-item"\n              data-semester="' + semester + '"\n              data-name="' + v.name + '"\n              data-score="' + v.score + '"\n              data-gpa="' + v.gpa + '"\n              data-credit="' + v.credit + '"\n              data-attribute="' + v.attribute + '"\n            >\n              <td>' + v.name + '</td>\n              <td>' + v.score + '</td>\n              <td>' + v.gpa + '</td>\n              <td>' + v.credit + '</td>\n              <td>' + v.attribute + '</td>\n            </tr>\n          ';
+        return '\n            <tr\n              class="gpa-st-item"\n              data-semester="' + semester + '"\n              data-name="' + v.name + '"\n              data-score="' + v.score + '"\n              data-level="' + v.level + '"\n              data-gpa="' + v.gpa + '"\n              data-credit="' + v.credit + '"\n              data-attribute="' + v.attribute + '"\n            >\n              <td>' + v.name + '</td>\n              <td class="center">' + v.score + '</td>\n              <td class="center">' + v.level + '</td>\n              <td class="center">' + v.gpa + '</td>\n              <td class="center">' + v.credit + '</td>\n              <td class="center">' + v.attribute + '</td>\n            </tr>\n          ';
       }).join('');
     };
 
-    return "\n      <table class=\"gpa-st-table table table-striped table-bordered table-hover\">\n        <thead>\n          <tr>\n            <th>\u8BFE\u7A0B\u540D</th>\n            <th>\u5206\u6570</th>\n            <th>\u7EE9\u70B9</th>\n            <th>\u5B66\u5206</th>\n            <th>\u5C5E\u6027</th>\n          </tr>\n        </thead>\n        <tbody>\n        " + courseList() + '\n        </tbody>\n      </table>\n    ';
+    return "\n      <table class=\"gpa-st-table table table-striped table-bordered table-hover\">\n        <thead>\n          <tr>\n            <th>\u8BFE\u7A0B\u540D</th>\n            <th class=\"center\">\u5206\u6570</th>\n            <th class=\"center\">\u7B49\u7EA7</th>\n            <th class=\"center\">\u7EE9\u70B9</th>\n            <th class=\"center\">\u5B66\u5206</th>\n            <th class=\"center\">\u5C5E\u6027</th>\n          </tr>\n        </thead>\n        <tbody>\n        " + courseList() + '\n        </tbody>\n      </table>\n    ';
   },
   semesterTranscriptWrapper: function semesterTranscriptWrapper(header, labels, content) {
     return '<div class="gpa-st col-sm-6">' + (header + labels + content) + '</div>';
@@ -4876,7 +4877,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.8.22
+// @version      0.8.23
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 恢复登陆页面的「两周之内不必登录」选项。3. 增强绩点与均分的计算功能。
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
