@@ -41,23 +41,24 @@ const $sua = {
    * 加载样式的队列
    */
   styleQueue: [],
+  menuQueue: [],
   /**
    * 初始化 SCU URP 助手
    */
-  init() {
+  init () {
     // 旧版教务系统兼容
     if (window.location.host === 'zhjwwx.scu.edu.cn:8080') {
       if (window.location.pathname !== '/loginAction.do') {
         return
       }
-      let dataLegacy = {
+      const dataLegacy = {
         topFrame: window.frames.topFrame,
         bottomFrame: window.frames.bottomFrame,
         menuFrame: window.frames.bottomFrame.frames.menuFrame,
         mainFrame: window.frames.bottomFrame.frames.mainFrame
       }
 
-      let pluginsLegacy = [compatibilityLegacy, fastEvaluationLegacy]
+      const pluginsLegacy = [compatibilityLegacy, fastEvaluationLegacy]
 
       window.$sua = Object.assign($sua, dataLegacy)
       for (let plugin of pluginsLegacy) {
@@ -70,11 +71,11 @@ const $sua = {
           this.taskQueue.push(plugin.task.bind(plugin))
         }
       }
-      for (let i of this.initQueue) {
+      for (const i of this.initQueue) {
         i()
       }
       setInterval(() => {
-        for (let t of this.taskQueue) {
+        for (const t of this.taskQueue) {
           t()
         }
       }, this.timeInterval)
@@ -105,7 +106,7 @@ const $sua = {
       }
     }
     // 加载样式
-    for (let s of this.styleQueue) {
+    for (const s of this.styleQueue) {
       window.$('head').append(`
         <style type="text/css">
           ${s}
@@ -113,12 +114,12 @@ const $sua = {
       `)
     }
     // 初始化方法
-    for (let i of this.initQueue) {
+    for (const i of this.initQueue) {
       i()
     }
     // 定时任务
     setInterval(() => {
-      for (let t of this.taskQueue) {
+      for (const t of this.taskQueue) {
         t()
       }
     }, this.taskTimeInterval)
@@ -130,8 +131,8 @@ const $sua = {
      * 如果 pathname 属性不存在，则默认对全体 url 均生效
      * @returns 检测的结果
      */
-    function urlTrigger(plugin) {
-      let { pathname } = plugin
+    function urlTrigger (plugin) {
+      const { pathname } = plugin
       // 如果pathname不存在，默认对全部url生效
       if (!pathname) {
         return true
@@ -140,14 +141,14 @@ const $sua = {
       } else if (typeof pathname === 'string') {
         return minimatch(window.location.pathname, pathname)
       } else if (Array.isArray(pathname)) {
-        for (let item of pathname) {
+        for (const item of pathname) {
           if (minimatch(window.location.pathname, item)) {
             return true
           }
         }
         return false
       } else if (typeof pathname === 'object') {
-        for (let item of Object.values(pathname)) {
+        for (const item of Object.values(pathname)) {
           if (minimatch(window.location.pathname, item)) {
             return true
           }
