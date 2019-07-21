@@ -5,12 +5,13 @@ const compatibilityLegacy = require('./plugins/compatibility-legacy')
 const fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy')
 const recoverRememberMe = require('./plugins/recover-remember-me')
 const gpa = require('./plugins/gpa')
+const trainingScheme = require('./plugins/training-scheme')
 /**
  * 2019-5-27 23:43:26
  * TODO: 加入更友好的查看培养方案（分学期）的功能，以及查询全校所有专业的培养方案的功能。
  * 使用接口：http://zhjw.scu.edu.cn/student/rollManagement/project/3623/1/detail
  */
-
+const $ = window.$
 // 挂载到 window 上的全局对象
 const $sua = {
   // 属性值的存放处
@@ -27,7 +28,8 @@ const $sua = {
     tooltip,
     fastEvaluation,
     recoverRememberMe,
-    gpa
+    gpa,
+    trainingScheme
   ],
   /**
    * 初始化任务的队列
@@ -41,7 +43,14 @@ const $sua = {
    * 加载样式的队列
    */
   styleQueue: [],
+  /**
+   * 加载菜单的队列
+   */
   menuQueue: [],
+  /**
+   * 存储菜单的对象
+   */
+  menuItems: [],
   /**
    * 初始化 SCU URP 助手
    */
@@ -95,6 +104,10 @@ const $sua = {
         if (plugin.style) {
           this.styleQueue.push(plugin.style)
         }
+        // 将菜单推入队列中
+        if (plugin.menu) {
+          this.menuQueue = this.menuQueue.concat(plugin.menu)
+        }
         // 将初始化方法推入队列中
         if (plugin.init) {
           this.initQueue.push(plugin.init.bind(plugin))
@@ -107,11 +120,82 @@ const $sua = {
     }
     // 加载样式
     for (const s of this.styleQueue) {
-      window.$('head').append(`
+      $('head').append(`
         <style type="text/css">
           ${s}
         </style>
       `)
+    }
+    // 加载菜单
+    for (const m of this.menuQueue) {
+      const { rootMenuId, rootMenuName, id: menuId, name: menuName, items } = m
+      const $rootMenuList = $('#menus')
+      // 检查根菜单是否存在，如不存在则新建
+      if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
+        $rootMenuList.append(`
+          <li class="hsub sua-menu-list" id="${rootMenuId}" onclick="rootMenuClick(this);">
+            <a href="#" class="dropdown-toggle">
+              <i class="menu-icon fa fa-gavel"></i>
+              <span class="menu-text">${rootMenuName}</span>
+              <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu nav-hide" onclick="stopHere();" style="display: none;">
+            </ul>
+          </li>
+        `)
+      }
+      const $rootMenu = $rootMenuList.find(`li#${rootMenuId}>ul.submenu`)
+      // 检查菜单是否存在，如不存在则新建
+      if (!$rootMenu.children(`li#${menuId}`).length) {
+        $rootMenu.append(`
+          <li class="hsub open sua-menu" id="${menuId}">
+            <a href="#" class="dropdown-toggle">
+              <i class="menu-icon fa fa-caret-right"></i>${menuName}
+              <b class="arrow fa fa-angle-down"></b></a>
+            <b class="arrow"></b>
+            <ul class="submenu nav-show" style="display: block;">
+            </ul>
+          </li>
+        `)
+      }
+      const $menu = $rootMenu.find(`li#${menuId}>ul.submenu`)
+      items.forEach(({ name, breadcrumbs, render }) => {
+        $menu.append(`
+          <li class="sua-menu-item" id="menu-item-${name}" onclick="$sua.menuItems[${this.menuItems.length}].clickHandler()">
+            <a href="#">&nbsp;&nbsp; ${name}</a>
+            <b class="arrow"></b>
+          </li>
+        `)
+        this.menuItems.push({
+          element: $menu.children(`#menu-item-${name}`)[0],
+          id: `menu-item-${name}`,
+          name,
+          clickHandler () {
+            window.$sua.menuItems.forEach(v => {
+              if (v.id === this.element.id) {
+                $(v.element).addClass('active')
+              } else {
+                $(v.element).removeClass('active')
+              }
+            })
+            const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
+            $breadcrumbs.empty()
+            $breadcrumbs.append(`
+              <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
+                <i class="ace-icon fa fa-home home-icon"></i>
+                首页
+              </li>
+              <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${rootMenuName}</li>
+              <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${menuName}</li>
+              <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${this.element.id}">${this.name}</li>
+            `)
+            const $pageContent = $('.main-content>.page-content')
+            $pageContent.empty()
+            render($('.main-content>.page-content')[0])
+          }
+        })
+      })
     }
     // 初始化方法
     for (const i of this.initQueue) {

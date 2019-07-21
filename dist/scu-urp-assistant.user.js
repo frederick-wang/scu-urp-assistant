@@ -3491,10 +3491,10 @@ module.exports = {
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
     "cssnano": "^4.1.10",
-    "cz-conventional-changelog": "^2.1.0",
-    "eslint": "^6.0.1",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.18.0",
+    "cz-conventional-changelog": "^3.0.2",
+    "eslint": "^6.1.0",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^9.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
@@ -4486,7 +4486,44 @@ var templates = {
   }
 };
 module.exports = gpa;
-},{"babel-runtime/core-js/array/from":"VuZO","fs":"tuDi"}],"287w":[function(require,module,exports) {
+},{"babel-runtime/core-js/array/from":"VuZO","fs":"tuDi"}],"J+gl":[function(require,module,exports) {
+'use strict'; // 培养方案查询插件
+
+var fs = require('fs');
+
+var trainingScheme = {
+  name: 'training-scheme',
+  pathname: '/**',
+  style: "",
+  menu: [{
+    rootMenuId: 'sua-menu-list',
+    rootMenuName: 'SCU URP 助手',
+    id: 'menu-advanced-query',
+    name: '高级查询',
+    items: [{
+      name: '培养方案查询',
+      breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案查询'],
+      render: renderPageContent
+    }, {
+      name: '培养方案查询222',
+      breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案查询222'],
+      render: renderPageContent2
+    }]
+  }]
+};
+
+function renderPageContent(root) {
+  console.log(root);
+  console.log('培养方案查询插件调用111！');
+}
+
+function renderPageContent2(root) {
+  console.log(root);
+  console.log('培养方案查询插件调用222！');
+}
+
+module.exports = trainingScheme;
+},{"fs":"tuDi"}],"287w":[function(require,module,exports) {
 'use strict';
 
 var _values = require('babel-runtime/core-js/object/values');
@@ -4524,13 +4561,16 @@ var fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy');
 var recoverRememberMe = require('./plugins/recover-remember-me');
 
 var gpa = require('./plugins/gpa');
+
+var trainingScheme = require('./plugins/training-scheme');
 /**
  * 2019-5-27 23:43:26
  * TODO: 加入更友好的查看培养方案（分学期）的功能，以及查询全校所有专业的培养方案的功能。
  * 使用接口：http://zhjw.scu.edu.cn/student/rollManagement/project/3623/1/detail
  */
-// 挂载到 window 上的全局对象
 
+
+var $ = window.$; // 挂载到 window 上的全局对象
 
 var $sua = {
   // 属性值的存放处
@@ -4544,7 +4584,7 @@ var $sua = {
   /**
    * 插件
    */
-  plugins: [tooltip, fastEvaluation, recoverRememberMe, gpa],
+  plugins: [tooltip, fastEvaluation, recoverRememberMe, gpa, trainingScheme],
 
   /**
    * 初始化任务的队列
@@ -4560,6 +4600,16 @@ var $sua = {
    * 加载样式的队列
    */
   styleQueue: [],
+
+  /**
+   * 加载菜单的队列
+   */
+  menuQueue: [],
+
+  /**
+   * 存储菜单的对象
+   */
+  menuItems: [],
 
   /**
    * 初始化 SCU URP 助手
@@ -4684,6 +4734,11 @@ var $sua = {
           // 将样式推入队列中
           if (_plugin.style) {
             this.styleQueue.push(_plugin.style);
+          } // 将菜单推入队列中
+
+
+          if (_plugin.menu) {
+            this.menuQueue = this.menuQueue.concat(_plugin.menu);
           } // 将初始化方法推入队列中
 
 
@@ -4720,8 +4775,8 @@ var $sua = {
     try {
       for (var _iterator5 = (0, _getIterator3.default)(this.styleQueue), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
         var s = _step5.value;
-        window.$('head').append('\n        <style type="text/css">\n          ' + s + '\n        </style>\n      ');
-      } // 初始化方法
+        $('head').append('\n        <style type="text/css">\n          ' + s + '\n        </style>\n      ');
+      } // 加载菜单
 
     } catch (err) {
       _didIteratorError5 = true;
@@ -4738,16 +4793,66 @@ var $sua = {
       }
     }
 
+    var _loop = function _loop(m) {
+      var rootMenuId = m.rootMenuId,
+          rootMenuName = m.rootMenuName,
+          menuId = m.id,
+          menuName = m.name,
+          items = m.items;
+      var $rootMenuList = $('#menus'); // 检查根菜单是否存在，如不存在则新建
+
+      if (!$rootMenuList.children('li#' + rootMenuId).length) {
+        $rootMenuList.append('\n          <li class="hsub sua-menu-list" id="' + rootMenuId + '" onclick="rootMenuClick(this);">\n            <a href="#" class="dropdown-toggle">\n              <i class="menu-icon fa fa-gavel"></i>\n              <span class="menu-text">' + rootMenuName + '</span>\n              <b class="arrow fa fa-angle-down"></b>\n            </a>\n            <b class="arrow"></b>\n            <ul class="submenu nav-hide" onclick="stopHere();" style="display: none;">\n            </ul>\n          </li>\n        ');
+      }
+
+      var $rootMenu = $rootMenuList.find('li#' + rootMenuId + '>ul.submenu'); // 检查菜单是否存在，如不存在则新建
+
+      if (!$rootMenu.children('li#' + menuId).length) {
+        $rootMenu.append('\n          <li class="hsub open sua-menu" id="' + menuId + '">\n            <a href="#" class="dropdown-toggle">\n              <i class="menu-icon fa fa-caret-right"></i>' + menuName + '\n              <b class="arrow fa fa-angle-down"></b></a>\n            <b class="arrow"></b>\n            <ul class="submenu nav-show" style="display: block;">\n            </ul>\n          </li>\n        ');
+      }
+
+      var $menu = $rootMenu.find('li#' + menuId + '>ul.submenu');
+      items.forEach(function (_ref) {
+        var name = _ref.name,
+            breadcrumbs = _ref.breadcrumbs,
+            render = _ref.render;
+        $menu.append('\n          <li class="sua-menu-item" id="menu-item-' + name + '" onclick="$sua.menuItems[' + _this.menuItems.length + '].clickHandler()">\n            <a href="#">&nbsp;&nbsp; ' + name + '</a>\n            <b class="arrow"></b>\n          </li>\n        ');
+
+        _this.menuItems.push({
+          element: $menu.children('#menu-item-' + name)[0],
+          id: 'menu-item-' + name,
+          name: name,
+          clickHandler: function clickHandler() {
+            var _this2 = this;
+
+            window.$sua.menuItems.forEach(function (v) {
+              if (v.id === _this2.element.id) {
+                $(v.element).addClass('active');
+              } else {
+                $(v.element).removeClass('active');
+              }
+            });
+            var $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb');
+            $breadcrumbs.empty();
+            $breadcrumbs.append("\n              <li onclick=\"javascript:window.location.href='/'\" style=\"cursor:pointer;\">\n                <i class=\"ace-icon fa fa-home home-icon\"></i>\n                \u9996\u9875\n              </li>\n              <li class=\"active\" onclick=\"ckickTopMenu(this);return false;\" id=\"firmenu\" menuid=\"" + rootMenuId + '">' + rootMenuName + '</li>\n              <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="' + menuId + '">' + menuName + '</li>\n              <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="' + this.element.id + '">' + this.name + '</li>\n            ');
+            var $pageContent = $('.main-content>.page-content');
+            $pageContent.empty();
+            render($('.main-content>.page-content')[0]);
+          }
+        });
+      });
+    };
+
     var _iteratorNormalCompletion6 = true;
     var _didIteratorError6 = false;
     var _iteratorError6 = undefined;
 
     try {
-      for (var _iterator6 = (0, _getIterator3.default)(this.initQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-        var _i = _step6.value;
+      for (var _iterator6 = (0, _getIterator3.default)(this.menuQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+        var m = _step6.value;
 
-        _i();
-      } // 定时任务
+        _loop(m);
+      } // 初始化方法
 
     } catch (err) {
       _didIteratorError6 = true;
@@ -4764,27 +4869,53 @@ var $sua = {
       }
     }
 
+    var _iteratorNormalCompletion7 = true;
+    var _didIteratorError7 = false;
+    var _iteratorError7 = undefined;
+
+    try {
+      for (var _iterator7 = (0, _getIterator3.default)(this.initQueue), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+        var _i = _step7.value;
+
+        _i();
+      } // 定时任务
+
+    } catch (err) {
+      _didIteratorError7 = true;
+      _iteratorError7 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion7 && _iterator7.return) {
+          _iterator7.return();
+        }
+      } finally {
+        if (_didIteratorError7) {
+          throw _iteratorError7;
+        }
+      }
+    }
+
     setInterval(function () {
-      var _iteratorNormalCompletion7 = true;
-      var _didIteratorError7 = false;
-      var _iteratorError7 = undefined;
+      var _iteratorNormalCompletion8 = true;
+      var _didIteratorError8 = false;
+      var _iteratorError8 = undefined;
 
       try {
-        for (var _iterator7 = (0, _getIterator3.default)(_this.taskQueue), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-          var t = _step7.value;
+        for (var _iterator8 = (0, _getIterator3.default)(_this.taskQueue), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+          var t = _step8.value;
           t();
         }
       } catch (err) {
-        _didIteratorError7 = true;
-        _iteratorError7 = err;
+        _didIteratorError8 = true;
+        _iteratorError8 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion7 && _iterator7.return) {
-            _iterator7.return();
+          if (!_iteratorNormalCompletion8 && _iterator8.return) {
+            _iterator8.return();
           }
         } finally {
-          if (_didIteratorError7) {
-            throw _iteratorError7;
+          if (_didIteratorError8) {
+            throw _iteratorError8;
           }
         }
       }
@@ -4807,44 +4938,15 @@ var $sua = {
       } else if (typeof pathname === 'string') {
         return minimatch(window.location.pathname, pathname);
       } else if (Array.isArray(pathname)) {
-        var _iteratorNormalCompletion8 = true;
-        var _didIteratorError8 = false;
-        var _iteratorError8 = undefined;
-
-        try {
-          for (var _iterator8 = (0, _getIterator3.default)(pathname), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-            var item = _step8.value;
-
-            if (minimatch(window.location.pathname, item)) {
-              return true;
-            }
-          }
-        } catch (err) {
-          _didIteratorError8 = true;
-          _iteratorError8 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion8 && _iterator8.return) {
-              _iterator8.return();
-            }
-          } finally {
-            if (_didIteratorError8) {
-              throw _iteratorError8;
-            }
-          }
-        }
-
-        return false;
-      } else if ((typeof pathname === 'undefined' ? 'undefined' : (0, _typeof3.default)(pathname)) === 'object') {
         var _iteratorNormalCompletion9 = true;
         var _didIteratorError9 = false;
         var _iteratorError9 = undefined;
 
         try {
-          for (var _iterator9 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-            var _item = _step9.value;
+          for (var _iterator9 = (0, _getIterator3.default)(pathname), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+            var item = _step9.value;
 
-            if (minimatch(window.location.pathname, _item)) {
+            if (minimatch(window.location.pathname, item)) {
               return true;
             }
           }
@@ -4864,6 +4966,35 @@ var $sua = {
         }
 
         return false;
+      } else if ((typeof pathname === 'undefined' ? 'undefined' : (0, _typeof3.default)(pathname)) === 'object') {
+        var _iteratorNormalCompletion10 = true;
+        var _didIteratorError10 = false;
+        var _iteratorError10 = undefined;
+
+        try {
+          for (var _iterator10 = (0, _getIterator3.default)((0, _values2.default)(pathname)), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+            var _item = _step10.value;
+
+            if (minimatch(window.location.pathname, _item)) {
+              return true;
+            }
+          }
+        } catch (err) {
+          _didIteratorError10 = true;
+          _iteratorError10 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion10 && _iterator10.return) {
+              _iterator10.return();
+            }
+          } finally {
+            if (_didIteratorError10) {
+              throw _iteratorError10;
+            }
+          }
+        }
+
+        return false;
       } else if (typeof pathname === 'function') {
         return pathname.bind(plugin)();
       }
@@ -4873,7 +5004,7 @@ var $sua = {
   }
 };
 module.exports = $sua;
-},{"babel-runtime/core-js/object/values":"Qujq","babel-runtime/helpers/typeof":"GyB/","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/core-js/object/assign":"gc0D","minimatch":"Nt/K","./plugins/fast-evaluation":"eunL","./plugins/tooltip":"IHPy","./plugins/compatibility-legacy":"BZ5J","./plugins/fast-evaluation-legacy":"wAV6","./plugins/recover-remember-me":"Gbn9","./plugins/gpa":"Fqjc"}],"9TYs":[function(require,module,exports) {
+},{"babel-runtime/core-js/object/values":"Qujq","babel-runtime/helpers/typeof":"GyB/","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/core-js/object/assign":"gc0D","minimatch":"Nt/K","./plugins/fast-evaluation":"eunL","./plugins/tooltip":"IHPy","./plugins/compatibility-legacy":"BZ5J","./plugins/fast-evaluation-legacy":"wAV6","./plugins/recover-remember-me":"Gbn9","./plugins/gpa":"Fqjc","./plugins/training-scheme":"J+gl"}],"9TYs":[function(require,module,exports) {
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
