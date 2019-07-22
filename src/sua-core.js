@@ -11,7 +11,6 @@ const trainingScheme = require('./plugins/training-scheme')
  * TODO: 加入更友好的查看培养方案（分学期）的功能，以及查询全校所有专业的培养方案的功能。
  * 使用接口：http://zhjw.scu.edu.cn/student/rollManagement/project/3623/1/detail
  */
-const $ = window.$
 // 挂载到 window 上的全局对象
 const $sua = {
   // 属性值的存放处
@@ -119,8 +118,15 @@ const $sua = {
       }
     }
     // 加载样式
+    window.$('head').append(`
+      <style type="text/css">
+        body, h1, h2, h3, h4, h5, h6 {
+          font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+        }
+      </style>
+    `)
     for (const s of this.styleQueue) {
-      $('head').append(`
+      window.$('head').append(`
         <style type="text/css">
           ${s}
         </style>
@@ -129,7 +135,7 @@ const $sua = {
     // 加载菜单
     for (const m of this.menuQueue) {
       const { rootMenuId, rootMenuName, id: menuId, name: menuName, items } = m
-      const $rootMenuList = $('#menus')
+      const $rootMenuList = window.$('#menus')
       // 检查根菜单是否存在，如不存在则新建
       if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
         $rootMenuList.append(`
@@ -174,14 +180,15 @@ const $sua = {
           clickHandler () {
             window.$sua.menuItems.forEach(v => {
               if (v.id === this.element.id) {
-                $(v.element).addClass('active')
+                window.$(v.element).addClass('active')
               } else {
-                $(v.element).removeClass('active')
+                window.$(v.element).removeClass('active')
               }
             })
-            const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
-            $breadcrumbs.empty()
-            $breadcrumbs.append(`
+            const $breadcrumbs = window.$('.main-content>.breadcrumbs>ul.breadcrumb')
+            $breadcrumbs
+              .empty()
+              .append(`
               <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
                 <i class="ace-icon fa fa-home home-icon"></i>
                 首页
@@ -190,9 +197,9 @@ const $sua = {
               <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${menuName}</li>
               <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${this.element.id}">${this.name}</li>
             `)
-            const $pageContent = $('.main-content>.page-content')
+            const $pageContent = window.$('.main-content>.page-content')
             $pageContent.empty()
-            render($('.main-content>.page-content')[0])
+            render(window.$('.main-content>.page-content')[0], window.$)
           }
         })
       })

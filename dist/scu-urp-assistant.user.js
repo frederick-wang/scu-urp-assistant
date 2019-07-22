@@ -4486,15 +4486,1604 @@ var templates = {
   }
 };
 module.exports = gpa;
-},{"babel-runtime/core-js/array/from":"VuZO","fs":"tuDi"}],"J+gl":[function(require,module,exports) {
-'use strict'; // 培养方案查询插件
+},{"babel-runtime/core-js/array/from":"VuZO","fs":"tuDi"}],"htFH":[function(require,module,exports) {
+var $export = require('./_export');
+// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
+$export($export.S + $export.F * !require('./_descriptors'), 'Object', { defineProperty: require('./_object-dp').f });
+
+},{"./_export":"vSO4","./_descriptors":"6MLN","./_object-dp":"Gfzd"}],"3v7p":[function(require,module,exports) {
+require('../../modules/es6.object.define-property');
+var $Object = require('../../modules/_core').Object;
+module.exports = function defineProperty(it, key, desc) {
+  return $Object.defineProperty(it, key, desc);
+};
+
+},{"../../modules/es6.object.define-property":"htFH","../../modules/_core":"zKeE"}],"FFZn":[function(require,module,exports) {
+module.exports = { "default": require("core-js/library/fn/object/define-property"), __esModule: true };
+},{"core-js/library/fn/object/define-property":"3v7p"}],"Xos8":[function(require,module,exports) {
+"use strict";
+
+exports.__esModule = true;
+
+var _defineProperty = require("../core-js/object/define-property");
+
+var _defineProperty2 = _interopRequireDefault(_defineProperty);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (obj, key, value) {
+  if (key in obj) {
+    (0, _defineProperty2.default)(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+};
+},{"../core-js/object/define-property":"FFZn"}],"KUik":[function(require,module,exports) {
+module.exports = function (it, Constructor, name, forbiddenField) {
+  if (!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)) {
+    throw TypeError(name + ': incorrect invocation!');
+  } return it;
+};
+
+},{}],"ozpD":[function(require,module,exports) {
+var ctx = require('./_ctx');
+var call = require('./_iter-call');
+var isArrayIter = require('./_is-array-iter');
+var anObject = require('./_an-object');
+var toLength = require('./_to-length');
+var getIterFn = require('./core.get-iterator-method');
+var BREAK = {};
+var RETURN = {};
+var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
+  var iterFn = ITERATOR ? function () { return iterable; } : getIterFn(iterable);
+  var f = ctx(fn, that, entries ? 2 : 1);
+  var index = 0;
+  var length, step, iterator, result;
+  if (typeof iterFn != 'function') throw TypeError(iterable + ' is not iterable!');
+  // fast case for arrays with default iterator
+  if (isArrayIter(iterFn)) for (length = toLength(iterable.length); length > index; index++) {
+    result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
+    if (result === BREAK || result === RETURN) return result;
+  } else for (iterator = iterFn.call(iterable); !(step = iterator.next()).done;) {
+    result = call(iterator, f, step.value, entries);
+    if (result === BREAK || result === RETURN) return result;
+  }
+};
+exports.BREAK = BREAK;
+exports.RETURN = RETURN;
+
+},{"./_ctx":"3zRh","./_iter-call":"hEIm","./_is-array-iter":"af0K","./_an-object":"zotD","./_to-length":"S7IM","./core.get-iterator-method":"7AqT"}],"B1ls":[function(require,module,exports) {
+// 7.3.20 SpeciesConstructor(O, defaultConstructor)
+var anObject = require('./_an-object');
+var aFunction = require('./_a-function');
+var SPECIES = require('./_wks')('species');
+module.exports = function (O, D) {
+  var C = anObject(O).constructor;
+  var S;
+  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
+};
+
+},{"./_an-object":"zotD","./_a-function":"g31e","./_wks":"Ug9I"}],"o4G5":[function(require,module,exports) {
+// fast apply, http://jsperf.lnkit.com/fast-apply/5
+module.exports = function (fn, args, that) {
+  var un = that === undefined;
+  switch (args.length) {
+    case 0: return un ? fn()
+                      : fn.call(that);
+    case 1: return un ? fn(args[0])
+                      : fn.call(that, args[0]);
+    case 2: return un ? fn(args[0], args[1])
+                      : fn.call(that, args[0], args[1]);
+    case 3: return un ? fn(args[0], args[1], args[2])
+                      : fn.call(that, args[0], args[1], args[2]);
+    case 4: return un ? fn(args[0], args[1], args[2], args[3])
+                      : fn.call(that, args[0], args[1], args[2], args[3]);
+  } return fn.apply(that, args);
+};
+
+},{}],"uzcO":[function(require,module,exports) {
+
+
+var ctx = require('./_ctx');
+var invoke = require('./_invoke');
+var html = require('./_html');
+var cel = require('./_dom-create');
+var global = require('./_global');
+var process = global.process;
+var setTask = global.setImmediate;
+var clearTask = global.clearImmediate;
+var MessageChannel = global.MessageChannel;
+var Dispatch = global.Dispatch;
+var counter = 0;
+var queue = {};
+var ONREADYSTATECHANGE = 'onreadystatechange';
+var defer, channel, port;
+var run = function () {
+  var id = +this;
+  // eslint-disable-next-line no-prototype-builtins
+  if (queue.hasOwnProperty(id)) {
+    var fn = queue[id];
+    delete queue[id];
+    fn();
+  }
+};
+var listener = function (event) {
+  run.call(event.data);
+};
+// Node.js 0.9+ & IE10+ has setImmediate, otherwise:
+if (!setTask || !clearTask) {
+  setTask = function setImmediate(fn) {
+    var args = [];
+    var i = 1;
+    while (arguments.length > i) args.push(arguments[i++]);
+    queue[++counter] = function () {
+      // eslint-disable-next-line no-new-func
+      invoke(typeof fn == 'function' ? fn : Function(fn), args);
+    };
+    defer(counter);
+    return counter;
+  };
+  clearTask = function clearImmediate(id) {
+    delete queue[id];
+  };
+  // Node.js 0.8-
+  if (require('./_cof')(process) == 'process') {
+    defer = function (id) {
+      process.nextTick(ctx(run, id, 1));
+    };
+  // Sphere (JS game engine) Dispatch API
+  } else if (Dispatch && Dispatch.now) {
+    defer = function (id) {
+      Dispatch.now(ctx(run, id, 1));
+    };
+  // Browsers with MessageChannel, includes WebWorkers
+  } else if (MessageChannel) {
+    channel = new MessageChannel();
+    port = channel.port2;
+    channel.port1.onmessage = listener;
+    defer = ctx(port.postMessage, port, 1);
+  // Browsers with postMessage, skip WebWorkers
+  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
+  } else if (global.addEventListener && typeof postMessage == 'function' && !global.importScripts) {
+    defer = function (id) {
+      global.postMessage(id + '', '*');
+    };
+    global.addEventListener('message', listener, false);
+  // IE8-
+  } else if (ONREADYSTATECHANGE in cel('script')) {
+    defer = function (id) {
+      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function () {
+        html.removeChild(this);
+        run.call(id);
+      };
+    };
+  // Rest old browsers
+  } else {
+    defer = function (id) {
+      setTimeout(ctx(run, id, 1), 0);
+    };
+  }
+}
+module.exports = {
+  set: setTask,
+  clear: clearTask
+};
+
+},{"./_ctx":"3zRh","./_invoke":"o4G5","./_html":"ebIA","./_dom-create":"9kxq","./_global":"i1Q6","./_cof":"ShN9"}],"H109":[function(require,module,exports) {
+
+
+var global = require('./_global');
+var macrotask = require('./_task').set;
+var Observer = global.MutationObserver || global.WebKitMutationObserver;
+var process = global.process;
+var Promise = global.Promise;
+var isNode = require('./_cof')(process) == 'process';
+
+module.exports = function () {
+  var head, last, notify;
+
+  var flush = function () {
+    var parent, fn;
+    if (isNode && (parent = process.domain)) parent.exit();
+    while (head) {
+      fn = head.fn;
+      head = head.next;
+      try {
+        fn();
+      } catch (e) {
+        if (head) notify();
+        else last = undefined;
+        throw e;
+      }
+    } last = undefined;
+    if (parent) parent.enter();
+  };
+
+  // Node.js
+  if (isNode) {
+    notify = function () {
+      process.nextTick(flush);
+    };
+  // browsers with MutationObserver, except iOS Safari - https://github.com/zloirock/core-js/issues/339
+  } else if (Observer && !(global.navigator && global.navigator.standalone)) {
+    var toggle = true;
+    var node = document.createTextNode('');
+    new Observer(flush).observe(node, { characterData: true }); // eslint-disable-line no-new
+    notify = function () {
+      node.data = toggle = !toggle;
+    };
+  // environments with maybe non-completely correct, but existent Promise
+  } else if (Promise && Promise.resolve) {
+    // Promise.resolve without an argument throws an error in LG WebOS 2
+    var promise = Promise.resolve(undefined);
+    notify = function () {
+      promise.then(flush);
+    };
+  // for other environments - macrotask based on:
+  // - setImmediate
+  // - MessageChannel
+  // - window.postMessag
+  // - onreadystatechange
+  // - setTimeout
+  } else {
+    notify = function () {
+      // strange IE + webpack dev server bug - use .call(global)
+      macrotask.call(global, flush);
+    };
+  }
+
+  return function (fn) {
+    var task = { fn: fn, next: undefined };
+    if (last) last.next = task;
+    if (!head) {
+      head = task;
+      notify();
+    } last = task;
+  };
+};
+
+},{"./_global":"i1Q6","./_task":"uzcO","./_cof":"ShN9"}],"AIlg":[function(require,module,exports) {
+'use strict';
+// 25.4.1.5 NewPromiseCapability(C)
+var aFunction = require('./_a-function');
+
+function PromiseCapability(C) {
+  var resolve, reject;
+  this.promise = new C(function ($$resolve, $$reject) {
+    if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');
+    resolve = $$resolve;
+    reject = $$reject;
+  });
+  this.resolve = aFunction(resolve);
+  this.reject = aFunction(reject);
+}
+
+module.exports.f = function (C) {
+  return new PromiseCapability(C);
+};
+
+},{"./_a-function":"g31e"}],"kX4D":[function(require,module,exports) {
+module.exports = function (exec) {
+  try {
+    return { e: false, v: exec() };
+  } catch (e) {
+    return { e: true, v: e };
+  }
+};
+
+},{}],"/cCi":[function(require,module,exports) {
+
+var global = require('./_global');
+var navigator = global.navigator;
+
+module.exports = navigator && navigator.userAgent || '';
+
+},{"./_global":"i1Q6"}],"5Czc":[function(require,module,exports) {
+var anObject = require('./_an-object');
+var isObject = require('./_is-object');
+var newPromiseCapability = require('./_new-promise-capability');
+
+module.exports = function (C, x) {
+  anObject(C);
+  if (isObject(x) && x.constructor === C) return x;
+  var promiseCapability = newPromiseCapability.f(C);
+  var resolve = promiseCapability.resolve;
+  resolve(x);
+  return promiseCapability.promise;
+};
+
+},{"./_an-object":"zotD","./_is-object":"BxvP","./_new-promise-capability":"AIlg"}],"O6kh":[function(require,module,exports) {
+var hide = require('./_hide');
+module.exports = function (target, src, safe) {
+  for (var key in src) {
+    if (safe && target[key]) target[key] = src[key];
+    else hide(target, key, src[key]);
+  } return target;
+};
+
+},{"./_hide":"akPY"}],"FGzK":[function(require,module,exports) {
+
+'use strict';
+var global = require('./_global');
+var core = require('./_core');
+var dP = require('./_object-dp');
+var DESCRIPTORS = require('./_descriptors');
+var SPECIES = require('./_wks')('species');
+
+module.exports = function (KEY) {
+  var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];
+  if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {
+    configurable: true,
+    get: function () { return this; }
+  });
+};
+
+},{"./_global":"i1Q6","./_core":"zKeE","./_object-dp":"Gfzd","./_descriptors":"6MLN","./_wks":"Ug9I"}],"9kJF":[function(require,module,exports) {
+
+
+'use strict';
+var LIBRARY = require('./_library');
+var global = require('./_global');
+var ctx = require('./_ctx');
+var classof = require('./_classof');
+var $export = require('./_export');
+var isObject = require('./_is-object');
+var aFunction = require('./_a-function');
+var anInstance = require('./_an-instance');
+var forOf = require('./_for-of');
+var speciesConstructor = require('./_species-constructor');
+var task = require('./_task').set;
+var microtask = require('./_microtask')();
+var newPromiseCapabilityModule = require('./_new-promise-capability');
+var perform = require('./_perform');
+var userAgent = require('./_user-agent');
+var promiseResolve = require('./_promise-resolve');
+var PROMISE = 'Promise';
+var TypeError = global.TypeError;
+var process = global.process;
+var versions = process && process.versions;
+var v8 = versions && versions.v8 || '';
+var $Promise = global[PROMISE];
+var isNode = classof(process) == 'process';
+var empty = function () { /* empty */ };
+var Internal, newGenericPromiseCapability, OwnPromiseCapability, Wrapper;
+var newPromiseCapability = newGenericPromiseCapability = newPromiseCapabilityModule.f;
+
+var USE_NATIVE = !!function () {
+  try {
+    // correct subclassing with @@species support
+    var promise = $Promise.resolve(1);
+    var FakePromise = (promise.constructor = {})[require('./_wks')('species')] = function (exec) {
+      exec(empty, empty);
+    };
+    // unhandled rejections tracking support, NodeJS Promise without it fails @@species test
+    return (isNode || typeof PromiseRejectionEvent == 'function')
+      && promise.then(empty) instanceof FakePromise
+      // v8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=830565
+      // we can't detect it synchronously, so just check versions
+      && v8.indexOf('6.6') !== 0
+      && userAgent.indexOf('Chrome/66') === -1;
+  } catch (e) { /* empty */ }
+}();
+
+// helpers
+var isThenable = function (it) {
+  var then;
+  return isObject(it) && typeof (then = it.then) == 'function' ? then : false;
+};
+var notify = function (promise, isReject) {
+  if (promise._n) return;
+  promise._n = true;
+  var chain = promise._c;
+  microtask(function () {
+    var value = promise._v;
+    var ok = promise._s == 1;
+    var i = 0;
+    var run = function (reaction) {
+      var handler = ok ? reaction.ok : reaction.fail;
+      var resolve = reaction.resolve;
+      var reject = reaction.reject;
+      var domain = reaction.domain;
+      var result, then, exited;
+      try {
+        if (handler) {
+          if (!ok) {
+            if (promise._h == 2) onHandleUnhandled(promise);
+            promise._h = 1;
+          }
+          if (handler === true) result = value;
+          else {
+            if (domain) domain.enter();
+            result = handler(value); // may throw
+            if (domain) {
+              domain.exit();
+              exited = true;
+            }
+          }
+          if (result === reaction.promise) {
+            reject(TypeError('Promise-chain cycle'));
+          } else if (then = isThenable(result)) {
+            then.call(result, resolve, reject);
+          } else resolve(result);
+        } else reject(value);
+      } catch (e) {
+        if (domain && !exited) domain.exit();
+        reject(e);
+      }
+    };
+    while (chain.length > i) run(chain[i++]); // variable length - can't use forEach
+    promise._c = [];
+    promise._n = false;
+    if (isReject && !promise._h) onUnhandled(promise);
+  });
+};
+var onUnhandled = function (promise) {
+  task.call(global, function () {
+    var value = promise._v;
+    var unhandled = isUnhandled(promise);
+    var result, handler, console;
+    if (unhandled) {
+      result = perform(function () {
+        if (isNode) {
+          process.emit('unhandledRejection', value, promise);
+        } else if (handler = global.onunhandledrejection) {
+          handler({ promise: promise, reason: value });
+        } else if ((console = global.console) && console.error) {
+          console.error('Unhandled promise rejection', value);
+        }
+      });
+      // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
+      promise._h = isNode || isUnhandled(promise) ? 2 : 1;
+    } promise._a = undefined;
+    if (unhandled && result.e) throw result.v;
+  });
+};
+var isUnhandled = function (promise) {
+  return promise._h !== 1 && (promise._a || promise._c).length === 0;
+};
+var onHandleUnhandled = function (promise) {
+  task.call(global, function () {
+    var handler;
+    if (isNode) {
+      process.emit('rejectionHandled', promise);
+    } else if (handler = global.onrejectionhandled) {
+      handler({ promise: promise, reason: promise._v });
+    }
+  });
+};
+var $reject = function (value) {
+  var promise = this;
+  if (promise._d) return;
+  promise._d = true;
+  promise = promise._w || promise; // unwrap
+  promise._v = value;
+  promise._s = 2;
+  if (!promise._a) promise._a = promise._c.slice();
+  notify(promise, true);
+};
+var $resolve = function (value) {
+  var promise = this;
+  var then;
+  if (promise._d) return;
+  promise._d = true;
+  promise = promise._w || promise; // unwrap
+  try {
+    if (promise === value) throw TypeError("Promise can't be resolved itself");
+    if (then = isThenable(value)) {
+      microtask(function () {
+        var wrapper = { _w: promise, _d: false }; // wrap
+        try {
+          then.call(value, ctx($resolve, wrapper, 1), ctx($reject, wrapper, 1));
+        } catch (e) {
+          $reject.call(wrapper, e);
+        }
+      });
+    } else {
+      promise._v = value;
+      promise._s = 1;
+      notify(promise, false);
+    }
+  } catch (e) {
+    $reject.call({ _w: promise, _d: false }, e); // wrap
+  }
+};
+
+// constructor polyfill
+if (!USE_NATIVE) {
+  // 25.4.3.1 Promise(executor)
+  $Promise = function Promise(executor) {
+    anInstance(this, $Promise, PROMISE, '_h');
+    aFunction(executor);
+    Internal.call(this);
+    try {
+      executor(ctx($resolve, this, 1), ctx($reject, this, 1));
+    } catch (err) {
+      $reject.call(this, err);
+    }
+  };
+  // eslint-disable-next-line no-unused-vars
+  Internal = function Promise(executor) {
+    this._c = [];             // <- awaiting reactions
+    this._a = undefined;      // <- checked in isUnhandled reactions
+    this._s = 0;              // <- state
+    this._d = false;          // <- done
+    this._v = undefined;      // <- value
+    this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled
+    this._n = false;          // <- notify
+  };
+  Internal.prototype = require('./_redefine-all')($Promise.prototype, {
+    // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
+    then: function then(onFulfilled, onRejected) {
+      var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
+      reaction.ok = typeof onFulfilled == 'function' ? onFulfilled : true;
+      reaction.fail = typeof onRejected == 'function' && onRejected;
+      reaction.domain = isNode ? process.domain : undefined;
+      this._c.push(reaction);
+      if (this._a) this._a.push(reaction);
+      if (this._s) notify(this, false);
+      return reaction.promise;
+    },
+    // 25.4.5.1 Promise.prototype.catch(onRejected)
+    'catch': function (onRejected) {
+      return this.then(undefined, onRejected);
+    }
+  });
+  OwnPromiseCapability = function () {
+    var promise = new Internal();
+    this.promise = promise;
+    this.resolve = ctx($resolve, promise, 1);
+    this.reject = ctx($reject, promise, 1);
+  };
+  newPromiseCapabilityModule.f = newPromiseCapability = function (C) {
+    return C === $Promise || C === Wrapper
+      ? new OwnPromiseCapability(C)
+      : newGenericPromiseCapability(C);
+  };
+}
+
+$export($export.G + $export.W + $export.F * !USE_NATIVE, { Promise: $Promise });
+require('./_set-to-string-tag')($Promise, PROMISE);
+require('./_set-species')(PROMISE);
+Wrapper = require('./_core')[PROMISE];
+
+// statics
+$export($export.S + $export.F * !USE_NATIVE, PROMISE, {
+  // 25.4.4.5 Promise.reject(r)
+  reject: function reject(r) {
+    var capability = newPromiseCapability(this);
+    var $$reject = capability.reject;
+    $$reject(r);
+    return capability.promise;
+  }
+});
+$export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
+  // 25.4.4.6 Promise.resolve(x)
+  resolve: function resolve(x) {
+    return promiseResolve(LIBRARY && this === Wrapper ? $Promise : this, x);
+  }
+});
+$export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(function (iter) {
+  $Promise.all(iter)['catch'](empty);
+})), PROMISE, {
+  // 25.4.4.1 Promise.all(iterable)
+  all: function all(iterable) {
+    var C = this;
+    var capability = newPromiseCapability(C);
+    var resolve = capability.resolve;
+    var reject = capability.reject;
+    var result = perform(function () {
+      var values = [];
+      var index = 0;
+      var remaining = 1;
+      forOf(iterable, false, function (promise) {
+        var $index = index++;
+        var alreadyCalled = false;
+        values.push(undefined);
+        remaining++;
+        C.resolve(promise).then(function (value) {
+          if (alreadyCalled) return;
+          alreadyCalled = true;
+          values[$index] = value;
+          --remaining || resolve(values);
+        }, reject);
+      });
+      --remaining || resolve(values);
+    });
+    if (result.e) reject(result.v);
+    return capability.promise;
+  },
+  // 25.4.4.4 Promise.race(iterable)
+  race: function race(iterable) {
+    var C = this;
+    var capability = newPromiseCapability(C);
+    var reject = capability.reject;
+    var result = perform(function () {
+      forOf(iterable, false, function (promise) {
+        C.resolve(promise).then(capability.resolve, reject);
+      });
+    });
+    if (result.e) reject(result.v);
+    return capability.promise;
+  }
+});
+
+},{"./_library":"1kq3","./_global":"i1Q6","./_ctx":"3zRh","./_classof":"ZHvQ","./_export":"vSO4","./_is-object":"BxvP","./_a-function":"g31e","./_an-instance":"KUik","./_for-of":"ozpD","./_species-constructor":"B1ls","./_task":"uzcO","./_microtask":"H109","./_new-promise-capability":"AIlg","./_perform":"kX4D","./_user-agent":"/cCi","./_promise-resolve":"5Czc","./_wks":"Ug9I","./_redefine-all":"O6kh","./_set-to-string-tag":"11Ut","./_set-species":"FGzK","./_core":"zKeE","./_iter-detect":"Lli7"}],"zaru":[function(require,module,exports) {
+
+// https://github.com/tc39/proposal-promise-finally
+'use strict';
+var $export = require('./_export');
+var core = require('./_core');
+var global = require('./_global');
+var speciesConstructor = require('./_species-constructor');
+var promiseResolve = require('./_promise-resolve');
+
+$export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
+  var C = speciesConstructor(this, core.Promise || global.Promise);
+  var isFunction = typeof onFinally == 'function';
+  return this.then(
+    isFunction ? function (x) {
+      return promiseResolve(C, onFinally()).then(function () { return x; });
+    } : onFinally,
+    isFunction ? function (e) {
+      return promiseResolve(C, onFinally()).then(function () { throw e; });
+    } : onFinally
+  );
+} });
+
+},{"./_export":"vSO4","./_core":"zKeE","./_global":"i1Q6","./_species-constructor":"B1ls","./_promise-resolve":"5Czc"}],"+CEt":[function(require,module,exports) {
+'use strict';
+// https://github.com/tc39/proposal-promise-try
+var $export = require('./_export');
+var newPromiseCapability = require('./_new-promise-capability');
+var perform = require('./_perform');
+
+$export($export.S, 'Promise', { 'try': function (callbackfn) {
+  var promiseCapability = newPromiseCapability.f(this);
+  var result = perform(callbackfn);
+  (result.e ? promiseCapability.reject : promiseCapability.resolve)(result.v);
+  return promiseCapability.promise;
+} });
+
+},{"./_export":"vSO4","./_new-promise-capability":"AIlg","./_perform":"kX4D"}],"9u1Q":[function(require,module,exports) {
+require('../modules/es6.object.to-string');
+require('../modules/es6.string.iterator');
+require('../modules/web.dom.iterable');
+require('../modules/es6.promise');
+require('../modules/es7.promise.finally');
+require('../modules/es7.promise.try');
+module.exports = require('../modules/_core').Promise;
+
+},{"../modules/es6.object.to-string":"tuDi","../modules/es6.string.iterator":"i+u+","../modules/web.dom.iterable":"COf8","../modules/es6.promise":"9kJF","../modules/es7.promise.finally":"zaru","../modules/es7.promise.try":"+CEt","../modules/_core":"zKeE"}],"L3Vt":[function(require,module,exports) {
+module.exports = { "default": require("core-js/library/fn/promise"), __esModule: true };
+},{"core-js/library/fn/promise":"9u1Q"}],"cOHw":[function(require,module,exports) {
+// most Object methods by ES6 should accept primitives
+var $export = require('./_export');
+var core = require('./_core');
+var fails = require('./_fails');
+module.exports = function (KEY, exec) {
+  var fn = (core.Object || {})[KEY] || Object[KEY];
+  var exp = {};
+  exp[KEY] = exec(fn);
+  $export($export.S + $export.F * fails(function () { fn(1); }), 'Object', exp);
+};
+
+},{"./_export":"vSO4","./_core":"zKeE","./_fails":"wLcK"}],"PDcB":[function(require,module,exports) {
+// 19.1.2.14 Object.keys(O)
+var toObject = require('./_to-object');
+var $keys = require('./_object-keys');
+
+require('./_object-sap')('keys', function () {
+  return function keys(it) {
+    return $keys(toObject(it));
+  };
+});
+
+},{"./_to-object":"mbLO","./_object-keys":"knrM","./_object-sap":"cOHw"}],"eOjq":[function(require,module,exports) {
+require('../../modules/es6.object.keys');
+module.exports = require('../../modules/_core').Object.keys;
+
+},{"../../modules/es6.object.keys":"PDcB","../../modules/_core":"zKeE"}],"8FtN":[function(require,module,exports) {
+module.exports = { "default": require("core-js/library/fn/object/keys"), __esModule: true };
+},{"core-js/library/fn/object/keys":"eOjq"}],"QVnC":[function(require,module,exports) {
+var global = arguments[3];
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+!(function(global) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  var inModule = typeof module === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
+  }
+
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  runtime.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  IteratorPrototype[iteratorSymbol] = function () {
+    return this;
+  };
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunctionPrototype[toStringTagSymbol] =
+    GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      if (!(toStringTagSymbol in genFun)) {
+        genFun[toStringTagSymbol] = "GeneratorFunction";
+      }
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  runtime.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return Promise.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return Promise.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration. If the Promise is rejected, however, the
+          // result for this iteration will be rejected with the same
+          // reason. Note that rejections of yielded Promises are not
+          // thrown back into the generator function, as is the case
+          // when an awaited Promise is rejected. This difference in
+          // behavior between yield and await is important, because it
+          // allows the consumer to decide what to do with the yielded
+          // rejection (swallow it and continue, manually .throw it back
+          // into the generator, abandon iteration, whatever). With
+          // await, by contrast, there is no opportunity to examine the
+          // rejection reason outside the generator function, so the
+          // only option is to throw it from the await expression, and
+          // let the generator function handle the exception.
+          result.value = unwrapped;
+          resolve(result);
+        }, reject);
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new Promise(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+    return this;
+  };
+  runtime.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        if (delegate.iterator.return) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[toStringTagSymbol] = "Generator";
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+})(
+  // In sloppy mode, unbound `this` refers to the global object, fallback to
+  // Function constructor if we're in global strict mode. That is sadly a form
+  // of indirect eval which violates Content Security Policy.
+  (function() { return this })() || Function("return this")()
+);
+
+},{}],"QYzI":[function(require,module,exports) {
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// This method of obtaining a reference to the global object needs to be
+// kept identical to the way it is obtained in runtime.js
+var g = (function() { return this })() || Function("return this")();
+
+// Use `getOwnPropertyNames` because not all browsers support calling
+// `hasOwnProperty` on the global `self` object in a worker. See #183.
+var hadRuntime = g.regeneratorRuntime &&
+  Object.getOwnPropertyNames(g).indexOf("regeneratorRuntime") >= 0;
+
+// Save the old regeneratorRuntime in case it needs to be restored later.
+var oldRuntime = hadRuntime && g.regeneratorRuntime;
+
+// Force reevalutation of runtime.js.
+g.regeneratorRuntime = undefined;
+
+module.exports = require("./runtime");
+
+if (hadRuntime) {
+  // Restore the original runtime.
+  g.regeneratorRuntime = oldRuntime;
+} else {
+  // Remove the global property added by runtime.js.
+  try {
+    delete g.regeneratorRuntime;
+  } catch(e) {
+    g.regeneratorRuntime = undefined;
+  }
+}
+
+},{"./runtime":"QVnC"}],"aIIw":[function(require,module,exports) {
+module.exports = require("regenerator-runtime");
+
+},{"regenerator-runtime":"QYzI"}],"kcQR":[function(require,module,exports) {
+"use strict";
+
+exports.__esModule = true;
+
+var _promise = require("../core-js/promise");
+
+var _promise2 = _interopRequireDefault(_promise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (fn) {
+  return function () {
+    var gen = fn.apply(this, arguments);
+    return new _promise2.default(function (resolve, reject) {
+      function step(key, arg) {
+        try {
+          var info = gen[key](arg);
+          var value = info.value;
+        } catch (error) {
+          reject(error);
+          return;
+        }
+
+        if (info.done) {
+          resolve(value);
+        } else {
+          return _promise2.default.resolve(value).then(function (value) {
+            step("next", value);
+          }, function (err) {
+            step("throw", err);
+          });
+        }
+      }
+
+      return step("next");
+    });
+  };
+};
+},{"../core-js/promise":"L3Vt"}],"J+gl":[function(require,module,exports) {
+'use strict';
+
+var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
+
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
+
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
+var _getIterator2 = require('babel-runtime/core-js/get-iterator');
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
+var renderPageContent = function () {
+  var _ref = (0, _asyncToGenerator3.default)(
+  /*#__PURE__*/
+  _regenerator2.default.mark(function _callee(root, $) {
+    var _ref2, info, list, template;
+
+    return _regenerator2.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            console.log(root);
+            _context.next = 3;
+            return getTrainingSchemeData($);
+
+          case 3:
+            _ref2 = _context.sent;
+            info = _ref2.info;
+            list = _ref2.list;
+            console.log(info, list);
+            template = '\n    <div class="training-scheme-wrapper">\n      ' + genQueryHTML() + '\n      ' + genInfoHTML(info) + '\n      ' + genSchemeHTML(list) + '\n    </div>\n  ';
+            $(root).append(template);
+
+          case 9:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, this);
+  }));
+
+  return function renderPageContent(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : {
+    default: obj
+  };
+} // 培养方案查询插件
+
 
 var fs = require('fs');
 
 var trainingScheme = {
   name: 'training-scheme',
   pathname: '/**',
-  style: "",
+  style: ".glyphicon-list:before{content:\"\\e056\"}.info-container tr:first-child td:first-child,.info-container tr:first-child td:nth-child(2){border-top:1px solid #eee}.info-container tr:last-child td:first-child,.info-container tr:last-child td:nth-child(2){border-bottom:1px solid #eee}.info-container tr td{vertical-align:middle}.info-container tr td:first-child{font-weight:bold;color:#336199;background-color:#EDF3F4;border-top:1px solid #F7FBFF;border-bottom:1px solid #F7FBFF}.info-container tr td:nth-child(2){border-top:1px dotted #DCEBF7;border-bottom:1px dotted #DCEBF7}.scheme-container *{box-sizing:border-box}.scheme-container .scheme-wrapper .year-item{border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;box-shadow:0 1px 3px rgba(26,26,26,0.1);margin-bottom:20px}.scheme-container .scheme-wrapper .year-item .year-item-title{display:flex;justify-content:space-between;align-items:center;height:50px;padding:0 20px;border-bottom:1px solid #EBEEF5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:16px}.scheme-container .scheme-wrapper .year-item .year-item-content{padding:16px 20px;position:relative}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item{display:flex}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title{display:flex;justify-content:center;align-items:center;font-size:16px;padding-right:20px;margin:5px;border-right:1px solid #EBEEF5}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content{flex:1;display:flex;flex-wrap:wrap}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:20%}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item{display:flex;border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;margin:5px}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info{flex:3}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary{padding:10px}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name{font-size:16px;line-height:2;font-weight:lighter}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary{padding:10px;padding-top:0}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag{display:inline-block;height:24px;padding:0 5px;line-height:24px;font-size:12px;border-width:1px;border-style:solid;border-radius:4px;box-sizing:border-box;white-space:nowrap}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number{background-color:#ecf4f8;border-color:#d9e8f1;color:#438EB9}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-type{background-color:#fdf6ec;border-color:#faecd8;color:#e6a23c}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name{background-color:#fef0f0;border-color:#fde2e2;color:#f56c6c}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required{background-color:#f0f9eb;border-color:#e1f3d8;color:#67c23a}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-score{flex:1}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-score .course-score{font-weight:normal}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-score .exam-time{font-weight:normal}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider{background-color:#DCDFE6;position:relative;display:block;height:1px;width:100%;margin:24px 0}\n",
   menu: [{
     rootMenuId: 'sua-menu-list',
     rootMenuName: 'SCU URP 助手',
@@ -4512,9 +6101,206 @@ var trainingScheme = {
   }]
 };
 
-function renderPageContent(root) {
-  console.log(root);
-  console.log('培养方案查询插件调用111！');
+function genQueryHTML() {
+  return "\n    <div class=\"query-container\">\n      <div class=\"row\">\n        <div class=\"col-xs-12 self-margin\">\n          <h4 class=\"header smaller lighter grey\">\n            <i class=\"ace-icon fa fa-search\"></i>\u67E5\u8BE2\u6761\u4EF6\n            <span class=\"right_top_oper\">\n              <button id=\"queryButton\" title=\"\u67E5\u8BE2\" class=\"btn btn-info btn-xs btn-round\" onclick=\"return false;\">\n                <i class=\"ace-con fa fa-search white bigger-120\"></i>\u67E5\u8BE2\n              </button>\n            </span>\n          </h4>\n          <div class=\"profile-user-info profile-user-info-striped self\">\n            <div class=\"profile-info-row\">\n              <div class=\"profile-info-name\">\u5B66\u5E74\u5B66\u671F</div>\n              <div class=\"profile-info-value\">\n                <select name=\"executiveEducationPlanNum\" class=\"select form-control value_element\">\n                  <option value=\"\u5168\u90E8\">\u5168\u90E8</option>\n                  <option value=\"2019-2020\u5B66\u5E74\u79CB\">2019-2020\u5B66\u5E74\u79CB</option>\n                  <option value=\"2018-2019\u5B66\u5E74\u6625\">2018-2019\u5B66\u5E74\u6625</option>\n                  <option value=\"2018-2019\u5B66\u5E74\u79CB\">2018-2019\u5B66\u5E74\u79CB</option>\n                  <option value=\"2017-2018\u5B66\u5E74\u6625\">2017-2018\u5B66\u5E74\u6625</option>\n                  <option value=\"2017-2018\u5B66\u5E74\u79CB\">2017-2018\u5B66\u5E74\u79CB</option>\n                  <option value=\"2016-2017\u5B66\u5E74\u6625\">2016-2017\u5B66\u5E74\u6625</option>\n                  <option value=\"2016-2017\u5B66\u5E74\u79CB\">2016-2017\u5B66\u5E74\u79CB</option>\n                  <option value=\"2015-2016\u5B66\u5E74\u6625\">2015-2016\u5B66\u5E74\u6625</option>\n                  <option value=\"2015-2016\u5B66\u5E74\u79CB\">2015-2016\u5B66\u5E74\u79CB</option>\n                  <option value=\"2014-2015\u5B66\u5E74\u6625\">2014-2015\u5B66\u5E74\u6625</option>\n                  <option value=\"2014-2015\u5B66\u5E74\u79CB\">2014-2015\u5B66\u5E74\u79CB</option>\n                  <option value=\"2013-2014\u5B66\u5E74\u6625\">2013-2014\u5B66\u5E74\u6625</option>\n                  <option value=\"2013-2014\u5B66\u5E74\u79CB\">2013-2014\u5B66\u5E74\u79CB</option>\n                  <option value=\"2012-2013\u5B66\u5E74\u6625\">2012-2013\u5B66\u5E74\u6625</option>\n                  <option value=\"2012-2013\u5B66\u5E74\u79CB\">2012-2013\u5B66\u5E74\u79CB</option>\n                  <option value=\"2011-2012\u5B66\u5E74\u6625\">2011-2012\u5B66\u5E74\u6625</option>\n                  <option value=\"2011-2012\u5B66\u5E74\u79CB\">2011-2012\u5B66\u5E74\u79CB</option>\n                  <option value=\"2010-2011\u5B66\u5E74\u6625\">2010-2011\u5B66\u5E74\u6625</option>\n                  <option value=\"2010-2011\u5B66\u5E74\u79CB\">2010-2011\u5B66\u5E74\u79CB</option>\n                  <option value=\"2009-2010\u5B66\u5E74\u6625\">2009-2010\u5B66\u5E74\u6625</option>\n                  <option value=\"2009-2010\u5B66\u5E74\u79CB\">2009-2010\u5B66\u5E74\u79CB</option>\n                  <option value=\"2008-2009\u5B66\u5E74\u6625\">2008-2009\u5B66\u5E74\u6625</option>\n                  <option value=\"2008-2009\u5B66\u5E74\u79CB\">2008-2009\u5B66\u5E74\u79CB</option>\n                  <option value=\"2007-2008\u5B66\u5E74\u6625\">2007-2008\u5B66\u5E74\u6625</option>\n                  <option value=\"2007-2008\u5B66\u5E74\u79CB\">2007-2008\u5B66\u5E74\u79CB</option>\n                  <option value=\"2006-2007\u5B66\u5E74\u6625\">2006-2007\u5B66\u5E74\u6625</option>\n                  <option value=\"2006-2007\u5B66\u5E74\u79CB\">2006-2007\u5B66\u5E74\u79CB</option>\n                  <option value=\"2005-2006\u5B66\u5E74\u6625\">2005-2006\u5B66\u5E74\u6625</option>\n                  <option value=\"2005-2006\u5B66\u5E74\u79CB\">2005-2006\u5B66\u5E74\u79CB</option>\n                  <option value=\"2004-2005\u5B66\u5E74\u6625\">2004-2005\u5B66\u5E74\u6625</option>\n                  <option value=\"2004-2005\u5B66\u5E74\u79CB\">2004-2005\u5B66\u5E74\u79CB</option>\n                  <option value=\"2003-2004\u5B66\u5E74\u6625\">2003-2004\u5B66\u5E74\u6625</option>\n                  <option value=\"2003-2004\u5B66\u5E74\u79CB\">2003-2004\u5B66\u5E74\u79CB</option>\n                  <option value=\"2002-2003\u5B66\u5E74\u6625\">2002-2003\u5B66\u5E74\u6625</option>\n                  <option value=\"2002-2003\u5B66\u5E74\u79CB\">2002-2003\u5B66\u5E74\u79CB</option>\n                  <option value=\"2001-2002\u5B66\u5E74\u6625\">2001-2002\u5B66\u5E74\u6625</option>\n                  <option value=\"2001-2002\u5B66\u5E74\u79CB\">2001-2002\u5B66\u5E74\u79CB</option>\n                  <option value=\"2000-2001\u5B66\u5E74\u6625\">2000-2001\u5B66\u5E74\u6625</option>\n                  <option value=\"2000-2001\u5B66\u5E74\u79CB\">2000-2001\u5B66\u5E74\u79CB</option>\n                </select>\n              </div>\n              <div class=\"profile-info-name\">\u5E74\u7EA7</div>\n              <div class=\"profile-info-value\">\n                <select name=\"yearNum\" id=\"yearNum\" class=\"select form-control value_element\">\n                  <option value=\"\u5168\u90E8\">\u5168\u90E8</option>\n                  <option value=\"2020\u7EA7\">2020\u7EA7</option>\n                  <option value=\"2019\u7EA7\">2019\u7EA7</option>\n                  <option value=\"2018\u7EA7\">2018\u7EA7</option>\n                  <option value=\"2017\u7EA7\">2017\u7EA7</option>\n                  <option value=\"2016\u7EA7\">2016\u7EA7</option>\n                  <option value=\"2015\u7EA7\">2015\u7EA7</option>\n                  <option value=\"2014\u7EA7\">2014\u7EA7</option>\n                  <option value=\"2013\u7EA7\">2013\u7EA7</option>\n                  <option value=\"2012\u7EA7\">2012\u7EA7</option>\n                  <option value=\"2011\u7EA7\">2011\u7EA7</option>\n                  <option value=\"2010\u7EA7\">2010\u7EA7</option>\n                  <option value=\"2009\u7EA7\">2009\u7EA7</option>\n                  <option value=\"2008\u7EA7\">2008\u7EA7</option>\n                  <option value=\"2007\u7EA7\">2007\u7EA7</option>\n                  <option value=\"2006\u7EA7\">2006\u7EA7</option>\n                  <option value=\"2005\u7EA7\">2005\u7EA7</option>\n                  <option value=\"2004\u7EA7\">2004\u7EA7</option>\n                  <option value=\"2003\u7EA7\">2003\u7EA7</option>\n                  <option value=\"2002\u7EA7\">2002\u7EA7</option>\n                  <option value=\"2001\u7EA7\">2001\u7EA7</option>\n                  <option value=\"2000\u7EA7\">2000\u7EA7</option>\n                </select>\n              </div>\n              <div class=\"profile-info-name\">\u9662\u7CFB</div>\n              <div class=\"profile-info-value\">\n                <select name=\"departmentNum\" id=\"departmentNum\" class=\"select form-control value_element\">\n                  <option value=\"\u5168\u90E8\">\u5168\u90E8</option>\n                  <option value=\"\u827A\u672F\u5B66\u9662\">\u827A\u672F\u5B66\u9662</option>\n                  <option value=\"\u7ECF\u6D4E\u5B66\u9662\">\u7ECF\u6D4E\u5B66\u9662</option>\n                  <option value=\"\u6CD5\u5B66\u9662\">\u6CD5\u5B66\u9662</option>\n                  <option value=\"\u6587\u5B66\u4E0E\u65B0\u95FB\u5B66\u9662\">\u6587\u5B66\u4E0E\u65B0\u95FB\u5B66\u9662</option>\n                  <option value=\"\u5916\u56FD\u8BED\u5B66\u9662\">\u5916\u56FD\u8BED\u5B66\u9662</option>\n                  <option value=\"\u5386\u53F2\u6587\u5316\u5B66\u9662\uFF08\u65C5\u6E38\u5B66\u9662\uFF09\">\u5386\u53F2\u6587\u5316\u5B66\u9662\uFF08\u65C5\u6E38\u5B66\u9662\uFF09</option>\n                  <option value=\"\u9A6C\u514B\u601D\u4E3B\u4E49\u5B66\u9662\">\u9A6C\u514B\u601D\u4E3B\u4E49\u5B66\u9662</option>\n                  <option value=\"\u56FD\u9645\u5173\u7CFB\u5B66\u9662\">\u56FD\u9645\u5173\u7CFB\u5B66\u9662</option>\n                  <option value=\"\u6570\u5B66\u5B66\u9662\">\u6570\u5B66\u5B66\u9662</option>\n                  <option value=\"\u7269\u7406\u79D1\u5B66\u4E0E\u6280\u672F\u5B66\u9662\">\u7269\u7406\u79D1\u5B66\u4E0E\u6280\u672F\u5B66\u9662</option>\n                  <option value=\"\u5316\u5B66\u5B66\u9662\">\u5316\u5B66\u5B66\u9662</option>\n                  <option value=\"\u751F\u547D\u79D1\u5B66\u5B66\u9662\">\u751F\u547D\u79D1\u5B66\u5B66\u9662</option>\n                  <option value=\"\u7535\u5B50\u4FE1\u606F\u5B66\u9662\">\u7535\u5B50\u4FE1\u606F\u5B66\u9662</option>\n                  <option value=\"\u9AD8\u5206\u5B50\u79D1\u5B66\u4E0E\u5DE5\u7A0B\u5B66\u9662\">\u9AD8\u5206\u5B50\u79D1\u5B66\u4E0E\u5DE5\u7A0B\u5B66\u9662</option>\n                  <option value=\"\u6750\u6599\u79D1\u5B66\u4E0E\u5DE5\u7A0B\u5B66\u9662\">\u6750\u6599\u79D1\u5B66\u4E0E\u5DE5\u7A0B\u5B66\u9662</option>\n                  <option value=\"\u5236\u9020\u79D1\u5B66\u4E0E\u5DE5\u7A0B\u5B66\u9662\">\u5236\u9020\u79D1\u5B66\u4E0E\u5DE5\u7A0B\u5B66\u9662</option>\n                  <option value=\"\u7535\u6C14\u4FE1\u606F\u5B66\u9662\">\u7535\u6C14\u4FE1\u606F\u5B66\u9662</option>\n                  <option value=\"\u8BA1\u7B97\u673A\u5B66\u9662\">\u8BA1\u7B97\u673A\u5B66\u9662</option>\n                  <option value=\"\u5EFA\u7B51\u4E0E\u73AF\u5883\u5B66\u9662\">\u5EFA\u7B51\u4E0E\u73AF\u5883\u5B66\u9662</option>\n                  <option value=\"\u6C34\u5229\u6C34\u7535\u5B66\u9662\">\u6C34\u5229\u6C34\u7535\u5B66\u9662</option>\n                  <option value=\"\u5316\u5B66\u5DE5\u7A0B\u5B66\u9662\">\u5316\u5B66\u5DE5\u7A0B\u5B66\u9662</option>\n                  <option value=\"\u8F7B\u7EBA\u4E0E\u98DF\u54C1\u5B66\u9662\">\u8F7B\u7EBA\u4E0E\u98DF\u54C1\u5B66\u9662</option>\n                  <option value=\"\u8F6F\u4EF6\u5B66\u9662\">\u8F6F\u4EF6\u5B66\u9662</option>\n                  <option value=\"\u56DB\u5DDD\u5927\u5B66\u5339\u5179\u5821\u5B66\u9662\">\u56DB\u5DDD\u5927\u5B66\u5339\u5179\u5821\u5B66\u9662</option>\n                  <option value=\"\u7A7A\u5929\u79D1\u5B66\u4E0E\u5DE5\u7A0B\u5B66\u9662\">\u7A7A\u5929\u79D1\u5B66\u4E0E\u5DE5\u7A0B\u5B66\u9662</option>\n                  <option value=\"\u7F51\u7EDC\u7A7A\u95F4\u5B89\u5168\u5B66\u9662\">\u7F51\u7EDC\u7A7A\u95F4\u5B89\u5168\u5B66\u9662</option>\n                  <option value=\"\u516C\u5171\u7BA1\u7406\u5B66\u9662\">\u516C\u5171\u7BA1\u7406\u5B66\u9662</option>\n                  <option value=\"\u5546\u5B66\u9662\">\u5546\u5B66\u9662</option>\n                  <option value=\"\u707E\u540E\u91CD\u5EFA\u4E0E\u7BA1\u7406\u5B66\u9662\">\u707E\u540E\u91CD\u5EFA\u4E0E\u7BA1\u7406\u5B66\u9662</option>\n                  <option value=\"\u534E\u897F\u57FA\u7840\u533B\u5B66\u4E0E\u6CD5\u533B\u5B66\u9662\">\u534E\u897F\u57FA\u7840\u533B\u5B66\u4E0E\u6CD5\u533B\u5B66\u9662</option>\n                  <option value=\"\u534E\u897F\u4E34\u5E8A\u533B\u5B66\u9662\">\u534E\u897F\u4E34\u5E8A\u533B\u5B66\u9662</option>\n                  <option value=\"\u534E\u897F\u53E3\u8154\u533B\u5B66\u9662\">\u534E\u897F\u53E3\u8154\u533B\u5B66\u9662</option>\n                  <option value=\"\u534E\u897F\u516C\u5171\u536B\u751F\u5B66\u9662\">\u534E\u897F\u516C\u5171\u536B\u751F\u5B66\u9662</option>\n                  <option value=\"\u534E\u897F\u836F\u5B66\u9662\">\u534E\u897F\u836F\u5B66\u9662</option>\n                  <option value=\"\u534E\u897F\u52A8\u7269\u4E2D\u5FC3\">\u534E\u897F\u52A8\u7269\u4E2D\u5FC3</option>\n                  <option value=\"\u8054\u5408\u73ED\">\u8054\u5408\u73ED</option>\n                  <option value=\"\u6570\u5B66\u5B66\u9662\u4E0E\u7ECF\u6D4E\u5B66\u9662\">\u6570\u5B66\u5B66\u9662\u4E0E\u7ECF\u6D4E\u5B66\u9662</option>\n                  <option value=\"\u5434\u7389\u7AE0\u5B66\u9662\">\u5434\u7389\u7AE0\u5B66\u9662</option>\n                  <option value=\"\u751F\u7269\u6CBB\u7597\u56FD\u5BB6\u91CD\u70B9\u5B9E\u9A8C\u5BA4\">\u751F\u7269\u6CBB\u7597\u56FD\u5BB6\u91CD\u70B9\u5B9E\u9A8C\u5BA4</option>\n                  <option value=\"\u751F\u7269\u533B\u5B66\u6750\u6599\u5DE5\u7A0B\u6280\u672F\u7814\u7A76\u4E2D\u5FC3\">\u751F\u7269\u533B\u5B66\u6750\u6599\u5DE5\u7A0B\u6280\u672F\u7814\u7A76\u4E2D\u5FC3</option>\n                  <option value=\"\u7814\u7A76\u751F\u9662\">\u7814\u7A76\u751F\u9662</option>\n                  <option value=\"\u9884\u79D1\u6559\u80B2\">\u9884\u79D1\u6559\u80B2</option>\n                  <option value=\"\u4F53\u80B2\u5B66\u9662\">\u4F53\u80B2\u5B66\u9662</option>\n                  <option value=\"\u515A\u59D4\u6B66\u88C5\u90E8\uFF08\u519B\u4E8B\u6559\u7814\u5BA4\uFF09\">\u515A\u59D4\u6B66\u88C5\u90E8\uFF08\u519B\u4E8B\u6559\u7814\u5BA4\uFF09</option>\n                  <option value=\"\u7F51\u7EDC\u6559\u80B2\u5B66\u9662\">\u7F51\u7EDC\u6559\u80B2\u5B66\u9662</option>\n                  <option value=\"\u56FE\u4E66\u9986\">\u56FE\u4E66\u9986</option>\n                  <option value=\"\u5206\u6790\u6D4B\u8BD5\u4E2D\u5FC3\">\u5206\u6790\u6D4B\u8BD5\u4E2D\u5FC3</option>\n                  <option value=\"\u5DE5\u7A0B\u8BBE\u8BA1\u4E2D\u5FC3\">\u5DE5\u7A0B\u8BBE\u8BA1\u4E2D\u5FC3</option>\n                  <option value=\"\u5DE5\u7A0B\u8BAD\u7EC3\u4E2D\u5FC3\">\u5DE5\u7A0B\u8BAD\u7EC3\u4E2D\u5FC3</option>\n                  <option value=\"\u7535\u5B50\u5B9E\u4E60\u4E2D\u5FC3\">\u7535\u5B50\u5B9E\u4E60\u4E2D\u5FC3</option>\n                  <option value=\"\u7535\u5DE5\u7535\u5B50\u4E2D\u5FC3\">\u7535\u5DE5\u7535\u5B50\u4E2D\u5FC3</option>\n                  <option value=\"\u5316\u5B66\u57FA\u7840\u5B9E\u9A8C\u6559\u5B66\u4E2D\u5FC3\">\u5316\u5B66\u57FA\u7840\u5B9E\u9A8C\u6559\u5B66\u4E2D\u5FC3</option>\n                  <option value=\"\u8BA1\u7B97\u673A\u57FA\u7840\u6559\u5B66\u5B9E\u9A8C\u4E2D\u5FC3\">\u8BA1\u7B97\u673A\u57FA\u7840\u6559\u5B66\u5B9E\u9A8C\u4E2D\u5FC3</option>\n                  <option value=\"\u62DB\u751F\u5C31\u4E1A\u5904\">\u62DB\u751F\u5C31\u4E1A\u5904</option>\n                  <option value=\"\u6821\u56E2\u59D4\">\u6821\u56E2\u59D4</option>\n                  <option value=\"\u5FC3\u7406\u5065\u5EB7\u6559\u80B2\u4E2D\u5FC3\">\u5FC3\u7406\u5065\u5EB7\u6559\u80B2\u4E2D\u5FC3</option>\n                  <option value=\"\u56FD\u5BB6\u5927\u5B66\u79D1\u6280\u56ED\">\u56FD\u5BB6\u5927\u5B66\u79D1\u6280\u56ED</option>\n                  <option value=\"\u6D77\u5916\u6559\u80B2\u5B66\u9662\">\u6D77\u5916\u6559\u80B2\u5B66\u9662</option>\n                  <option value=\"\u56FD\u9645\u5408\u4F5C\u4E0E\u4EA4\u6D41\u5904\">\u56FD\u9645\u5408\u4F5C\u4E0E\u4EA4\u6D41\u5904</option>\n                  <option value=\"\u6821\u533B\u9662\">\u6821\u533B\u9662</option>\n                  <option value=\"\u6210\u4EBA\u6559\u80B2\u5B66\u9662\">\u6210\u4EBA\u6559\u80B2\u5B66\u9662</option>\n                  <option value=\"\u5B9E\u9A8C\u5BA4\u53CA\u8BBE\u5907\u7BA1\u7406\u5904\">\u5B9E\u9A8C\u5BA4\u53CA\u8BBE\u5907\u7BA1\u7406\u5904</option>\n                  <option value=\"\u73B0\u4EE3\u6559\u80B2\u6280\u672F\u4E2D\u5FC3\">\u73B0\u4EE3\u6559\u80B2\u6280\u672F\u4E2D\u5FC3</option>\n                  <option value=\"IBM\u6280\u672F\u4E2D\u5FC3\">IBM\u6280\u672F\u4E2D\u5FC3</option>\n                  <option value=\"\u4FE1\u606F\u7BA1\u7406\u4E2D\u5FC3\">\u4FE1\u606F\u7BA1\u7406\u4E2D\u5FC3</option>\n                  <option value=\"\u5BF9\u5916\u8054\u7EDC\u529E\u516C\u5BA4\">\u5BF9\u5916\u8054\u7EDC\u529E\u516C\u5BA4</option>\n                  <option value=\"\u6863\u6848\u9986\">\u6863\u6848\u9986</option>\n                  <option value=\"\u6587\u5316\u79D1\u6280\u534F\u540C\u521B\u65B0\u7814\u53D1\u4E2D\u5FC3\">\u6587\u5316\u79D1\u6280\u534F\u540C\u521B\u65B0\u7814\u53D1\u4E2D\u5FC3</option>\n                  <option value=\"\u535A\u7269\u9986\">\u535A\u7269\u9986</option>\n                  <option value=\"\u6821\u62A5\u7F16\u8F91\u90E8\">\u6821\u62A5\u7F16\u8F91\u90E8</option>\n                  <option value=\"\u51FA\u56FD\u7559\u5B66\u9884\u5907\u5B66\u9662\">\u51FA\u56FD\u7559\u5B66\u9884\u5907\u5B66\u9662</option>\n                  <option value=\"\u51FA\u56FD\u7559\u5B66\u4EBA\u5458\u57F9\u8BAD\u90E8\">\u51FA\u56FD\u7559\u5B66\u4EBA\u5458\u57F9\u8BAD\u90E8</option>\n                  <option value=\"\u56DB\u5DDD\u5927\u5B66\u6B27\u6D32\u7814\u7A76\u4E2D\u5FC3\">\u56DB\u5DDD\u5927\u5B66\u6B27\u6D32\u7814\u7A76\u4E2D\u5FC3</option>\n                  <option value=\"\u4E2D\u56FD\u897F\u90E8\u8FB9\u7586\u5B89\u5168\u4E0E\u53D1\u5C55\u534F\u540C\u521B\u65B0\u4E2D\u5FC3\">\u4E2D\u56FD\u897F\u90E8\u8FB9\u7586\u5B89\u5168\u4E0E\u53D1\u5C55\u534F\u540C\u521B\u65B0\u4E2D\u5FC3</option>\n                  <option value=\"\u4FDD\u536B\u5904\">\u4FDD\u536B\u5904</option>\n                  <option value=\"\u540E\u52E4\u96C6\u56E2\">\u540E\u52E4\u96C6\u56E2</option>\n                  <option value=\"\u515A\u59D4\u7EC4\u7EC7\u90E8\">\u515A\u59D4\u7EC4\u7EC7\u90E8</option>\n                  <option value=\"\u7EAA\u59D4\u76D1\u5BDF\u5904\">\u7EAA\u59D4\u76D1\u5BDF\u5904</option>\n                  <option value=\"\u515A\u59D4\u5BA3\u4F20\u90E8\">\u515A\u59D4\u5BA3\u4F20\u90E8</option>\n                  <option value=\"\u8D22\u52A1\u5904\">\u8D22\u52A1\u5904</option>\n                  <option value=\"\u6E2F\u6FB3\u53F0\u4E8B\u52A1\u529E\u516C\u5BA4\">\u6E2F\u6FB3\u53F0\u4E8B\u52A1\u529E\u516C\u5BA4</option>\n                  <option value=\"\u56DB\u5DDD\u5927\u5B66\u51FA\u7248\u793E\">\u56DB\u5DDD\u5927\u5B66\u51FA\u7248\u793E</option>\n                  <option value=\"\u4EBA\u4E8B\u5904\">\u4EBA\u4E8B\u5904</option>\n                  <option value=\"\u53E4\u7C4D\u6574\u7406\u7814\u7A76\u6240\">\u53E4\u7C4D\u6574\u7406\u7814\u7A76\u6240</option>\n                  <option value=\"\u793E\u4F1A\u53D1\u5C55\u4E0E\u897F\u90E8\u5F00\u53D1\u7814\u7A76\u9662\">\u793E\u4F1A\u53D1\u5C55\u4E0E\u897F\u90E8\u5F00\u53D1\u7814\u7A76\u9662</option>\n                  <option value=\"\u9AD8\u5206\u5B50\u7814\u7A76\u6240\">\u9AD8\u5206\u5B50\u7814\u7A76\u6240</option>\n                  <option value=\"\u65B0\u80FD\u6E90\u4E0E\u4F4E\u78B3\u6280\u672F\u7814\u7A76\u9662\">\u65B0\u80FD\u6E90\u4E0E\u4F4E\u78B3\u6280\u672F\u7814\u7A76\u9662</option>\n                  <option value=\"\u201C\u53CC\u4E00\u6D41\u201D\u5EFA\u8BBE\u4E0E\u8D28\u91CF\u8BC4\u4F30\u529E\u516C\u5BA4\">\u201C\u53CC\u4E00\u6D41\u201D\u5EFA\u8BBE\u4E0E\u8D28\u91CF\u8BC4\u4F30\u529E\u516C\u5BA4</option>\n                  <option value=\"\u6821\u957F\u529E\u516C\u5BA4\">\u6821\u957F\u529E\u516C\u5BA4</option>\n                  <option value=\"\u6559\u52A1\u5904\">\u6559\u52A1\u5904</option>\n                  <option value=\"\u56FD\u9645\u4EA4\u6D41\u6691\u671F\u5B66\u9662\">\u56FD\u9645\u4EA4\u6D41\u6691\u671F\u5B66\u9662</option>\n                  <option value=\"\u56DB\u5DDD\u7701\u56FD\u5BB6\u4FDD\u5BC6\u5C40\">\u56DB\u5DDD\u7701\u56FD\u5BB6\u4FDD\u5BC6\u5C40</option>\n                  <option value=\"\u6210\u90FD\u7F8E\u56FD\u7559\u5B66\u4E2D\u5FC3\">\u6210\u90FD\u7F8E\u56FD\u7559\u5B66\u4E2D\u5FC3</option>\n                  <option value=\"\u6559\u80B2\u7535\u89C6\u53F0\">\u6559\u80B2\u7535\u89C6\u53F0</option>\n                  <option value=\"\u521B\u65B0\u6559\u80B2\">\u521B\u65B0\u6559\u80B2</option>\n                  <option value=\"\u515A\u59D4\u5B66\u751F\u5DE5\u4F5C\u90E8\uFF08\u5904\uFF09\">\u515A\u59D4\u5B66\u751F\u5DE5\u4F5C\u90E8\uFF08\u5904\uFF09</option>\n                  <option value=\"\u5176\u5B83\">\u5176\u5B83</option>\n                </select>\n              </div>\n              <div class=\"profile-info-name\">\u4E13\u4E1A</div>\n              <div class=\"profile-info-value\">\n                <select name=\"subjectNum\" id=\"subjectNum\" class=\"form-control value_element\">\n                  <option value=\"\">\u5168\u90E8</option></select>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n  ";
+}
+
+function genInfoHTML(info) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = (0, _getIterator3.default)((0, _keys2.default)(info)), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var key = _step.value;
+
+      if (!info[key]) {
+        info[key] = '-';
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return '\n    <div class="info-container">\n      <div class="row">\n        <div class="col-xs-12">\n          <h4 class="header smaller lighter grey">\n            <i class="glyphicon glyphicon-list"></i> ' + info.zym + "\u65B9\u6848\u8BA1\u5212\u4FE1\u606F\n          </h4>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-xs-12 col-md-4\">\n          <table class=\"table table-bordered table-hover\">\n            <tbody>\n              <tr>\n                <td>\u65B9\u6848\u540D\u79F0</td>\n                <td>" + info.famc + "</td>\n              </tr>\n              <tr>\n                <td>\u8BA1\u5212\u540D\u79F0</td>\n                <td>" + info.jhmc + "</td>\n              </tr>\n              <tr>\n                <td>\u5E74\u7EA7</td>\n                <td>" + info.njmc + "</td>\n              </tr>\n              <tr>\n                <td>\u9662\u7CFB\u540D\u79F0</td>\n                <td>" + info.xsm + "</td>\n              </tr>\n              <tr>\n                <td>\u4E13\u4E1A\u540D\u79F0</td>\n                <td>" + info.zym + "</td>\n              </tr>\n              <tr>\n                <td>\u4E13\u4E1A\u65B9\u5411\u540D\u79F0</td>\n                <td>" + info.zyfxm + "</td>\n              </tr>\n              <tr>\n                <td>\u5B66\u4F4D</td>\n                <td>" + info.xwm + "</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"col-xs-12 col-md-4\">\n          <table class=\"table table-bordered table-hover\">\n            <tbody>\n              <tr>\n                <td>\u6BD5\u4E1A\u7C7B\u578B</td>\n                <td>" + info.bylxmc + "</td>\n              </tr>\n              <tr>\n                <td>\u5B66\u5236\u7C7B\u578B</td>\n                <td>" + info.xzlxmc + "</td>\n              </tr>\n              <tr>\n                <td>\u4FEE\u8BFB\u7C7B\u578B</td>\n                <td>" + info.xdlxmc + "</td>\n              </tr>\n              <tr>\n                <td>\u65B9\u6848\u8BA1\u5212\u7C7B\u578B</td>\n                <td>" + info.fajhlx + "</td>\n              </tr>\n              <tr>\n                <td>\u5F00\u59CB\u5B66\u5E74\u4EE3\u7801</td>\n                <td>" + info.xnmc + "</td>\n              </tr>\n              <tr>\n                <td>\u5B66\u671F\u7C7B\u578B\u4EE3\u7801</td>\n                <td>" + info.xqlxm + "</td>\n              </tr>\n              <tr>\n                <td>\u5F00\u59CB\u5B66\u671F\u4EE3\u7801</td>\n                <td>" + info.xqm + "</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"col-xs-12 col-md-4\">\n          <table class=\"table table-bordered table-hover\">\n            <tbody>\n              <tr>\n                <td>\u8981\u6C42\u603B\u5B66\u5206</td>\n                <td>" + info.yqzxf + "</td>\n              </tr>\n              <tr>\n                <td>\u8BFE\u7A0B\u603B\u5B66\u5206</td>\n                <td>" + info.kczxf + "</td>\n              </tr>\n              <tr>\n                <td>\u8BFE\u7A0B\u603B\u95E8\u6570</td>\n                <td>" + info.kczms + "</td>\n              </tr>\n              <tr>\n                <td>\u8BFE\u7A0B\u603B\u5B66\u65F6</td>\n                <td>" + info.kczxs + "</td>\n              </tr>\n              <tr>\n                <td>\u5B66\u5236\u7C7B\u578B</td>\n                <td>" + info.xzlxmc + "</td>\n              </tr>\n              <tr>\n                <td>\u57F9\u517B\u76EE\u6807</td>\n                <td>" + info.pymb + "</td>\n              </tr>\n              <tr>\n                <td>\u4FEE\u8BFB\u8981\u6C42</td>\n                <td>" + info.xdyq + "</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n        <div class=\"col-xs-12\">\n          <table class=\"table table-bordered table-hover\">\n            <tbody>\n              <tr>\n                <td>\u5907\u6CE8</td>\n                <td>" + info.bz + '</td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  ';
+}
+
+function genSchemeHTML(list) {
+  var courseItemTemplate = function courseItemTemplate(course) {
+    return '\n    <div class="course-item-wrapper">\n      <div class="course-item">\n        <div class="course-item-info">\n          <div class="info-primary">\n            <div class="course-name">\n              <div>' + course.courseName + '</div>\n            </div>\n          </div>\n          <div class="info-secondary">\n            <div class="info-tag course-number">' + course.courseNumber + '</div>\n            <div class="info-tag course-type">' + course.courseType + '</div>\n            <div class="info-tag course-property-name' + (course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : '') + '">' + course.coursePropertyName + '</div>\n          </div>\n        </div>\n        <!--\n        <div class="course-item-score">\n          <div class="course-score">' + course.courseScore + '</div>\n          <div class="exam-time">' + course.examTime + '</div>\n        </div>\n        -->\n      </div>\n    </div>\n  ';
+  };
+
+  var semesterItemTemplate = function semesterItemTemplate(semester) {
+    return '\n    <div class="semester-item">\n      <div class="semester-item-title">' + semester.name + '</div>\n      <div class="semester-item-content">\n        ' + semester.children.map(function (v) {
+      return courseItemTemplate(v);
+    }).join('') + '\n      </div>\n    </div>\n  ';
+  };
+
+  var yearItemTemplate = function yearItemTemplate(year) {
+    return '\n  <div class="year-item">\n    <div class="year-item-title">' + year.name + '</div>\n    <div class="year-item-content">\n      ' + year.children.map(function (v) {
+      return semesterItemTemplate(v);
+    }).join('<div class="semester-divider"></div>') + '\n    </div>\n  </div>\n  ';
+  };
+
+  return "\n    <div class=\"scheme-container\">\n      <div class=\"row\">\n        <div class=\"col-xs-12\">\n          <h4 class=\"header smaller lighter grey\">\n            <i class=\"glyphicon glyphicon-list\"></i> \u57F9\u517B\u65B9\u6848\u4E0E\u6307\u5BFC\u6027\u6559\u5B66\u8BA1\u5212\n          </h4>\n        </div>\n      </div>\n      <div class=\"row\">\n        <div class=\"col-xs-12\">\n          <div class=\"scheme-wrapper\">\n            " + list.map(function (v) {
+    return yearItemTemplate(v);
+  }).join('') + '\n          </div>\n        </div>\n      </div>\n    </div>\n  ';
+}
+
+function getTrainingSchemeData($) {
+  $.ajaxSetup({
+    beforeSend: function beforeSend(xhr) {
+      return xhr.setRequestHeader('X-Requested-With', {
+        toString: function toString() {
+          return '';
+        }
+      });
+    }
+  });
+
+  var res = _promise2.default.all([$.get('http://zhjw.scu.edu.cn/student/rollManagement/project/3623/2/detail').then(function (_ref3) {
+    var jhFajhb = _ref3.jhFajhb,
+        treeList = _ref3.treeList;
+    return {
+      info: jhFajhb,
+      list: treeList.reduce(function (acc, cur) {
+        if (cur.name.match(/^\d{4}-\d{4}学年$/)) {
+          acc.push({
+            name: cur.name,
+            children: []
+          });
+        } else if (cur.name === '春' || cur.name === '秋') {
+          acc[acc.length - 1].children.push({
+            name: cur.name,
+            children: []
+          });
+        } else {
+          acc[acc.length - 1].children[acc[acc.length - 1].children.length - 1].children.push({
+            courseName: cur.name,
+            courseNumber: cur.urlPath.match(/project\/.+\/(\d+)$/)[1]
+          });
+        }
+
+        return acc;
+      }, [])
+    };
+  }), $.get('http://zhjw.scu.edu.cn/student/integratedQuery/planCompletion/index').then(function (data) {
+    return JSON.parse(data.match(/var zNodes = (.+);/)[1]);
+  }).then(function (data) {
+    return data.map(function (v) {
+      return {
+        type: v.flagType,
+        raw: v.name
+      };
+    }).reduce(function (acc, cur) {
+      if (cur.type === '001') {
+        acc.push({
+          name: cur.raw.match(/nbsp;(.+)\(/)[1],
+          children: []
+        });
+      } else if (cur.type === '002') {
+        acc[acc.length - 1].children.push({
+          name: cur.raw.match(/nbsp;(.+)\(/)[1],
+          children: []
+        });
+      } else {
+        var result = cur.raw.match(/nbsp;\[(\d+)\](.+)\[.+,(.+)\((.+)\)\)$/);
+        var _data = {
+          courseType: acc[acc.length - 1].name,
+          coursePropertyName: acc[acc.length - 1].children[acc[acc.length - 1].children.length - 1].name
+        };
+
+        if (result) {
+          _data = (0, _assign2.default)(_data, {
+            courseNumber: result[1],
+            courseName: result[2],
+            courseScore: Number(result[3]),
+            examTime: result[4]
+          });
+        } else {
+          var _cur$raw$match = cur.raw.match(/nbsp;\[(\d+)\](.+)$/),
+              _cur$raw$match2 = (0, _slicedToArray3.default)(_cur$raw$match, 3),
+              courseNumber = _cur$raw$match2[1],
+              courseName = _cur$raw$match2[2];
+
+          _data = (0, _assign2.default)(_data, {
+            courseNumber: courseNumber,
+            courseName: courseName,
+            courseScore: null,
+            examTime: null
+          });
+        }
+
+        acc[acc.length - 1].children[acc[acc.length - 1].children.length - 1].children.push(_data);
+      }
+
+      return acc;
+    }, []).reduce(function (acc, cur) {
+      return (0, _assign2.default)(acc, cur.children.reduce(function (ac, cu) {
+        return (0, _assign2.default)(ac, cu.children.reduce(function (a, c) {
+          return (0, _assign2.default)(a, (0, _defineProperty3.default)({}, c.courseNumber, c));
+        }, {}));
+      }, {}));
+    }, {});
+  })]).then(function (_ref4) {
+    var _ref5 = (0, _slicedToArray3.default)(_ref4, 2),
+        _ref5$ = _ref5[0],
+        info = _ref5$.info,
+        list = _ref5$.list,
+        table = _ref5[1];
+
+    return {
+      info: info,
+      list: list.map(function (year) {
+        return {
+          name: year.name,
+          children: year.children.map(function (semester) {
+            return {
+              name: semester.name,
+              children: semester.children.map(function (v) {
+                return (0, _assign2.default)(v, table[v.courseNumber]);
+              }).sort(function (a, b) {
+                var propertyWeight = {
+                  必修: 100,
+                  '中华文化（春）': 75,
+                  '中华文化（秋）': 75,
+                  选修: 50
+                };
+                var typeWeight = {
+                  公共课: 10,
+                  '中华文化（春）_kz': 9,
+                  '中华文化（秋）_kz': 9,
+                  专业基础课: 8,
+                  专业课: 6,
+                  实践环节: 4
+                };
+                var weightA = (propertyWeight[a.coursePropertyName] || 0) + (typeWeight[a.courseType] || 0);
+                var weightB = (propertyWeight[b.coursePropertyName] || 0) + (typeWeight[b.courseType] || 0);
+                return weightB - weightA;
+              })
+            };
+          })
+        };
+      })
+    };
+  }); // 还原Ajax配置
+
+
+  $.ajaxSetup({
+    beforeSend: null
+  });
+  return res;
 }
 
 function renderPageContent2(root) {
@@ -4523,7 +6309,7 @@ function renderPageContent2(root) {
 }
 
 module.exports = trainingScheme;
-},{"fs":"tuDi"}],"287w":[function(require,module,exports) {
+},{"babel-runtime/helpers/defineProperty":"Xos8","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/object/assign":"gc0D","babel-runtime/core-js/promise":"L3Vt","babel-runtime/core-js/object/keys":"8FtN","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/regenerator":"aIIw","babel-runtime/helpers/asyncToGenerator":"kcQR","fs":"tuDi"}],"287w":[function(require,module,exports) {
 'use strict';
 
 var _values = require('babel-runtime/core-js/object/values');
@@ -4568,9 +6354,8 @@ var trainingScheme = require('./plugins/training-scheme');
  * TODO: 加入更友好的查看培养方案（分学期）的功能，以及查询全校所有专业的培养方案的功能。
  * 使用接口：http://zhjw.scu.edu.cn/student/rollManagement/project/3623/1/detail
  */
+// 挂载到 window 上的全局对象
 
-
-var $ = window.$; // 挂载到 window 上的全局对象
 
 var $sua = {
   // 属性值的存放处
@@ -4768,6 +6553,7 @@ var $sua = {
       }
     }
 
+    window.$('head').append("\n      <style type=\"text/css\">\n        body, h1, h2, h3, h4, h5, h6 {\n          font-family: \"Helvetica Neue\",Helvetica,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",\"\u5FAE\u8F6F\u96C5\u9ED1\",Arial,sans-serif;\n        }\n      </style>\n    ");
     var _iteratorNormalCompletion5 = true;
     var _didIteratorError5 = false;
     var _iteratorError5 = undefined;
@@ -4775,7 +6561,7 @@ var $sua = {
     try {
       for (var _iterator5 = (0, _getIterator3.default)(this.styleQueue), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
         var s = _step5.value;
-        $('head').append('\n        <style type="text/css">\n          ' + s + '\n        </style>\n      ');
+        window.$('head').append('\n        <style type="text/css">\n          ' + s + '\n        </style>\n      ');
       } // 加载菜单
 
     } catch (err) {
@@ -4799,7 +6585,7 @@ var $sua = {
           menuId = m.id,
           menuName = m.name,
           items = m.items;
-      var $rootMenuList = $('#menus'); // 检查根菜单是否存在，如不存在则新建
+      var $rootMenuList = window.$('#menus'); // 检查根菜单是否存在，如不存在则新建
 
       if (!$rootMenuList.children('li#' + rootMenuId).length) {
         $rootMenuList.append('\n          <li class="hsub sua-menu-list" id="' + rootMenuId + '" onclick="rootMenuClick(this);">\n            <a href="#" class="dropdown-toggle">\n              <i class="menu-icon fa fa-gavel"></i>\n              <span class="menu-text">' + rootMenuName + '</span>\n              <b class="arrow fa fa-angle-down"></b>\n            </a>\n            <b class="arrow"></b>\n            <ul class="submenu nav-hide" onclick="stopHere();" style="display: none;">\n            </ul>\n          </li>\n        ');
@@ -4827,17 +6613,16 @@ var $sua = {
 
             window.$sua.menuItems.forEach(function (v) {
               if (v.id === _this2.element.id) {
-                $(v.element).addClass('active');
+                window.$(v.element).addClass('active');
               } else {
-                $(v.element).removeClass('active');
+                window.$(v.element).removeClass('active');
               }
             });
-            var $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb');
-            $breadcrumbs.empty();
-            $breadcrumbs.append("\n              <li onclick=\"javascript:window.location.href='/'\" style=\"cursor:pointer;\">\n                <i class=\"ace-icon fa fa-home home-icon\"></i>\n                \u9996\u9875\n              </li>\n              <li class=\"active\" onclick=\"ckickTopMenu(this);return false;\" id=\"firmenu\" menuid=\"" + rootMenuId + '">' + rootMenuName + '</li>\n              <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="' + menuId + '">' + menuName + '</li>\n              <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="' + this.element.id + '">' + this.name + '</li>\n            ');
-            var $pageContent = $('.main-content>.page-content');
+            var $breadcrumbs = window.$('.main-content>.breadcrumbs>ul.breadcrumb');
+            $breadcrumbs.empty().append("\n              <li onclick=\"javascript:window.location.href='/'\" style=\"cursor:pointer;\">\n                <i class=\"ace-icon fa fa-home home-icon\"></i>\n                \u9996\u9875\n              </li>\n              <li class=\"active\" onclick=\"ckickTopMenu(this);return false;\" id=\"firmenu\" menuid=\"" + rootMenuId + '">' + rootMenuName + '</li>\n              <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="' + menuId + '">' + menuName + '</li>\n              <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="' + this.element.id + '">' + this.name + '</li>\n            ');
+            var $pageContent = window.$('.main-content>.page-content');
             $pageContent.empty();
-            render($('.main-content>.page-content')[0]);
+            render(window.$('.main-content>.page-content')[0], window.$);
           }
         });
       });
