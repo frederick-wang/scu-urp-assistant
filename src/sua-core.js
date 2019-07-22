@@ -6,11 +6,7 @@ const fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy')
 const recoverRememberMe = require('./plugins/recover-remember-me')
 const gpa = require('./plugins/gpa')
 const trainingScheme = require('./plugins/training-scheme')
-/**
- * 2019-5-27 23:43:26
- * TODO: 加入更友好的查看培养方案（分学期）的功能，以及查询全校所有专业的培养方案的功能。
- * 使用接口：http://zhjw.scu.edu.cn/student/rollManagement/project/3623/1/detail
- */
+
 // 挂载到 window 上的全局对象
 const $sua = {
   // 属性值的存放处

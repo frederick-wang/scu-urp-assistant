@@ -3,44 +3,60 @@
 }
 
 .info-container {
-  tr {
-    &:first-child {
-      td {
+  .info-content {
+    display: flex;
+    flex-wrap: wrap;
 
-        &:first-child,
-        &:nth-child(2) {
-          border-top: 1px solid #eee;
-        }
-      }
+    >div {
+      margin-bottom: 20px;
     }
 
-    &:last-child {
-      td {
+    table {
+      height: 100%;
+      margin-bottom: 0;
 
-        &:first-child,
-        &:nth-child(2) {
-          border-bottom: 1px solid #eee;
+      tr {
+        &:first-child {
+          td {
+
+            &:first-child,
+            &:nth-child(2) {
+              border-top: 1px solid #eee;
+            }
+          }
         }
-      }
-    }
 
-    td {
-      vertical-align: middle;
+        &:last-child {
+          td {
 
-      &:first-child {
-        font-weight: bold;
-        color: #336199;
-        background-color: #EDF3F4;
-        border-top: 1px solid #F7FBFF;
-        border-bottom: 1px solid #F7FBFF;
-      }
+            &:first-child,
+            &:nth-child(2) {
+              border-bottom: 1px solid #eee;
+            }
+          }
+        }
 
-      &:nth-child(2) {
-        border-top: 1px dotted #DCEBF7;
-        border-bottom: 1px dotted #DCEBF7;
+        td {
+          vertical-align: middle;
+
+          &:first-child {
+            font-weight: bold;
+            color: #336199;
+            background-color: #EDF3F4;
+            border-top: 1px solid #F7FBFF;
+            border-bottom: 1px solid #F7FBFF;
+          }
+
+          &:nth-child(2) {
+            border-top: 1px dotted #DCEBF7;
+            border-bottom: 1px dotted #DCEBF7;
+          }
+        }
       }
     }
   }
+
+
 }
 
 .scheme-container {
@@ -109,7 +125,6 @@
                 margin: 5px;
 
                 .course-item-info {
-                  flex: 3;
 
                   .info-primary {
                     padding: 10px;
@@ -161,18 +176,6 @@
                         }
                       }
                     }
-                  }
-                }
-
-                .course-item-score {
-                  flex: 1;
-
-                  .course-score {
-                    font-weight: normal;
-                  }
-
-                  .exam-time {
-                    font-weight: normal;
                   }
                 }
               }

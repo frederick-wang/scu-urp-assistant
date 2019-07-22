@@ -1,6 +1,6 @@
 {
   "name": "scu-urp-assistant",
-  "version": "0.8.23",
+  "version": "0.9.0",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
