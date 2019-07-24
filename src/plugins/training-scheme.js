@@ -274,8 +274,8 @@ function genSchemeHTML (list) {
           </div>
           <div class="info-secondary">
             <div class="info-tag course-number">课程号：${course.courseNumber}</div>
-            <div class="info-tag course-type">${course.courseType}</div>
-            <div class="info-tag course-property-name${course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : ''}">${course.coursePropertyName}</div>
+            ${course.coursePropertyName ? `<div class="info-tag course-property-name${course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : ''}">${course.coursePropertyName}</div>` : ''}
+            ${course.courseAttributes.map(v => `<div class="info-tag course-attribute">${v}</div>`).join('')}
           </div>
         </div>
       </div>
@@ -327,6 +327,7 @@ function getTrainingSchemeData (number, $) {
       }
     })
   })
+  const coursePropertyNameList = ['必修', '选修']
   const res = Promise.all([
     $.get(`/student/rollManagement/project/${number}/2/detail`)
       .then(({ jhFajhb, treeList }) =>
@@ -359,56 +360,41 @@ function getTrainingSchemeData (number, $) {
         })),
     $.get(`/student/rollManagement/project/${number}/1/detail`)
       .then(({ treeList }) =>
-        treeList
-          .map(v => ({ name: v.name.match(/<\/i>(.+)$/)[1], id: v.urlPath.match(/@(.+)$/)[1] }))
-          .reduce(
-            (acc, cur) => {
-              if (cur.name.match(/^公共课|公共基础课|专业基础课|学科基础课|专业课|实践环节|跨专业选修课_kz|中华文化（春）_kz|中华文化（秋）_kz$/)) {
-                acc.push({
-                  name: cur.name,
-                  children: []
-                })
-              } else if (cur.name === '必修' || cur.name === '选修' || cur.name === '跨专业选修课' || cur.name === '中华文化（春）' || cur.name === '中华文化（秋）') {
-                acc[acc.length - 1]
-                  .children.push({
-                    name: cur.name,
-                    children: []
-                  })
-              } else {
-                acc[acc.length - 1]
-                  .children[acc[acc.length - 1].children.length - 1]
-                  .children.push({
-                    courseName: cur.name.replace(/\s+(必修|选修)/g, ''),
-                    courseNumber: cur.id,
-                    courseType: acc[acc.length - 1].name,
-                    coursePropertyName: acc[acc.length - 1].children[acc[acc.length - 1].children.length - 1].name
-                  })
+        Object.values(treeList.reduce((acc, cur) => {
+          acc[cur.id] = cur
+          if (!acc[cur.pId]) {
+            acc[cur.pId] = { id: cur.pId }
+          }
+          cur.parent = acc[cur.pId]
+          cur.isDir = cur.name.includes('fa-kz')
+          if (cur.name.includes('必修')) {
+            cur.coursePropertyName = '必修'
+          } else if (cur.name.includes('选修')) {
+            cur.coursePropertyName = '选修'
+          } else {
+            cur.coursePropertyName = ''
+          }
+          cur.courseName = cur.name.match(/<\/i>(.+)$/)[1].replace(' 必修', '').replace(' 选修', '')
+          return acc
+        }, {})).reduce((acc, { urlPath, isDir, parent, courseName, coursePropertyName }) => {
+          if (urlPath) {
+            const courseNumber = urlPath.match(/@(.+)$/)[1]
+            if (!isDir) {
+              const courseAttributes = []
+              let p = parent
+              while (p.courseName) {
+                if (!coursePropertyNameList.includes(p.courseName)) {
+                  courseAttributes.unshift(p.courseName)
+                }
+                p = p.parent
               }
-              return acc
-            },
-            [])
-          .reduce(
-            (acc, cur) =>
-              Object.assign(
-                acc,
-                cur.children.reduce(
-                  (ac, cu) =>
-                    Object.assign(
-                      ac,
-                      cu.children.reduce(
-                        (a, c) => Object.assign(
-                          a,
-                          {
-                            [c.courseNumber]: c
-                          }),
-                        {}
-                      )
-                    ),
-                  {}
-                )
-              ),
-            {}
-          )
+              acc[courseNumber] = {
+                courseName, courseNumber, coursePropertyName, courseAttributes
+              }
+            }
+          }
+          return acc
+        }, {})
       ),
     number
   ])
@@ -435,7 +421,7 @@ function getTrainingSchemeData (number, $) {
                       '中华文化（秋）': 75,
                       选修: 50
                     }
-                    const typeWeight = {
+                    const attributeWeight = {
                       公共基础课: 10,
                       公共课: 10,
                       '中华文化（春）_kz': 9,
@@ -445,8 +431,9 @@ function getTrainingSchemeData (number, $) {
                       专业课: 6,
                       实践环节: 4
                     }
-                    const weightA = (propertyWeight[a.coursePropertyName] || 0) + (typeWeight[a.courseType] || 0)
-                    const weightB = (propertyWeight[b.coursePropertyName] || 0) + (typeWeight[b.courseType] || 0)
+                    const getAttributesWeight = (attributes) => (attributes || []).reduce((acc, cur) => acc + (attributeWeight[cur] || 0), 0)
+                    const weightA = (propertyWeight[a.coursePropertyName] || 0) + getAttributesWeight(a.courseAttributes)
+                    const weightB = (propertyWeight[b.coursePropertyName] || 0) + getAttributesWeight(b.courseAttributes)
                     return weightB - weightA
                   })
               }))

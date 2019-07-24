@@ -4486,46 +4486,7 @@ var templates = {
   }
 };
 module.exports = gpa;
-},{"babel-runtime/core-js/array/from":"VuZO","fs":"tuDi"}],"htFH":[function(require,module,exports) {
-var $export = require('./_export');
-// 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-$export($export.S + $export.F * !require('./_descriptors'), 'Object', { defineProperty: require('./_object-dp').f });
-
-},{"./_export":"vSO4","./_descriptors":"6MLN","./_object-dp":"Gfzd"}],"3v7p":[function(require,module,exports) {
-require('../../modules/es6.object.define-property');
-var $Object = require('../../modules/_core').Object;
-module.exports = function defineProperty(it, key, desc) {
-  return $Object.defineProperty(it, key, desc);
-};
-
-},{"../../modules/es6.object.define-property":"htFH","../../modules/_core":"zKeE"}],"FFZn":[function(require,module,exports) {
-module.exports = { "default": require("core-js/library/fn/object/define-property"), __esModule: true };
-},{"core-js/library/fn/object/define-property":"3v7p"}],"Xos8":[function(require,module,exports) {
-"use strict";
-
-exports.__esModule = true;
-
-var _defineProperty = require("../core-js/object/define-property");
-
-var _defineProperty2 = _interopRequireDefault(_defineProperty);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (obj, key, value) {
-  if (key in obj) {
-    (0, _defineProperty2.default)(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-};
-},{"../core-js/object/define-property":"FFZn"}],"KUik":[function(require,module,exports) {
+},{"babel-runtime/core-js/array/from":"VuZO","fs":"tuDi"}],"KUik":[function(require,module,exports) {
 module.exports = function (it, Constructor, name, forbiddenField) {
   if (!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)) {
     throw TypeError(name + ': incorrect invocation!');
@@ -6004,17 +5965,17 @@ exports.default = function (fn) {
 },{"../core-js/promise":"L3Vt"}],"J+gl":[function(require,module,exports) {
 'use strict';
 
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
 var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
-var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
+var _values = require('babel-runtime/core-js/object/values');
 
-var _defineProperty3 = _interopRequireDefault(_defineProperty2);
-
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
+var _values2 = _interopRequireDefault(_values);
 
 var _promise = require('babel-runtime/core-js/promise');
 
@@ -6139,7 +6100,7 @@ var trainingSchemeList = JSON.parse("[[\"10\",\"2011\u7EA7\",\"\u534E\u897F\u4E3
 var trainingScheme = {
   name: 'training-scheme',
   pathname: '/**',
-  style: ".info-container .info-content{display:flex;flex-wrap:wrap}.info-container .info-content>div{margin-bottom:20px}.info-container .info-content table{height:100%;margin-bottom:0}.info-container .info-content table tr:first-child td:first-child,.info-container .info-content table tr:first-child td:nth-child(2){border-top:1px solid #eee}.info-container .info-content table tr:last-child td:first-child,.info-container .info-content table tr:last-child td:nth-child(2){border-bottom:1px solid #eee}.info-container .info-content table tr td{vertical-align:middle}.info-container .info-content table tr td:first-child{max-width:150px;min-width:100px;font-weight:bold;color:#336199;background-color:#EDF3F4;border-top:1px solid #F7FBFF;border-bottom:1px solid #F7FBFF}.info-container .info-content table tr td:nth-child(2){border-top:1px dotted #DCEBF7;border-bottom:1px dotted #DCEBF7}.scheme-container *{box-sizing:border-box}.scheme-container .scheme-wrapper .year-item{border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;box-shadow:0 1px 3px rgba(26,26,26,0.1);margin-bottom:20px}.scheme-container .scheme-wrapper .year-item .year-item-title{height:50px;line-height:50px;padding:0 15px;border-bottom:1px solid #EBEEF5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:16px}.scheme-container .scheme-wrapper .year-item .year-item-content{padding:15px;position:relative}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item{display:flex}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title{font-weight:bold;display:flex;justify-content:center;align-items:center;font-size:16px;padding-right:20px;margin:5px;border-right:1px solid #EBEEF5}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content{flex:1;display:flex;flex-wrap:wrap}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:20%}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item{display:flex;border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;margin:5px}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary{padding:10px}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name{font-size:16px;line-height:2;font-weight:lighter}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary{padding:10px;padding-top:0}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag{display:inline-block;height:24px;padding:0 5px;margin:2px 0;line-height:24px;font-size:12px;border-width:1px;border-style:solid;border-radius:4px;box-sizing:border-box;white-space:nowrap}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number{background-color:#ecf4f8;border-color:#d9e8f1;color:#438EB9}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-type{background-color:#fdf6ec;border-color:#faecd8;color:#e6a23c}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name{background-color:#fef0f0;border-color:#fde2e2;color:#f56c6c}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required{background-color:#f0f9eb;border-color:#e1f3d8;color:#67c23a}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider{background-color:#DCDFE6;position:relative;display:block;height:1px;width:100%;margin:24px 0}\n",
+  style: ".info-container .info-content{display:flex;flex-wrap:wrap}.info-container .info-content>div{margin-bottom:20px}.info-container .info-content table{height:100%;margin-bottom:0}.info-container .info-content table tr:first-child td:first-child,.info-container .info-content table tr:first-child td:nth-child(2){border-top:1px solid #eee}.info-container .info-content table tr:last-child td:first-child,.info-container .info-content table tr:last-child td:nth-child(2){border-bottom:1px solid #eee}.info-container .info-content table tr td{vertical-align:middle}.info-container .info-content table tr td:first-child{max-width:150px;min-width:100px;font-weight:bold;color:#336199;background-color:#EDF3F4;border-top:1px solid #F7FBFF;border-bottom:1px solid #F7FBFF}.info-container .info-content table tr td:nth-child(2){border-top:1px dotted #DCEBF7;border-bottom:1px dotted #DCEBF7}.scheme-container *{box-sizing:border-box}.scheme-container .scheme-wrapper .year-item{border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;box-shadow:0 1px 3px rgba(26,26,26,0.1);margin-bottom:20px}.scheme-container .scheme-wrapper .year-item .year-item-title{height:50px;line-height:50px;padding:0 15px;border-bottom:1px solid #EBEEF5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:16px}.scheme-container .scheme-wrapper .year-item .year-item-content{padding:15px;position:relative}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item{display:flex}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title{font-weight:bold;display:flex;justify-content:center;align-items:center;font-size:16px;padding-right:20px;margin:5px;border-right:1px solid #EBEEF5}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content{flex:1;display:flex;flex-wrap:wrap}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:20%}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item{display:flex;border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;margin:5px}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary{padding:10px}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name{font-size:16px;line-height:2;font-weight:lighter}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary{padding:10px;padding-top:0}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag{display:inline-block;height:24px;padding:0 5px;margin:2px 0;line-height:24px;font-size:12px;border-width:1px;border-style:solid;border-radius:4px;box-sizing:border-box;white-space:nowrap}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number{background-color:#ecf4f8;border-color:#d9e8f1;color:#438EB9}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-attribute{background-color:#fdf6ec;border-color:#faecd8;color:#e6a23c}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name{background-color:#fef0f0;border-color:#fde2e2;color:#f56c6c}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required{background-color:#f0f9eb;border-color:#e1f3d8;color:#67c23a}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider{background-color:#DCDFE6;position:relative;display:block;height:1px;width:100%;margin:24px 0}\n",
   menu: [{
     rootMenuId: 'sua-menu-list',
     rootMenuName: 'SCU URP 助手',
@@ -6240,7 +6201,9 @@ function genInfoHTML(info) {
 
 function genSchemeHTML(list) {
   var courseItemTemplate = function courseItemTemplate(course, number) {
-    return '\n    <div class="course-item-wrapper">\n      <div class="course-item">\n        <div class="course-item-info">\n          <div class="info-primary">\n            <div class="course-name">\n              <div>' + number + '. ' + course.courseName + "</div>\n            </div>\n          </div>\n          <div class=\"info-secondary\">\n            <div class=\"info-tag course-number\">\u8BFE\u7A0B\u53F7\uFF1A" + course.courseNumber + '</div>\n            <div class="info-tag course-type">' + course.courseType + '</div>\n            <div class="info-tag course-property-name' + (course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : '') + '">' + course.coursePropertyName + '</div>\n          </div>\n        </div>\n      </div>\n    </div>\n  ';
+    return '\n    <div class="course-item-wrapper">\n      <div class="course-item">\n        <div class="course-item-info">\n          <div class="info-primary">\n            <div class="course-name">\n              <div>' + number + '. ' + course.courseName + "</div>\n            </div>\n          </div>\n          <div class=\"info-secondary\">\n            <div class=\"info-tag course-number\">\u8BFE\u7A0B\u53F7\uFF1A" + course.courseNumber + '</div>\n            ' + (course.coursePropertyName ? '<div class="info-tag course-property-name' + (course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : '') + '">' + course.coursePropertyName + '</div>' : '') + '\n            ' + course.courseAttributes.map(function (v) {
+      return '<div class="info-tag course-attribute">' + v + '</div>';
+    }).join('') + '\n          </div>\n        </div>\n      </div>\n    </div>\n  ';
   };
 
   var semesterItemTemplate = function semesterItemTemplate(semester) {
@@ -6270,6 +6233,7 @@ function getTrainingSchemeData(number, $) {
       });
     }
   });
+  var coursePropertyNameList = ['必修', '选修'];
 
   var res = _promise2.default.all([$.get('/student/rollManagement/project/' + number + '/2/detail').then(function (_ref5) {
     var jhFajhb = _ref5.jhFajhb,
@@ -6299,46 +6263,68 @@ function getTrainingSchemeData(number, $) {
     };
   }), $.get('/student/rollManagement/project/' + number + '/1/detail').then(function (_ref6) {
     var treeList = _ref6.treeList;
-    return treeList.map(function (v) {
-      return {
-        name: v.name.match(/<\/i>(.+)$/)[1],
-        id: v.urlPath.match(/@(.+)$/)[1]
-      };
-    }).reduce(function (acc, cur) {
-      if (cur.name.match(/^公共课|公共基础课|专业基础课|学科基础课|专业课|实践环节|跨专业选修课_kz|中华文化（春）_kz|中华文化（秋）_kz$/)) {
-        acc.push({
-          name: cur.name,
-          children: []
-        });
-      } else if (cur.name === '必修' || cur.name === '选修' || cur.name === '跨专业选修课' || cur.name === '中华文化（春）' || cur.name === '中华文化（秋）') {
-        acc[acc.length - 1].children.push({
-          name: cur.name,
-          children: []
-        });
+    return (0, _values2.default)(treeList.reduce(function (acc, cur) {
+      acc[cur.id] = cur;
+
+      if (!acc[cur.pId]) {
+        acc[cur.pId] = {
+          id: cur.pId
+        };
+      }
+
+      cur.parent = acc[cur.pId];
+      cur.isDir = cur.name.includes('fa-kz');
+
+      if (cur.name.includes('必修')) {
+        cur.coursePropertyName = '必修';
+      } else if (cur.name.includes('选修')) {
+        cur.coursePropertyName = '选修';
       } else {
-        acc[acc.length - 1].children[acc[acc.length - 1].children.length - 1].children.push({
-          courseName: cur.name.replace(/\s+(必修|选修)/g, ''),
-          courseNumber: cur.id,
-          courseType: acc[acc.length - 1].name,
-          coursePropertyName: acc[acc.length - 1].children[acc[acc.length - 1].children.length - 1].name
-        });
+        cur.coursePropertyName = '';
+      }
+
+      cur.courseName = cur.name.match(/<\/i>(.+)$/)[1].replace(' 必修', '').replace(' 选修', '');
+      return acc;
+    }, {})).reduce(function (acc, _ref7) {
+      var urlPath = _ref7.urlPath,
+          isDir = _ref7.isDir,
+          parent = _ref7.parent,
+          courseName = _ref7.courseName,
+          coursePropertyName = _ref7.coursePropertyName;
+
+      if (urlPath) {
+        var courseNumber = urlPath.match(/@(.+)$/)[1];
+
+        if (!isDir) {
+          var courseAttributes = [];
+          var p = parent;
+
+          while (p.courseName) {
+            if (!coursePropertyNameList.includes(p.courseName)) {
+              courseAttributes.unshift(p.courseName);
+            }
+
+            p = p.parent;
+          }
+
+          acc[courseNumber] = {
+            courseName: courseName,
+            courseNumber: courseNumber,
+            coursePropertyName: coursePropertyName,
+            courseAttributes: courseAttributes
+          };
+        }
       }
 
       return acc;
-    }, []).reduce(function (acc, cur) {
-      return (0, _assign2.default)(acc, cur.children.reduce(function (ac, cu) {
-        return (0, _assign2.default)(ac, cu.children.reduce(function (a, c) {
-          return (0, _assign2.default)(a, (0, _defineProperty3.default)({}, c.courseNumber, c));
-        }, {}));
-      }, {}));
     }, {});
-  }), number]).then(function (_ref7) {
-    var _ref8 = (0, _slicedToArray3.default)(_ref7, 2),
-        _ref8$ = _ref8[0],
-        info = _ref8$.info,
-        list = _ref8$.list,
-        selfMajorNumber = _ref8$.selfMajorNumber,
-        table = _ref8[1];
+  }), number]).then(function (_ref8) {
+    var _ref9 = (0, _slicedToArray3.default)(_ref8, 2),
+        _ref9$ = _ref9[0],
+        info = _ref9$.info,
+        list = _ref9$.list,
+        selfMajorNumber = _ref9$.selfMajorNumber,
+        table = _ref9[1];
 
     return {
       selfMajorNumber: selfMajorNumber,
@@ -6358,7 +6344,7 @@ function getTrainingSchemeData(number, $) {
                   '中华文化（秋）': 75,
                   选修: 50
                 };
-                var typeWeight = {
+                var attributeWeight = {
                   公共基础课: 10,
                   公共课: 10,
                   '中华文化（春）_kz': 9,
@@ -6368,8 +6354,15 @@ function getTrainingSchemeData(number, $) {
                   专业课: 6,
                   实践环节: 4
                 };
-                var weightA = (propertyWeight[a.coursePropertyName] || 0) + (typeWeight[a.courseType] || 0);
-                var weightB = (propertyWeight[b.coursePropertyName] || 0) + (typeWeight[b.courseType] || 0);
+
+                var getAttributesWeight = function getAttributesWeight(attributes) {
+                  return (attributes || []).reduce(function (acc, cur) {
+                    return acc + (attributeWeight[cur] || 0);
+                  }, 0);
+                };
+
+                var weightA = (propertyWeight[a.coursePropertyName] || 0) + getAttributesWeight(a.courseAttributes);
+                var weightB = (propertyWeight[b.coursePropertyName] || 0) + getAttributesWeight(b.courseAttributes);
                 return weightB - weightA;
               })
             };
@@ -6387,7 +6380,7 @@ function getTrainingSchemeData(number, $) {
 }
 
 module.exports = trainingScheme;
-},{"babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/helpers/defineProperty":"Xos8","babel-runtime/core-js/object/assign":"gc0D","babel-runtime/core-js/promise":"L3Vt","babel-runtime/core-js/object/keys":"8FtN","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/regenerator":"aIIw","babel-runtime/helpers/asyncToGenerator":"kcQR","fs":"tuDi"}],"287w":[function(require,module,exports) {
+},{"babel-runtime/core-js/object/assign":"gc0D","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/object/values":"Qujq","babel-runtime/core-js/promise":"L3Vt","babel-runtime/core-js/object/keys":"8FtN","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/regenerator":"aIIw","babel-runtime/helpers/asyncToGenerator":"kcQR","fs":"tuDi"}],"287w":[function(require,module,exports) {
 'use strict';
 
 var _values = require('babel-runtime/core-js/object/values');
