@@ -140,7 +140,7 @@ function genInfoHTML (info) {
       <div class="info-header row">
         <div class="col-xs-12">
           <h4 class="header smaller lighter grey">
-            <i class="glyphicon glyphicon-list"></i> ${info.zym}方案计划信息
+            <i class="fa fa-graduation-cap"></i> ${info.zym}方案计划信息
           </h4>
         </div>
       </div>
@@ -273,7 +273,7 @@ function genSchemeHTML (list) {
             </div>
           </div>
           <div class="info-secondary">
-            <div class="info-tag course-number">${course.courseNumber}</div>
+            <div class="info-tag course-number">课程号：${course.courseNumber}</div>
             <div class="info-tag course-type">${course.courseType}</div>
             <div class="info-tag course-property-name${course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : ''}">${course.coursePropertyName}</div>
           </div>
@@ -292,7 +292,7 @@ function genSchemeHTML (list) {
 
   const yearItemTemplate = (year) => `
   <div class="year-item">
-    <div class="year-item-title">${year.name}</div>
+    <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${year.name}</div>
     <div class="year-item-content">
       ${year.children.map(v => semesterItemTemplate(v)).join('<div class="semester-divider"></div>')}
     </div>
