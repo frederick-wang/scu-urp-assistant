@@ -275,7 +275,7 @@ function genSchemeHTML (list) {
           <div class="info-secondary">
             <div class="info-tag course-number">课程号：${course.courseNumber}</div>
             ${course.coursePropertyName ? `<div class="info-tag course-property-name${course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : ''}">${course.coursePropertyName}</div>` : ''}
-            ${course.courseAttributes.map(v => `<div class="info-tag course-attribute">${v}</div>`).join('')}
+            ${course.courseAttributes.map(v => `<div class="info-tag course-attribute">${v}</div>`).join('&nbsp;')}
           </div>
         </div>
       </div>

@@ -6203,7 +6203,7 @@ function genSchemeHTML(list) {
   var courseItemTemplate = function courseItemTemplate(course, number) {
     return '\n    <div class="course-item-wrapper">\n      <div class="course-item">\n        <div class="course-item-info">\n          <div class="info-primary">\n            <div class="course-name">\n              <div>' + number + '. ' + course.courseName + "</div>\n            </div>\n          </div>\n          <div class=\"info-secondary\">\n            <div class=\"info-tag course-number\">\u8BFE\u7A0B\u53F7\uFF1A" + course.courseNumber + '</div>\n            ' + (course.coursePropertyName ? '<div class="info-tag course-property-name' + (course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : '') + '">' + course.coursePropertyName + '</div>' : '') + '\n            ' + course.courseAttributes.map(function (v) {
       return '<div class="info-tag course-attribute">' + v + '</div>';
-    }).join('') + '\n          </div>\n        </div>\n      </div>\n    </div>\n  ';
+    }).join('&nbsp;') + '\n          </div>\n        </div>\n      </div>\n    </div>\n  ';
   };
 
   var semesterItemTemplate = function semesterItemTemplate(semester) {
