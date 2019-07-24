@@ -1,6 +1,7 @@
 // 培养方案查询插件
 const fs = require('fs')
 const trainingSchemeList = JSON.parse(fs.readFileSync('src/plugins/training-scheme-list.json', 'utf8'))
+const chineseNumbers = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
 
 const trainingScheme = {
   name: 'training-scheme',
@@ -290,9 +291,9 @@ function genSchemeHTML (list) {
     </div>
   `
 
-  const yearItemTemplate = (year) => `
+  const yearItemTemplate = (year, grade) => `
   <div class="year-item">
-    <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${year.name}</div>
+    <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${year.name}（${chineseNumbers[grade]}年级）</div>
     <div class="year-item-content">
       ${year.children.map(v => semesterItemTemplate(v)).join('<div class="semester-divider"></div>')}
     </div>
@@ -311,7 +312,7 @@ function genSchemeHTML (list) {
       <div class="row">
         <div class="col-xs-12">
           <div class="scheme-wrapper">
-            ${list.map(v => yearItemTemplate(v)).join('')}
+            ${list.map((v, i) => yearItemTemplate(v, i + 1)).join('')}
           </div>
         </div>
       </div>
