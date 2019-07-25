@@ -360,30 +360,38 @@ function getTrainingSchemeData (number, $) {
       .then(({ jhFajhb, treeList }) =>
         ({
           info: jhFajhb,
-          list: treeList.reduce(
-            (acc, cur) => {
-              if (cur.name.match(/^\d{4}-\d{4}学年$/)) {
-                acc.push({
-                  name: cur.name,
-                  children: []
-                })
-              } else if (cur.name === '春' || cur.name === '秋') {
-                acc[acc.length - 1]
-                  .children.push({
+          list: treeList
+            .reduce(
+              (acc, cur) => {
+                if (cur.name.match(/^\d{4}-\d{4}学年$/)) {
+                  acc.push({
                     name: cur.name,
                     children: []
                   })
-              } else {
-                acc[acc.length - 1]
-                  .children[acc[acc.length - 1].children.length - 1]
-                  .children.push({
-                    courseName: cur.name,
-                    courseNumber: cur.urlPath.match(/project\/.+\/(\d+)$/)[1]
-                  })
-              }
-              return acc
-            },
-            [])
+                } else if (cur.name === '春' || cur.name === '秋') {
+                  acc[acc.length - 1]
+                    .children.push({
+                      name: cur.name,
+                      children: []
+                    })
+                } else {
+                  acc[acc.length - 1]
+                    .children[acc[acc.length - 1].children.length - 1]
+                    .children.push({
+                      courseName: cur.name,
+                      courseNumber: cur.urlPath.match(/project\/.+\/(\d+)$/)[1]
+                    })
+                }
+                return acc
+              },
+              [])
+            .sort((a, b) => {
+              const regexpResultA = a.name.match(/^(\d+)-(\d+)学年$/)
+              const regexpResultB = b.name.match(/^(\d+)-(\d+)学年$/)
+              const resultA = Number(regexpResultA[1]) + Number(regexpResultA[2])
+              const resultB = Number(regexpResultB[1]) + Number(regexpResultB[2])
+              return resultA - resultB
+            })
         })),
     $.get(`/student/rollManagement/project/${number}/1/detail`)
       .then(({ treeList }) =>
