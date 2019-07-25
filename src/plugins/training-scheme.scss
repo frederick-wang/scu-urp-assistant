@@ -1,176 +1,227 @@
-.info-container {
-  .info-content {
-    display: flex;
-    flex-wrap: wrap;
+.training-scheme-wrapper {
+  position: relative;
 
-    >div {
-      margin-bottom: 20px;
-    }
+  .info-container {
+    .info-content {
+      display: flex;
+      flex-wrap: wrap;
 
-    table {
-      height: 100%;
-      margin-bottom: 0;
+      >div {
+        margin-bottom: 20px;
+      }
 
-      tr {
-        &:first-child {
-          td {
+      table {
+        height: 100%;
+        margin-bottom: 0;
 
-            &:first-child,
-            &:nth-child(2) {
-              border-top: 1px solid #eee;
-            }
-          }
-        }
-
-        &:last-child {
-          td {
-
-            &:first-child,
-            &:nth-child(2) {
-              border-bottom: 1px solid #eee;
-            }
-          }
-        }
-
-        td {
-          vertical-align: middle;
-
+        tr {
           &:first-child {
-            max-width: 150px;
-            min-width: 100px;
-            font-weight: bold;
-            color: #336199;
-            background-color: #EDF3F4;
-            border-top: 1px solid #F7FBFF;
-            border-bottom: 1px solid #F7FBFF;
+            td {
+
+              &:first-child,
+              &:nth-child(2) {
+                border-top: 1px solid #eee;
+              }
+            }
           }
 
-          &:nth-child(2) {
-            border-top: 1px dotted #DCEBF7;
-            border-bottom: 1px dotted #DCEBF7;
+          &:last-child {
+            td {
+
+              &:first-child,
+              &:nth-child(2) {
+                border-bottom: 1px solid #eee;
+              }
+            }
+          }
+
+          td {
+            vertical-align: middle;
+
+            &:first-child {
+              max-width: 150px;
+              min-width: 100px;
+              font-weight: bold;
+              color: #336199;
+              background-color: #EDF3F4;
+              border-top: 1px solid #F7FBFF;
+              border-bottom: 1px solid #F7FBFF;
+            }
+
+            &:nth-child(2) {
+              border-top: 1px dotted #DCEBF7;
+              border-bottom: 1px dotted #DCEBF7;
+            }
           }
         }
       }
     }
+
+
   }
 
+  .loading-container {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    top: 0;
+    height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 
-}
+    .lds-dual-ring {
+      display: inline-block;
+      width: 200px;
+      height: 200px;
 
-.scheme-container {
-  * {
-    box-sizing: border-box;
-  }
+      &:after {
+        content: " ";
+        display: block;
+        width: 100%;
+        height: 100%;
+        margin: 1px;
+        border-radius: 50%;
+        border: 5px solid #336199;
+        border-color: #336199 transparent #336199 transparent;
+        animation: lds-dual-ring 1.2s linear infinite;
+      }
+    }
 
-  .scheme-wrapper {
-    .year-item {
-      border-radius: 4px;
-      border: 1px solid #ebeef5;
-      background-color: #fff;
-      overflow: hidden;
-      color: #303133;
-      transition: .3s;
-      box-shadow: 0 1px 3px rgba(26, 26, 26, .1);
-      margin-bottom: 20px;
+    .lds-title {
+      font-size: 30px;
+      color: #336199;
+      padding-top: 40px;
+      font-weight: lighter;
+    }
 
-      .year-item-title {
-        height: 50px;
-        line-height: 50px;
-        padding: 0 15px;
-        border-bottom: 1px solid #EBEEF5;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-weight: 600;
-        font-size: 16px;
+    @keyframes lds-dual-ring {
+      0% {
+        transform: rotate(0deg);
       }
 
-      .year-item-content {
-        padding: 15px;
-        position: relative;
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  }
 
-        .semester-item {
-          display: flex;
+  .scheme-container {
+    * {
+      box-sizing: border-box;
+    }
 
-          .semester-item-title {
-            font-weight: bold;
+    .scheme-wrapper {
+      .year-item {
+        border-radius: 4px;
+        border: 1px solid #ebeef5;
+        background-color: #fff;
+        overflow: hidden;
+        color: #303133;
+        transition: .3s;
+        box-shadow: 0 1px 3px rgba(26, 26, 26, .1);
+        margin-bottom: 20px;
+
+        .year-item-title {
+          height: 50px;
+          line-height: 50px;
+          padding: 0 15px;
+          border-bottom: 1px solid #EBEEF5;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-weight: 600;
+          font-size: 16px;
+        }
+
+        .year-item-content {
+          padding: 15px;
+          position: relative;
+
+          .semester-item {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 16px;
-            padding-right: 20px;
-            margin: 5px;
-            border-right: 1px solid #EBEEF5;
-          }
 
-          .semester-item-content {
-            flex: 1;
-            display: flex;
-            flex-wrap: wrap;
+            .semester-item-title {
+              font-weight: bold;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              font-size: 16px;
+              padding-right: 20px;
+              margin: 5px;
+              border-right: 1px solid #EBEEF5;
+            }
 
-            .course-item-wrapper {
-              width: 20%;
+            .semester-item-content {
+              flex: 1;
+              display: flex;
+              flex-wrap: wrap;
 
-              .course-item {
-                display: flex;
-                border-radius: 4px;
-                border: 1px solid #ebeef5;
-                background-color: #fff;
-                overflow: hidden;
-                color: #303133;
-                transition: .3s;
-                margin: 5px;
+              .course-item-wrapper {
+                width: 20%;
 
-                .course-item-info {
+                .course-item {
+                  display: flex;
+                  border-radius: 4px;
+                  border: 1px solid #ebeef5;
+                  background-color: #fff;
+                  overflow: hidden;
+                  color: #303133;
+                  transition: .3s;
+                  margin: 5px;
 
-                  .info-primary {
-                    padding: 10px;
+                  .course-item-info {
 
-                    .course-name {
-                      font-size: 16px;
-                      line-height: 2;
-                      font-weight: lighter;
+                    .info-primary {
+                      padding: 10px;
+
+                      .course-name {
+                        font-size: 16px;
+                        line-height: 2;
+                        font-weight: lighter;
+                      }
                     }
-                  }
 
-                  .info-secondary {
-                    padding: 10px;
-                    padding-top: 0;
+                    .info-secondary {
+                      padding: 10px;
+                      padding-top: 0;
 
-                    .info-tag {
-                      display: inline-block;
-                      height: 24px;
-                      padding: 0 5px;
-                      margin: 2px 0;
-                      line-height: 24px;
-                      font-size: 12px;
-                      border-width: 1px;
-                      border-style: solid;
-                      border-radius: 4px;
-                      box-sizing: border-box;
-                      white-space: nowrap;
+                      .info-tag {
+                        display: inline-block;
+                        height: 24px;
+                        padding: 0 5px;
+                        margin: 2px 0;
+                        line-height: 24px;
+                        font-size: 12px;
+                        border-width: 1px;
+                        border-style: solid;
+                        border-radius: 4px;
+                        box-sizing: border-box;
+                        white-space: nowrap;
 
-                      &.course-number {
-                        background-color: #ecf4f8;
-                        border-color: #d9e8f1;
-                        color: #438EB9;
-                      }
+                        &.course-number {
+                          background-color: #ecf4f8;
+                          border-color: #d9e8f1;
+                          color: #438EB9;
+                        }
 
-                      &.course-attribute {
-                        background-color: #fdf6ec;
-                        border-color: #faecd8;
-                        color: #e6a23c;
-                      }
+                        &.course-attribute {
+                          background-color: #fdf6ec;
+                          border-color: #faecd8;
+                          color: #e6a23c;
+                        }
 
-                      &.course-property-name {
-                        background-color: #fef0f0;
-                        border-color: #fde2e2;
-                        color: #f56c6c;
+                        &.course-property-name {
+                          background-color: #fef0f0;
+                          border-color: #fde2e2;
+                          color: #f56c6c;
 
-                        &.required {
-                          background-color: #f0f9eb;
-                          border-color: #e1f3d8;
-                          color: #67c23a;
+                          &.required {
+                            background-color: #f0f9eb;
+                            border-color: #e1f3d8;
+                            color: #67c23a;
+                          }
                         }
                       }
                     }
@@ -179,15 +230,15 @@
               }
             }
           }
-        }
 
-        .semester-divider {
-          background-color: #DCDFE6;
-          position: relative;
-          display: block;
-          height: 1px;
-          width: 100%;
-          margin: 24px 0;
+          .semester-divider {
+            background-color: #DCDFE6;
+            position: relative;
+            display: block;
+            height: 1px;
+            width: 100%;
+            margin: 24px 0;
+          }
         }
       }
     }

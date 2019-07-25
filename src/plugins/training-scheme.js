@@ -28,9 +28,9 @@ async function query () {
   const $ = window.$
   const number = $('#major').val()
   if (number !== '无') {
+    showLoadingAnimation($)
     const { info, list } = await getTrainingSchemeData(number, $)
-    $('.info-container').remove()
-    $('.scheme-container').remove()
+    hideLoadingAnimation($)
     $('.training-scheme-wrapper').append(genInfoHTML(info))
     $('.training-scheme-wrapper').append(genSchemeHTML(list))
   }
@@ -63,24 +63,50 @@ function getSelfMajorNumber ($) {
   return res
 }
 
-async function renderPageContent (root, $) {
-  const selfMajorNumber = await getSelfMajorNumber($)
-  const { info, list } = await getTrainingSchemeData(selfMajorNumber, $)
+function renderPageContent (root, $) {
+  initFunc()
+  initDOM(root, $)
+  selectSelfMajorAndQuery($)
+}
+
+function showLoadingAnimation ($) {
+  const template = `
+    <div class="loading-container">
+      <div class="lds-dual-ring"></div>
+      <div class="lds-title">( º﹃º ) 兆基祈祷中……</div>
+    </div>
+  `
+  $('.info-container').remove()
+  $('.scheme-container').remove()
+  $('.training-scheme-wrapper').append(template)
+}
+
+function hideLoadingAnimation ($) {
+  $('.loading-container').remove()
+}
+
+function initFunc () {
   window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = updateMajorList
   window.__$SUA_TRAINING_SCHEME_QUERY__ = query
+}
+
+function initDOM (root, $) {
   const template = `
     <div class="training-scheme-wrapper">
       ${genQueryHTML(trainingSchemeList)}
-      ${genInfoHTML(info)}
-      ${genSchemeHTML(list)}
     </div>
   `
   $(root).append(template)
+}
+
+async function selectSelfMajorAndQuery ($) {
+  const selfMajorNumber = await getSelfMajorNumber($)
   const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
   $('#grade').val(selfSchemeInfo[1])
   $('#department').val(selfSchemeInfo[2])
   updateMajorList()
   $('#major').val(selfSchemeInfo[0])
+  query()
 }
 
 function genQueryHTML (trainingSchemeList) {

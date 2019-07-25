@@ -3467,7 +3467,7 @@ module.exports = fastEvaluation;
 },{"babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/array/from":"VuZO"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -6015,15 +6015,15 @@ var query = function () {
               break;
             }
 
-            _context.next = 5;
+            showLoadingAnimation($);
+            _context.next = 6;
             return getTrainingSchemeData(number, $);
 
-          case 5:
+          case 6:
             _ref2 = _context.sent;
             info = _ref2.info;
             list = _ref2.list;
-            $('.info-container').remove();
-            $('.scheme-container').remove();
+            hideLoadingAnimation($);
             $('.training-scheme-wrapper').append(genInfoHTML(info));
             $('.training-scheme-wrapper').append(genSchemeHTML(list));
 
@@ -6040,12 +6040,11 @@ var query = function () {
   };
 }();
 
-var renderPageContent = function () {
+var selectSelfMajorAndQuery = function () {
   var _ref3 = (0, _asyncToGenerator3.default)(
   /*#__PURE__*/
-  _regenerator2.default.mark(function _callee2(root, $) {
-    var selfMajorNumber, _ref4, info, list, template, selfSchemeInfo;
-
+  _regenerator2.default.mark(function _callee2($) {
+    var selfMajorNumber, selfSchemeInfo;
     return _regenerator2.default.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -6055,17 +6054,6 @@ var renderPageContent = function () {
 
           case 2:
             selfMajorNumber = _context2.sent;
-            _context2.next = 5;
-            return getTrainingSchemeData(selfMajorNumber, $);
-
-          case 5:
-            _ref4 = _context2.sent;
-            info = _ref4.info;
-            list = _ref4.list;
-            window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = updateMajorList;
-            window.__$SUA_TRAINING_SCHEME_QUERY__ = query;
-            template = '\n    <div class="training-scheme-wrapper">\n      ' + genQueryHTML(trainingSchemeList) + '\n      ' + genInfoHTML(info) + '\n      ' + genSchemeHTML(list) + '\n    </div>\n  ';
-            $(root).append(template);
             selfSchemeInfo = trainingSchemeList.filter(function (v) {
               return v[0] === selfMajorNumber;
             })[0];
@@ -6073,8 +6061,9 @@ var renderPageContent = function () {
             $('#department').val(selfSchemeInfo[2]);
             updateMajorList();
             $('#major').val(selfSchemeInfo[0]);
+            query();
 
-          case 17:
+          case 9:
           case 'end':
             return _context2.stop();
         }
@@ -6082,7 +6071,7 @@ var renderPageContent = function () {
     }, _callee2, this);
   }));
 
-  return function renderPageContent(_x, _x2) {
+  return function selectSelfMajorAndQuery(_x) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -6101,7 +6090,7 @@ var chineseNumbers = ['零', '一', '二', '三', '四', '五', '六', '七', '�
 var trainingScheme = {
   name: 'training-scheme',
   pathname: '/**',
-  style: ".info-container .info-content{display:flex;flex-wrap:wrap}.info-container .info-content>div{margin-bottom:20px}.info-container .info-content table{height:100%;margin-bottom:0}.info-container .info-content table tr:first-child td:first-child,.info-container .info-content table tr:first-child td:nth-child(2){border-top:1px solid #eee}.info-container .info-content table tr:last-child td:first-child,.info-container .info-content table tr:last-child td:nth-child(2){border-bottom:1px solid #eee}.info-container .info-content table tr td{vertical-align:middle}.info-container .info-content table tr td:first-child{max-width:150px;min-width:100px;font-weight:bold;color:#336199;background-color:#EDF3F4;border-top:1px solid #F7FBFF;border-bottom:1px solid #F7FBFF}.info-container .info-content table tr td:nth-child(2){border-top:1px dotted #DCEBF7;border-bottom:1px dotted #DCEBF7}.scheme-container *{box-sizing:border-box}.scheme-container .scheme-wrapper .year-item{border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;box-shadow:0 1px 3px rgba(26,26,26,0.1);margin-bottom:20px}.scheme-container .scheme-wrapper .year-item .year-item-title{height:50px;line-height:50px;padding:0 15px;border-bottom:1px solid #EBEEF5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:16px}.scheme-container .scheme-wrapper .year-item .year-item-content{padding:15px;position:relative}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item{display:flex}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title{font-weight:bold;display:flex;justify-content:center;align-items:center;font-size:16px;padding-right:20px;margin:5px;border-right:1px solid #EBEEF5}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content{flex:1;display:flex;flex-wrap:wrap}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:20%}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item{display:flex;border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;margin:5px}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary{padding:10px}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name{font-size:16px;line-height:2;font-weight:lighter}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary{padding:10px;padding-top:0}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag{display:inline-block;height:24px;padding:0 5px;margin:2px 0;line-height:24px;font-size:12px;border-width:1px;border-style:solid;border-radius:4px;box-sizing:border-box;white-space:nowrap}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number{background-color:#ecf4f8;border-color:#d9e8f1;color:#438EB9}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-attribute{background-color:#fdf6ec;border-color:#faecd8;color:#e6a23c}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name{background-color:#fef0f0;border-color:#fde2e2;color:#f56c6c}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required{background-color:#f0f9eb;border-color:#e1f3d8;color:#67c23a}.scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider{background-color:#DCDFE6;position:relative;display:block;height:1px;width:100%;margin:24px 0}\n",
+  style: ".training-scheme-wrapper{position:relative}.training-scheme-wrapper .info-container .info-content{display:flex;flex-wrap:wrap}.training-scheme-wrapper .info-container .info-content>div{margin-bottom:20px}.training-scheme-wrapper .info-container .info-content table{height:100%;margin-bottom:0}.training-scheme-wrapper .info-container .info-content table tr:first-child td:first-child,.training-scheme-wrapper .info-container .info-content table tr:first-child td:nth-child(2){border-top:1px solid #eee}.training-scheme-wrapper .info-container .info-content table tr:last-child td:first-child,.training-scheme-wrapper .info-container .info-content table tr:last-child td:nth-child(2){border-bottom:1px solid #eee}.training-scheme-wrapper .info-container .info-content table tr td{vertical-align:middle}.training-scheme-wrapper .info-container .info-content table tr td:first-child{max-width:150px;min-width:100px;font-weight:bold;color:#336199;background-color:#EDF3F4;border-top:1px solid #F7FBFF;border-bottom:1px solid #F7FBFF}.training-scheme-wrapper .info-container .info-content table tr td:nth-child(2){border-top:1px dotted #DCEBF7;border-bottom:1px dotted #DCEBF7}.training-scheme-wrapper .loading-container{position:absolute;width:100%;left:0;top:0;height:60vh;display:flex;justify-content:center;align-items:center;flex-direction:column}.training-scheme-wrapper .loading-container .lds-dual-ring{display:inline-block;width:200px;height:200px}.training-scheme-wrapper .loading-container .lds-dual-ring:after{content:\" \";display:block;width:100%;height:100%;margin:1px;border-radius:50%;border:5px solid #336199;border-color:#336199 transparent #336199 transparent;animation:lds-dual-ring 1.2s linear infinite}.training-scheme-wrapper .loading-container .lds-title{font-size:30px;color:#336199;padding-top:40px;font-weight:lighter}@keyframes lds-dual-ring{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.training-scheme-wrapper .scheme-container *{box-sizing:border-box}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item{border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;box-shadow:0 1px 3px rgba(26,26,26,0.1);margin-bottom:20px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-title{height:50px;line-height:50px;padding:0 15px;border-bottom:1px solid #EBEEF5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:16px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content{padding:15px;position:relative}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item{display:flex}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title{font-weight:bold;display:flex;justify-content:center;align-items:center;font-size:16px;padding-right:20px;margin:5px;border-right:1px solid #EBEEF5}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content{flex:1;display:flex;flex-wrap:wrap}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:20%}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item{display:flex;border-radius:4px;border:1px solid #ebeef5;background-color:#fff;overflow:hidden;color:#303133;transition:.3s;margin:5px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary{padding:10px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name{font-size:16px;line-height:2;font-weight:lighter}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary{padding:10px;padding-top:0}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag{display:inline-block;height:24px;padding:0 5px;margin:2px 0;line-height:24px;font-size:12px;border-width:1px;border-style:solid;border-radius:4px;box-sizing:border-box;white-space:nowrap}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number{background-color:#ecf4f8;border-color:#d9e8f1;color:#438EB9}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-attribute{background-color:#fdf6ec;border-color:#faecd8;color:#e6a23c}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name{background-color:#fef0f0;border-color:#fde2e2;color:#f56c6c}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required{background-color:#f0f9eb;border-color:#e1f3d8;color:#67c23a}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider{background-color:#DCDFE6;position:relative;display:block;height:1px;width:100%;margin:24px 0}\n",
   menu: [{
     rootMenuId: 'sua-menu-list',
     rootMenuName: 'SCU URP 助手',
@@ -6145,6 +6134,33 @@ function getSelfMajorNumber($) {
     beforeSend: null
   });
   return res;
+}
+
+function renderPageContent(root, $) {
+  initFunc();
+  initDOM(root, $);
+  selectSelfMajorAndQuery($);
+}
+
+function showLoadingAnimation($) {
+  var template = "\n    <div class=\"loading-container\">\n      <div class=\"lds-dual-ring\"></div>\n      <div class=\"lds-title\">( \xBA\uFE43\xBA ) \u5146\u57FA\u7948\u7977\u4E2D\u2026\u2026</div>\n    </div>\n  ";
+  $('.info-container').remove();
+  $('.scheme-container').remove();
+  $('.training-scheme-wrapper').append(template);
+}
+
+function hideLoadingAnimation($) {
+  $('.loading-container').remove();
+}
+
+function initFunc() {
+  window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = updateMajorList;
+  window.__$SUA_TRAINING_SCHEME_QUERY__ = query;
+}
+
+function initDOM(root, $) {
+  var template = '\n    <div class="training-scheme-wrapper">\n      ' + genQueryHTML(trainingSchemeList) + '\n    </div>\n  ';
+  $(root).append(template);
 }
 
 function genQueryHTML(trainingSchemeList) {
@@ -6236,9 +6252,9 @@ function getTrainingSchemeData(number, $) {
   });
   var coursePropertyNameList = ['必修', '选修'];
 
-  var res = _promise2.default.all([$.get('/student/rollManagement/project/' + number + '/2/detail').then(function (_ref5) {
-    var jhFajhb = _ref5.jhFajhb,
-        treeList = _ref5.treeList;
+  var res = _promise2.default.all([$.get('/student/rollManagement/project/' + number + '/2/detail').then(function (_ref4) {
+    var jhFajhb = _ref4.jhFajhb,
+        treeList = _ref4.treeList;
     return {
       info: jhFajhb,
       list: treeList.reduce(function (acc, cur) {
@@ -6262,8 +6278,8 @@ function getTrainingSchemeData(number, $) {
         return acc;
       }, [])
     };
-  }), $.get('/student/rollManagement/project/' + number + '/1/detail').then(function (_ref6) {
-    var treeList = _ref6.treeList;
+  }), $.get('/student/rollManagement/project/' + number + '/1/detail').then(function (_ref5) {
+    var treeList = _ref5.treeList;
     return (0, _values2.default)(treeList.reduce(function (acc, cur) {
       acc[cur.id] = cur;
 
@@ -6286,12 +6302,12 @@ function getTrainingSchemeData(number, $) {
 
       cur.courseName = cur.name.match(/<\/i>(.+)$/)[1].replace(' 必修', '').replace(' 选修', '');
       return acc;
-    }, {})).reduce(function (acc, _ref7) {
-      var urlPath = _ref7.urlPath,
-          isDir = _ref7.isDir,
-          parent = _ref7.parent,
-          courseName = _ref7.courseName,
-          coursePropertyName = _ref7.coursePropertyName;
+    }, {})).reduce(function (acc, _ref6) {
+      var urlPath = _ref6.urlPath,
+          isDir = _ref6.isDir,
+          parent = _ref6.parent,
+          courseName = _ref6.courseName,
+          coursePropertyName = _ref6.coursePropertyName;
 
       if (urlPath) {
         var courseNumber = urlPath.match(/@(.+)$/)[1];
@@ -6319,13 +6335,13 @@ function getTrainingSchemeData(number, $) {
 
       return acc;
     }, {});
-  }), number]).then(function (_ref8) {
-    var _ref9 = (0, _slicedToArray3.default)(_ref8, 2),
-        _ref9$ = _ref9[0],
-        info = _ref9$.info,
-        list = _ref9$.list,
-        selfMajorNumber = _ref9$.selfMajorNumber,
-        table = _ref9[1];
+  }), number]).then(function (_ref7) {
+    var _ref8 = (0, _slicedToArray3.default)(_ref7, 2),
+        _ref8$ = _ref8[0],
+        info = _ref8$.info,
+        list = _ref8$.list,
+        selfMajorNumber = _ref8$.selfMajorNumber,
+        table = _ref8[1];
 
     return {
       selfMajorNumber: selfMajorNumber,
@@ -6859,7 +6875,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.9.2
+// @version      0.9.3
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 恢复登陆页面的「两周之内不必登录」选项。3. 增强绩点与均分的计算功能。4. 增加查询全校专业的培养方案与指导性教学计划的功能
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
