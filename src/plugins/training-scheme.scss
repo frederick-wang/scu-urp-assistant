@@ -277,6 +277,22 @@
     }
   }
 
+  .info-tip {
+    margin-bottom: 20px;
+    font-weight: bold;
+
+    @mixin info-tip($type) {
+      span.item-value-#{$type} {
+        color: map-get($major-colors, $type);
+      }
+    }
+
+    @include info-tip("same");
+    @include info-tip("1");
+    @include info-tip("2");
+  }
+
+
   .info-container {
     td {
       @mixin info-item($type) {

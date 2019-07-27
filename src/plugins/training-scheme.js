@@ -392,7 +392,7 @@ const compareTrainingScheme = {
     this.updateMajorList('#query-major-2')
     $('#query-major-1 #major').val(selfSchemeInfo[0])
     $('#query-major-2 #major').val(selfSchemeInfo[0])
-    this.query()
+    // this.query()
   },
   updateMajorList (containerSelector) {
     const $ = window.$
@@ -447,6 +447,11 @@ const compareTrainingScheme = {
             <h4 class="header smaller lighter grey">
               <i class="fa fa-graduation-cap"></i> 方案计划信息比较
             </h4>
+          </div>
+        </div>
+        <div class="info-header row">
+          <div class="col-xs-12">
+            <div class="info-tip">提示：在方案计划信息比较结果中，<span class="item-value-same">绿色</span>表示该项两个专业的值相同，<span class="item-value-1">红色</span>表示 <span class="item-value-1">专业-1</span> 的值，<span class="item-value-2">蓝色</span>表示 <span class="item-value-2">专业-2</span> 的值</div>
           </div>
         </div>
         <div class="info-content row">
@@ -772,6 +777,11 @@ const compareTrainingScheme = {
             <h4 class="header smaller lighter grey">
               <i class="fa fa-book"></i> 培养方案与指导性教学计划比较
             </h4>
+          </div>
+        </div>
+        <div class="info-header row">
+          <div class="col-xs-12">
+            <div class="info-tip">提示：在培养方案与指导性教学计划比较结果中，<span class="item-value-same">绿色</span>表示该课程在两个专业中的课程名或课程号相同，<span class="item-value-1">红色</span>表示 <span class="item-value-1">专业-1</span> 独有的课程，<span class="item-value-2">蓝色</span>表示 <span class="item-value-2">专业-2</span> 独有的课程</div>
           </div>
         </div>
         <div class="row">
