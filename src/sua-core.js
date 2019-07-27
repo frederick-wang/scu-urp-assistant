@@ -1,5 +1,6 @@
 const minimatch = require('minimatch')
 const fastEvaluation = require('./plugins/fast-evaluation')
+const sharedData = require('./plugins/shared-data')
 const tooltip = require('./plugins/tooltip')
 const compatibilityLegacy = require('./plugins/compatibility-legacy')
 const fastEvaluationLegacy = require('./plugins/fast-evaluation-legacy')
@@ -20,6 +21,7 @@ const $sua = {
    * 插件
    */
   plugins: [
+    sharedData,
     tooltip,
     fastEvaluation,
     recoverRememberMe,
