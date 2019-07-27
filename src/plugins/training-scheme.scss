@@ -1,4 +1,5 @@
-.training-scheme-wrapper {
+.training-scheme-wrapper,
+.compare-training-scheme-wrapper {
   position: relative;
 
   .info-container {
@@ -159,7 +160,7 @@
               flex-wrap: wrap;
 
               .course-item-wrapper {
-                width: 20%;
+                width: percentage(1/5);
 
                 .course-item {
                   display: flex;
@@ -242,5 +243,82 @@
         }
       }
     }
+  }
+}
+
+.compare-training-scheme-wrapper {
+  $major-colors: ( // 绿 MIDORI
+      "same": #227D51,
+      // 红 KURENAI
+      "1":#CB1B45,
+      // 露草 TSUYUKUSA
+      "2":#2EA9DF);
+
+  .query-container {
+    .query-major {
+      margin-bottom: 10px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      @mixin query-major-name($type) {
+        &#query-major-#{$type} {
+          .profile-info-value:first-child {
+            color: map-get($major-colors, $type);
+            font-weight: bold;
+            text-align: center;
+          }
+        }
+      }
+
+      @include query-major-name("1");
+      @include query-major-name("2");
+    }
+  }
+
+  .info-container {
+    td {
+      @mixin info-item($type) {
+        .item-value-#{$type} {
+          color: map-get($major-colors, $type);
+        }
+      }
+
+      @include info-item("same");
+      @include info-item("1");
+      @include info-item("2");
+    }
+  }
+
+  .scheme-container {
+    .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper {
+      width: percentage(1/3);
+    }
+
+    @mixin course-item($type) {
+      .year-item-title span.item-value-#{$type} {
+        color: map-get($major-colors, $type) !important;
+      }
+
+      .course-item {
+
+        &.item-value-#{$type} {
+          border-color: map-get($major-colors, $type) !important;
+        }
+
+        .course-item-info .info-primary .course-name {
+          font-weight: normal;
+
+          span.item-value-#{$type} {
+            color: map-get($major-colors, $type) !important;
+          }
+        }
+      }
+    }
+
+    @include course-item("same");
+    @include course-item("1");
+    @include course-item("2");
   }
 }
