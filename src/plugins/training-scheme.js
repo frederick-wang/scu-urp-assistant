@@ -1,5 +1,7 @@
 // 培养方案查询插件
+import debounce from 'lodash/debounce'
 const fs = require('fs')
+
 const trainingSchemeList = JSON.parse(fs.readFileSync('src/plugins/training-scheme-list.json', 'utf8'))
 const chineseNumbers = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
 
@@ -13,6 +15,7 @@ const trainingScheme = {
       hideLoadingAnimation()
       $('.training-scheme-wrapper').append(this.genInfoHTML(info))
       $('.training-scheme-wrapper').append(this.genSchemeHTML(list))
+      this.initCourseInfoPopover()
     }
   },
   updateMajorList () {
@@ -24,6 +27,22 @@ const trainingScheme = {
       .map(v => `<option value="${v[0]}">${v[3]}</option>`)
       .join('')
     $('#major').empty().append(res || `<option value="无">无</option>`)
+  },
+  initCourseInfoPopover () {
+    const $ = window.$
+    const { academicInfo: { currentSemester } } = window.__$SUA_SHARED_DATA__
+    // 教务系统课程信息频繁查询的阈值
+    const thresholdValueOfFrequentQuery = 5000
+    const test = debounce(async function (e) {
+      const courseName = $(this).data('course-name')
+      const courseNumber = $(this).data('course-number')
+      console.log(await $.post('/student/integratedQuery/course/courseSchdule/courseInfo', {
+        zxjxjhh: currentSemester,
+        kch: courseNumber,
+        kcm: courseName
+      }))
+    }, thresholdValueOfFrequentQuery)
+    $('.course-item').hover(test)
   },
   render (root, $) {
     this.initFunc()
@@ -232,7 +251,7 @@ const trainingScheme = {
   genSchemeHTML (list) {
     const courseItemTemplate = (course, number) => `
       <div class="course-item-wrapper">
-        <div class="course-item">
+        <div class="course-item" data-course-number="${course.courseNumber}" data-course-name="${course.courseName}">
           <div class="course-item-info">
             <div class="info-primary">
               <div class="course-name">
