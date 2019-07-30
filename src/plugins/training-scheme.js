@@ -1,4 +1,7 @@
 // 培养方案查询插件
+// TODO: 1. 将弹出框的方向修改为自适应的上下左右4种，且大小在加载出来数据后也可以自适应
+// TODO: 2. 美化表格样式
+// TODO: 3. 将课程中时间和地点的对应关系体现的更清晰，分成两行
 const fs = require('fs')
 
 const trainingSchemeList = JSON.parse(fs.readFileSync('src/plugins/training-scheme-list.json', 'utf8'))
