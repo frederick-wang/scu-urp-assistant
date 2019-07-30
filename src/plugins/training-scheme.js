@@ -1,5 +1,4 @@
 // 培养方案查询插件
-import debounce from 'lodash/debounce'
 const fs = require('fs')
 
 const trainingSchemeList = JSON.parse(fs.readFileSync('src/plugins/training-scheme-list.json', 'utf8'))
@@ -34,8 +33,7 @@ const trainingScheme = {
     let currentQueryCourse = null
     // 教务系统课程信息频繁查询的阈值
     const initDOM = function (e) {
-      const $courseInfo = $(this)
-      $courseInfo.append(`
+      $('body').append(`
         <div class="course-info-popover">
           <div class="ci-popover-title">我是标题</div>
           <div class="ci-popover-content">这是一段内容,这是一段内容,这是一段内容,这是一段内容。</div>
@@ -92,7 +90,7 @@ const trainingScheme = {
       getCourseInfoData(currentSemester, courseName, courseNumber, this)
     }, function (e) {
       currentQueryCourse = null
-      $(this).children('.course-info-popover').remove()
+      // $('body').children('.course-info-popover').remove()
     })
   },
   render (root, $) {
