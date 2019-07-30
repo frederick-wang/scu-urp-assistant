@@ -98,7 +98,7 @@ const trainingScheme = {
               courseSequenceNumber: kxh || '',
               departmentCode: kkxsh || '',
               departmentName: kkxsjc || '',
-              credit: xf || '',
+              credit: (!xf && xf !== 0) ? '' : xf,
               courseTypeCode: kclbdm || '',
               courseTypeName: kclbmc || '',
               examTypeCode: kslxdm || '',
