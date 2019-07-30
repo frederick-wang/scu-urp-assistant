@@ -6161,6 +6161,10 @@ var trainingScheme = {
     var currentQueryCourse = null; // 教务系统课程信息频繁查询的阈值
 
     var initDOM = function initDOM(e) {
+      if ($('.course-info-popover').length) {
+        $('.course-info-popover').remove();
+      }
+
       $('body').append("\n        <div class=\"course-info-popover\">\n          <div class=\"ci-popover-title\">\u6211\u662F\u6807\u9898</div>\n          <div class=\"ci-popover-content\">\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9\u3002</div>\n          <div class=\"ci-popover-arrow\"></div>\n        </div>\n      ");
     };
 

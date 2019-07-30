@@ -33,6 +33,9 @@ const trainingScheme = {
     let currentQueryCourse = null
     // 教务系统课程信息频繁查询的阈值
     const initDOM = function (e) {
+      if ($('.course-info-popover').length) {
+        $('.course-info-popover').remove()
+      }
       $('body').append(`
         <div class="course-info-popover">
           <div class="ci-popover-title">我是标题</div>
