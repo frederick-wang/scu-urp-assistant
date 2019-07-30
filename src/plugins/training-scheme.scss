@@ -1,8 +1,9 @@
 .course-info-popover {
+  box-sizing: border-box;
   position: absolute;
-  width: 500px;
-  top: 0;
-  left: 0;
+  width: 800px;
+  top: -300px;
+  left: -400px;
   z-index: 2333;
   background: #fff;
   border-radius: 4px;
@@ -13,13 +14,43 @@
   font-size: 14px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   word-break: break-all;
-  padding: 18px 20px;
+  padding: 15px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+
+  * {
+    box-sizing: border-box;
+  }
 
   .ci-popover-title {
     color: #303133;
     font-size: 16px;
     line-height: 1;
     margin-bottom: 12px;
+  }
+
+  .ci-popover-content {
+    flex: 1;
+    overflow-y: auto;
+
+    table {
+      tr {
+
+        td,
+        th {
+          text-align: center;
+          vertical-align: middle;
+
+          &:nth-child(7),
+          &:nth-child(8),
+          &:last-child {
+            max-width: 100px;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -147,7 +178,7 @@
         transition: .3s;
         box-shadow: 0 1px 3px rgba(26, 26, 26, .1);
         margin-bottom: 20px;
-        overflow: hidden;
+        // overflow: hidden;
 
         .year-item-title {
           height: 50px;
@@ -166,7 +197,7 @@
 
           .semester-item {
             display: flex;
-            overflow: hidden;
+            // overflow: hidden;
 
             .semester-item-title {
               font-weight: bold;
@@ -196,7 +227,12 @@
                   color: #303133;
                   transition: .3s;
                   margin: 5px;
-                  overflow: hidden;
+                  cursor: pointer;
+                  // overflow: hidden;
+
+                  &:hover {
+                    background-color: #F5F7FA;
+                  }
 
                   .course-item-info {
 

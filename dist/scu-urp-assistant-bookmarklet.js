@@ -4996,7 +4996,7 @@ module.exports = sharedData;
 },{"babel-runtime/regenerator":"aIIw","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/helpers/asyncToGenerator":"kcQR"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -6160,25 +6160,37 @@ var trainingScheme = {
     var currentSemester = window.__$SUA_SHARED_DATA__.academicInfo.currentSemester;
     var currentQueryCourse = null; // 教务系统课程信息频繁查询的阈值
 
-    var initDOM = function initDOM(e) {
+    var initDOM = function initDOM(courseName, courseNumber) {
       if ($('.course-info-popover').length) {
         $('.course-info-popover').remove();
       }
 
-      $('body').append("\n        <div class=\"course-info-popover\">\n          <div class=\"ci-popover-title\">\u6211\u662F\u6807\u9898</div>\n          <div class=\"ci-popover-content\">\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9\u3002</div>\n          <div class=\"ci-popover-arrow\"></div>\n        </div>\n      ");
+      var loadingTips = "( \xBA\uFE43\xBA ) \u5146\u57FA\u7948\u7977\u4E2D\u2026\u2026";
+      $(this).append('\n        <div class="course-info-popover">\n          <div class="ci-popover-title">' + courseName + "\uFF08" + courseNumber + "\uFF09</div>\n          <div class=\"ci-popover-content\">" + loadingTips + '</div>\n          <div class="ci-popover-arrow"></div>\n        </div>\n      ');
+      var $pop = $('.course-info-popover');
+
+      if ($pop.offset().left + $pop.width() > $('body').width()) {
+        $pop.offset({
+          left: $('body').width() - $pop.width() - 50
+        });
+      } else if ($pop.offset().left < 0) {
+        $pop.offset({
+          left: 20
+        });
+      }
     };
 
     var getCourseInfoData = function () {
       var _ref3 = (0, _asyncToGenerator3.default)(
       /*#__PURE__*/
       _regenerator2.default.mark(function _callee2(currentSemester, courseName, courseNumber, element) {
-        var res, data;
+        var res, records, data, $pop, $popTitle, $popContent, titleText, templateHTML, genRowsHTML;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
                 if (!(currentQueryCourse === element)) {
-                  _context2.next = 11;
+                  _context2.next = 19;
                   break;
                 }
 
@@ -6208,27 +6220,126 @@ var trainingScheme = {
 
               case 6:
                 if (res.pfcx) {
-                  _context2.next = 10;
+                  _context2.next = 18;
                   break;
                 }
 
+                records = res.list.records.map(function (_ref4) {
+                  var kcm = _ref4.kcm,
+                      kch = _ref4.kch,
+                      kxh = _ref4.kxh,
+                      kkxsh = _ref4.kkxsh,
+                      kkxsjc = _ref4.kkxsjc,
+                      xf = _ref4.xf,
+                      kclbdm = _ref4.kclbdm,
+                      kclbmc = _ref4.kclbmc,
+                      kslxdm = _ref4.kslxdm,
+                      kslxmc = _ref4.kslxmc,
+                      skjs = _ref4.skjs,
+                      zcsm = _ref4.zcsm,
+                      skxq = _ref4.skxq,
+                      skjc = _ref4.skjc,
+                      xqm = _ref4.xqm,
+                      jxlm = _ref4.jxlm,
+                      jasm = _ref4.jasm,
+                      bkskrl = _ref4.bkskrl,
+                      bkskyl = _ref4.bkskyl,
+                      xkxzsm = _ref4.xkxzsm;
+                  return {
+                    courseName: kcm || '无',
+                    courseNumber: kch || '无',
+                    courseSequenceNumber: kxh || '无',
+                    departmentCode: kkxsh || '无',
+                    departmentName: kkxsjc || '无',
+                    credit: xf || '无',
+                    courseTypeCode: kclbdm || '无',
+                    courseTypeName: kclbmc || '无',
+                    examTypeCode: kslxdm || '无',
+                    examTypeName: kslxmc || '无',
+                    teacherName: skjs || '无',
+                    courseTime: zcsm + "\u661F\u671F" + chineseNumbers[skxq] + skjc + "\u8282",
+                    courseSite: xqm + "\u6821\u533A" + jxlm + jasm,
+                    availibleCapacity: bkskyl + ' / ' + bkskrl,
+                    note: xkxzsm && xkxzsm !== ';' ? xkxzsm : '无'
+                  };
+                }).reduce(function (acc, cur) {
+                  var index = -1;
+
+                  for (var i = 0; i < acc.length; i++) {
+                    if (acc[i].courseSequenceNumber === cur.courseSequenceNumber) {
+                      index = i;
+                      break;
+                    }
+                  }
+
+                  var merge = function merge(obj1, obj2) {
+                    var result = {};
+
+                    for (var key in obj1) {
+                      result[key] = obj1[key] === obj2[key] ? obj1[key] : obj1[key] + "\uFF0C" + obj2[key];
+                    }
+
+                    return result;
+                  };
+
+                  if (index === -1) {
+                    return acc.concat(cur);
+                  }
+
+                  acc[index] = merge(acc[index], cur);
+                  return acc;
+                }, []).sort(function (a, b) {
+                  return Number(a.courseSequenceNumber) - Number(b.courseSequenceNumber);
+                });
                 data = {
                   semester: currentSemester,
                   number: courseNumber,
                   name: courseName,
-                  records: res.list.records
+                  records: records
                 };
-                console.log(data);
+                $pop = $('.course-info-popover');
+                $popTitle = $pop.children('.ci-popover-title');
+                $popContent = $pop.children('.ci-popover-content');
+                titleText = void 0;
+                templateHTML = void 0;
+
+                if (records.length) {
+                  titleText = courseName + "\uFF08" + courseNumber + "\uFF09- \u5171" + records.length + "\u4E2A\u8BFE\u5E8F\u53F7";
+
+                  genRowsHTML = function genRowsHTML(records) {
+                    return records.map(function (_ref5) {
+                      var courseSequenceNumber = _ref5.courseSequenceNumber,
+                          departmentName = _ref5.departmentName,
+                          credit = _ref5.credit,
+                          courseTypeName = _ref5.courseTypeName,
+                          examTypeName = _ref5.examTypeName,
+                          teacherName = _ref5.teacherName,
+                          courseTime = _ref5.courseTime,
+                          courseSite = _ref5.courseSite,
+                          availibleCapacity = _ref5.availibleCapacity,
+                          note = _ref5.note;
+                      return '<tr>\n                    <td>' + courseSequenceNumber + '</td>\n                    <td>' + departmentName + '</td>\n                    <td>' + credit + '</td>\n                    <td>' + courseTypeName + '</td>\n                    <td>' + examTypeName + '</td>\n                    <td>' + teacherName + '</td>\n                    <td>' + courseTime + '</td>\n                    <td>' + courseSite + '</td>\n                    <td>' + availibleCapacity + '</td>\n                    <td>' + note + '</td>\n                  </tr>';
+                    }).join('');
+                  };
+
+                  templateHTML = "\n              <table class=\"table table-striped table-bordered table-hover\">\n                <thead>\n                  <tr>\n                    <th>\u8BFE\u5E8F\u53F7</th>\n                    <th>\u5F00\u8BFE\u9662\u7CFB</th>\n                    <th>\u5B66\u5206</th>\n                    <th>\u8BFE\u7A0B\u7C7B\u522B</th>\n                    <th>\u8003\u8BD5\u7C7B\u578B</th>\n                    <th>\u6559\u5E08</th>\n                    <th>\u65F6\u95F4</th>\n                    <th>\u5730\u70B9</th>\n                    <th>\u8BFE\u4F59\u91CF</th>\n                    <th>\u5907\u6CE8</th>\n                  </tr>\n                </thead>\n                <tbody>\n                  " + genRowsHTML(records) + '\n                </tbody>\n              </table>\n            ';
+                } else {
+                  titleText = courseName + "\uFF08" + courseNumber + "\uFF09";
+                  templateHTML = '<p style="color: #CB1B45;">' + courseName + "\uFF08" + courseNumber + "\uFF09\u5E76\u672A\u5728\u672C\u5B66\u671F\u5F00\u8BFE</p>";
+                }
+
+                $popTitle.text(titleText);
+                $popContent.html(templateHTML);
                 return _context2.abrupt('return', data);
 
-              case 10:
+              case 18:
                 return _context2.abrupt('return', new _promise2.default(function (resolve) {
                   return setTimeout(function () {
                     return resolve(getCourseInfoData(currentSemester, courseName, courseNumber, element));
                   }, 1000);
                 }));
 
-              case 11:
+              case 19:
                 return _context2.abrupt('return', {
                   semester: currentSemester,
                   number: courseNumber,
@@ -6236,7 +6347,7 @@ var trainingScheme = {
                   records: []
                 });
 
-              case 12:
+              case 20:
               case 'end':
                 return _context2.stop();
             }
@@ -6250,7 +6361,7 @@ var trainingScheme = {
     }();
 
     $('.course-item').hover(function () {
-      var _ref4 = (0, _asyncToGenerator3.default)(
+      var _ref6 = (0, _asyncToGenerator3.default)(
       /*#__PURE__*/
       _regenerator2.default.mark(function _callee3(e) {
         var $courseInfo, courseName, courseNumber;
@@ -6258,11 +6369,11 @@ var trainingScheme = {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                initDOM.bind(this)(e);
                 $courseInfo = $(this);
                 courseName = $courseInfo.data('course-name');
                 courseNumber = $courseInfo.data('course-number');
                 currentQueryCourse = this;
+                initDOM.bind(this)(courseName, courseNumber);
                 getCourseInfoData(currentSemester, courseName, courseNumber, this);
 
               case 6:
@@ -6274,10 +6385,11 @@ var trainingScheme = {
       }));
 
       return function (_x5) {
-        return _ref4.apply(this, arguments);
+        return _ref6.apply(this, arguments);
       };
     }(), function (e) {
-      currentQueryCourse = null; // $('body').children('.course-info-popover').remove()
+      currentQueryCourse = null;
+      $(this).children('.course-info-popover').remove();
     });
   },
   render: function render(root, $) {
@@ -6294,7 +6406,7 @@ var trainingScheme = {
     $(root).append(template);
   },
   selectSelfMajorAndQuery: function () {
-    var _ref5 = (0, _asyncToGenerator3.default)(
+    var _ref7 = (0, _asyncToGenerator3.default)(
     /*#__PURE__*/
     _regenerator2.default.mark(function _callee4($) {
       var selfMajorNumber, selfSchemeInfo;
@@ -6325,7 +6437,7 @@ var trainingScheme = {
     }));
 
     function selectSelfMajorAndQuery(_x6) {
-      return _ref5.apply(this, arguments);
+      return _ref7.apply(this, arguments);
     }
 
     return selectSelfMajorAndQuery;
@@ -6447,7 +6559,7 @@ var compareTrainingScheme = {
     }).join('') + "\n                  </select>\n                </div>\n                <div class=\"profile-info-name\">\u4E13\u4E1A</div>\n                <div class=\"profile-info-value\">\n                  <select name=\"major\" id=\"major\" class=\"form-control value_element\">\n                    <option value=\"\u65E0\">\u65E0</option>\n                  </select>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    ";
   },
   selectSelfMajorAndQuery: function () {
-    var _ref6 = (0, _asyncToGenerator3.default)(
+    var _ref8 = (0, _asyncToGenerator3.default)(
     /*#__PURE__*/
     _regenerator2.default.mark(function _callee5($) {
       var selfMajorNumber, selfSchemeInfo;
@@ -6482,7 +6594,7 @@ var compareTrainingScheme = {
     }));
 
     function selectSelfMajorAndQuery(_x7) {
-      return _ref6.apply(this, arguments);
+      return _ref8.apply(this, arguments);
     }
 
     return selectSelfMajorAndQuery;
@@ -6499,10 +6611,10 @@ var compareTrainingScheme = {
     $(containerSelector + ' #major').empty().append(res || "<option value=\"\u65E0\">\u65E0</option>");
   },
   query: function () {
-    var _ref7 = (0, _asyncToGenerator3.default)(
+    var _ref9 = (0, _asyncToGenerator3.default)(
     /*#__PURE__*/
     _regenerator2.default.mark(function _callee6() {
-      var $, number1, number2, _ref8, _ref9, _ref9$, info1, list1, _ref9$2, info2, list2;
+      var $, number1, number2, _ref10, _ref11, _ref11$, info1, list1, _ref11$2, info2, list2;
 
       return _regenerator2.default.wrap(function _callee6$(_context6) {
         while (1) {
@@ -6522,14 +6634,14 @@ var compareTrainingScheme = {
               return _promise2.default.all([getTrainingSchemeData(number1, $), getTrainingSchemeData(number2, $)]);
 
             case 7:
-              _ref8 = _context6.sent;
-              _ref9 = (0, _slicedToArray3.default)(_ref8, 2);
-              _ref9$ = _ref9[0];
-              info1 = _ref9$.info;
-              list1 = _ref9$.list;
-              _ref9$2 = _ref9[1];
-              info2 = _ref9$2.info;
-              list2 = _ref9$2.list;
+              _ref10 = _context6.sent;
+              _ref11 = (0, _slicedToArray3.default)(_ref10, 2);
+              _ref11$ = _ref11[0];
+              info1 = _ref11$.info;
+              list1 = _ref11$.list;
+              _ref11$2 = _ref11[1];
+              info2 = _ref11$2.info;
+              list2 = _ref11$2.list;
               hideLoadingAnimation();
               $('.compare-training-scheme-wrapper').append(this.genInfoHTML(info1, info2));
               $('.compare-training-scheme-wrapper').append(this.genSchemeHTML(list1, list2));
@@ -6543,7 +6655,7 @@ var compareTrainingScheme = {
     }));
 
     function query() {
-      return _ref7.apply(this, arguments);
+      return _ref9.apply(this, arguments);
     }
 
     return query;
@@ -6848,7 +6960,7 @@ var compareTrainingScheme = {
 var trainingSchemePlugin = {
   name: 'training-scheme',
   pathname: '/**',
-  style: ".course-info-popover{position:absolute;width:500px;top:0;left:0;z-index:2333;background:#fff;border-radius:4px;border:1px solid #EBEEF5;color:#606266;line-height:1.4;text-align:justify;font-size:14px;box-shadow:0 2px 12px 0 rgba(0,0,0,0.1);word-break:break-all;padding:18px 20px}.course-info-popover .ci-popover-title{color:#303133;font-size:16px;line-height:1;margin-bottom:12px}.training-scheme-wrapper,.compare-training-scheme-wrapper{position:relative}.training-scheme-wrapper .info-container .info-content,.compare-training-scheme-wrapper .info-container .info-content{display:flex;flex-wrap:wrap}.training-scheme-wrapper .info-container .info-content>div,.compare-training-scheme-wrapper .info-container .info-content>div{margin-bottom:20px}.training-scheme-wrapper .info-container .info-content table,.compare-training-scheme-wrapper .info-container .info-content table{height:100%;margin-bottom:0}.training-scheme-wrapper .info-container .info-content table tr:first-child td:first-child,.training-scheme-wrapper .info-container .info-content table tr:first-child td:nth-child(2),.compare-training-scheme-wrapper .info-container .info-content table tr:first-child td:first-child,.compare-training-scheme-wrapper .info-container .info-content table tr:first-child td:nth-child(2){border-top:1px solid #eee}.training-scheme-wrapper .info-container .info-content table tr:last-child td:first-child,.training-scheme-wrapper .info-container .info-content table tr:last-child td:nth-child(2),.compare-training-scheme-wrapper .info-container .info-content table tr:last-child td:first-child,.compare-training-scheme-wrapper .info-container .info-content table tr:last-child td:nth-child(2){border-bottom:1px solid #eee}.training-scheme-wrapper .info-container .info-content table tr td,.compare-training-scheme-wrapper .info-container .info-content table tr td{vertical-align:middle}.training-scheme-wrapper .info-container .info-content table tr td:first-child,.compare-training-scheme-wrapper .info-container .info-content table tr td:first-child{max-width:150px;min-width:100px;font-weight:bold;color:#336199;background-color:#EDF3F4;border-top:1px solid #F7FBFF;border-bottom:1px solid #F7FBFF}.training-scheme-wrapper .info-container .info-content table tr td:nth-child(2),.compare-training-scheme-wrapper .info-container .info-content table tr td:nth-child(2){border-top:1px dotted #DCEBF7;border-bottom:1px dotted #DCEBF7}.training-scheme-wrapper .loading-container,.compare-training-scheme-wrapper .loading-container{position:absolute;width:100%;left:0;top:0;height:60vh;display:flex;justify-content:center;align-items:center;flex-direction:column}.training-scheme-wrapper .loading-container .lds-dual-ring,.compare-training-scheme-wrapper .loading-container .lds-dual-ring{display:inline-block;width:200px;height:200px}.training-scheme-wrapper .loading-container .lds-dual-ring:after,.compare-training-scheme-wrapper .loading-container .lds-dual-ring:after{content:\" \";display:block;width:100%;height:100%;margin:1px;border-radius:50%;border:5px solid #336199;border-color:#336199 transparent #336199 transparent;-webkit-animation:lds-dual-ring 1.2s linear infinite;animation:lds-dual-ring 1.2s linear infinite}.training-scheme-wrapper .loading-container .lds-title,.compare-training-scheme-wrapper .loading-container .lds-title{font-size:30px;color:#336199;padding-top:40px;font-weight:lighter}@-webkit-keyframes lds-dual-ring{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes lds-dual-ring{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.training-scheme-wrapper .scheme-container *,.compare-training-scheme-wrapper .scheme-container *{box-sizing:border-box}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item{border-radius:4px;border:1px solid #ebeef5;background-color:#fff;color:#303133;transition:.3s;box-shadow:0 1px 3px rgba(26,26,26,0.1);margin-bottom:20px;overflow:hidden}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-title,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-title{height:50px;line-height:50px;padding:0 15px;border-bottom:1px solid #EBEEF5;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:16px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content{padding:15px;position:relative}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item{display:flex;overflow:hidden}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title{font-weight:bold;display:flex;justify-content:center;align-items:center;font-size:16px;padding-right:20px;margin:5px;border-right:1px solid #EBEEF5}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content{flex:1;display:flex;flex-wrap:wrap}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:20%}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item{position:relative;display:flex;border-radius:4px;border:1px solid #ebeef5;background-color:#fff;color:#303133;transition:.3s;margin:5px;overflow:hidden}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary{padding:10px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name{font-size:16px;line-height:2;font-weight:lighter}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary{padding:10px;padding-top:0}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag{display:inline-block;height:24px;padding:0 5px;margin:2px 0;line-height:24px;font-size:12px;border-width:1px;border-style:solid;border-radius:4px;box-sizing:border-box;white-space:nowrap}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number{background-color:#ecf4f8;border-color:#d9e8f1;color:#438EB9}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-attribute,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-attribute{background-color:#fdf6ec;border-color:#faecd8;color:#e6a23c}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name{background-color:#fef0f0;border-color:#fde2e2;color:#f56c6c}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required{background-color:#f0f9eb;border-color:#e1f3d8;color:#67c23a}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider{background-color:#DCDFE6;position:relative;display:block;height:1px;width:100%;margin:24px 0}.compare-training-scheme-wrapper .query-container .query-major{margin-bottom:10px}.compare-training-scheme-wrapper .query-container .query-major:last-child{margin-bottom:0}.compare-training-scheme-wrapper .query-container .query-major#query-major-1 .profile-info-value:first-child{color:#CB1B45;font-weight:bold;text-align:center}.compare-training-scheme-wrapper .query-container .query-major#query-major-2 .profile-info-value:first-child{color:#2EA9DF;font-weight:bold;text-align:center}.compare-training-scheme-wrapper .info-tip{margin-bottom:20px;font-weight:bold}.compare-training-scheme-wrapper .info-tip span.item-value-same{color:#227D51}.compare-training-scheme-wrapper .info-tip span.item-value-1{color:#CB1B45}.compare-training-scheme-wrapper .info-tip span.item-value-2{color:#2EA9DF}.compare-training-scheme-wrapper .info-container td .item-value-same{color:#227D51}.compare-training-scheme-wrapper .info-container td .item-value-1{color:#CB1B45}.compare-training-scheme-wrapper .info-container td .item-value-2{color:#2EA9DF}.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:33.33333%}.compare-training-scheme-wrapper .scheme-container .year-item-title span.item-value-same{color:#227D51 !important}.compare-training-scheme-wrapper .scheme-container .course-item.item-value-same{border-color:#227D51 !important}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name{font-weight:normal}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name span.item-value-same{color:#227D51 !important}.compare-training-scheme-wrapper .scheme-container .year-item-title span.item-value-1{color:#CB1B45 !important}.compare-training-scheme-wrapper .scheme-container .course-item.item-value-1{border-color:#CB1B45 !important}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name{font-weight:normal}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name span.item-value-1{color:#CB1B45 !important}.compare-training-scheme-wrapper .scheme-container .year-item-title span.item-value-2{color:#2EA9DF !important}.compare-training-scheme-wrapper .scheme-container .course-item.item-value-2{border-color:#2EA9DF !important}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name{font-weight:normal}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name span.item-value-2{color:#2EA9DF !important}\n",
+  style: ".course-info-popover{box-sizing:border-box;position:absolute;width:800px;top:-300px;left:-400px;z-index:2333;background:#fff;border-radius:4px;border:1px solid #EBEEF5;color:#606266;line-height:1.4;text-align:justify;font-size:14px;box-shadow:0 2px 12px 0 rgba(0,0,0,0.1);word-break:break-all;padding:15px;height:300px;display:flex;flex-direction:column;cursor:default}.course-info-popover *{box-sizing:border-box}.course-info-popover .ci-popover-title{color:#303133;font-size:16px;line-height:1;margin-bottom:12px}.course-info-popover .ci-popover-content{flex:1;overflow-y:auto}.course-info-popover .ci-popover-content table tr td,.course-info-popover .ci-popover-content table tr th{text-align:center;vertical-align:middle}.course-info-popover .ci-popover-content table tr td:nth-child(7),.course-info-popover .ci-popover-content table tr td:nth-child(8),.course-info-popover .ci-popover-content table tr td:last-child,.course-info-popover .ci-popover-content table tr th:nth-child(7),.course-info-popover .ci-popover-content table tr th:nth-child(8),.course-info-popover .ci-popover-content table tr th:last-child{max-width:100px}.training-scheme-wrapper,.compare-training-scheme-wrapper{position:relative}.training-scheme-wrapper .info-container .info-content,.compare-training-scheme-wrapper .info-container .info-content{display:flex;flex-wrap:wrap}.training-scheme-wrapper .info-container .info-content>div,.compare-training-scheme-wrapper .info-container .info-content>div{margin-bottom:20px}.training-scheme-wrapper .info-container .info-content table,.compare-training-scheme-wrapper .info-container .info-content table{height:100%;margin-bottom:0}.training-scheme-wrapper .info-container .info-content table tr:first-child td:first-child,.training-scheme-wrapper .info-container .info-content table tr:first-child td:nth-child(2),.compare-training-scheme-wrapper .info-container .info-content table tr:first-child td:first-child,.compare-training-scheme-wrapper .info-container .info-content table tr:first-child td:nth-child(2){border-top:1px solid #eee}.training-scheme-wrapper .info-container .info-content table tr:last-child td:first-child,.training-scheme-wrapper .info-container .info-content table tr:last-child td:nth-child(2),.compare-training-scheme-wrapper .info-container .info-content table tr:last-child td:first-child,.compare-training-scheme-wrapper .info-container .info-content table tr:last-child td:nth-child(2){border-bottom:1px solid #eee}.training-scheme-wrapper .info-container .info-content table tr td,.compare-training-scheme-wrapper .info-container .info-content table tr td{vertical-align:middle}.training-scheme-wrapper .info-container .info-content table tr td:first-child,.compare-training-scheme-wrapper .info-container .info-content table tr td:first-child{max-width:150px;min-width:100px;font-weight:bold;color:#336199;background-color:#EDF3F4;border-top:1px solid #F7FBFF;border-bottom:1px solid #F7FBFF}.training-scheme-wrapper .info-container .info-content table tr td:nth-child(2),.compare-training-scheme-wrapper .info-container .info-content table tr td:nth-child(2){border-top:1px dotted #DCEBF7;border-bottom:1px dotted #DCEBF7}.training-scheme-wrapper .loading-container,.compare-training-scheme-wrapper .loading-container{position:absolute;width:100%;left:0;top:0;height:60vh;display:flex;justify-content:center;align-items:center;flex-direction:column}.training-scheme-wrapper .loading-container .lds-dual-ring,.compare-training-scheme-wrapper .loading-container .lds-dual-ring{display:inline-block;width:200px;height:200px}.training-scheme-wrapper .loading-container .lds-dual-ring:after,.compare-training-scheme-wrapper .loading-container .lds-dual-ring:after{content:\" \";display:block;width:100%;height:100%;margin:1px;border-radius:50%;border:5px solid #336199;border-color:#336199 transparent #336199 transparent;-webkit-animation:lds-dual-ring 1.2s linear infinite;animation:lds-dual-ring 1.2s linear infinite}.training-scheme-wrapper .loading-container .lds-title,.compare-training-scheme-wrapper .loading-container .lds-title{font-size:30px;color:#336199;padding-top:40px;font-weight:lighter}@-webkit-keyframes lds-dual-ring{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes lds-dual-ring{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.training-scheme-wrapper .scheme-container *,.compare-training-scheme-wrapper .scheme-container *{box-sizing:border-box}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item{border-radius:4px;border:1px solid #ebeef5;background-color:#fff;color:#303133;transition:.3s;box-shadow:0 1px 3px rgba(26,26,26,0.1);margin-bottom:20px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-title,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-title{height:50px;line-height:50px;padding:0 15px;border-bottom:1px solid #EBEEF5;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:16px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content{padding:15px;position:relative}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item{display:flex}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-title{font-weight:bold;display:flex;justify-content:center;align-items:center;font-size:16px;padding-right:20px;margin:5px;border-right:1px solid #EBEEF5}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content{flex:1;display:flex;flex-wrap:wrap}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:20%}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item{position:relative;display:flex;border-radius:4px;border:1px solid #ebeef5;background-color:#fff;color:#303133;transition:.3s;margin:5px;cursor:pointer}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item:hover,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item:hover{background-color:#F5F7FA}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary{padding:10px}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-primary .course-name{font-size:16px;line-height:2;font-weight:lighter}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary{padding:10px;padding-top:0}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag{display:inline-block;height:24px;padding:0 5px;margin:2px 0;line-height:24px;font-size:12px;border-width:1px;border-style:solid;border-radius:4px;box-sizing:border-box;white-space:nowrap}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-number{background-color:#ecf4f8;border-color:#d9e8f1;color:#438EB9}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-attribute,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-attribute{background-color:#fdf6ec;border-color:#faecd8;color:#e6a23c}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name{background-color:#fef0f0;border-color:#fde2e2;color:#f56c6c}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper .course-item .course-item-info .info-secondary .info-tag.course-property-name.required{background-color:#f0f9eb;border-color:#e1f3d8;color:#67c23a}.training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider,.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-divider{background-color:#DCDFE6;position:relative;display:block;height:1px;width:100%;margin:24px 0}.compare-training-scheme-wrapper .query-container .query-major{margin-bottom:10px}.compare-training-scheme-wrapper .query-container .query-major:last-child{margin-bottom:0}.compare-training-scheme-wrapper .query-container .query-major#query-major-1 .profile-info-value:first-child{color:#CB1B45;font-weight:bold;text-align:center}.compare-training-scheme-wrapper .query-container .query-major#query-major-2 .profile-info-value:first-child{color:#2EA9DF;font-weight:bold;text-align:center}.compare-training-scheme-wrapper .info-tip{margin-bottom:20px;font-weight:bold}.compare-training-scheme-wrapper .info-tip span.item-value-same{color:#227D51}.compare-training-scheme-wrapper .info-tip span.item-value-1{color:#CB1B45}.compare-training-scheme-wrapper .info-tip span.item-value-2{color:#2EA9DF}.compare-training-scheme-wrapper .info-container td .item-value-same{color:#227D51}.compare-training-scheme-wrapper .info-container td .item-value-1{color:#CB1B45}.compare-training-scheme-wrapper .info-container td .item-value-2{color:#2EA9DF}.compare-training-scheme-wrapper .scheme-container .scheme-wrapper .year-item .year-item-content .semester-item .semester-item-content .course-item-wrapper{width:33.33333%}.compare-training-scheme-wrapper .scheme-container .year-item-title span.item-value-same{color:#227D51 !important}.compare-training-scheme-wrapper .scheme-container .course-item.item-value-same{border-color:#227D51 !important}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name{font-weight:normal}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name span.item-value-same{color:#227D51 !important}.compare-training-scheme-wrapper .scheme-container .year-item-title span.item-value-1{color:#CB1B45 !important}.compare-training-scheme-wrapper .scheme-container .course-item.item-value-1{border-color:#CB1B45 !important}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name{font-weight:normal}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name span.item-value-1{color:#CB1B45 !important}.compare-training-scheme-wrapper .scheme-container .year-item-title span.item-value-2{color:#2EA9DF !important}.compare-training-scheme-wrapper .scheme-container .course-item.item-value-2{border-color:#2EA9DF !important}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name{font-weight:normal}.compare-training-scheme-wrapper .scheme-container .course-item .course-item-info .info-primary .course-name span.item-value-2{color:#2EA9DF !important}\n",
   menu: [{
     rootMenuId: 'sua-menu-list',
     rootMenuName: 'SCU URP 助手',
@@ -6911,9 +7023,9 @@ function getTrainingSchemeData(number, $) {
   });
   var coursePropertyNameList = ['必修', '选修'];
 
-  var res = _promise2.default.all([$.get('/student/rollManagement/project/' + number + '/2/detail').then(function (_ref10) {
-    var jhFajhb = _ref10.jhFajhb,
-        treeList = _ref10.treeList;
+  var res = _promise2.default.all([$.get('/student/rollManagement/project/' + number + '/2/detail').then(function (_ref12) {
+    var jhFajhb = _ref12.jhFajhb,
+        treeList = _ref12.treeList;
     return {
       info: jhFajhb,
       list: treeList.reduce(function (acc, cur) {
@@ -6943,8 +7055,8 @@ function getTrainingSchemeData(number, $) {
         return resultA - resultB;
       })
     };
-  }), $.get('/student/rollManagement/project/' + number + '/1/detail').then(function (_ref11) {
-    var treeList = _ref11.treeList;
+  }), $.get('/student/rollManagement/project/' + number + '/1/detail').then(function (_ref13) {
+    var treeList = _ref13.treeList;
     return (0, _values2.default)(treeList.reduce(function (acc, cur) {
       acc[cur.id] = cur;
 
@@ -6967,12 +7079,12 @@ function getTrainingSchemeData(number, $) {
 
       cur.courseName = cur.name.match(/<\/i>(.+)$/)[1].replace(' 必修', '').replace(' 选修', '');
       return acc;
-    }, {})).reduce(function (acc, _ref12) {
-      var urlPath = _ref12.urlPath,
-          isDir = _ref12.isDir,
-          parent = _ref12.parent,
-          courseName = _ref12.courseName,
-          coursePropertyName = _ref12.coursePropertyName;
+    }, {})).reduce(function (acc, _ref14) {
+      var urlPath = _ref14.urlPath,
+          isDir = _ref14.isDir,
+          parent = _ref14.parent,
+          courseName = _ref14.courseName,
+          coursePropertyName = _ref14.coursePropertyName;
 
       if (urlPath) {
         var courseNumber = urlPath.match(/@(.+)$/)[1];
@@ -7000,12 +7112,12 @@ function getTrainingSchemeData(number, $) {
 
       return acc;
     }, {});
-  })]).then(function (_ref13) {
-    var _ref14 = (0, _slicedToArray3.default)(_ref13, 2),
-        _ref14$ = _ref14[0],
-        info = _ref14$.info,
-        list = _ref14$.list,
-        table = _ref14[1];
+  })]).then(function (_ref15) {
+    var _ref16 = (0, _slicedToArray3.default)(_ref15, 2),
+        _ref16$ = _ref16[0],
+        info = _ref16$.info,
+        list = _ref16$.list,
+        table = _ref16[1];
 
     return {
       info: info,
@@ -7542,7 +7654,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.9.7
+// @version      0.9.8
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 恢复登陆页面的「两周之内不必登录」选项。3. 增强绩点与均分的计算功能。4. 增加查询全校专业的培养方案与指导性教学计划的功能
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
