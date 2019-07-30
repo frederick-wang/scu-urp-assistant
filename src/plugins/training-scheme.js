@@ -93,21 +93,21 @@ const trainingScheme = {
               bkskyl,
               xkxzsm
             }) => ({
-              courseName: kcm || '无',
-              courseNumber: kch || '无',
-              courseSequenceNumber: kxh || '无',
-              departmentCode: kkxsh || '无',
-              departmentName: kkxsjc || '无',
-              credit: xf || '无',
-              courseTypeCode: kclbdm || '无',
-              courseTypeName: kclbmc || '无',
-              examTypeCode: kslxdm || '无',
-              examTypeName: kslxmc || '无',
-              teacherName: skjs || '无',
+              courseName: kcm || '',
+              courseNumber: kch || '',
+              courseSequenceNumber: kxh || '',
+              departmentCode: kkxsh || '',
+              departmentName: kkxsjc || '',
+              credit: xf || '',
+              courseTypeCode: kclbdm || '',
+              courseTypeName: kclbmc || '',
+              examTypeCode: kslxdm || '',
+              examTypeName: kslxmc || '',
+              teacherName: skjs || '',
               courseTime: `${zcsm}星期${chineseNumbers[skxq]}${skjc}节`,
               courseSite: `${xqm}校区${jxlm}${jasm}`,
               availibleCapacity: `${bkskyl} / ${bkskrl}`,
-              note: (xkxzsm && xkxzsm !== ';') ? xkxzsm : '无'
+              note: (xkxzsm && xkxzsm !== ';') ? xkxzsm : ''
             }))
             .reduce((acc, cur) => {
               let index = -1

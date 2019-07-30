@@ -4996,7 +4996,7 @@ module.exports = sharedData;
 },{"babel-runtime/regenerator":"aIIw","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/helpers/asyncToGenerator":"kcQR"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -6246,21 +6246,21 @@ var trainingScheme = {
                       bkskyl = _ref4.bkskyl,
                       xkxzsm = _ref4.xkxzsm;
                   return {
-                    courseName: kcm || '无',
-                    courseNumber: kch || '无',
-                    courseSequenceNumber: kxh || '无',
-                    departmentCode: kkxsh || '无',
-                    departmentName: kkxsjc || '无',
-                    credit: xf || '无',
-                    courseTypeCode: kclbdm || '无',
-                    courseTypeName: kclbmc || '无',
-                    examTypeCode: kslxdm || '无',
-                    examTypeName: kslxmc || '无',
-                    teacherName: skjs || '无',
+                    courseName: kcm || '',
+                    courseNumber: kch || '',
+                    courseSequenceNumber: kxh || '',
+                    departmentCode: kkxsh || '',
+                    departmentName: kkxsjc || '',
+                    credit: xf || '',
+                    courseTypeCode: kclbdm || '',
+                    courseTypeName: kclbmc || '',
+                    examTypeCode: kslxdm || '',
+                    examTypeName: kslxmc || '',
+                    teacherName: skjs || '',
                     courseTime: zcsm + "\u661F\u671F" + chineseNumbers[skxq] + skjc + "\u8282",
                     courseSite: xqm + "\u6821\u533A" + jxlm + jasm,
                     availibleCapacity: bkskyl + ' / ' + bkskrl,
-                    note: xkxzsm && xkxzsm !== ';' ? xkxzsm : '无'
+                    note: xkxzsm && xkxzsm !== ';' ? xkxzsm : ''
                   };
                 }).reduce(function (acc, cur) {
                   var index = -1;
@@ -7654,7 +7654,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.9.8
+// @version      0.9.9
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 恢复登陆页面的「两周之内不必登录」选项。3. 增强绩点与均分的计算功能。4. 增加查询全校专业的培养方案与指导性教学计划的功能
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
