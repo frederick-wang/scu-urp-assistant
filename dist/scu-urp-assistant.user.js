@@ -5034,7 +5034,6 @@ module.exports = {
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
-    "lodash": "^4.17.15",
     "minimatch": "^3.0.4"
   },
   "config": {
@@ -6689,7 +6688,7 @@ var trainingScheme = {
             switch (_context2.prev = _context2.next) {
               case 0:
                 if (!(currentQueryCourse === element)) {
-                  _context2.next = 9;
+                  _context2.next = 11;
                   break;
                 }
 
@@ -6703,8 +6702,21 @@ var trainingScheme = {
               case 3:
                 res = _context2.sent;
 
+                if (!(currentQueryCourse !== element)) {
+                  _context2.next = 6;
+                  break;
+                }
+
+                return _context2.abrupt('return', {
+                  semester: currentSemester,
+                  number: courseNumber,
+                  name: courseName,
+                  list: []
+                });
+
+              case 6:
                 if (res.pfcx) {
-                  _context2.next = 8;
+                  _context2.next = 10;
                   break;
                 }
 
@@ -6717,14 +6729,14 @@ var trainingScheme = {
                 console.log(data);
                 return _context2.abrupt('return', data);
 
-              case 8:
+              case 10:
                 return _context2.abrupt('return', new _promise2.default(function (resolve) {
                   return setTimeout(function () {
                     return resolve(getCourseInfoData(currentSemester, courseName, courseNumber, element));
                   }, 1000);
                 }));
 
-              case 9:
+              case 11:
                 return _context2.abrupt('return', {
                   semester: currentSemester,
                   number: courseNumber,
@@ -6732,7 +6744,7 @@ var trainingScheme = {
                   list: []
                 });
 
-              case 10:
+              case 12:
               case 'end':
                 return _context2.stop();
             }
