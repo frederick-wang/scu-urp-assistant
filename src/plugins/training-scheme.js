@@ -46,14 +46,16 @@ const trainingScheme = {
         const res = await $.post('/student/integratedQuery/course/courseSchdule/courseInfo', {
           zxjxjhh: currentSemester,
           kcm: courseName,
-          kch: courseNumber
+          kch: courseNumber,
+          pageNum: 1,
+          pageSize: 1000
         })
         if (currentQueryCourse !== element) {
           return {
             semester: currentSemester,
             number: courseNumber,
             name: courseName,
-            list: []
+            records: []
           }
         }
         // pfcx 是「频繁查询的意思」
@@ -62,7 +64,7 @@ const trainingScheme = {
             semester: currentSemester,
             number: courseNumber,
             name: courseName,
-            list: res.list
+            records: res.list.records
           }
           console.log(data)
           return data
@@ -78,7 +80,7 @@ const trainingScheme = {
         semester: currentSemester,
         number: courseNumber,
         name: courseName,
-        list: []
+        records: []
       }
     }
     $('.course-item').hover(async function (e) {

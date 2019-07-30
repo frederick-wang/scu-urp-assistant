@@ -6182,7 +6182,9 @@ var trainingScheme = {
                 return $.post('/student/integratedQuery/course/courseSchdule/courseInfo', {
                   zxjxjhh: currentSemester,
                   kcm: courseName,
-                  kch: courseNumber
+                  kch: courseNumber,
+                  pageNum: 1,
+                  pageSize: 1000
                 });
 
               case 3:
@@ -6197,7 +6199,7 @@ var trainingScheme = {
                   semester: currentSemester,
                   number: courseNumber,
                   name: courseName,
-                  list: []
+                  records: []
                 });
 
               case 6:
@@ -6210,7 +6212,7 @@ var trainingScheme = {
                   semester: currentSemester,
                   number: courseNumber,
                   name: courseName,
-                  list: res.list
+                  records: res.list.records
                 };
                 console.log(data);
                 return _context2.abrupt('return', data);
@@ -6227,7 +6229,7 @@ var trainingScheme = {
                   semester: currentSemester,
                   number: courseNumber,
                   name: courseName,
-                  list: []
+                  records: []
                 });
 
               case 12:
