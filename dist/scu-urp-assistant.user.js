@@ -6571,10 +6571,6 @@ var _typeof2 = require('babel-runtime/helpers/typeof');
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
-var _promise = require('babel-runtime/core-js/promise');
-
-var _promise2 = _interopRequireDefault(_promise);
-
 var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
@@ -6586,6 +6582,10 @@ var _keys2 = _interopRequireDefault(_keys);
 var _getIterator2 = require('babel-runtime/core-js/get-iterator');
 
 var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+var _promise = require('babel-runtime/core-js/promise');
+
+var _promise2 = _interopRequireDefault(_promise);
 
 var _regenerator = require('babel-runtime/regenerator');
 
@@ -6668,45 +6668,114 @@ var trainingScheme = {
     $('#major').empty().append(res || "<option value=\"\u65E0\">\u65E0</option>");
   },
   initCourseInfoPopover: function initCourseInfoPopover() {
+    var _this = this;
+
     var $ = window.$;
     var currentSemester = window.__$SUA_SHARED_DATA__.academicInfo.currentSemester;
-    var test = (0, _debounce2.default)(function () {
+    var currentQueryCourse = null; // 教务系统课程信息频繁查询的阈值
+
+    var initDOM = function initDOM(e) {
+      var $courseInfo = $(this);
+      $courseInfo.append("\n        <div class=\"course-info-popover\">\n          <div class=\"ci-popover-title\">\u6211\u662F\u6807\u9898</div>\n          <div class=\"ci-popover-content\">\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9,\u8FD9\u662F\u4E00\u6BB5\u5185\u5BB9\u3002</div>\n          <div class=\"ci-popover-arrow\"></div>\n        </div>\n      ");
+    };
+
+    var getCourseInfoData = function () {
       var _ref3 = (0, _asyncToGenerator3.default)(
       /*#__PURE__*/
-      _regenerator2.default.mark(function _callee2(e) {
-        var courseName, courseNumber;
+      _regenerator2.default.mark(function _callee2(currentSemester, courseName, courseNumber, element) {
+        var res, data;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                courseName = $(this).data('course-name');
-                courseNumber = $(this).data('course-number');
-                _context2.t0 = console;
-                _context2.next = 5;
+                if (!(currentQueryCourse === element)) {
+                  _context2.next = 9;
+                  break;
+                }
+
+                _context2.next = 3;
                 return $.post('/student/integratedQuery/course/courseSchdule/courseInfo', {
                   zxjxjhh: currentSemester,
-                  kch: courseNumber,
-                  kcm: courseName
+                  kcm: courseName,
+                  kch: courseNumber
                 });
 
-              case 5:
-                _context2.t1 = _context2.sent;
+              case 3:
+                res = _context2.sent;
 
-                _context2.t0.log.call(_context2.t0, _context2.t1);
+                if (res.pfcx) {
+                  _context2.next = 8;
+                  break;
+                }
 
-              case 7:
+                data = {
+                  semester: currentSemester,
+                  number: courseNumber,
+                  name: courseName,
+                  list: res.list
+                };
+                console.log(data);
+                return _context2.abrupt('return', data);
+
+              case 8:
+                return _context2.abrupt('return', new _promise2.default(function (resolve) {
+                  return setTimeout(function () {
+                    return resolve(getCourseInfoData(currentSemester, courseName, courseNumber, element));
+                  }, 1000);
+                }));
+
+              case 9:
+                return _context2.abrupt('return', {
+                  semester: currentSemester,
+                  number: courseNumber,
+                  name: courseName,
+                  list: []
+                });
+
+              case 10:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee2, _this);
       }));
 
-      return function (_x) {
+      return function getCourseInfoData(_x, _x2, _x3, _x4) {
         return _ref3.apply(this, arguments);
       };
-    }(), 5000);
-    $('.course-item').hover(test);
+    }();
+
+    $('.course-item').hover(function () {
+      var _ref4 = (0, _asyncToGenerator3.default)(
+      /*#__PURE__*/
+      _regenerator2.default.mark(function _callee3(e) {
+        var $courseInfo, courseName, courseNumber;
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                initDOM.bind(this)(e);
+                $courseInfo = $(this);
+                courseName = $courseInfo.data('course-name');
+                courseNumber = $courseInfo.data('course-number');
+                currentQueryCourse = this;
+                getCourseInfoData(currentSemester, courseName, courseNumber, this);
+
+              case 6:
+              case 'end':
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      return function (_x5) {
+        return _ref4.apply(this, arguments);
+      };
+    }(), function (e) {
+      currentQueryCourse = null;
+      $(this).children('.course-info-popover').remove();
+    });
   },
   render: function render(root, $) {
     this.initFunc();
@@ -6722,19 +6791,19 @@ var trainingScheme = {
     $(root).append(template);
   },
   selectSelfMajorAndQuery: function () {
-    var _ref4 = (0, _asyncToGenerator3.default)(
+    var _ref5 = (0, _asyncToGenerator3.default)(
     /*#__PURE__*/
-    _regenerator2.default.mark(function _callee3($) {
+    _regenerator2.default.mark(function _callee4($) {
       var selfMajorNumber, selfSchemeInfo;
-      return _regenerator2.default.wrap(function _callee3$(_context3) {
+      return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
-          switch (_context3.prev = _context3.next) {
+          switch (_context4.prev = _context4.next) {
             case 0:
-              _context3.next = 2;
+              _context4.next = 2;
               return getSelfMajorNumber($);
 
             case 2:
-              selfMajorNumber = _context3.sent;
+              selfMajorNumber = _context4.sent;
               selfSchemeInfo = trainingSchemeList.filter(function (v) {
                 return v[0] === selfMajorNumber;
               })[0];
@@ -6746,14 +6815,14 @@ var trainingScheme = {
 
             case 9:
             case 'end':
-              return _context3.stop();
+              return _context4.stop();
           }
         }
-      }, _callee3, this);
+      }, _callee4, this);
     }));
 
-    function selectSelfMajorAndQuery(_x2) {
-      return _ref4.apply(this, arguments);
+    function selectSelfMajorAndQuery(_x6) {
+      return _ref5.apply(this, arguments);
     }
 
     return selectSelfMajorAndQuery;
@@ -6875,19 +6944,19 @@ var compareTrainingScheme = {
     }).join('') + "\n                  </select>\n                </div>\n                <div class=\"profile-info-name\">\u4E13\u4E1A</div>\n                <div class=\"profile-info-value\">\n                  <select name=\"major\" id=\"major\" class=\"form-control value_element\">\n                    <option value=\"\u65E0\">\u65E0</option>\n                  </select>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      </div>\n    ";
   },
   selectSelfMajorAndQuery: function () {
-    var _ref5 = (0, _asyncToGenerator3.default)(
+    var _ref6 = (0, _asyncToGenerator3.default)(
     /*#__PURE__*/
-    _regenerator2.default.mark(function _callee4($) {
+    _regenerator2.default.mark(function _callee5($) {
       var selfMajorNumber, selfSchemeInfo;
-      return _regenerator2.default.wrap(function _callee4$(_context4) {
+      return _regenerator2.default.wrap(function _callee5$(_context5) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context5.prev = _context5.next) {
             case 0:
-              _context4.next = 2;
+              _context5.next = 2;
               return getSelfMajorNumber($);
 
             case 2:
-              selfMajorNumber = _context4.sent;
+              selfMajorNumber = _context5.sent;
               selfSchemeInfo = trainingSchemeList.filter(function (v) {
                 return v[0] === selfMajorNumber;
               })[0];
@@ -6903,14 +6972,14 @@ var compareTrainingScheme = {
 
             case 12:
             case 'end':
-              return _context4.stop();
+              return _context5.stop();
           }
         }
-      }, _callee4, this);
+      }, _callee5, this);
     }));
 
-    function selectSelfMajorAndQuery(_x3) {
-      return _ref5.apply(this, arguments);
+    function selectSelfMajorAndQuery(_x7) {
+      return _ref6.apply(this, arguments);
     }
 
     return selectSelfMajorAndQuery;
@@ -6927,51 +6996,51 @@ var compareTrainingScheme = {
     $(containerSelector + ' #major').empty().append(res || "<option value=\"\u65E0\">\u65E0</option>");
   },
   query: function () {
-    var _ref6 = (0, _asyncToGenerator3.default)(
+    var _ref7 = (0, _asyncToGenerator3.default)(
     /*#__PURE__*/
-    _regenerator2.default.mark(function _callee5() {
-      var $, number1, number2, _ref7, _ref8, _ref8$, info1, list1, _ref8$2, info2, list2;
+    _regenerator2.default.mark(function _callee6() {
+      var $, number1, number2, _ref8, _ref9, _ref9$, info1, list1, _ref9$2, info2, list2;
 
-      return _regenerator2.default.wrap(function _callee5$(_context5) {
+      return _regenerator2.default.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context5.prev = _context5.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
               $ = window.$;
               number1 = $('#query-major-1 #major').val();
               number2 = $('#query-major-2 #major').val();
 
               if (!(number1 !== '无' && number2 !== '无')) {
-                _context5.next = 18;
+                _context6.next = 18;
                 break;
               }
 
               showLoadingAnimation('.compare-training-scheme-wrapper');
-              _context5.next = 7;
+              _context6.next = 7;
               return _promise2.default.all([getTrainingSchemeData(number1, $), getTrainingSchemeData(number2, $)]);
 
             case 7:
-              _ref7 = _context5.sent;
-              _ref8 = (0, _slicedToArray3.default)(_ref7, 2);
-              _ref8$ = _ref8[0];
-              info1 = _ref8$.info;
-              list1 = _ref8$.list;
-              _ref8$2 = _ref8[1];
-              info2 = _ref8$2.info;
-              list2 = _ref8$2.list;
+              _ref8 = _context6.sent;
+              _ref9 = (0, _slicedToArray3.default)(_ref8, 2);
+              _ref9$ = _ref9[0];
+              info1 = _ref9$.info;
+              list1 = _ref9$.list;
+              _ref9$2 = _ref9[1];
+              info2 = _ref9$2.info;
+              list2 = _ref9$2.list;
               hideLoadingAnimation();
               $('.compare-training-scheme-wrapper').append(this.genInfoHTML(info1, info2));
               $('.compare-training-scheme-wrapper').append(this.genSchemeHTML(list1, list2));
 
             case 18:
             case 'end':
-              return _context5.stop();
+              return _context6.stop();
           }
         }
-      }, _callee5, this);
+      }, _callee6, this);
     }));
 
     function query() {
-      return _ref6.apply(this, arguments);
+      return _ref7.apply(this, arguments);
     }
 
     return query;
@@ -7339,9 +7408,9 @@ function getTrainingSchemeData(number, $) {
   });
   var coursePropertyNameList = ['必修', '选修'];
 
-  var res = _promise2.default.all([$.get('/student/rollManagement/project/' + number + '/2/detail').then(function (_ref9) {
-    var jhFajhb = _ref9.jhFajhb,
-        treeList = _ref9.treeList;
+  var res = _promise2.default.all([$.get('/student/rollManagement/project/' + number + '/2/detail').then(function (_ref10) {
+    var jhFajhb = _ref10.jhFajhb,
+        treeList = _ref10.treeList;
     return {
       info: jhFajhb,
       list: treeList.reduce(function (acc, cur) {
@@ -7371,8 +7440,8 @@ function getTrainingSchemeData(number, $) {
         return resultA - resultB;
       })
     };
-  }), $.get('/student/rollManagement/project/' + number + '/1/detail').then(function (_ref10) {
-    var treeList = _ref10.treeList;
+  }), $.get('/student/rollManagement/project/' + number + '/1/detail').then(function (_ref11) {
+    var treeList = _ref11.treeList;
     return (0, _values2.default)(treeList.reduce(function (acc, cur) {
       acc[cur.id] = cur;
 
@@ -7395,12 +7464,12 @@ function getTrainingSchemeData(number, $) {
 
       cur.courseName = cur.name.match(/<\/i>(.+)$/)[1].replace(' 必修', '').replace(' 选修', '');
       return acc;
-    }, {})).reduce(function (acc, _ref11) {
-      var urlPath = _ref11.urlPath,
-          isDir = _ref11.isDir,
-          parent = _ref11.parent,
-          courseName = _ref11.courseName,
-          coursePropertyName = _ref11.coursePropertyName;
+    }, {})).reduce(function (acc, _ref12) {
+      var urlPath = _ref12.urlPath,
+          isDir = _ref12.isDir,
+          parent = _ref12.parent,
+          courseName = _ref12.courseName,
+          coursePropertyName = _ref12.coursePropertyName;
 
       if (urlPath) {
         var courseNumber = urlPath.match(/@(.+)$/)[1];
@@ -7428,12 +7497,12 @@ function getTrainingSchemeData(number, $) {
 
       return acc;
     }, {});
-  })]).then(function (_ref12) {
-    var _ref13 = (0, _slicedToArray3.default)(_ref12, 2),
-        _ref13$ = _ref13[0],
-        info = _ref13$.info,
-        list = _ref13$.list,
-        table = _ref13[1];
+  })]).then(function (_ref13) {
+    var _ref14 = (0, _slicedToArray3.default)(_ref13, 2),
+        _ref14$ = _ref14[0],
+        info = _ref14$.info,
+        list = _ref14$.list,
+        table = _ref14[1];
 
     return {
       info: info,
@@ -7490,7 +7559,7 @@ function getTrainingSchemeData(number, $) {
 }
 
 module.exports = trainingSchemePlugin;
-},{"babel-runtime/core-js/object/values":"Qujq","babel-runtime/core-js/object/assign":"gc0D","babel-runtime/helpers/typeof":"GyB/","babel-runtime/core-js/promise":"L3Vt","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/object/keys":"8FtN","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/regenerator":"aIIw","babel-runtime/helpers/asyncToGenerator":"kcQR","lodash/debounce":"CXfR","fs":"tuDi"}],"287w":[function(require,module,exports) {
+},{"babel-runtime/core-js/object/values":"Qujq","babel-runtime/core-js/object/assign":"gc0D","babel-runtime/helpers/typeof":"GyB/","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/core-js/object/keys":"8FtN","babel-runtime/core-js/get-iterator":"X9RM","babel-runtime/core-js/promise":"L3Vt","babel-runtime/regenerator":"aIIw","babel-runtime/helpers/asyncToGenerator":"kcQR","lodash/debounce":"CXfR","fs":"tuDi"}],"287w":[function(require,module,exports) {
 'use strict';
 
 var _values = require('babel-runtime/core-js/object/values');

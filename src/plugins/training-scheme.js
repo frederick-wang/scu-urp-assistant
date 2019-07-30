@@ -31,18 +31,69 @@ const trainingScheme = {
   initCourseInfoPopover () {
     const $ = window.$
     const { academicInfo: { currentSemester } } = window.__$SUA_SHARED_DATA__
+    let currentQueryCourse = null
     // 教务系统课程信息频繁查询的阈值
-    const thresholdValueOfFrequentQuery = 5000
-    const test = debounce(async function (e) {
-      const courseName = $(this).data('course-name')
-      const courseNumber = $(this).data('course-number')
-      console.log(await $.post('/student/integratedQuery/course/courseSchdule/courseInfo', {
-        zxjxjhh: currentSemester,
-        kch: courseNumber,
-        kcm: courseName
-      }))
-    }, thresholdValueOfFrequentQuery)
-    $('.course-item').hover(test)
+    const initDOM = function (e) {
+      const $courseInfo = $(this)
+      $courseInfo.append(`
+        <div class="course-info-popover">
+          <div class="ci-popover-title">我是标题</div>
+          <div class="ci-popover-content">这是一段内容,这是一段内容,这是一段内容,这是一段内容。</div>
+          <div class="ci-popover-arrow"></div>
+        </div>
+      `)
+    }
+    const getCourseInfoData = async (currentSemester, courseName, courseNumber, element) => {
+      if (currentQueryCourse === element) {
+        const res = await $.post('/student/integratedQuery/course/courseSchdule/courseInfo', {
+          zxjxjhh: currentSemester,
+          kcm: courseName,
+          kch: courseNumber
+        })
+        if (currentQueryCourse !== element) {
+          return {
+            semester: currentSemester,
+            number: courseNumber,
+            name: courseName,
+            list: []
+          }
+        }
+        // pfcx 是「频繁查询的意思」
+        if (!res.pfcx) {
+          const data = {
+            semester: currentSemester,
+            number: courseNumber,
+            name: courseName,
+            list: res.list
+          }
+          console.log(data)
+          return data
+        }
+        return new Promise(resolve =>
+          setTimeout(
+            () => resolve(getCourseInfoData(currentSemester, courseName, courseNumber, element)),
+            1000
+          )
+        )
+      }
+      return {
+        semester: currentSemester,
+        number: courseNumber,
+        name: courseName,
+        list: []
+      }
+    }
+    $('.course-item').hover(async function (e) {
+      initDOM.bind(this)(e)
+      const $courseInfo = $(this)
+      const courseName = $courseInfo.data('course-name')
+      const courseNumber = $courseInfo.data('course-number')
+      currentQueryCourse = this
+      getCourseInfoData(currentSemester, courseName, courseNumber, this)
+    }, function (e) {
+      currentQueryCourse = null
+      $(this).children('.course-info-popover').remove()
+    })
   },
   render (root, $) {
     this.initFunc()
