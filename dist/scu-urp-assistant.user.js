@@ -5008,7 +5008,7 @@ module.exports = sharedData;
 },{"babel-runtime/regenerator":"aIIw","babel-runtime/helpers/slicedToArray":"m8OI","babel-runtime/helpers/asyncToGenerator":"kcQR"}],"EHrm":[function(require,module,exports) {
 module.exports = {
   "name": "scu-urp-assistant",
-  "version": "0.9.9",
+  "version": "0.9.10",
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。",
   "main": "main.js",
   "scripts": {
@@ -6186,11 +6186,11 @@ var trainingScheme = {
 
       if ($pop.offset().left + $pop.width() > $('body').width()) {
         $pop.offset({
-          left: $('body').width() - $pop.width() - 50
+          left: $('body').width() - $pop.width() - 80
         });
       } else if ($pop.offset().left < 0) {
         $pop.offset({
-          left: 20
+          left: 50
         });
       }
     };
@@ -7686,7 +7686,7 @@ module.exports = $sua;
 'use strict'; // ==UserScript==
 // @name         四川大学综合教务系统助手
 // @namespace    http://zhaoji.wang/
-// @version      0.9.9
+// @version      0.9.10
 // @description  四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 恢复登陆页面的「两周之内不必登录」选项。3. 增强绩点与均分的计算功能。4. 增加查询全校专业的培养方案与指导性教学计划的功能
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*

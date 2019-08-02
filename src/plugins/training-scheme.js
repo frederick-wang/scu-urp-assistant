@@ -49,9 +49,9 @@ const trainingScheme = {
       `)
       const $pop = $('.course-info-popover')
       if ($pop.offset().left + $pop.width() > $('body').width()) {
-        $pop.offset({ left: $('body').width() - $pop.width() - 50 })
+        $pop.offset({ left: $('body').width() - $pop.width() - 80 })
       } else if ($pop.offset().left < 0) {
-        $pop.offset({ left: 20 })
+        $pop.offset({ left: 50 })
       }
     }
     const getCourseInfoData = async (currentSemester, courseName, courseNumber, element) => {
