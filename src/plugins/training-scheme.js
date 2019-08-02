@@ -2,7 +2,7 @@
 // TODO: 1. 将弹出框的方向修改为自适应的上下左右4种，且大小在加载出来数据后也可以自适应
 // TODO: 2. 美化表格样式
 // TODO: 3. 将课程中时间和地点的对应关系体现的更清晰，分成两行
-import { getTrainingSchemeList } from './training-scheme/common'
+import { trainingSchemeList } from './training-scheme/common'
 import { initCourseInfoPopover } from './training-scheme/popover'
 import { getChineseNumber } from '../utils/basic'
 const fs = require('fs')
@@ -21,11 +21,11 @@ const trainingScheme = {
       this.initCourseInfoPopover()
     }
   },
-  async updateMajorList () {
+  updateMajorList () {
     const $ = window.$
     const grade = $('#grade').val()
     const department = $('#department').val()
-    const res = (await getTrainingSchemeList())
+    const res = trainingSchemeList
       .filter(v => v[1] === grade && v[2] === department)
       .map(v => `<option value="${v[0]}">${v[3]}</option>`)
       .join('')
@@ -40,17 +40,17 @@ const trainingScheme = {
     window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = this.updateMajorList.bind(this)
     window.__$SUA_TRAINING_SCHEME_QUERY__ = this.query.bind(this)
   },
-  async initDOM (root, $) {
+  initDOM (root, $) {
     const template = `
       <div class="training-scheme-wrapper">
-        ${this.genQueryHTML(await getTrainingSchemeList())}
+        ${this.genQueryHTML(trainingSchemeList)}
       </div>
     `
     $(root).append(template)
   },
   async selectSelfMajorAndQuery ($) {
     const selfMajorNumber = await getSelfMajorNumber($)
-    const selfSchemeInfo = (await getTrainingSchemeList()).filter(v => v[0] === selfMajorNumber)[0]
+    const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
     $('#grade').val(selfSchemeInfo[1])
     $('#department').val(selfSchemeInfo[2])
     this.updateMajorList()
@@ -303,10 +303,10 @@ const compareTrainingScheme = {
     window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = this.updateMajorList.bind(this)
     window.__$SUA_TRAINING_SCHEME_QUERY__ = this.query.bind(this)
   },
-  async initDOM (root, $) {
+  initDOM (root, $) {
     const template = `
       <div class="compare-training-scheme-wrapper">
-        ${this.genQueryHTML(await getTrainingSchemeList())}
+        ${this.genQueryHTML(trainingSchemeList)}
       </div>
     `
     $(root).append(template)
@@ -389,7 +389,7 @@ const compareTrainingScheme = {
   },
   async selectSelfMajorAndQuery ($) {
     const selfMajorNumber = await getSelfMajorNumber($)
-    const selfSchemeInfo = (await getTrainingSchemeList()).filter(v => v[0] === selfMajorNumber)[0]
+    const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
     $('#query-major-1 #grade').val(selfSchemeInfo[1])
     $('#query-major-2 #grade').val(selfSchemeInfo[1])
     $('#query-major-1 #department').val(selfSchemeInfo[2])
@@ -400,11 +400,11 @@ const compareTrainingScheme = {
     $('#query-major-2 #major').val(selfSchemeInfo[0])
     // this.query()
   },
-  async updateMajorList (containerSelector) {
+  updateMajorList (containerSelector) {
     const $ = window.$
     const grade = $(`${containerSelector} #grade`).val()
     const department = $(`${containerSelector} #department`).val()
-    const res = (await getTrainingSchemeList())
+    const res = trainingSchemeList
       .filter(v => v[1] === grade && v[2] === department)
       .map(v => `<option value="${v[0]}">${v[3]}</option>`)
       .join('')
