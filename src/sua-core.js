@@ -130,6 +130,16 @@ const $sua = {
         </style>
       `)
     }
+    // 初始化方法
+    for (const i of this.initQueue) {
+      i()
+    }
+    // 定时任务
+    setInterval(() => {
+      for (const t of this.taskQueue) {
+        t()
+      }
+    }, this.taskTimeInterval)
     // 加载菜单
     for (const m of this.menuQueue) {
       const { rootMenuId, rootMenuName, id: menuId, name: menuName, items } = m
@@ -164,54 +174,55 @@ const $sua = {
         `)
       }
       const $menu = $rootMenu.find(`li#${menuId}>ul.submenu`)
-      items.forEach(({ name, breadcrumbs, render }) => {
+      items.forEach(({ name, path, breadcrumbs, render }) => {
         $menu.append(`
           <li class="sua-menu-item" id="menu-item-${name}" onclick="$sua.menuItems[${this.menuItems.length}].clickHandler()">
             <a href="#">&nbsp;&nbsp; ${name}</a>
             <b class="arrow"></b>
           </li>
         `)
-        this.menuItems.push({
+        const clickHandler = function () {
+          window.$sua.menuItems.forEach(v => {
+            if (v.id === this.element.id) {
+              window.$(v.element).addClass('active')
+            } else {
+              window.$(v.element).removeClass('active')
+            }
+          })
+          const $breadcrumbs = window.$('.main-content>.breadcrumbs>ul.breadcrumb')
+          $breadcrumbs
+            .empty()
+            .append(`
+            <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
+              <i class="ace-icon fa fa-home home-icon"></i>
+              首页
+            </li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${breadcrumbs[0]}</li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${breadcrumbs[1]}</li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${this.element.id}">${breadcrumbs[2]}</li>
+          `)
+          const $pageContent = window.$('.main-content>.page-content')
+          $pageContent.empty()
+          const hash = `#suapath=${this.path}`
+          // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
+          setTimeout(() => {
+            window.location.hash = hash
+          }, 0)
+          render(window.$('.main-content>.page-content')[0], window.$)
+        }
+        const menuItem = {
           element: $menu.children(`#menu-item-${name}`)[0],
           id: `menu-item-${name}`,
           name,
-          clickHandler () {
-            window.$sua.menuItems.forEach(v => {
-              if (v.id === this.element.id) {
-                window.$(v.element).addClass('active')
-              } else {
-                window.$(v.element).removeClass('active')
-              }
-            })
-            const $breadcrumbs = window.$('.main-content>.breadcrumbs>ul.breadcrumb')
-            $breadcrumbs
-              .empty()
-              .append(`
-              <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
-                <i class="ace-icon fa fa-home home-icon"></i>
-                首页
-              </li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${rootMenuName}</li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${menuName}</li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${this.element.id}">${this.name}</li>
-            `)
-            const $pageContent = window.$('.main-content>.page-content')
-            $pageContent.empty()
-            render(window.$('.main-content>.page-content')[0], window.$)
-          }
-        })
+          path,
+          clickHandler
+        }
+        this.menuItems.push(menuItem)
+        if (window.__$SUA_SHARED_DATA__.core.suaPath === path) {
+          menuItem.element.click()
+        }
       })
     }
-    // 初始化方法
-    for (const i of this.initQueue) {
-      i()
-    }
-    // 定时任务
-    setInterval(() => {
-      for (const t of this.taskQueue) {
-        t()
-      }
-    }, this.taskTimeInterval)
 
     /**
      * 检测当前的location.pathname是否满足插件触发要求

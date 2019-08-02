@@ -4940,24 +4940,37 @@ var sharedData = {
     var _ref = (0, _asyncToGenerator3.default)(
     /*#__PURE__*/
     _regenerator2.default.mark(function _callee() {
-      var $, _JSON$parse, _JSON$parse2, _JSON$parse2$, currentSemester, gpa, courseNumber, currentSemesterCourseNumber, failedCourseNumber;
+      var $, regexp, suaPath, _JSON$parse, _JSON$parse2, _JSON$parse2$, currentSemester, gpa, courseNumber, currentSemesterCourseNumber, failedCourseNumber;
 
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
+              window.__$SUA_SHARED_DATA__ = {};
               $ = window.$; // 保证处在登陆后界面
 
               if (!(window.location.pathname !== '/login')) {
-                _context.next = 15;
+                _context.next = 20;
                 break;
+              } // 加载suaPath
+
+
+              regexp = window.location.hash.match(/suapath=(.+)$/);
+              suaPath = '';
+
+              if (regexp) {
+                suaPath = regexp[1];
               }
 
+              window.__$SUA_SHARED_DATA__.core = {
+                suaPath: suaPath // 加载本学期基本信息
+
+              };
               _context.t0 = JSON;
-              _context.next = 5;
+              _context.next = 10;
               return $.post('/main/academicInfo');
 
-            case 5:
+            case 10:
               _context.t1 = _context.sent;
               _JSON$parse = _context.t0.parse.call(_context.t0, _context.t1);
               _JSON$parse2 = (0, _slicedToArray3.default)(_JSON$parse, 1);
@@ -4966,18 +4979,17 @@ var sharedData = {
               gpa = _JSON$parse2$.gpa;
               courseNumber = _JSON$parse2$.courseNum;
               currentSemesterCourseNumber = _JSON$parse2$.courseNum_bxqyxd;
-              failedCourseNumber = _JSON$parse2$.coursePas;
-              window.__$SUA_SHARED_DATA__ = {
-                academicInfo: {
-                  courseNumber: courseNumber,
-                  currentSemester: currentSemester,
-                  gpa: gpa,
-                  currentSemesterCourseNumber: currentSemesterCourseNumber,
-                  failedCourseNumber: failedCourseNumber
-                }
+              failedCourseNumber = _JSON$parse2$.coursePas; // 设置值
+
+              window.__$SUA_SHARED_DATA__.academicInfo = {
+                courseNumber: courseNumber,
+                currentSemester: currentSemester,
+                gpa: gpa,
+                currentSemesterCourseNumber: currentSemesterCourseNumber,
+                failedCourseNumber: failedCourseNumber
               };
 
-            case 15:
+            case 20:
             case 'end':
               return _context.stop();
           }
@@ -6090,6 +6102,9 @@ function _interopRequireDefault(obj) {
     default: obj
   };
 } // 培养方案查询插件
+// TODO: 1. 将弹出框的方向修改为自适应的上下左右4种，且大小在加载出来数据后也可以自适应
+// TODO: 2. 美化表格样式
+// TODO: 3. 将课程中时间和地点的对应关系体现的更清晰，分成两行
 
 
 var fs = require('fs');
@@ -6968,10 +6983,12 @@ var trainingSchemePlugin = {
     name: '高级查询',
     items: [{
       name: '培养方案查询',
+      path: 'advancedQuery/queryTrainingScheme',
       breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案查询'],
       render: trainingScheme.render.bind(trainingScheme)
     }, {
       name: '培养方案比较',
+      path: 'advancedQuery/compareTrainingScheme',
       breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案比较'],
       render: compareTrainingScheme.render.bind(compareTrainingScheme)
     }]
@@ -7423,7 +7440,7 @@ var $sua = {
       for (var _iterator5 = (0, _getIterator3.default)(this.styleQueue), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
         var s = _step5.value;
         window.$('head').append('\n        <style type="text/css">\n          ' + s + '\n        </style>\n      ');
-      } // 加载菜单
+      } // 初始化方法
 
     } catch (err) {
       _didIteratorError5 = true;
@@ -7439,6 +7456,58 @@ var $sua = {
         }
       }
     }
+
+    var _iteratorNormalCompletion6 = true;
+    var _didIteratorError6 = false;
+    var _iteratorError6 = undefined;
+
+    try {
+      for (var _iterator6 = (0, _getIterator3.default)(this.initQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+        var _i = _step6.value;
+
+        _i();
+      } // 定时任务
+
+    } catch (err) {
+      _didIteratorError6 = true;
+      _iteratorError6 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion6 && _iterator6.return) {
+          _iterator6.return();
+        }
+      } finally {
+        if (_didIteratorError6) {
+          throw _iteratorError6;
+        }
+      }
+    }
+
+    setInterval(function () {
+      var _iteratorNormalCompletion7 = true;
+      var _didIteratorError7 = false;
+      var _iteratorError7 = undefined;
+
+      try {
+        for (var _iterator7 = (0, _getIterator3.default)(_this.taskQueue), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+          var t = _step7.value;
+          t();
+        }
+      } catch (err) {
+        _didIteratorError7 = true;
+        _iteratorError7 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion7 && _iterator7.return) {
+            _iterator7.return();
+          }
+        } finally {
+          if (_didIteratorError7) {
+            throw _iteratorError7;
+          }
+        }
+      }
+    }, this.taskTimeInterval); // 加载菜单
 
     var _loop = function _loop(m) {
       var rootMenuId = m.rootMenuId,
@@ -7461,118 +7530,81 @@ var $sua = {
       var $menu = $rootMenu.find('li#' + menuId + '>ul.submenu');
       items.forEach(function (_ref) {
         var name = _ref.name,
+            path = _ref.path,
             breadcrumbs = _ref.breadcrumbs,
             render = _ref.render;
         $menu.append('\n          <li class="sua-menu-item" id="menu-item-' + name + '" onclick="$sua.menuItems[' + _this.menuItems.length + '].clickHandler()">\n            <a href="#">&nbsp;&nbsp; ' + name + '</a>\n            <b class="arrow"></b>\n          </li>\n        ');
 
-        _this.menuItems.push({
+        var clickHandler = function clickHandler() {
+          var _this2 = this;
+
+          window.$sua.menuItems.forEach(function (v) {
+            if (v.id === _this2.element.id) {
+              window.$(v.element).addClass('active');
+            } else {
+              window.$(v.element).removeClass('active');
+            }
+          });
+          var $breadcrumbs = window.$('.main-content>.breadcrumbs>ul.breadcrumb');
+          $breadcrumbs.empty().append("\n            <li onclick=\"javascript:window.location.href='/'\" style=\"cursor:pointer;\">\n              <i class=\"ace-icon fa fa-home home-icon\"></i>\n              \u9996\u9875\n            </li>\n            <li class=\"active\" onclick=\"ckickTopMenu(this);return false;\" id=\"firmenu\" menuid=\"" + rootMenuId + '">' + breadcrumbs[0] + '</li>\n            <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="' + menuId + '">' + breadcrumbs[1] + '</li>\n            <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="' + this.element.id + '">' + breadcrumbs[2] + '</li>\n          ');
+          var $pageContent = window.$('.main-content>.page-content');
+          $pageContent.empty();
+          var hash = '#suapath=' + this.path; // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
+
+          setTimeout(function () {
+            window.location.hash = hash;
+          }, 0);
+          render(window.$('.main-content>.page-content')[0], window.$);
+        };
+
+        var menuItem = {
           element: $menu.children('#menu-item-' + name)[0],
           id: 'menu-item-' + name,
           name: name,
-          clickHandler: function clickHandler() {
-            var _this2 = this;
+          path: path,
+          clickHandler: clickHandler
+        };
 
-            window.$sua.menuItems.forEach(function (v) {
-              if (v.id === _this2.element.id) {
-                window.$(v.element).addClass('active');
-              } else {
-                window.$(v.element).removeClass('active');
-              }
-            });
-            var $breadcrumbs = window.$('.main-content>.breadcrumbs>ul.breadcrumb');
-            $breadcrumbs.empty().append("\n              <li onclick=\"javascript:window.location.href='/'\" style=\"cursor:pointer;\">\n                <i class=\"ace-icon fa fa-home home-icon\"></i>\n                \u9996\u9875\n              </li>\n              <li class=\"active\" onclick=\"ckickTopMenu(this);return false;\" id=\"firmenu\" menuid=\"" + rootMenuId + '">' + rootMenuName + '</li>\n              <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="' + menuId + '">' + menuName + '</li>\n              <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="' + this.element.id + '">' + this.name + '</li>\n            ');
-            var $pageContent = window.$('.main-content>.page-content');
-            $pageContent.empty();
-            render(window.$('.main-content>.page-content')[0], window.$);
-          }
-        });
+        _this.menuItems.push(menuItem);
+
+        if (window.__$SUA_SHARED_DATA__.core.suaPath === path) {
+          menuItem.element.click();
+        }
       });
     };
 
-    var _iteratorNormalCompletion6 = true;
-    var _didIteratorError6 = false;
-    var _iteratorError6 = undefined;
+    var _iteratorNormalCompletion8 = true;
+    var _didIteratorError8 = false;
+    var _iteratorError8 = undefined;
 
     try {
-      for (var _iterator6 = (0, _getIterator3.default)(this.menuQueue), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-        var m = _step6.value;
+      for (var _iterator8 = (0, _getIterator3.default)(this.menuQueue), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+        var m = _step8.value;
 
         _loop(m);
-      } // 初始化方法
+      }
+      /**
+       * 检测当前的location.pathname是否满足插件触发要求
+       *
+       * @param {*} plugin 插件对象，pathname 属性可以是 Boolean、String、Array、Object、Function等类型。
+       * 如果 pathname 属性不存在，则默认对全体 url 均生效
+       * @returns 检测的结果
+       */
 
     } catch (err) {
-      _didIteratorError6 = true;
-      _iteratorError6 = err;
+      _didIteratorError8 = true;
+      _iteratorError8 = err;
     } finally {
       try {
-        if (!_iteratorNormalCompletion6 && _iterator6.return) {
-          _iterator6.return();
+        if (!_iteratorNormalCompletion8 && _iterator8.return) {
+          _iterator8.return();
         }
       } finally {
-        if (_didIteratorError6) {
-          throw _iteratorError6;
+        if (_didIteratorError8) {
+          throw _iteratorError8;
         }
       }
     }
-
-    var _iteratorNormalCompletion7 = true;
-    var _didIteratorError7 = false;
-    var _iteratorError7 = undefined;
-
-    try {
-      for (var _iterator7 = (0, _getIterator3.default)(this.initQueue), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-        var _i = _step7.value;
-
-        _i();
-      } // 定时任务
-
-    } catch (err) {
-      _didIteratorError7 = true;
-      _iteratorError7 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion7 && _iterator7.return) {
-          _iterator7.return();
-        }
-      } finally {
-        if (_didIteratorError7) {
-          throw _iteratorError7;
-        }
-      }
-    }
-
-    setInterval(function () {
-      var _iteratorNormalCompletion8 = true;
-      var _didIteratorError8 = false;
-      var _iteratorError8 = undefined;
-
-      try {
-        for (var _iterator8 = (0, _getIterator3.default)(_this.taskQueue), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-          var t = _step8.value;
-          t();
-        }
-      } catch (err) {
-        _didIteratorError8 = true;
-        _iteratorError8 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion8 && _iterator8.return) {
-            _iterator8.return();
-          }
-        } finally {
-          if (_didIteratorError8) {
-            throw _iteratorError8;
-          }
-        }
-      }
-    }, this.taskTimeInterval);
-    /**
-     * 检测当前的location.pathname是否满足插件触发要求
-     *
-     * @param {*} plugin 插件对象，pathname 属性可以是 Boolean、String、Array、Object、Function等类型。
-     * 如果 pathname 属性不存在，则默认对全体 url 均生效
-     * @returns 检测的结果
-     */
 
     function urlTrigger(plugin) {
       var pathname = plugin.pathname; // 如果pathname不存在，默认对全部url生效

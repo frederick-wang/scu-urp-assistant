@@ -1004,11 +1004,13 @@ const trainingSchemePlugin = {
       items: [
         {
           name: '培养方案查询',
+          path: 'advancedQuery/queryTrainingScheme',
           breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案查询'],
           render: trainingScheme.render.bind(trainingScheme)
         },
         {
           name: '培养方案比较',
+          path: 'advancedQuery/compareTrainingScheme',
           breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案比较'],
           render: compareTrainingScheme.render.bind(compareTrainingScheme)
         }
