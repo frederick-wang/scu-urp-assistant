@@ -208,7 +208,7 @@ const $sua = {
           setTimeout(() => {
             window.location.hash = hash
           }, 0)
-          render(window.$('.main-content>.page-content')[0], window.$)
+          render(window.$('.main-content>.page-content')[0])
         }
         const menuItem = {
           element: $menu.children(`#menu-item-${name}`)[0],

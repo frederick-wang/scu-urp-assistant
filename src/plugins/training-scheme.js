@@ -14,7 +14,7 @@ const trainingScheme = {
     const number = $('#major').val()
     if (number !== '无') {
       showLoadingAnimation('.training-scheme-wrapper')
-      const { info, list } = await getTrainingSchemeData(number, $)
+      const { info, list } = await getTrainingSchemeData(number)
       hideLoadingAnimation()
       $('.training-scheme-wrapper').append(this.genInfoHTML(info))
       $('.training-scheme-wrapper').append(this.genSchemeHTML(list))
@@ -31,16 +31,17 @@ const trainingScheme = {
       .join('')
     $('#major').empty().append(res || `<option value="无">无</option>`)
   },
-  render (root, $) {
+  render (root) {
     this.initFunc()
-    this.initDOM(root, $)
-    this.selectSelfMajorAndQuery($)
+    this.initDOM(root)
+    this.selectSelfMajorAndQuery()
   },
   initFunc () {
     window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = this.updateMajorList.bind(this)
     window.__$SUA_TRAINING_SCHEME_QUERY__ = this.query.bind(this)
   },
-  initDOM (root, $) {
+  initDOM (root) {
+    const $ = window.$
     const template = `
       <div class="training-scheme-wrapper">
         ${this.genQueryHTML(trainingSchemeList)}
@@ -48,8 +49,9 @@ const trainingScheme = {
     `
     $(root).append(template)
   },
-  async selectSelfMajorAndQuery ($) {
-    const selfMajorNumber = await getSelfMajorNumber($)
+  async selectSelfMajorAndQuery () {
+    const $ = window.$
+    const selfMajorNumber = await getSelfMajorNumber()
     const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
     $('#grade').val(selfSchemeInfo[1])
     $('#department').val(selfSchemeInfo[2])
@@ -294,16 +296,17 @@ const trainingScheme = {
 }
 
 const compareTrainingScheme = {
-  render (root, $) {
+  render (root) {
     this.initFunc()
-    this.initDOM(root, $)
-    this.selectSelfMajorAndQuery($)
+    this.initDOM(root)
+    this.selectSelfMajorAndQuery()
   },
   initFunc () {
     window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = this.updateMajorList.bind(this)
     window.__$SUA_TRAINING_SCHEME_QUERY__ = this.query.bind(this)
   },
-  initDOM (root, $) {
+  initDOM (root) {
+    const $ = window.$
     const template = `
       <div class="compare-training-scheme-wrapper">
         ${this.genQueryHTML(trainingSchemeList)}
@@ -387,8 +390,9 @@ const compareTrainingScheme = {
       </div>
     `
   },
-  async selectSelfMajorAndQuery ($) {
-    const selfMajorNumber = await getSelfMajorNumber($)
+  async selectSelfMajorAndQuery () {
+    const $ = window.$
+    const selfMajorNumber = await getSelfMajorNumber()
     const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
     $('#query-major-1 #grade').val(selfSchemeInfo[1])
     $('#query-major-2 #grade').val(selfSchemeInfo[1])
@@ -422,8 +426,8 @@ const compareTrainingScheme = {
         { info: info1, list: list1 },
         { info: info2, list: list2 }
       ] = await Promise.all([
-        getTrainingSchemeData(number1, $),
-        getTrainingSchemeData(number2, $)
+        getTrainingSchemeData(number1),
+        getTrainingSchemeData(number2)
       ])
       hideLoadingAnimation()
       $('.compare-training-scheme-wrapper').append(this.genInfoHTML(info1, info2))
@@ -848,7 +852,8 @@ function hideLoadingAnimation () {
   $('.loading-container').remove()
 }
 
-function getSelfMajorNumber ($) {
+function getSelfMajorNumber () {
+  const $ = window.$
   $.ajaxSetup({
     beforeSend: xhr => xhr.setRequestHeader('X-Requested-With', {
       toString () {
@@ -864,7 +869,8 @@ function getSelfMajorNumber ($) {
   return res
 }
 
-function getTrainingSchemeData (number, $) {
+function getTrainingSchemeData (number) {
+  const $ = window.$
   $.ajaxSetup({
     beforeSend: xhr => xhr.setRequestHeader('X-Requested-With', {
       toString () {
