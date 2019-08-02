@@ -1,7 +1,7 @@
 // 绩点计算插件
 const fs = require('fs')
 
-const gpa = {
+export default {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
   style: fs.readFileSync('transformed/plugins/gpa.css', 'utf8'),
@@ -807,5 +807,3 @@ const templates = {
     return `<div class="gpa-st col-sm-6">${header + labels + content}</div>`
   }
 }
-
-module.exports = gpa

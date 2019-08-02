@@ -1,5 +1,5 @@
 // 一键评教插件
-const fastEvaluation = {
+export default {
   name: 'fast-evaluation',
   pathname: '/student/teachingEvaluation/evaluation/index',
   $btn: undefined,
@@ -387,5 +387,3 @@ const fastEvaluation = {
     })
   }
 }
-
-module.exports = fastEvaluation

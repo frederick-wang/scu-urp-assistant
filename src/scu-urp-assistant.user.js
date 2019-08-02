@@ -6,12 +6,11 @@
 // @author       Zhaoji Wang
 // @include      http://202.115.47.141/*
 // @include      http://zhjw.scu.edu.cn/*
-// @include      http://zhjwwx.scu.edu.cn:8080/*
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
 
-const sua = require('./sua-core')
+import sua from './sua-core'
 
 ;(function() {
   if (!window.jQuery) {

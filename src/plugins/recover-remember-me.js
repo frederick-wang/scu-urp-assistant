@@ -1,9 +1,9 @@
 // 恢复登录页面的「两周之内不必登录」选项插件
-const recoverRememberMe = {
+export default {
   name: 'recover-remember-me',
   pathname: '/login',
   $rememberMe: void 0,
-  init() {
+  init () {
     this.$rememberMe = window.$(`
       <div style="margin: 5px 0;">
         <input
@@ -17,5 +17,3 @@ const recoverRememberMe = {
     window.$('#loginButton').before(this.$rememberMe)
   }
 }
-
-module.exports = recoverRememberMe

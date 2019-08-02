@@ -7,7 +7,7 @@ import { render as compareRender } from './training-scheme/compareTrainingScheme
 
 const fs = require('fs')
 
-const trainingScheme = {
+export default {
   name: 'training-scheme',
   pathname: '/**',
   style: fs.readFileSync('transformed/plugins/training-scheme.css', 'utf8'),
@@ -34,5 +34,3 @@ const trainingScheme = {
     }
   ]
 }
-
-module.exports = trainingScheme

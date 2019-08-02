@@ -1,7 +1,7 @@
 import { trainingSchemeList, getSelfMajorNumber, getTrainingSchemeData, showLoadingAnimation, hideLoadingAnimation } from './common'
 import { getChineseNumber } from '../../utils/basic'
 
-function render (root) {
+export function render (root) {
   initFunc()
   initDOM(root)
   selectSelfMajorAndQuery()
@@ -517,5 +517,3 @@ function genSchemeHTML (list1, list2) {
       </div>
     `
 }
-
-module.exports = { render }

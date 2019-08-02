@@ -1,7 +1,7 @@
 const fs = require('fs')
-const trainingSchemeList = JSON.parse(fs.readFileSync('src/data/training-scheme-list.json', 'utf8'))
+export const trainingSchemeList = JSON.parse(fs.readFileSync('src/data/training-scheme-list.json', 'utf8'))
 
-function getSelfMajorNumber () {
+export function getSelfMajorNumber () {
   const $ = window.$
   $.ajaxSetup({
     beforeSend: xhr => xhr.setRequestHeader('X-Requested-With', {
@@ -18,7 +18,7 @@ function getSelfMajorNumber () {
   return res
 }
 
-function getTrainingSchemeData (number) {
+export function getTrainingSchemeData (number) {
   const $ = window.$
   $.ajaxSetup({
     beforeSend: xhr => xhr.setRequestHeader('X-Requested-With', {
@@ -154,7 +154,7 @@ function getTrainingSchemeData (number) {
   return res
 }
 
-function showLoadingAnimation (containerSelector) {
+export function showLoadingAnimation (containerSelector) {
   const $ = window.$
   const template = `
       <div class="loading-container">
@@ -167,9 +167,7 @@ function showLoadingAnimation (containerSelector) {
   $(containerSelector).append(template)
 }
 
-function hideLoadingAnimation () {
+export function hideLoadingAnimation () {
   const $ = window.$
   $('.loading-container').remove()
 }
-
-module.exports = { trainingSchemeList, getSelfMajorNumber, getTrainingSchemeData, showLoadingAnimation, hideLoadingAnimation }

@@ -1,11 +1,11 @@
 // 提示信息插件
-const tooltip = {
+export default {
   name: 'tooltip',
   pathname: '/**',
   $loginTooltip: undefined,
   $navTooltip: undefined,
   version: require('../../package.json').version,
-  init() {
+  init () {
     if (window.location.pathname === '/login') {
       this.$loginTooltip = window.$(`
         <span class="sua-tooltip" style="
@@ -35,5 +35,3 @@ const tooltip = {
     }
   }
 }
-
-module.exports = tooltip

@@ -2,7 +2,7 @@ import { getChineseNumber } from '../../utils/basic'
 
 let currentQueryCourse = null
 
-function initCourseInfoPopover () {
+export function initCourseInfoPopover () {
   const $ = window.$
   const { academicInfo: { currentSemester } } = window.__$SUA_SHARED_DATA__
   // 教务系统课程信息频繁查询的阈值
@@ -193,5 +193,3 @@ async function getCourseInfoData (currentSemester, courseName, courseNumber, ele
     records: []
   }
 }
-
-module.exports = { initCourseInfoPopover, getCourseInfoData }

@@ -26,7 +26,7 @@ function updateMajorList () {
   $('#major').empty().append(res || `<option value="无">无</option>`)
 }
 
-function render (root) {
+export function render (root) {
   initFunc()
   initDOM(root)
   selectSelfMajorAndQuery()
@@ -294,5 +294,3 @@ function genSchemeHTML (list) {
       </div>
     `
 }
-
-module.exports = { render }

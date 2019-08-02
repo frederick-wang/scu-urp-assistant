@@ -1,5 +1,5 @@
 // 共享数据插件
-const sharedData = {
+export default {
   name: 'shared-data',
   pathname: '/**',
   async init () {
@@ -33,5 +33,3 @@ const sharedData = {
     }
   }
 }
-
-module.exports = sharedData
