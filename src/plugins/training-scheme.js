@@ -2,12 +2,13 @@
 // TODO: 1. 将弹出框的方向修改为自适应的上下左右4种，且大小在加载出来数据后也可以自适应
 // TODO: 2. 美化表格样式
 // TODO: 3. 将课程中时间和地点的对应关系体现的更清晰，分成两行
+import { getTrainingSchemeList } from './training-scheme/common'
+import { initCourseInfoPopover } from './training-scheme/popover'
+import { getChineseNumber } from '../utils/basic'
 const fs = require('fs')
 
-const trainingSchemeList = JSON.parse(fs.readFileSync('src/plugins/training-scheme-list.json', 'utf8'))
-const chineseNumbers = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
-
 const trainingScheme = {
+  initCourseInfoPopover,
   async query () {
     const $ = window.$
     const number = $('#major').val()
@@ -20,205 +21,15 @@ const trainingScheme = {
       this.initCourseInfoPopover()
     }
   },
-  updateMajorList () {
+  async updateMajorList () {
     const $ = window.$
     const grade = $('#grade').val()
     const department = $('#department').val()
-    const res = trainingSchemeList
+    const res = (await getTrainingSchemeList())
       .filter(v => v[1] === grade && v[2] === department)
       .map(v => `<option value="${v[0]}">${v[3]}</option>`)
       .join('')
     $('#major').empty().append(res || `<option value="无">无</option>`)
-  },
-  initCourseInfoPopover () {
-    const $ = window.$
-    const { academicInfo: { currentSemester } } = window.__$SUA_SHARED_DATA__
-    let currentQueryCourse = null
-    // 教务系统课程信息频繁查询的阈值
-    const initDOM = function (courseName, courseNumber) {
-      if ($('.course-info-popover').length) {
-        $('.course-info-popover').remove()
-      }
-      const loadingTips = `( º﹃º ) 兆基祈祷中……`
-      $(this).append(`
-        <div class="course-info-popover">
-          <div class="ci-popover-title">${courseName}（${courseNumber}）</div>
-          <div class="ci-popover-content">${loadingTips}</div>
-          <div class="ci-popover-arrow"></div>
-        </div>
-      `)
-      const $pop = $('.course-info-popover')
-      if ($pop.offset().left + $pop.width() > $('body').width()) {
-        $pop.offset({ left: $('body').width() - $pop.width() - 80 })
-      } else if ($pop.offset().left < 0) {
-        $pop.offset({ left: 50 })
-      }
-    }
-    const getCourseInfoData = async (currentSemester, courseName, courseNumber, element) => {
-      if (currentQueryCourse === element) {
-        const res = await $.post('/student/integratedQuery/course/courseSchdule/courseInfo', {
-          zxjxjhh: currentSemester,
-          kcm: courseName,
-          kch: courseNumber,
-          pageNum: 1,
-          pageSize: 1000
-        })
-        if (currentQueryCourse !== element) {
-          return {
-            semester: currentSemester,
-            number: courseNumber,
-            name: courseName,
-            records: []
-          }
-        }
-        // pfcx 是「频繁查询的意思」
-        if (!res.pfcx) {
-          const records = res.list.records
-            .map(({
-              kcm,
-              kch,
-              kxh,
-              kkxsh,
-              kkxsjc,
-              xf,
-              kclbdm,
-              kclbmc,
-              kslxdm,
-              kslxmc,
-              skjs,
-              zcsm,
-              skxq,
-              skjc,
-              xqm,
-              jxlm,
-              jasm,
-              bkskrl,
-              bkskyl,
-              xkxzsm
-            }) => ({
-              courseName: kcm || '',
-              courseNumber: kch || '',
-              courseSequenceNumber: kxh || '',
-              departmentCode: kkxsh || '',
-              departmentName: kkxsjc || '',
-              credit: (!xf && xf !== 0) ? '' : xf,
-              courseTypeCode: kclbdm || '',
-              courseTypeName: kclbmc || '',
-              examTypeCode: kslxdm || '',
-              examTypeName: kslxmc || '',
-              teacherName: skjs || '',
-              courseTime: `${zcsm}星期${chineseNumbers[skxq]}${skjc}节`,
-              courseSite: `${xqm}校区${jxlm}${jasm}`,
-              availibleCapacity: `${bkskyl} / ${bkskrl}`,
-              note: (xkxzsm && xkxzsm !== ';') ? xkxzsm : ''
-            }))
-            .reduce((acc, cur) => {
-              let index = -1
-              for (let i = 0; i < acc.length; i++) {
-                if (acc[i].courseSequenceNumber === cur.courseSequenceNumber) {
-                  index = i
-                  break
-                }
-              }
-              const merge = (obj1, obj2) => {
-                const result = {}
-                for (const key in obj1) {
-                  result[key] = obj1[key] === obj2[key] ? obj1[key] : `${obj1[key]}，${obj2[key]}`
-                }
-                return result
-              }
-              if (index === -1) {
-                return acc.concat(cur)
-              }
-              acc[index] = merge(acc[index], cur)
-              return acc
-            }, [])
-            .sort((a, b) => Number(a.courseSequenceNumber) - Number(b.courseSequenceNumber))
-          const data = {
-            semester: currentSemester,
-            number: courseNumber,
-            name: courseName,
-            records
-          }
-          const $pop = $('.course-info-popover')
-          const $popTitle = $pop.children('.ci-popover-title')
-          const $popContent = $pop.children('.ci-popover-content')
-          let titleText
-          let templateHTML
-          if (records.length) {
-            titleText = `${courseName}（${courseNumber}）- 共${records.length}个课序号`
-            const genRowsHTML = (records) =>
-              records
-                .map(
-                  ({ courseSequenceNumber, departmentName, credit, courseTypeName, examTypeName, teacherName, courseTime, courseSite, availibleCapacity, note }) =>
-                    `<tr>
-                    <td>${courseSequenceNumber}</td>
-                    <td>${departmentName}</td>
-                    <td>${credit}</td>
-                    <td>${courseTypeName}</td>
-                    <td>${examTypeName}</td>
-                    <td>${teacherName}</td>
-                    <td>${courseTime}</td>
-                    <td>${courseSite}</td>
-                    <td>${availibleCapacity}</td>
-                    <td>${note}</td>
-                  </tr>`
-                )
-                .join('')
-            templateHTML = `
-              <table class="table table-striped table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th>课序号</th>
-                    <th>开课院系</th>
-                    <th>学分</th>
-                    <th>课程类别</th>
-                    <th>考试类型</th>
-                    <th>教师</th>
-                    <th>时间</th>
-                    <th>地点</th>
-                    <th>课余量</th>
-                    <th>备注</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${genRowsHTML(records)}
-                </tbody>
-              </table>
-            `
-          } else {
-            titleText = `${courseName}（${courseNumber}）`
-            templateHTML = `<p style="color: #CB1B45;">${courseName}（${courseNumber}）并未在本学期开课</p>`
-          }
-          $popTitle.text(titleText)
-          $popContent.html(templateHTML)
-          return data
-        }
-        return new Promise(resolve =>
-          setTimeout(
-            () => resolve(getCourseInfoData(currentSemester, courseName, courseNumber, element)),
-            1000
-          )
-        )
-      }
-      return {
-        semester: currentSemester,
-        number: courseNumber,
-        name: courseName,
-        records: []
-      }
-    }
-    $('.course-item').hover(async function (e) {
-      const $courseInfo = $(this)
-      const courseName = $courseInfo.data('course-name')
-      const courseNumber = $courseInfo.data('course-number')
-      currentQueryCourse = this
-      initDOM.bind(this)(courseName, courseNumber)
-      getCourseInfoData(currentSemester, courseName, courseNumber, this)
-    }, function (e) {
-      currentQueryCourse = null
-      $(this).children('.course-info-popover').remove()
-    })
   },
   render (root, $) {
     this.initFunc()
@@ -229,17 +40,17 @@ const trainingScheme = {
     window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = this.updateMajorList.bind(this)
     window.__$SUA_TRAINING_SCHEME_QUERY__ = this.query.bind(this)
   },
-  initDOM (root, $) {
+  async initDOM (root, $) {
     const template = `
       <div class="training-scheme-wrapper">
-        ${this.genQueryHTML(trainingSchemeList)}
+        ${this.genQueryHTML(await getTrainingSchemeList())}
       </div>
     `
     $(root).append(template)
   },
   async selectSelfMajorAndQuery ($) {
     const selfMajorNumber = await getSelfMajorNumber($)
-    const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
+    const selfSchemeInfo = (await getTrainingSchemeList()).filter(v => v[0] === selfMajorNumber)[0]
     $('#grade').val(selfSchemeInfo[1])
     $('#department').val(selfSchemeInfo[2])
     this.updateMajorList()
@@ -454,7 +265,7 @@ const trainingScheme = {
 
     const yearItemTemplate = (year, grade) => `
     <div class="year-item">
-      <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${year.name}（${chineseNumbers[grade]}年级）</div>
+      <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${year.name}（${getChineseNumber(grade)}年级）</div>
       <div class="year-item-content">
         ${year.children.map(v => semesterItemTemplate(v)).join('<div class="semester-divider"></div>')}
       </div>
@@ -492,10 +303,10 @@ const compareTrainingScheme = {
     window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = this.updateMajorList.bind(this)
     window.__$SUA_TRAINING_SCHEME_QUERY__ = this.query.bind(this)
   },
-  initDOM (root, $) {
+  async initDOM (root, $) {
     const template = `
       <div class="compare-training-scheme-wrapper">
-        ${this.genQueryHTML(trainingSchemeList)}
+        ${this.genQueryHTML(await getTrainingSchemeList())}
       </div>
     `
     $(root).append(template)
@@ -578,7 +389,7 @@ const compareTrainingScheme = {
   },
   async selectSelfMajorAndQuery ($) {
     const selfMajorNumber = await getSelfMajorNumber($)
-    const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
+    const selfSchemeInfo = (await getTrainingSchemeList()).filter(v => v[0] === selfMajorNumber)[0]
     $('#query-major-1 #grade').val(selfSchemeInfo[1])
     $('#query-major-2 #grade').val(selfSchemeInfo[1])
     $('#query-major-1 #department').val(selfSchemeInfo[2])
@@ -589,11 +400,11 @@ const compareTrainingScheme = {
     $('#query-major-2 #major').val(selfSchemeInfo[0])
     // this.query()
   },
-  updateMajorList (containerSelector) {
+  async updateMajorList (containerSelector) {
     const $ = window.$
     const grade = $(`${containerSelector} #grade`).val()
     const department = $(`${containerSelector} #department`).val()
-    const res = trainingSchemeList
+    const res = (await getTrainingSchemeList())
       .filter(v => v[1] === grade && v[2] === department)
       .map(v => `<option value="${v[0]}">${v[3]}</option>`)
       .join('')
@@ -958,7 +769,7 @@ const compareTrainingScheme = {
       }
       return `
         <div class="year-item">
-          <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${yearName}（${chineseNumbers[grade]}年级）</div>
+          <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${yearName}（${getChineseNumber(grade)}年级）</div>
           <div class="year-item-content">
             ${year.children.map(v => semesterItemTemplate(v)).join('<div class="semester-divider"></div>')}
           </div>

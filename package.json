@@ -7,7 +7,8 @@
     "start": "npm run transform && npm run userscript && npm run bookmarklet && rm -rf transformed/",
     "userscript": "parcel build transformed/scu-urp-assistant.user.js --no-minify --no-source-maps",
     "bookmarklet": "parcel build transformed/scu-urp-assistant-bookmarklet.js --no-minify --no-source-maps",
-    "transform": "npm run transform:js && npm run transform:scss",
+    "transform": "npm run transform:data && npm run transform:js && npm run transform:scss",
+    "transform:data": "cp -r src/data/. dist/data",
     "transform:js": "babel --plugins transform-runtime src --out-dir transformed",
     "transform:scss": "node-sass src/plugins/ -o transformed/plugins/ --output-style compressed && postcss transformed/plugins/**/*.css -d transformed/plugins/"
   },
