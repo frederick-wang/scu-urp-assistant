@@ -12,8 +12,8 @@ const fastEvaluation = {
     '学生评教（实践教学）': '#sjjx-checkbox-wrapper',
     '学生评教（实验实践）': '#sysj-checkbox-wrapper',
     '学生评教（体育教学）': '#tyjx-checkbox-wrapper',
-    '研究生助教评价': '#yjs-checkbox-wrapper',
-    'UIP国际课程学生评教': '#uip-checkbox-wrapper'
+    研究生助教评价: '#yjs-checkbox-wrapper',
+    UIP国际课程学生评教: '#uip-checkbox-wrapper'
   },
   questionsNumberRange: {
     '学生评教（课堂教学）': [107, 108, 123, 127, 128, 129, 131],
@@ -21,8 +21,8 @@ const fastEvaluation = {
     '学生评教（实践教学）': [89, 90, 91, 92, 93, 94, 95],
     '学生评教（实验实践）': [132, 133, 134, 135, 136, 137, 138],
     '学生评教（体育教学）': [96, 97, 98, 99, 100, 101, 102],
-    '研究生助教评价': [28, 29, 30, 31, 32, 33],
-    'UIP国际课程学生评教': [53, 54, 55, 56, 57, 58, 59, 60, 61, 105]
+    研究生助教评价: [28, 29, 30, 31, 32, 33],
+    UIP国际课程学生评教: [53, 54, 55, 56, 57, 58, 59, 60, 61, 105]
   },
   templates: {
     btn:
@@ -126,7 +126,7 @@ const fastEvaluation = {
   },
   onClickBtn (e) {
     e.preventDefault()
-    let hasUnevaluatedQuestionnaire = this.collectData()
+    const hasUnevaluatedQuestionnaire = this.collectData()
     if (hasUnevaluatedQuestionnaire) {
       this.showSelectionModal()
     } else {
@@ -156,7 +156,7 @@ const fastEvaluation = {
             index
           ) => {
             if (this.checkboxWrapperSelectors[type]) {
-              let selector = this.checkboxWrapperSelectors[type]
+              const selector = this.checkboxWrapperSelectors[type]
               window.$(selector).append(`
               <div class="checkbox">
                 <label>
@@ -170,8 +170,8 @@ const fastEvaluation = {
             }
           }
         )
-        for (let key in this.checkboxWrapperSelectors) {
-          let selector = this.checkboxWrapperSelectors[key]
+        for (const key in this.checkboxWrapperSelectors) {
+          const selector = this.checkboxWrapperSelectors[key]
           if (!window.$(selector).children().length) {
             window
               .$(selector)
@@ -191,7 +191,7 @@ const fastEvaluation = {
         window.layer.close(layerIndex)
         if (this.list.length) {
           this.$btn.remove()
-          let {
+          const {
             evaluatedPeople,
             evaluationContentContent
           } = this.list[0]
@@ -205,8 +205,8 @@ const fastEvaluation = {
     })
   },
   collectData () {
-    let collectingMsgIndex = window.layer.msg('正在收集本页问卷数据……')
-    let items = Array.from(
+    const collectingMsgIndex = window.layer.msg('正在收集本页问卷数据……')
+    const items = Array.from(
       document.getElementById('jxpgtbody').getElementsByTagName('button')
     )
       .filter(item => item.innerText === '评估')
@@ -234,7 +234,7 @@ const fastEvaluation = {
   },
   parseName (data) {
     data = data.split(`","`)
-    let [
+    const [
       questionnaireCode,
       questionnaireName,
       evaluatedPeopleNumber,
@@ -242,7 +242,7 @@ const fastEvaluation = {
       evaluationContentNumber,
       evaluationContentContent
     ] = data
-    let result = {
+    const result = {
       questionnaireCode,
       questionnaireName,
       evaluatedPeopleNumber,
@@ -258,13 +258,13 @@ const fastEvaluation = {
     )
   },
   evaluate (index) {
-    let origin = window.location.origin
+    const origin = window.location.origin
     if (index >= this.list.length) {
       this.changePrompt(`本页上的老师已经全部评价完毕！正在刷新……`)
       window.location.href = `${origin}/student/teachingEvaluation/evaluation/index`
       return
     }
-    let {
+    const {
       evaluatedPeopleNumber,
       evaluatedPeople,
       evaluationContentNumber,
@@ -317,11 +317,11 @@ const fastEvaluation = {
         }
 
         if (this.questionsNumberRange[questionnaireName]) {
-          let range = this.questionsNumberRange[questionnaireName]
+          const range = this.questionsNumberRange[questionnaireName]
 
           let bodyStr = `questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}&count=${count}`
-          for (let number of range) {
-            let numberString = ('0000000000' + number).substr(-10)
+          for (const number of range) {
+            const numberString = ('0000000000' + number).substr(-10)
             bodyStr += `&${numberString}=10_1`
           }
           bodyStr += `&zgpj=${this.getComment()}`
