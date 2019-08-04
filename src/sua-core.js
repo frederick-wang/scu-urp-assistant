@@ -1,3 +1,5 @@
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
 import minimatch from 'minimatch'
 import fastEvaluation from './plugins/fast-evaluation'
 import sharedData from './plugins/shared-data'

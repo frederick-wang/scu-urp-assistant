@@ -1,0 +1,73 @@
+/* gpa -> namespace */
+
+/* st -> semester-transcript */
+
+/* tt -> total-transcript */
+
+.gpa-st-item {
+  cursor: pointer;
+  & > td {
+    transition: 0.1s;
+  }
+  &.selected {
+    & > td {
+      font-weight: bolder;
+      color: #409eff;
+      background-color: #ecf5ff !important;
+    }
+    &:hover > td {
+      background-color: #6a7681 !important;
+      color: #fff;
+    }
+  }
+  &:active > td {
+    background-color: #3a8ee6 !important;
+    color: #fff;
+    outline: none;
+  }
+}
+
+.gpa-st-tag-selected-score,
+.gpa-st-tag-selected-gpa,
+.gpa-tt-tag-selected-score,
+.gpa-tt-tag-selected-gpa {
+  display: none;
+}
+
+.gpa-st-select-all-btn,
+.gpa-tt-select-all-btn {
+  position: relative;
+  top: 2.5px;
+  float: right;
+}
+
+.gpa-st-cancel-btn,
+.gpa-tt-cancel-btn {
+  display: none;
+  position: relative;
+  top: 2.5px;
+  float: right;
+}
+
+#gpa-toolbar-detail,
+#gpa-toolbar-reset {
+  cursor: pointer;
+}
+
+.gpa-st-tag,
+.gpa-tt-tag {
+  cursor: pointer;
+}
+
+.gpa-info-badge {
+  cursor: pointer;
+  position: relative;
+  top: -7.5px;
+}
+
+.gpa-info-badge-tt-selected-course-quantity,
+.gpa-info-badge-tt-selected-course-credits,
+.gpa-info-badge-st-selected-course-quantity,
+.gpa-info-badge-st-selected-course-credits {
+  display: none;
+}
