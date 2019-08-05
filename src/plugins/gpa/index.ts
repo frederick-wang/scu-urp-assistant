@@ -32,8 +32,8 @@ interface Course {
 }
 
 let $indexWidget: JQuery<HTMLElement> | null
-let $indexWidgetMain: JQuery<HTMLElement> | null
-let $indexWidgetMainRow: JQuery<HTMLElement> | null
+let $gpaContent: JQuery<HTMLElement> | null
+let $gpaStContainer: JQuery<HTMLElement> | null
 let records: Record[] | null
 
 /**
@@ -69,7 +69,6 @@ function renderSemesterTagSelected() {
     const $gpaTag = getSemester$Element('gpa-st-tag-selected-gpa')
     const $selectAllBtn = getSemester$Element('gpa-st-select-all-btn')
     const $cancelBtn = getSemester$Element('gpa-st-cancel-btn')
-    console.log($selectAllBtn, $cancelBtn)
     if (selectedCourses.length) {
       const selectedCoursesQuantity = selectedCourses.length
       const selectedCourseCredits = selectedCourses.reduce(
@@ -272,8 +271,8 @@ export default {
       .$('.page-content')
       .children('.row')
       .append($indexWidget)
-    $indexWidgetMain = $indexWidget.find('.gpa-content')
-    $indexWidgetMainRow = $indexWidget.find('.gpa-content .row')
+    $gpaContent = $indexWidget.find('.gpa-content')
+    $gpaStContainer = $indexWidget.find('.gpa-st-container')
   },
 
   /**
@@ -365,7 +364,7 @@ export default {
    * 渲染「总成绩」部分的界面
    */
   renderTotalTranscript() {
-    if (!$indexWidgetMain || !records) {
+    if (!$gpaContent || !records) {
       return
     }
     const semestersQuantity = records.length
@@ -374,7 +373,7 @@ export default {
       [] as Course[]
     )
     const labels = templates.totalTranscript(semestersQuantity, allCourses)
-    $indexWidgetMain.prepend(labels)
+    $gpaContent.prepend(labels)
   },
 
   /**
@@ -385,12 +384,10 @@ export default {
       return
     }
     records.forEach(({ semester, courses }) => {
-      if (!$indexWidgetMainRow) {
+      if (!$gpaStContainer) {
         return
       }
-      $indexWidgetMainRow.append(
-        templates.semesterTranscript(semester, courses)
-      )
+      $gpaStContainer.append(templates.semesterTranscript(semester, courses))
     })
   },
 
@@ -398,13 +395,13 @@ export default {
    * 销毁页面元素
    */
   destroy() {
-    if ($indexWidgetMainRow) {
-      $indexWidgetMainRow.remove()
-      $indexWidgetMainRow = null
+    if ($gpaStContainer) {
+      $gpaStContainer.remove()
+      $gpaStContainer = null
     }
-    if ($indexWidgetMain) {
-      $indexWidgetMain.remove()
-      $indexWidgetMain = null
+    if ($gpaContent) {
+      $gpaContent.remove()
+      $gpaContent = null
     }
     if ($indexWidget) {
       $indexWidget.remove()
@@ -459,8 +456,15 @@ function convertRecords(rawList: RawRecord[]) {
       }))
       // 不显示还没有课程成绩的学期
       .filter(v => v.courses && v.courses.length)
+      .sort((a, b) => {
+        const getWeightSum = ({ semester }: Record) => {
+          const r = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
+          return r ? Number(r[1]) + Number(r[2]) + (r[3] === '秋' ? 0 : 1) : 0
+        }
+        // 从大到小排
+        return getWeightSum(b) - getWeightSum(a)
+      })
   )
-  // .reverse()
 }
 
 /**

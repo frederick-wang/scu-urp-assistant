@@ -4,6 +4,15 @@
 
 /* tt -> total-transcript */
 
+.gpa-st-container {
+  display: flex;
+  flex-wrap: wrap;
+
+  .gpa-st {
+    width: 50%;
+  }
+}
+
 .gpa-st-item {
   cursor: pointer;
   & > td {
@@ -58,21 +67,12 @@
 .gpa-st-tag,
 .gpa-tt-tag {
   cursor: pointer;
-  margin-right: 5px;
-
-  &:last-child {
-    margin-right: 0;
-  }
 }
 
 .gpa-info-badge {
   cursor: pointer;
   position: relative;
   top: -7.5px;
-  margin-right: 5px;
-  &:first-child {
-    margin-left: 5px;
-  }
 }
 
 .gpa-info-badge-tt-selected-course-quantity,
