@@ -1,6 +1,4 @@
 // 绩点计算插件
-const css = require('./index.scss').toString()
-
 interface allTermScoresData {
   list: {
     pageSize: number
@@ -40,7 +38,7 @@ let records: Record[] | null
 export default {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
-  style: css,
+  style: require('./index.scss').toString(),
   init() {
     this.initDOM()
     // 第一次请求只是为了获得课程总数 totalCount

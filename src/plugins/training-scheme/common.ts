@@ -4,6 +4,8 @@ import {
   TrainingSchemeCourse
 } from './types'
 
+import trainingSchemeList from './training-scheme-list.json'
+
 interface InstructionalTeachingPlanAPIData {
   title: string
   jhFajhb: JhFajhb
@@ -34,8 +36,6 @@ interface TrainingSchemeAPIItem {
   coursePropertyName: string
   courseName: string
 }
-
-const trainingSchemeList: string[][] = require('./training-scheme-list.json')
 
 function getSelfMajorNumber() {
   const $ = window.$

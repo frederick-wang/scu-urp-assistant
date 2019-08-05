@@ -61,12 +61,12 @@ function initDOM(root: HTMLElement) {
 function genQueryHTML() {
   const { gradeList, departmentList } = trainingSchemeList.reduce(
     (acc, cur) => ({
-      gradeList: acc.gradeList.includes(cur[1])
+      gradeList: acc.gradeList.includes(cur[1] as string)
         ? acc.gradeList
-        : acc.gradeList.concat(cur[1]),
-      departmentList: acc.departmentList.includes(cur[2])
+        : acc.gradeList.concat(cur[1] as string),
+      departmentList: acc.departmentList.includes(cur[2] as string)
         ? acc.departmentList
-        : acc.departmentList.concat(cur[2])
+        : acc.departmentList.concat(cur[2] as string)
     }),
     { gradeList: [] as string[], departmentList: [] as string[] }
   )
@@ -166,14 +166,14 @@ async function selectSelfMajorAndQuery() {
   const selfSchemeInfo = trainingSchemeList.filter(
     v => v[0] === selfMajorNumber
   )[0]
-  $('#query-major-1 #grade').val(selfSchemeInfo[1])
-  $('#query-major-2 #grade').val(selfSchemeInfo[1])
-  $('#query-major-1 #department').val(selfSchemeInfo[2])
-  $('#query-major-2 #department').val(selfSchemeInfo[2])
+  $('#query-major-1 #grade').val(selfSchemeInfo[1] as string)
+  $('#query-major-2 #grade').val(selfSchemeInfo[1] as string)
+  $('#query-major-1 #department').val(selfSchemeInfo[2] as string)
+  $('#query-major-2 #department').val(selfSchemeInfo[2] as string)
   updateMajorList('#query-major-1')
   updateMajorList('#query-major-2')
-  $('#query-major-1 #major').val(selfSchemeInfo[0])
-  $('#query-major-2 #major').val(selfSchemeInfo[0])
+  $('#query-major-1 #major').val(selfSchemeInfo[0] as string)
+  $('#query-major-2 #major').val(selfSchemeInfo[0] as string)
   // query()
 }
 
