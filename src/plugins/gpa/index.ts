@@ -391,7 +391,7 @@ export default {
         return
       }
       $indexWidgetMainRow.append(
-        templates.semesterTranscriptWrapper(semester, courses)
+        templates.semesterTranscript(semester, courses)
       )
     })
   },
@@ -674,7 +674,7 @@ const templates = {
       compulsoryCoursesQuantity
     })
   },
-  semesterTranscriptWrapper(semester: string, courses: Course[]) {
+  semesterTranscript(semester: string, courses: Course[]) {
     const {
       allCoursesGPA,
       allCoursesScore,
