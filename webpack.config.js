@@ -63,6 +63,10 @@ module.exports = {
           { loader: 'css-loader', options: { importLoaders: 1 } },
           'postcss-loader'
         ]
+      },
+      {
+        test: /\.pug$/i,
+        use: ['pug-loader']
       }
     ]
   },

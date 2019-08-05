@@ -1,0 +1,18 @@
+table.gpa-st-table.table.table-striped.table-bordered.table-hover
+  thead
+    tr
+      th 课程名
+      th.center 分数
+      th.center 等级
+      th.center 绩点
+      th.center 学分
+      th.center 属性
+  tbody
+    each v in courses
+      tr.gpa-st-item(data-semester=semester, data-name=v.name, data-score=v.score, data-level=v.level, data-gpa=v.gpa, data-credit=v.credit, data-attribute=v.attribute)
+        td #{v.name}
+        td.center #{v.score}
+        td.center #{v.level}
+        td.center #{v.gpa}
+        td.center #{v.credit}
+        td.center #{v.attribute}

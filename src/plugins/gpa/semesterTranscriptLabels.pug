@@ -1,0 +1,14 @@
+p
+  span.gpa-st-tag.label.label-success(title=`在${semester}，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均分为 ${compulsoryCoursesScore}`)
+    | 必修平均分：#{compulsoryCoursesScore}
+  span.gpa-st-tag.label.label-success(title=`在${semester}，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均绩点为 ${compulsoryCoursesGPA}`)
+    | 必修绩点：#{compulsoryCoursesGPA}
+  span.gpa-st-tag.label.label-purple(title=`在${semester}，您一共修读了 ${coursesQuantity} 门课程，加权平均分为 ${allCoursesScore}`)
+    | 全部平均分：#{allCoursesScore}
+  span.gpa-st-tag.label.label-purple(title=`在${semester}，您一共修读了 ${coursesQuantity} 门课程，加权平均绩点为 ${allCoursesGPA}`)
+    | 全部绩点：#{allCoursesGPA}
+p
+  span.gpa-st-tag.gpa-st-tag-selected-score.label.label-pink(data-semester=semester)
+    | 选中课程平均分：0
+  span.gpa-st-tag.gpa-st-tag-selected-gpa.label.label-pink(data-semester=semester)
+    | 选中课程绩点：0

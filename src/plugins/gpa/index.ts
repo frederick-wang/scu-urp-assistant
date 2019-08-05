@@ -390,11 +390,8 @@ export default {
       if (!$indexWidgetMainRow) {
         return
       }
-      const header = templates.semesterTranscriptHeader(semester, courses)
-      const labels = templates.semesterTranscriptLabels(semester, courses)
-      const content = templates.semesterTranscriptContent(semester, courses)
       $indexWidgetMainRow.append(
-        templates.semesterTranscriptWrapper(header, labels, content)
+        templates.semesterTranscriptWrapper(semester, courses)
       )
     })
   },
@@ -654,33 +651,7 @@ function getPointByScore(score: number, semester: string) {
 }
 
 const templates = {
-  indexWidget: `
-    <div class="col-sm-12 widget-container-col">
-      <div class="widget-box">
-        <div class="widget-header">
-          <h5 class="widget-title">
-            我的成绩
-            <span class="badge badge-primary" style="padding-top:3px;position:relative;top:-3px;">SCU URP 助手</span>
-          </h5>
-          <div class="widget-toolbar">
-            <div class="widget-menu">
-                <a id="gpa-toolbar-detail" data-action="settings" data-toggle="dropdown">
-                    <i class="ace-icon fa fa-bars"></i>
-                </a>
-                <a id="gpa-toolbar-reset" data-action="reload"">
-                    <i class="ace-icon fa fa-refresh"></i>
-                </a>
-            </div>
-          </div>
-        </div>
-        <div class="widget-body">
-          <div class="widget-main">
-            <div class="row"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
+  indexWidget: require('./indexWidget.pug')(),
   totalTranscript(semestersQuantity: number, courses: Course[]) {
     const {
       allCoursesGPA,
@@ -692,202 +663,38 @@ const templates = {
     const coursesQuantity = courses.length
     const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
     const compulsoryCoursesQuantity = compulsoryCourses.length
-    return `
-      <div class="gpa-tt row" style="margin-bottom: 20px;">
-        <div class="col-sm-12">
-          <h4 class="header smaller lighter grey" style="margin-top: 0;">
-            <i class="menu-icon fa fa-calendar"></i> 全部成绩
-            <span
-              class="gpa-info-badge badge badge-yellow"
-              title="在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程"
-            >
-              ${coursesQuantity} 门
-            </span>
-            <span
-              class="gpa-info-badge badge badge-yellow"
-              title="在 ${semestersQuantity} 个学期中，您一共修读了 ${totalCourseCredits} 学分"
-            >
-              ${totalCourseCredits} 学分
-            </span>
-            <span
-              class="gpa-info-badge gpa-info-badge-tt-selected-course-quantity badge badge-pink"
-              title="在 ${semestersQuantity} 个学期中，您当前一共选中了 0 门课程"
-            >
-              0 门
-            </span>
-            <span
-              class="gpa-info-badge gpa-info-badge-tt-selected-course-credits badge badge-pink"
-              title="在 ${semestersQuantity} 个学期中，您当前选中的全部课程总学分为 0"
-            >
-              0 学分
-            </span>
-            <button class="btn btn-white btn-minier gpa-tt-select-all-btn">
-              <i class="ace-icon fa fa-check green"></i>
-              全选
-            </button>
-            <button class="btn btn-white btn-minier gpa-tt-cancel-btn">
-              <i class="ace-icon fa fa-times red2"></i>
-              全不选
-            </button>
-          </h4>
-          <span
-            class="gpa-tt-tag label label-success"
-            title="在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均分为 ${compulsoryCoursesScore}"
-          >
-            必修平均分：${compulsoryCoursesScore}
-          </span>
-          <span
-            class="gpa-tt-tag label label-success"
-            title="在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均绩点为 ${compulsoryCoursesGPA}"
-          >
-            必修绩点：${compulsoryCoursesGPA}
-          </span>
-          <span
-            class="gpa-tt-tag label label-purple"
-            title="在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程，全部加权平均分为 ${allCoursesScore}"
-          >
-            全部平均分：${allCoursesScore}
-          </span>
-          <span
-            class="gpa-st-tag label label-purple"
-            title="在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程，全部加权平均绩点为 ${allCoursesGPA}"
-          >
-            全部绩点：${allCoursesGPA}
-          </span>
-          <span class="gpa-tt-tag gpa-tt-tag-selected-score label label-pink">
-            所有选中课程平均分：0
-          </span>
-          <span class="gpa-tt-tag gpa-tt-tag-selected-gpa label label-pink">
-            所有选中课程绩点：0
-          </span>
-        </div>
-      </div>
-    `
+    return require('./totalTranscript.pug')({
+      allCoursesGPA,
+      allCoursesScore,
+      compulsoryCoursesGPA,
+      compulsoryCoursesScore,
+      semestersQuantity,
+      coursesQuantity,
+      totalCourseCredits,
+      compulsoryCoursesQuantity
+    })
   },
-  semesterTranscriptHeader(semester: string, courses: Course[]) {
-    const coursesQuantity = courses.length
-    const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
-    return `
-      <h4 class="header smaller lighter grey">
-        <i class="menu-icon fa fa-calendar"></i> ${semester}
-        <span class="gpa-info-badge badge badge-yellow" title="在${semester}，您一共修读了 ${coursesQuantity} 门课程">${coursesQuantity} 门</span>
-        <span class="gpa-info-badge badge badge-yellow" title="在${semester}，您一共修读了 ${totalCourseCredits} 学分">${totalCourseCredits} 学分</span>
-        <span
-          class="gpa-info-badge gpa-info-badge-st-selected-course-quantity badge badge-pink"
-          title="在${semester}，您当前选中了 0 门课程"
-          data-semester="${semester}"
-        >
-          0 门
-        </span>
-        <span
-          class="gpa-info-badge gpa-info-badge-st-selected-course-credits badge badge-pink"
-          title="在${semester}，您当前选中的课程总学分为 0"
-          data-semester="${semester}"
-        >
-          0 学分
-        </span>
-        <button class="btn btn-white btn-minier gpa-st-select-all-btn" data-semester="${semester}">
-          <i class="ace-icon fa fa-check green"></i>
-          全选
-        </button>
-        <button class="btn btn-white btn-minier gpa-st-cancel-btn" data-semester="${semester}">
-          <i class="ace-icon fa fa-times red2"></i>
-          全不选
-        </button>
-      </h4>
-    `
-  },
-  semesterTranscriptLabels(semester: string, courses: Course[]) {
+  semesterTranscriptWrapper(semester: string, courses: Course[]) {
     const {
       allCoursesGPA,
       allCoursesScore,
       compulsoryCoursesGPA,
       compulsoryCoursesScore
     } = getFourTypesValue(courses)
-    const compulsoryCourses = getCompulsoryCourse(courses)
     const coursesQuantity = courses.length
+    const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
+    const compulsoryCourses = getCompulsoryCourse(courses)
     const compulsoryCoursesQuantity = compulsoryCourses.length
-    return `
-      <p>
-        <span
-          class="gpa-st-tag label label-success"
-          title="在${semester}，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均分为 ${compulsoryCoursesScore}"
-        >
-          必修平均分：${compulsoryCoursesScore}
-        </span>
-        <span
-          class="gpa-st-tag label label-success"
-          title="在${semester}，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均绩点为 ${compulsoryCoursesGPA}"
-        >
-          必修绩点：${compulsoryCoursesGPA}
-        </span>
-        <span
-          class="gpa-st-tag label label-purple"
-          title="在${semester}，您一共修读了 ${coursesQuantity} 门课程，加权平均分为 ${allCoursesScore}"
-        >
-          全部平均分：${allCoursesScore}
-        </span>
-        <span
-          class="gpa-st-tag label label-purple"
-          title="在${semester}，您一共修读了 ${coursesQuantity} 门课程，加权平均绩点为 ${allCoursesGPA}"
-        >
-          全部绩点：${allCoursesGPA}
-        </span>
-      </p>
-      <p>
-        <span class="gpa-st-tag gpa-st-tag-selected-score label label-pink" data-semester="${semester}">
-        选中课程平均分：0
-        </span>
-        <span class="gpa-st-tag gpa-st-tag-selected-gpa label label-pink" data-semester="${semester}">
-          选中课程绩点：0
-        </span>
-      </p>
-    `
-  },
-  semesterTranscriptContent(semester: string, courses: Course[]) {
-    const courseList = () =>
+    return require('./semesterTranscript.pug')({
+      allCoursesGPA,
+      allCoursesScore,
+      compulsoryCoursesGPA,
+      compulsoryCoursesScore,
+      coursesQuantity,
+      totalCourseCredits,
+      compulsoryCoursesQuantity,
+      semester,
       courses
-        .map(
-          v => `
-            <tr
-              class="gpa-st-item"
-              data-semester="${semester}"
-              data-name="${v.name}"
-              data-score="${v.score}"
-              data-level="${v.level}"
-              data-gpa="${v.gpa}"
-              data-credit="${v.credit}"
-              data-attribute="${v.attribute}"
-            >
-              <td>${v.name}</td>
-              <td class="center">${v.score}</td>
-              <td class="center">${v.level}</td>
-              <td class="center">${v.gpa}</td>
-              <td class="center">${v.credit}</td>
-              <td class="center">${v.attribute}</td>
-            </tr>
-          `
-        )
-        .join('')
-    return `
-      <table class="gpa-st-table table table-striped table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>课程名</th>
-            <th class="center">分数</th>
-            <th class="center">等级</th>
-            <th class="center">绩点</th>
-            <th class="center">学分</th>
-            <th class="center">属性</th>
-          </tr>
-        </thead>
-        <tbody>
-        ${courseList()}
-        </tbody>
-      </table>
-    `
-  },
-  semesterTranscriptWrapper(header: string, labels: string, content: string) {
-    return `<div class="gpa-st col-sm-6">${header + labels + content}</div>`
+    })
   }
 }
