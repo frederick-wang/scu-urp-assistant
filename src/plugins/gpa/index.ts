@@ -35,6 +35,175 @@ let $indexWidgetMain: JQuery<HTMLElement> | null
 let $indexWidgetMainRow: JQuery<HTMLElement> | null
 let records: Record[] | null
 
+/**
+ * 渲染与「选择」有关的元素
+ */
+function renderTagSelected() {
+  renderSemesterTagSelected()
+  renderTotalTagSelected()
+}
+
+/**
+ * 渲染与「选择」有关的「分学期」元素
+ */
+function renderSemesterTagSelected() {
+  if (!records) {
+    return
+  }
+  records.forEach(({ semester, courses }) => {
+    const selectedCourses = courses.filter(v => v.selected)
+    const getSemester$Element = (className: string) =>
+      window.$(
+        Array.from(document.getElementsByClassName(className)).filter(
+          v => (v as HTMLElement).dataset.semester === semester
+        )[0]
+      )
+    const $selectedCourseQuantityBadge = getSemester$Element(
+      'gpa-info-badge-st-selected-course-quantity'
+    )
+    const $selectedCourseCreditsBadge = getSemester$Element(
+      'gpa-info-badge-st-selected-course-credits'
+    )
+    const $scoreTag = getSemester$Element('gpa-st-tag-selected-score')
+    const $gpaTag = getSemester$Element('gpa-st-tag-selected-gpa')
+    const $selectAllBtn = getSemester$Element('gpa-st-select-all-btn')
+    const $cancelBtn = getSemester$Element('gpa-st-cancel-btn')
+    console.log($selectAllBtn, $cancelBtn)
+    if (selectedCourses.length) {
+      const selectedCoursesQuantity = selectedCourses.length
+      const selectedCourseCredits = selectedCourses.reduce(
+        (acc, cur) => acc + cur.credit,
+        0
+      )
+      const selectedCoursesScore = getAllCoursesScore(selectedCourses)
+      const selectedCoursesGPA = getAllCoursesGPA(selectedCourses)
+
+      $selectedCourseQuantityBadge.show()
+      $selectedCourseQuantityBadge.attr(
+        'title',
+        `在${semester}，您当前选中了 ${selectedCoursesQuantity} 门课程`
+      )
+      $selectedCourseQuantityBadge.text(`${selectedCoursesQuantity} 门`)
+      $selectedCourseCreditsBadge.show()
+      $selectedCourseCreditsBadge.attr(
+        'title',
+        `在${semester}，您当前选中的课程总学分为 ${selectedCourseCredits}`
+      )
+      $selectedCourseCreditsBadge.text(`${selectedCourseCredits} 学分`)
+      $scoreTag.show()
+      $scoreTag.attr(
+        'title',
+        `在${semester}，您当前选出了 ${selectedCoursesQuantity} 门课程进行计算，选中课程的加权平均分为 ${selectedCoursesScore}`
+      )
+      $scoreTag.text(`选中课程平均分：${selectedCoursesScore}`)
+      $gpaTag.show()
+      $gpaTag.attr(
+        'title',
+        `在${semester}，您当前选出了 ${selectedCoursesQuantity} 门课程进行计算，选中课程的加权平均绩点为 ${selectedCoursesGPA}`
+      )
+      $gpaTag.text(`选中课程绩点：${selectedCoursesGPA}`)
+      $selectAllBtn.hide()
+      $cancelBtn.show()
+    } else {
+      $selectedCourseQuantityBadge.hide()
+      $selectedCourseCreditsBadge.hide()
+      $scoreTag.hide()
+      $gpaTag.hide()
+      $selectAllBtn.show()
+      $cancelBtn.hide()
+    }
+  })
+}
+
+/**
+ * 渲染与「选择」有关的「全部成绩」元素
+ */
+function renderTotalTagSelected() {
+  if (!records) {
+    return
+  }
+  const selectedCourses = records
+    .reduce((acc, cur) => acc.concat(cur.courses), [] as Course[])
+    .filter(v => v.selected)
+  const $selectedCourseQuantityBadge = window.$(
+    '.gpa-info-badge-tt-selected-course-quantity'
+  )
+  const $selectedCourseCreditsBadge = window.$(
+    '.gpa-info-badge-tt-selected-course-credits'
+  )
+  const $scoreTag = window.$('.gpa-tt-tag-selected-score')
+  const $gpaTag = window.$('.gpa-tt-tag-selected-gpa')
+  const $selectAllBtn = window.$('.gpa-tt-select-all-btn')
+  const $cancelBtn = window.$('.gpa-tt-cancel-btn')
+  if (selectedCourses.length) {
+    const semestersQuantity = records.length
+    const selectedCoursesQuantity = selectedCourses.length
+    const selectedCourseCredits = selectedCourses.reduce(
+      (acc, cur) => acc + cur.credit,
+      0
+    )
+    const selectedCoursesScore = getAllCoursesScore(selectedCourses)
+    const selectedCoursesGPA = getAllCoursesGPA(selectedCourses)
+
+    $selectedCourseQuantityBadge.show()
+    $selectedCourseQuantityBadge.attr(
+      'title',
+      `在 ${semestersQuantity} 个学期中，您当前一共选中了 ${selectedCoursesQuantity} 门课程`
+    )
+    $selectedCourseQuantityBadge.text(`${selectedCoursesQuantity} 门`)
+    $selectedCourseCreditsBadge.show()
+    $selectedCourseCreditsBadge.attr(
+      'title',
+      `在 ${semestersQuantity} 个学期中，您当前选中的全部课程总学分为 ${selectedCourseCredits}`
+    )
+    $selectedCourseCreditsBadge.text(`${selectedCourseCredits} 学分`)
+    $scoreTag.show()
+    $scoreTag.attr(
+      'title',
+      `在 ${semestersQuantity} 个学期中，您当前一共选出了 ${selectedCoursesQuantity} 门课程进行计算，全部选中课程的加权平均分为 ${selectedCoursesScore}`
+    )
+    $scoreTag.text(`所有选中课程平均分：${selectedCoursesScore}`)
+    $gpaTag.show()
+    $gpaTag.attr(
+      'title',
+      `在 ${semestersQuantity} 个学期中，您当前一共选出了 ${selectedCoursesQuantity} 门课程进行计算，全部选中课程的加权平均绩点为 ${selectedCoursesGPA}`
+    )
+    $gpaTag.text(`所有选中课程绩点：${selectedCoursesGPA}`)
+    $selectAllBtn.hide()
+    $cancelBtn.show()
+  } else {
+    $selectedCourseQuantityBadge.hide()
+    $selectedCourseCreditsBadge.hide()
+    $scoreTag.hide()
+    $gpaTag.hide()
+    $selectAllBtn.show()
+    $cancelBtn.hide()
+  }
+}
+
+/**
+ * 当「课程块」被点击时，做出相应的反应
+ */
+function toggleTranscriptItemStatus(dom: HTMLElement) {
+  if (!records) {
+    return
+  }
+  window.$(dom).toggleClass('selected')
+  const status = window.$(dom).hasClass('selected')
+  const { name, attribute, semester } = dom.dataset
+  const score = Number(dom.dataset.score)
+  const gpa = Number(dom.dataset.gpa)
+  const credit = Number(dom.dataset.credit)
+  getSemesterCourses(records, semester as string).filter(
+    v =>
+      v.name === name &&
+      v.attribute === attribute &&
+      v.score === score &&
+      v.gpa === gpa &&
+      v.credit === credit
+  )[0].selected = status
+}
+
 export default {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
@@ -97,24 +266,22 @@ export default {
    * 初始化最初的界面
    */
   initDOM() {
-    $indexWidget = window.$(templates.indexWidget)
+    $indexWidget = window.$(templates.indexWidget())
     window
       .$('.page-content')
       .children('.row')
       .append($indexWidget)
-    $indexWidgetMain = $indexWidget.find('.widget-main')
-    $indexWidgetMainRow = $indexWidget.find('.widget-main .row')
+    $indexWidgetMain = $indexWidget.find('.gpa-content')
+    $indexWidgetMainRow = $indexWidget.find('.gpa-content .row')
   },
 
   /**
    * 初始化按钮与「课程块」的鼠标事件
    */
   initEvent() {
-    const that = this
-
     window.$('.gpa-st-item').click(function() {
-      that.toggleTranscriptItemStatus(this)
-      that.renderTagSelected()
+      toggleTranscriptItemStatus(this)
+      renderTagSelected()
     })
 
     window.$('#gpa-toolbar-detail').click(() => {
@@ -143,7 +310,7 @@ export default {
           window.$(this).addClass('selected')
         }
       })
-      that.renderTagSelected()
+      renderTagSelected()
     })
 
     window.$('.gpa-st-cancel-btn').click(function() {
@@ -159,7 +326,7 @@ export default {
           window.$(this).removeClass('selected')
         }
       })
-      that.renderTagSelected()
+      renderTagSelected()
     })
 
     window.$('.gpa-tt-select-all-btn').click(function() {
@@ -174,7 +341,7 @@ export default {
       window.$('.gpa-st-item').each(function() {
         window.$(this).addClass('selected')
       })
-      that.renderTagSelected()
+      renderTagSelected()
     })
 
     window.$('.gpa-tt-cancel-btn').click(function() {
@@ -189,176 +356,8 @@ export default {
       window.$('.gpa-st-item').each(function() {
         window.$(this).removeClass('selected')
       })
-      that.renderTagSelected()
+      renderTagSelected()
     })
-  },
-
-  /**
-   * 渲染与「选择」有关的元素
-   */
-  renderTagSelected() {
-    this.renderSemesterTagSelected()
-    this.renderTotalTagSelected()
-  },
-
-  /**
-   * 渲染与「选择」有关的「分学期」元素
-   */
-  renderSemesterTagSelected() {
-    if (!records) {
-      return
-    }
-    records.forEach(({ semester, courses }) => {
-      const selectedCourses = courses.filter(v => v.selected)
-      const getSemester$Element = (className: string) =>
-        window.$(
-          Array.from(document.getElementsByClassName(className)).filter(
-            v => window.$.data(v, 'semester') === semester
-          )[0]
-        )
-      const $selectedCourseQuantityBadge = getSemester$Element(
-        'gpa-info-badge-st-selected-course-quantity'
-      )
-      const $selectedCourseCreditsBadge = getSemester$Element(
-        'gpa-info-badge-st-selected-course-credits'
-      )
-      const $scoreTag = getSemester$Element('gpa-st-tag-selected-score')
-      const $gpaTag = getSemester$Element('gpa-st-tag-selected-gpa')
-      const $selectAllBtn = getSemester$Element('gpa-st-select-all-btn')
-      const $cancelBtn = getSemester$Element('gpa-st-cancel-btn')
-      if (selectedCourses.length) {
-        const selectedCoursesQuantity = selectedCourses.length
-        const selectedCourseCredits = selectedCourses.reduce(
-          (acc, cur) => acc + cur.credit,
-          0
-        )
-        const selectedCoursesScore = getAllCoursesScore(selectedCourses)
-        const selectedCoursesGPA = getAllCoursesGPA(selectedCourses)
-
-        $selectedCourseQuantityBadge.show()
-        $selectedCourseQuantityBadge.attr(
-          'title',
-          `在${semester}，您当前选中了 ${selectedCoursesQuantity} 门课程`
-        )
-        $selectedCourseQuantityBadge.text(`${selectedCoursesQuantity} 门`)
-        $selectedCourseCreditsBadge.show()
-        $selectedCourseCreditsBadge.attr(
-          'title',
-          `在${semester}，您当前选中的课程总学分为 ${selectedCourseCredits}`
-        )
-        $selectedCourseCreditsBadge.text(`${selectedCourseCredits} 学分`)
-        $scoreTag.show()
-        $scoreTag.attr(
-          'title',
-          `在${semester}，您当前选出了 ${selectedCoursesQuantity} 门课程进行计算，选中课程的加权平均分为 ${selectedCoursesScore}`
-        )
-        $scoreTag.text(`选中课程平均分：${selectedCoursesScore}`)
-        $gpaTag.show()
-        $gpaTag.attr(
-          'title',
-          `在${semester}，您当前选出了 ${selectedCoursesQuantity} 门课程进行计算，选中课程的加权平均绩点为 ${selectedCoursesGPA}`
-        )
-        $gpaTag.text(`选中课程绩点：${selectedCoursesGPA}`)
-        $selectAllBtn.hide()
-        $cancelBtn.show()
-      } else {
-        $selectedCourseQuantityBadge.hide()
-        $selectedCourseCreditsBadge.hide()
-        $scoreTag.hide()
-        $gpaTag.hide()
-        $selectAllBtn.show()
-        $cancelBtn.hide()
-      }
-    })
-  },
-
-  /**
-   * 渲染与「选择」有关的「全部成绩」元素
-   */
-  renderTotalTagSelected() {
-    if (!records) {
-      return
-    }
-    const selectedCourses = records
-      .reduce((acc, cur) => acc.concat(cur.courses), [] as Course[])
-      .filter(v => v.selected)
-    const $selectedCourseQuantityBadge = window.$(
-      '.gpa-info-badge-tt-selected-course-quantity'
-    )
-    const $selectedCourseCreditsBadge = window.$(
-      '.gpa-info-badge-tt-selected-course-credits'
-    )
-    const $scoreTag = window.$('.gpa-tt-tag-selected-score')
-    const $gpaTag = window.$('.gpa-tt-tag-selected-gpa')
-    const $selectAllBtn = window.$('.gpa-tt-select-all-btn')
-    const $cancelBtn = window.$('.gpa-tt-cancel-btn')
-    if (selectedCourses.length) {
-      const semestersQuantity = records.length
-      const selectedCoursesQuantity = selectedCourses.length
-      const selectedCourseCredits = selectedCourses.reduce(
-        (acc, cur) => acc + cur.credit,
-        0
-      )
-      const selectedCoursesScore = getAllCoursesScore(selectedCourses)
-      const selectedCoursesGPA = getAllCoursesGPA(selectedCourses)
-
-      $selectedCourseQuantityBadge.show()
-      $selectedCourseQuantityBadge.attr(
-        'title',
-        `在 ${semestersQuantity} 个学期中，您当前一共选中了 ${selectedCoursesQuantity} 门课程`
-      )
-      $selectedCourseQuantityBadge.text(`${selectedCoursesQuantity} 门`)
-      $selectedCourseCreditsBadge.show()
-      $selectedCourseCreditsBadge.attr(
-        'title',
-        `在 ${semestersQuantity} 个学期中，您当前选中的全部课程总学分为 ${selectedCourseCredits}`
-      )
-      $selectedCourseCreditsBadge.text(`${selectedCourseCredits} 学分`)
-      $scoreTag.show()
-      $scoreTag.attr(
-        'title',
-        `在 ${semestersQuantity} 个学期中，您当前一共选出了 ${selectedCoursesQuantity} 门课程进行计算，全部选中课程的加权平均分为 ${selectedCoursesScore}`
-      )
-      $scoreTag.text(`所有选中课程平均分：${selectedCoursesScore}`)
-      $gpaTag.show()
-      $gpaTag.attr(
-        'title',
-        `在 ${semestersQuantity} 个学期中，您当前一共选出了 ${selectedCoursesQuantity} 门课程进行计算，全部选中课程的加权平均绩点为 ${selectedCoursesGPA}`
-      )
-      $gpaTag.text(`所有选中课程绩点：${selectedCoursesGPA}`)
-      $selectAllBtn.hide()
-      $cancelBtn.show()
-    } else {
-      $selectedCourseQuantityBadge.hide()
-      $selectedCourseCreditsBadge.hide()
-      $scoreTag.hide()
-      $gpaTag.hide()
-      $selectAllBtn.show()
-      $cancelBtn.hide()
-    }
-  },
-
-  /**
-   * 当「课程块」被点击时，做出相应的反应
-   */
-  toggleTranscriptItemStatus(dom: HTMLElement) {
-    if (!records) {
-      return
-    }
-    window.$(dom).toggleClass('selected')
-    const status = window.$(dom).hasClass('selected')
-    const { name, attribute, semester } = dom.dataset
-    const score = Number(dom.dataset.score)
-    const gpa = Number(dom.dataset.gpa)
-    const credit = Number(dom.dataset.credit)
-    getSemesterCourses(records, semester as string).filter(
-      v =>
-        v.name === name &&
-        v.attribute === attribute &&
-        v.score === score &&
-        v.gpa === gpa &&
-        v.credit === credit
-    )[0].selected = status
   },
 
   /**
@@ -649,7 +648,9 @@ function getPointByScore(score: number, semester: string) {
 }
 
 const templates = {
-  indexWidget: require('./indexWidget.pug')(),
+  indexWidget(): string {
+    return require('./indexWidget.pug')()
+  },
   totalTranscript(semestersQuantity: number, courses: Course[]) {
     const {
       allCoursesGPA,
