@@ -3,7 +3,7 @@ export default {
   name: 'recover-remember-me',
   pathname: '/login',
   init() {
-    const $rememberMe = window.$(require('./rememberMe.pug')())
-    window.$('#loginButton').before($rememberMe)
+    const $rememberMe = $(require('./rememberMe.pug')())
+    $('#loginButton').before($rememberMe)
   }
 }

@@ -113,9 +113,9 @@ function showSelectionModal() {
         ) => {
           const selector = checkboxWrapperSelectors.get(type)
           if (selector) {
-            window
-              .$(selector)
-              .append(require('./checkbox.pug')({ name, index, curriculum }))
+            $(selector).append(
+              require('./checkbox.pug')({ name, index, curriculum })
+            )
           } else {
             const msg = `无效的问卷名称：${type}`
             window.urp.alert(msg)
@@ -128,18 +128,16 @@ function showSelectionModal() {
         if (!selector) {
           continue
         }
-        if (!window.$(selector).children().length) {
-          window
-            .$(selector)
+        if (!$(selector).children().length) {
+          $(selector)
             .prev()
             .remove()
-          window.$(selector).remove()
+          $(selector).remove()
         }
       }
     },
     yes: (layerIndex: number) => {
-      list = window
-        .$('#selection-form')
+      list = $('#selection-form')
         .serializeArray()
         .map(v => list[Number(v.name.replace('selection-checkbox-', ''))])
       window.layer.close(layerIndex)
@@ -177,7 +175,7 @@ function evaluate(index: number) {
   let tokenValue: string
   let count: string
 
-  window.$.ajax({
+  $.ajax({
     type: 'POST',
     url: '/student/teachingEvaluation/teachingEvaluation/evaluationPage',
     headers: {
@@ -244,7 +242,7 @@ function evaluate2ndStage(
   evaluationContentContent: string,
   tokenValue: string
 ) {
-  window.$.ajax({
+  $.ajax({
     cache: true,
     type: 'POST',
     async: true,
@@ -313,10 +311,10 @@ export default {
   pathname: '/student/teachingEvaluation/evaluation/index',
   style: require('./index.scss').toString(),
   init() {
-    $btn = window.$(templates.btn)
-    $prompt = window.$(templates.prompt)
+    $btn = $(templates.btn)
+    $prompt = $(templates.prompt)
 
-    window.$('#close > h4').append($btn, $prompt)
+    $('#close > h4').append($btn, $prompt)
 
     $btn.click(onClickBtn.bind(this))
   }

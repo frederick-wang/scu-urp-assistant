@@ -27,11 +27,11 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new webpack.BannerPlugin({ banner })
-    // new webpack.ProvidePlugin({
-    //   $: 'jquery',
-    //   jQuery: 'jquery'
-    // })
+    new webpack.BannerPlugin({ banner }),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    })
   ],
   output: {
     filename: '[name].js',

@@ -6,12 +6,11 @@ export default {
   pathname: '/**',
   init() {
     if (window.location.pathname === '/login') {
-      const $loginTooltip = window.$(require('./loginTooltip.pug')({ version }))
-      window.$('#formContent').prepend($loginTooltip)
+      const $loginTooltip = $(require('./loginTooltip.pug')({ version }))
+      $('#formContent').prepend($loginTooltip)
     } else {
-      const $navTooltip = window.$(require('./navTooltip.pug')({ version }))
-      window
-        .$(
+      const $navTooltip = $(require('./navTooltip.pug')({ version }))
+      $(
           '#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul'
         )
         .children('li')

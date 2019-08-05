@@ -15,7 +15,6 @@ import { initCourseInfoPopover } from './popover'
 import { getChineseNumber } from '../../utils/basic'
 
 async function query() {
-  const $ = window.$
   const number = $('#major').val()
   if (number !== '无') {
     showLoadingAnimation('.training-scheme-wrapper')
@@ -28,7 +27,6 @@ async function query() {
 }
 
 function updateMajorList() {
-  const $ = window.$
   const grade = $('#grade').val()
   const department = $('#department').val()
   const res = trainingSchemeList
@@ -52,7 +50,6 @@ function initFunc() {
 }
 
 function initDOM(root: HTMLElement) {
-  const $ = window.$
   const template = `
       <div class="training-scheme-wrapper">
         ${genQueryHTML()}
@@ -62,7 +59,6 @@ function initDOM(root: HTMLElement) {
 }
 
 async function selectSelfMajorAndQuery() {
-  const $ = window.$
   const selfMajorNumber = await getSelfMajorNumber()
   const selfSchemeInfo = trainingSchemeList.filter(
     v => v[0] === selfMajorNumber

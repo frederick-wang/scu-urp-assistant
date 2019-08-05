@@ -49,7 +49,6 @@ function initFunc() {
 }
 
 function initDOM(root: HTMLElement) {
-  const $ = window.$
   const template = `
       <div class="compare-training-scheme-wrapper">
         ${genQueryHTML()}
@@ -161,7 +160,6 @@ function genQueryHTML() {
 }
 
 async function selectSelfMajorAndQuery() {
-  const $ = window.$
   const selfMajorNumber = await getSelfMajorNumber()
   const selfSchemeInfo = trainingSchemeList.filter(
     v => v[0] === selfMajorNumber
@@ -178,7 +176,6 @@ async function selectSelfMajorAndQuery() {
 }
 
 function updateMajorList(containerSelector: string) {
-  const $ = window.$
   const grade = $(`${containerSelector} #grade`).val()
   const department = $(`${containerSelector} #department`).val()
   const res = trainingSchemeList
@@ -191,7 +188,6 @@ function updateMajorList(containerSelector: string) {
 }
 
 async function query() {
-  const $ = window.$
   const number1 = $('#query-major-1 #major').val()
   const number2 = $('#query-major-2 #major').val()
   if (number1 !== '无' && number2 !== '无') {

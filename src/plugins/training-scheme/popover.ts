@@ -92,7 +92,6 @@ export function initCourseInfoPopover() {
   if (!window.__$SUA_SHARED_DATA__) {
     return
   }
-  const $ = window.$
   const {
     academicInfo: { currentSemester }
   } = window.__$SUA_SHARED_DATA__
@@ -147,7 +146,6 @@ async function getCourseInfoData(
   courseNumber: string,
   element: Element
 ): Promise<CourseInfo> {
-  const $ = window.$
   if (currentQueryCourse === element) {
     const res: CourseInfoAPIData = await $.post(
       '/student/integratedQuery/course/courseSchdule/courseInfo',

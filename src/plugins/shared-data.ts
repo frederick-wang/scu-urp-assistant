@@ -15,7 +15,6 @@ export default {
         failedCourseNumber: 0
       }
     }
-    const $ = window.$
     // 保证处在登陆后界面
     if (window.location.pathname !== '/login') {
       // 加载suaPath

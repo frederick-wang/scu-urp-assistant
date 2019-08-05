@@ -25,8 +25,6 @@ declare global {
         failedCourseNumber: number
       }
     }
-    $: JQueryStatic
-    jQuery: JQueryStatic
     layer: {
       open: (a: any) => number
       close: (a: any) => number
@@ -133,7 +131,7 @@ export default {
       }
     }
     // 加载样式
-    window.$('head').append(`
+    $('head').append(`
       <style type="text/css">
         body, h1, h2, h3, h4, h5, h6 {
           font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
@@ -141,7 +139,7 @@ export default {
       </style>
     `)
     for (const s of this.styleQueue) {
-      window.$('head').append(`
+      $('head').append(`
         <style type="text/css">
           ${s}
         </style>
@@ -160,7 +158,7 @@ export default {
     // 加载菜单
     for (const m of this.menuQueue) {
       const { rootMenuId, rootMenuName, id: menuId, name: menuName, items } = m
-      const $rootMenuList = window.$('#menus')
+      const $rootMenuList = $('#menus')
       // 检查根菜单是否存在，如不存在则新建
       if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
         $rootMenuList.append(`
@@ -208,12 +206,12 @@ export default {
           clickHandler() {
             window.$sua.menuItems.forEach(v => {
               if (v.id === this.element.id) {
-                window.$(v.element).addClass('active')
+                $(v.element).addClass('active')
               } else {
-                window.$(v.element).removeClass('active')
+                $(v.element).removeClass('active')
               }
             })
-            const $breadcrumbs = window.$(
+            const $breadcrumbs = $(
               '.main-content>.breadcrumbs>ul.breadcrumb'
             )
             $breadcrumbs.empty().append(`
@@ -231,14 +229,14 @@ export default {
                 this.element.id
               }">${breadcrumbs[2]}</li>
             `)
-            const $pageContent = window.$('.main-content>.page-content')
+            const $pageContent = $('.main-content>.page-content')
             $pageContent.empty()
             const hash = `#suapath=${this.path}`
             // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
             setTimeout(() => {
               window.location.hash = hash
             }, 0)
-            render(window.$('.main-content>.page-content')[0])
+            render($('.main-content>.page-content')[0])
           }
         }
         this.menuItems.push(menuItem)

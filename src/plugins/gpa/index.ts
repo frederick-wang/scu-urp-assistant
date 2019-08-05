@@ -37,6 +37,69 @@ let $gpaStContainer: JQuery<HTMLElement> | null
 let records: Record[] | null
 
 /**
+ * 初始化最初的界面
+ */
+function initDOM() {
+  $indexWidget = $(templates.indexWidget())
+  $('.page-content')
+    .children('.row')
+    .append($indexWidget)
+  $gpaContent = $indexWidget.find('.gpa-content')
+  $gpaStContainer = $indexWidget.find('.gpa-st-container')
+}
+
+/**
+ * 渲染「总成绩」部分的界面
+ */
+function renderTotalTranscript() {
+  if (!$gpaContent || !records) {
+    return
+  }
+  const semestersQuantity = records.length
+  const allCourses = records.reduce(
+    (acc, cur) => acc.concat(cur.courses),
+    [] as Course[]
+  )
+  const labels = templates.totalTranscript(semestersQuantity, allCourses)
+  $gpaContent.prepend(labels)
+}
+
+/**
+ * 渲染「学期成绩」部分的界面
+ */
+function renderSemesterTranscript() {
+  if (!records) {
+    return
+  }
+  records.forEach(({ semester, courses }) => {
+    if (!$gpaStContainer) {
+      return
+    }
+    $gpaStContainer.append(templates.semesterTranscript(semester, courses))
+  })
+}
+
+/**
+ * 销毁页面元素
+ */
+function destroy() {
+  if ($gpaStContainer) {
+    $gpaStContainer.remove()
+    $gpaStContainer = null
+  }
+  if ($gpaContent) {
+    $gpaContent.remove()
+    $gpaContent = null
+  }
+  if ($indexWidget) {
+    $indexWidget.remove()
+    $indexWidget = null
+  }
+
+  records = null
+}
+
+/**
  * 渲染与「选择」有关的元素
  */
 function renderTagSelected() {
@@ -54,7 +117,7 @@ function renderSemesterTagSelected() {
   records.forEach(({ semester, courses }) => {
     const selectedCourses = courses.filter(v => v.selected)
     const getSemester$Element = (className: string) =>
-      window.$(
+      $(
         Array.from(document.getElementsByClassName(className)).filter(
           v => (v as HTMLElement).dataset.semester === semester
         )[0]
@@ -125,16 +188,16 @@ function renderTotalTagSelected() {
   const selectedCourses = records
     .reduce((acc, cur) => acc.concat(cur.courses), [] as Course[])
     .filter(v => v.selected)
-  const $selectedCourseQuantityBadge = window.$(
+  const $selectedCourseQuantityBadge = $(
     '.gpa-info-badge-tt-selected-course-quantity'
   )
-  const $selectedCourseCreditsBadge = window.$(
+  const $selectedCourseCreditsBadge = $(
     '.gpa-info-badge-tt-selected-course-credits'
   )
-  const $scoreTag = window.$('.gpa-tt-tag-selected-score')
-  const $gpaTag = window.$('.gpa-tt-tag-selected-gpa')
-  const $selectAllBtn = window.$('.gpa-tt-select-all-btn')
-  const $cancelBtn = window.$('.gpa-tt-cancel-btn')
+  const $scoreTag = $('.gpa-tt-tag-selected-score')
+  const $gpaTag = $('.gpa-tt-tag-selected-gpa')
+  const $selectAllBtn = $('.gpa-tt-select-all-btn')
+  const $cancelBtn = $('.gpa-tt-cancel-btn')
   if (selectedCourses.length) {
     const semestersQuantity = records.length
     const selectedCoursesQuantity = selectedCourses.length
@@ -188,8 +251,8 @@ function toggleTranscriptItemStatus(dom: HTMLElement) {
   if (!records) {
     return
   }
-  window.$(dom).toggleClass('selected')
-  const status = window.$(dom).hasClass('selected')
+  $(dom).toggleClass('selected')
+  const status = $(dom).hasClass('selected')
   const { name, attribute, semester } = dom.dataset
   const score = Number(dom.dataset.score)
   const gpa = Number(dom.dataset.gpa)
@@ -202,221 +265,6 @@ function toggleTranscriptItemStatus(dom: HTMLElement) {
       v.gpa === gpa &&
       v.credit === credit
   )[0].selected = status
-}
-
-export default {
-  name: 'gpa',
-  pathname: ['/', '/index.jsp'],
-  style: require('./index.scss').toString(),
-  init() {
-    this.initDOM()
-    // 第一次请求只是为了获得课程总数 totalCount
-    window.$.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
-      zxjxjhh: '',
-      kch: '',
-      kcm: '',
-      pageNum: 1,
-      pageSize: 1
-    })
-      .then(({ list: { pageContext: { totalCount } } }: allTermScoresData) => {
-        // 用拿到的课程总数再次请求，获得全部课程成绩列表
-        return window.$.post(
-          '/student/integratedQuery/scoreQuery/allTermScores/data',
-          {
-            zxjxjhh: '',
-            kch: '',
-            kcm: '',
-            pageNum: 1,
-            pageSize: totalCount
-          }
-        )
-      })
-      .then((data: allTermScoresData) =>
-        // 将获取的全部课程成绩列表按照学期分组
-        data.list.records.reduce(
-          (acc, cur) => {
-            // 如果没有挂科，那么 cur[18] ≡ null
-            // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
-            const failReason = cur[18] ? (cur[18] as string) : null
-            if (!failReason || failReason.indexOf('缓考') === -1) {
-              const s = acc.filter(v => v.semester === cur[0])
-              if (s.length) {
-                s[0].courses.push(cur)
-              } else {
-                acc.push({
-                  semester: cur[0] as string,
-                  courses: [cur]
-                })
-              }
-            }
-            return acc
-          },
-          [] as RawRecord[]
-        )
-      )
-      .then(list => {
-        records = convertRecords(list)
-        this.renderSemesterTranscript()
-        this.renderTotalTranscript()
-        this.initEvent()
-      })
-  },
-
-  /**
-   * 初始化最初的界面
-   */
-  initDOM() {
-    $indexWidget = window.$(templates.indexWidget())
-    window
-      .$('.page-content')
-      .children('.row')
-      .append($indexWidget)
-    $gpaContent = $indexWidget.find('.gpa-content')
-    $gpaStContainer = $indexWidget.find('.gpa-st-container')
-  },
-
-  /**
-   * 初始化按钮与「课程块」的鼠标事件
-   */
-  initEvent() {
-    window.$('.gpa-st-item').click(function() {
-      toggleTranscriptItemStatus(this)
-      renderTagSelected()
-    })
-
-    window.$('#gpa-toolbar-detail').click(() => {
-      const menu = document.getElementById('125803405')
-      if (menu) {
-        window.toSelect(menu)
-        window.location.href =
-          '/student/integratedQuery/scoreQuery/allTermScores/index'
-      }
-    })
-
-    window.$('#gpa-toolbar-reset').click(() => {
-      this.reset()
-    })
-
-    window.$('.gpa-st-select-all-btn').click(function() {
-      if (!records) {
-        return
-      }
-      const { semester } = this.dataset
-      getSemesterCourses(records, semester as string).forEach(item => {
-        item.selected = true
-      })
-      window.$('.gpa-st-item').each(function() {
-        if (this.dataset.semester === semester) {
-          window.$(this).addClass('selected')
-        }
-      })
-      renderTagSelected()
-    })
-
-    window.$('.gpa-st-cancel-btn').click(function() {
-      if (!records) {
-        return
-      }
-      const { semester } = this.dataset
-      getSemesterCourses(records, semester as string).forEach(item => {
-        item.selected = false
-      })
-      window.$('.gpa-st-item').each(function() {
-        if (this.dataset.semester === semester) {
-          window.$(this).removeClass('selected')
-        }
-      })
-      renderTagSelected()
-    })
-
-    window.$('.gpa-tt-select-all-btn').click(function() {
-      if (!records) {
-        return
-      }
-      records.forEach(list =>
-        list.courses.forEach(item => {
-          item.selected = true
-        })
-      )
-      window.$('.gpa-st-item').each(function() {
-        window.$(this).addClass('selected')
-      })
-      renderTagSelected()
-    })
-
-    window.$('.gpa-tt-cancel-btn').click(function() {
-      if (!records) {
-        return
-      }
-      records.forEach(list =>
-        list.courses.forEach(item => {
-          item.selected = false
-        })
-      )
-      window.$('.gpa-st-item').each(function() {
-        window.$(this).removeClass('selected')
-      })
-      renderTagSelected()
-    })
-  },
-
-  /**
-   * 渲染「总成绩」部分的界面
-   */
-  renderTotalTranscript() {
-    if (!$gpaContent || !records) {
-      return
-    }
-    const semestersQuantity = records.length
-    const allCourses = records.reduce(
-      (acc, cur) => acc.concat(cur.courses),
-      [] as Course[]
-    )
-    const labels = templates.totalTranscript(semestersQuantity, allCourses)
-    $gpaContent.prepend(labels)
-  },
-
-  /**
-   * 渲染「学期成绩」部分的界面
-   */
-  renderSemesterTranscript() {
-    if (!records) {
-      return
-    }
-    records.forEach(({ semester, courses }) => {
-      if (!$gpaStContainer) {
-        return
-      }
-      $gpaStContainer.append(templates.semesterTranscript(semester, courses))
-    })
-  },
-
-  /**
-   * 销毁页面元素
-   */
-  destroy() {
-    if ($gpaStContainer) {
-      $gpaStContainer.remove()
-      $gpaStContainer = null
-    }
-    if ($gpaContent) {
-      $gpaContent.remove()
-      $gpaContent = null
-    }
-    if ($indexWidget) {
-      $indexWidget.remove()
-      $indexWidget = null
-    }
-
-    records = null
-  },
-  /**
-   * 重置页面，销毁页面元素，重新获取数据并渲染界面
-   */
-  reset() {
-    this.destroy()
-    this.init()
-  }
 }
 
 /**
@@ -700,5 +548,166 @@ const templates = {
       semester,
       courses
     })
+  }
+}
+
+function getAllTermScoresData(): Promise<Record[]> {
+  // 第一次请求只是为了获得课程总数 totalCount
+  return new Promise((resolve, reject) => {
+    $.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
+      zxjxjhh: '',
+      kch: '',
+      kcm: '',
+      pageNum: 1,
+      pageSize: 1
+    })
+      .then(({ list: { pageContext: { totalCount } } }: allTermScoresData) => {
+        // 用拿到的课程总数再次请求，获得全部课程成绩列表
+        return $.post(
+          '/student/integratedQuery/scoreQuery/allTermScores/data',
+          {
+            zxjxjhh: '',
+            kch: '',
+            kcm: '',
+            pageNum: 1,
+            pageSize: totalCount
+          }
+        )
+      })
+      .then((data: allTermScoresData) =>
+        // 将获取的全部课程成绩列表按照学期分组
+        data.list.records.reduce(
+          (acc, cur) => {
+            // 如果没有挂科，那么 cur[18] ≡ null
+            // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
+            const failReason = cur[18] ? (cur[18] as string) : null
+            if (!failReason || failReason.indexOf('缓考') === -1) {
+              const s = acc.filter(v => v.semester === cur[0])
+              if (s.length) {
+                s[0].courses.push(cur)
+              } else {
+                acc.push({
+                  semester: cur[0] as string,
+                  courses: [cur]
+                })
+              }
+            }
+            return acc
+          },
+          [] as RawRecord[]
+        )
+      )
+      .then(list => resolve(convertRecords(list)))
+      .catch(error => reject(error))
+  })
+}
+
+async function initSequence() {
+  initDOM()
+  records = await getAllTermScoresData()
+  renderSemesterTranscript()
+  renderTotalTranscript()
+  initEvent()
+}
+
+/**
+ * 初始化按钮与「课程块」的鼠标事件
+ */
+function initEvent() {
+  $('.gpa-st-item').click(function() {
+    toggleTranscriptItemStatus(this)
+    renderTagSelected()
+  })
+
+  $('#gpa-toolbar-detail').click(() => {
+    const menu = document.getElementById('125803405')
+    if (menu) {
+      window.toSelect(menu)
+      window.location.href =
+        '/student/integratedQuery/scoreQuery/allTermScores/index'
+    }
+  })
+
+  $('#gpa-toolbar-reset').click(() => {
+    reset()
+  })
+
+  $('.gpa-st-select-all-btn').click(function() {
+    if (!records) {
+      return
+    }
+    const { semester } = this.dataset
+    getSemesterCourses(records, semester as string).forEach(item => {
+      item.selected = true
+    })
+    $('.gpa-st-item').each(function() {
+      if (this.dataset.semester === semester) {
+        $(this).addClass('selected')
+      }
+    })
+    renderTagSelected()
+  })
+
+  $('.gpa-st-cancel-btn').click(function() {
+    if (!records) {
+      return
+    }
+    const { semester } = this.dataset
+    getSemesterCourses(records, semester as string).forEach(item => {
+      item.selected = false
+    })
+    $('.gpa-st-item').each(function() {
+      if (this.dataset.semester === semester) {
+        $(this).removeClass('selected')
+      }
+    })
+    renderTagSelected()
+  })
+
+  $('.gpa-tt-select-all-btn').click(function() {
+    if (!records) {
+      return
+    }
+    records.forEach(list =>
+      list.courses.forEach(item => {
+        item.selected = true
+      })
+    )
+    $('.gpa-st-item').each(function() {
+      $(this).addClass('selected')
+    })
+    renderTagSelected()
+  })
+
+  $('.gpa-tt-cancel-btn').click(function() {
+    if (!records) {
+      return
+    }
+    records.forEach(list =>
+      list.courses.forEach(item => {
+        item.selected = false
+      })
+    )
+    $('.gpa-st-item').each(function() {
+      $(this).removeClass('selected')
+    })
+    renderTagSelected()
+  })
+}
+
+/**
+ * 重置页面，销毁页面元素，重新获取数据并渲染界面
+ */
+function reset() {
+  destroy()
+  initSequence()
+}
+
+export default {
+  name: 'gpa',
+  pathname: ['/', '/index.jsp'],
+  style: require('./index.scss').toString(),
+  init() {
+    initSequence()
   }
 }

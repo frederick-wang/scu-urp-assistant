@@ -38,7 +38,6 @@ interface TrainingSchemeAPIItem {
 }
 
 function getSelfMajorNumber() {
-  const $ = window.$
   $.ajaxSetup({
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
@@ -58,7 +57,6 @@ function getSelfMajorNumber() {
 }
 
 function getTrainingSchemeData(number: string) {
-  const $ = window.$
   $.ajaxSetup({
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
@@ -236,7 +234,6 @@ function getTrainingSchemeData(number: string) {
 }
 
 function showLoadingAnimation(containerSelector: string) {
-  const $ = window.$
   const template = `
       <div class="loading-container">
         <div class="lds-dual-ring"></div>
@@ -249,7 +246,6 @@ function showLoadingAnimation(containerSelector: string) {
 }
 
 function hideLoadingAnimation() {
-  const $ = window.$
   $('.loading-container').remove()
 }
 
