@@ -4,7 +4,12 @@
   "description": "四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个Bookmarklet在点击后运行。目前包括的功能有：1. 一键评教的功能。2. 恢复登陆页面的「两周之内不必登录」选项。3. 增强绩点与均分的计算功能。4. 增加查询全校专业的培养方案与指导性教学计划的功能",
   "main": "index.js",
   "scripts": {
-    "start": "webpack"
+    "start": "npm run build",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "webpack"
   },
   "repository": {
     "type": "git",
@@ -18,14 +23,22 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-proposal-numeric-separator": "^7.2.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.5.5",
     "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jquery": "^3.3.30",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.1.0",
     "cssnano": "^4.1.10",
     "cz-conventional-changelog": "^3.0.2",
     "eslint": "^6.1.0",
+    "eslint-config-prettier": "^6.0.0",
     "eslint-config-standard": "^13.0.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^9.1.0",
@@ -39,12 +52,14 @@
     "style-loader": "^0.23.1",
     "terser-webpack-plugin": "^1.4.1",
     "to-string-loader": "^1.1.5",
+    "typescript": "^3.5.3",
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "core-js": "^3.1.4",
+    "jquery": "^3.4.1",
     "minimatch": "^3.0.4",
     "regenerator-runtime": "^0.13.3"
   },
@@ -58,6 +73,6 @@
     "> 1%",
     "maintained node versions",
     "not dead",
-    "ie >= 8"
+    "ie >= 9"
   ]
 }

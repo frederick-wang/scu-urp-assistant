@@ -1,15 +1,47 @@
 // 绩点计算插件
 const css = require('./index.scss').toString()
 
+interface allTermScoresData {
+  list: {
+    pageSize: number
+    pageNum: number
+    pageContext: {
+      totalCount: number
+    }
+    records: (null | string | number)[][]
+  }
+}
+
+interface RawRecord {
+  semester: string
+  courses: (null | string | number)[][]
+}
+
+interface Record {
+  semester: string
+  courses: Course[]
+}
+
+interface Course {
+  name: string
+  score: number
+  level: string
+  gpa: number
+  credit: number
+  attribute: string
+  selected: boolean
+}
+
+let $indexWidget: JQuery<HTMLElement> | null
+let $indexWidgetMain: JQuery<HTMLElement> | null
+let $indexWidgetMainRow: JQuery<HTMLElement> | null
+let records: Record[] | null
+
 export default {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
   style: css,
-  $indexWidget: null,
-  $indexWidgetMain: null,
-  $indexWidgetMainRow: null,
-  records: null,
-  init () {
+  init() {
     this.initDOM()
     // 第一次请求只是为了获得课程总数 totalCount
     window.$.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
@@ -19,7 +51,7 @@ export default {
       pageNum: 1,
       pageSize: 1
     })
-      .then(({ list: { pageContext: { totalCount } } }) => {
+      .then(({ list: { pageContext: { totalCount } } }: allTermScoresData) => {
         // 用拿到的课程总数再次请求，获得全部课程成绩列表
         return window.$.post(
           '/student/integratedQuery/scoreQuery/allTermScores/data',
@@ -32,27 +64,31 @@ export default {
           }
         )
       })
-      .then(data =>
+      .then((data: allTermScoresData) =>
         // 将获取的全部课程成绩列表按照学期分组
-        data.list.records.reduce((acc, cur) => {
-          // 如果没有挂科，那么 cur[18] ≡ null
-          // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
-          if (!cur[18] || cur[18].indexOf('缓考') === -1) {
-            const s = acc.filter(v => v.semester === cur[0])
-            if (s.length) {
-              s[0].courses.push(cur)
-            } else {
-              acc.push({
-                semester: cur[0],
-                courses: [cur]
-              })
+        data.list.records.reduce(
+          (acc, cur) => {
+            // 如果没有挂科，那么 cur[18] ≡ null
+            // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
+            const failReason = cur[18] ? (cur[18] as string) : null
+            if (!failReason || failReason.indexOf('缓考') === -1) {
+              const s = acc.filter(v => v.semester === cur[0])
+              if (s.length) {
+                s[0].courses.push(cur)
+              } else {
+                acc.push({
+                  semester: cur[0] as string,
+                  courses: [cur]
+                })
+              }
             }
-          }
-          return acc
-        }, [])
+            return acc
+          },
+          [] as RawRecord[]
+        )
       )
       .then(list => {
-        this.records = convertRecords(list)
+        records = convertRecords(list)
         this.renderSemesterTranscript()
         this.renderTotalTranscript()
         this.initEvent()
@@ -62,43 +98,49 @@ export default {
   /**
    * 初始化最初的界面
    */
-  initDOM () {
-    this.$indexWidget = window.$(templates.indexWidget)
+  initDOM() {
+    $indexWidget = window.$(templates.indexWidget)
     window
       .$('.page-content')
       .children('.row')
-      .append(this.$indexWidget)
-    this.$indexWidgetMain = this.$indexWidget.find('.widget-main')
-    this.$indexWidgetMainRow = this.$indexWidget.find('.widget-main .row')
+      .append($indexWidget)
+    $indexWidgetMain = $indexWidget.find('.widget-main')
+    $indexWidgetMainRow = $indexWidget.find('.widget-main .row')
   },
 
   /**
    * 初始化按钮与「课程块」的鼠标事件
    */
-  initEvent () {
+  initEvent() {
     const that = this
 
-    window.$('.gpa-st-item').click(function () {
+    window.$('.gpa-st-item').click(function() {
       that.toggleTranscriptItemStatus(this)
       that.renderTagSelected()
     })
 
     window.$('#gpa-toolbar-detail').click(() => {
-      window.toSelect(document.getElementById('125803405'))
-      window.location =
-        '/student/integratedQuery/scoreQuery/allTermScores/index'
+      const menu = document.getElementById('125803405')
+      if (menu) {
+        window.toSelect(menu)
+        window.location.href =
+          '/student/integratedQuery/scoreQuery/allTermScores/index'
+      }
     })
 
     window.$('#gpa-toolbar-reset').click(() => {
       this.reset()
     })
 
-    window.$('.gpa-st-select-all-btn').click(function () {
-      const semester = this.dataset.semester
-      getSemesterCourses(that.records, semester).forEach(item => {
+    window.$('.gpa-st-select-all-btn').click(function() {
+      if (!records) {
+        return
+      }
+      const { semester } = this.dataset
+      getSemesterCourses(records, semester as string).forEach(item => {
         item.selected = true
       })
-      window.$('.gpa-st-item').each(function () {
+      window.$('.gpa-st-item').each(function() {
         if (this.dataset.semester === semester) {
           window.$(this).addClass('selected')
         }
@@ -106,12 +148,15 @@ export default {
       that.renderTagSelected()
     })
 
-    window.$('.gpa-st-cancel-btn').click(function () {
-      const semester = this.dataset.semester
-      getSemesterCourses(that.records, semester).forEach(item => {
+    window.$('.gpa-st-cancel-btn').click(function() {
+      if (!records) {
+        return
+      }
+      const { semester } = this.dataset
+      getSemesterCourses(records, semester as string).forEach(item => {
         item.selected = false
       })
-      window.$('.gpa-st-item').each(function () {
+      window.$('.gpa-st-item').each(function() {
         if (this.dataset.semester === semester) {
           window.$(this).removeClass('selected')
         }
@@ -119,25 +164,31 @@ export default {
       that.renderTagSelected()
     })
 
-    window.$('.gpa-tt-select-all-btn').click(function () {
-      that.records.forEach(list =>
+    window.$('.gpa-tt-select-all-btn').click(function() {
+      if (!records) {
+        return
+      }
+      records.forEach(list =>
         list.courses.forEach(item => {
           item.selected = true
         })
       )
-      window.$('.gpa-st-item').each(function () {
+      window.$('.gpa-st-item').each(function() {
         window.$(this).addClass('selected')
       })
       that.renderTagSelected()
     })
 
-    window.$('.gpa-tt-cancel-btn').click(function () {
-      that.records.forEach(list =>
+    window.$('.gpa-tt-cancel-btn').click(function() {
+      if (!records) {
+        return
+      }
+      records.forEach(list =>
         list.courses.forEach(item => {
           item.selected = false
         })
       )
-      window.$('.gpa-st-item').each(function () {
+      window.$('.gpa-st-item').each(function() {
         window.$(this).removeClass('selected')
       })
       that.renderTagSelected()
@@ -147,7 +198,7 @@ export default {
   /**
    * 渲染与「选择」有关的元素
    */
-  renderTagSelected () {
+  renderTagSelected() {
     this.renderSemesterTagSelected()
     this.renderTotalTagSelected()
   },
@@ -155,13 +206,16 @@ export default {
   /**
    * 渲染与「选择」有关的「分学期」元素
    */
-  renderSemesterTagSelected () {
-    this.records.forEach(({ semester, courses }) => {
+  renderSemesterTagSelected() {
+    if (!records) {
+      return
+    }
+    records.forEach(({ semester, courses }) => {
       const selectedCourses = courses.filter(v => v.selected)
-      const getSemester$Element = className =>
+      const getSemester$Element = (className: string) =>
         window.$(
           Array.from(document.getElementsByClassName(className)).filter(
-            v => v.dataset.semester === semester
+            v => window.$.data(v, 'semester') === semester
           )[0]
         )
       const $selectedCourseQuantityBadge = getSemester$Element(
@@ -223,9 +277,12 @@ export default {
   /**
    * 渲染与「选择」有关的「全部成绩」元素
    */
-  renderTotalTagSelected () {
-    const selectedCourses = this.records
-      .reduce((acc, cur) => acc.concat(cur.courses), [])
+  renderTotalTagSelected() {
+    if (!records) {
+      return
+    }
+    const selectedCourses = records
+      .reduce((acc, cur) => acc.concat(cur.courses), [] as Course[])
       .filter(v => v.selected)
     const $selectedCourseQuantityBadge = window.$(
       '.gpa-info-badge-tt-selected-course-quantity'
@@ -238,7 +295,7 @@ export default {
     const $selectAllBtn = window.$('.gpa-tt-select-all-btn')
     const $cancelBtn = window.$('.gpa-tt-cancel-btn')
     if (selectedCourses.length) {
-      const semestersQuantity = this.records.length
+      const semestersQuantity = records.length
       const selectedCoursesQuantity = selectedCourses.length
       const selectedCourseCredits = selectedCourses.reduce(
         (acc, cur) => acc + cur.credit,
@@ -286,14 +343,17 @@ export default {
   /**
    * 当「课程块」被点击时，做出相应的反应
    */
-  toggleTranscriptItemStatus (dom) {
+  toggleTranscriptItemStatus(dom: HTMLElement) {
+    if (!records) {
+      return
+    }
     window.$(dom).toggleClass('selected')
     const status = window.$(dom).hasClass('selected')
     const { name, attribute, semester } = dom.dataset
     const score = Number(dom.dataset.score)
     const gpa = Number(dom.dataset.gpa)
     const credit = Number(dom.dataset.credit)
-    getSemesterCourses(this.records, semester).filter(
+    getSemesterCourses(records, semester as string).filter(
       v =>
         v.name === name &&
         v.attribute === attribute &&
@@ -306,25 +366,34 @@ export default {
   /**
    * 渲染「总成绩」部分的界面
    */
-  renderTotalTranscript () {
-    const semestersQuantity = this.records.length
-    const allCourses = this.records.reduce(
+  renderTotalTranscript() {
+    if (!$indexWidgetMain || !records) {
+      return
+    }
+    const semestersQuantity = records.length
+    const allCourses = records.reduce(
       (acc, cur) => acc.concat(cur.courses),
-      []
+      [] as Course[]
     )
     const labels = templates.totalTranscript(semestersQuantity, allCourses)
-    this.$indexWidgetMain.prepend(labels)
+    $indexWidgetMain.prepend(labels)
   },
 
   /**
    * 渲染「学期成绩」部分的界面
    */
-  renderSemesterTranscript () {
-    this.records.forEach(({ semester, courses }) => {
+  renderSemesterTranscript() {
+    if (!records) {
+      return
+    }
+    records.forEach(({ semester, courses }) => {
+      if (!$indexWidgetMainRow) {
+        return
+      }
       const header = templates.semesterTranscriptHeader(semester, courses)
       const labels = templates.semesterTranscriptLabels(semester, courses)
       const content = templates.semesterTranscriptContent(semester, courses)
-      this.$indexWidgetMainRow.append(
+      $indexWidgetMainRow.append(
         templates.semesterTranscriptWrapper(header, labels, content)
       )
     })
@@ -333,21 +402,26 @@ export default {
   /**
    * 销毁页面元素
    */
-  destroy () {
-    this.$indexWidgetMainRow.remove()
-    this.$indexWidgetMain.remove()
-    this.$indexWidget.remove()
+  destroy() {
+    if ($indexWidgetMainRow) {
+      $indexWidgetMainRow.remove()
+      $indexWidgetMainRow = null
+    }
+    if ($indexWidgetMain) {
+      $indexWidgetMain.remove()
+      $indexWidgetMain = null
+    }
+    if ($indexWidget) {
+      $indexWidget.remove()
+      $indexWidget = null
+    }
 
-    this.$indexWidget = null
-    this.$indexWidgetMain = null
-    this.$indexWidgetMainRow = null
-
-    this.records = null
+    records = null
   },
   /**
    * 重置页面，销毁页面元素，重新获取数据并渲染界面
    */
-  reset () {
+  reset() {
     this.destroy()
     this.init()
   }
@@ -359,54 +433,59 @@ export default {
  * @param {*} rawList 原始数据
  * @returns 处理后的数据
  */
-function convertRecords (rawList) {
-  return rawList
-    .map(s => ({
-      semester: s.semester
-        .replace(/^(\d+-\d+)-(.+)$/, '$1学年 $2学期')
-        .replace('1-1学期', '秋季学期')
-        .replace('2-1学期', '春季学期'),
-      courses: s.courses
-        // 根据 http://jwc.scu.edu.cn/detail/122/6891.htm 《网上登录成绩的通知》 的说明
-        // 教师「暂存」的成绩学生不应看到
-        // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
-        // TODO: 考虑做开关，让用户决定看不看
-        .filter(v => v[4] === '05')
-        .map(v => ({
-          name: v[11],
-          score: v[8],
-          level: v[17],
-          gpa: getPointByScore(v[8], s.semester),
-          credit: v[13],
-          attribute: v[15],
-          selected: false
-        }))
-        // 分数可能为null
-        .filter(v => v.score)
-    }))
-    // 不显示还没有课程成绩的学期
-    .filter(v => v.courses && v.courses.length)
+function convertRecords(rawList: RawRecord[]) {
+  return (
+    rawList
+      .map(s => ({
+        semester: s.semester
+          .replace(/^(\d+-\d+)-(.+)$/, '$1学年 $2学期')
+          .replace('1-1学期', '秋季学期')
+          .replace('2-1学期', '春季学期'),
+        courses: s.courses
+          // 根据 http://jwc.scu.edu.cn/detail/122/6891.htm 《网上登录成绩的通知》 的说明
+          // 教师「暂存」的成绩学生不应看到
+          // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
+          // TODO: 考虑做开关，让用户决定看不看
+          .filter(v => v[4] === '05')
+          .map(
+            v =>
+              ({
+                name: v[11],
+                score: v[8],
+                level: v[17],
+                gpa: getPointByScore(v[8] as number, s.semester),
+                credit: v[13],
+                attribute: v[15],
+                selected: false
+              } as Course)
+          )
+          // 分数可能为null
+          .filter(v => v.score)
+      }))
+      // 不显示还没有课程成绩的学期
+      .filter(v => v.courses && v.courses.length)
+  )
   // .reverse()
 }
 
 /**
  * 从总记录中提取出对应学期的课程列表
  *
- * @param {*} records 总记录
+ * @param {Record[]} records 总记录
  * @param {string} semester 学期名称
  * @returns 课程列表
  */
-function getSemesterCourses (records, semester) {
+function getSemesterCourses(records: Record[], semester: string) {
   return records.filter(v => v.semester === semester)[0].courses
 }
 
 /**
  * 计算加权平均数
  *
- * @param {*} arr 一个数组，每个对象包括数值(value)和权值(weight)
+ * @param {Array<{ value: number; weight: number }>} arr 一个数组，每个对象包括数值(value)和权值(weight)
  * @returns 计算好的加权平均数
  */
-function getWeightedAverage (arr) {
+function getWeightedAverage(arr: Array<{ value: number; weight: number }>) {
   return arr
     .reduce(
       (acc, cur) => [acc[0] + cur.value * cur.weight, acc[1] + cur.weight],
@@ -418,91 +497,91 @@ function getWeightedAverage (arr) {
 /**
  * 从一个课程数组里筛选出所有的必修课程
  *
- * @param {*} arr 一个课程数组
+ * @param {Course[]} arr 一个课程数组
  * @returns 筛选出的只包括必修课程的数组
  */
-function getCompulsoryCourse (arr) {
+function getCompulsoryCourse(arr: Course[]) {
   return arr.filter(v => v.attribute === '必修')
 }
 
 /**
  * 将课程数组映射为只包含gpa作为数值，学分作为权值的对象数组，用于加权平均数计算
  *
- * @param {*} arr 一个课程数组
+ * @param {Course[]} arr 一个课程数组
  * @returns 一个只包含gpa作为数值，学分作为权值的对象数组
  */
-function mapGPA (arr) {
+function mapGPA(arr: Course[]) {
   return arr.map(v => ({ value: v.gpa, weight: v.credit }))
 }
 
 /**
  * 将课程数组映射为只包含分数作为数值，学分作为权值的对象数组，用于加权平均数计算
  *
- * @param {*} arr 一个课程数组
+ * @param {Course[]} arr 一个课程数组
  * @returns 一个只包含分数作为数值，学分作为权值的对象数组
  */
-function mapScore (arr) {
+function mapScore(arr: Course[]) {
   return arr.map(v => ({ value: v.score, weight: v.credit }))
 }
 
 /**
  * 将数值保留3位小数，再作为number返回
  *
- * @param {*} num 待处理的数字
+ * @param {number} num 待处理的数字
  * @param {number} [fractionDigits=3] 保留小数位数
  * @returns 保留对应位数后的小数
  */
-function reserveDigits (num, fractionDigits = 3) {
+function reserveDigits(num: number, fractionDigits = 3) {
   return Number(num.toFixed(fractionDigits))
 }
 
 /**
  * 输入课程数组，得到必修加权平均绩点
  *
- * @param {*} arr 课程数组
+ * @param {Course[]} 课程数组
  * @returns 必修加权平均绩点
  */
-function getCompulsoryCoursesGPA (arr) {
+function getCompulsoryCoursesGPA(arr: Course[]) {
   return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))))
 }
 
 /**
  * 输入课程数组，得到必修加权平均分
  *
- * @param {*} arr 课程数组
+ * @param {Course[]} arr 课程数组
  * @returns 必修加权平均分
  */
-function getCompulsoryCoursesScore (arr) {
+function getCompulsoryCoursesScore(arr: Course[]) {
   return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))))
 }
 
 /**
  * 输入课程数组，得到全部课程加权平均绩点
  *
- * @param {*} arr 课程数组
+ * @param {Course[]} arr 课程数组
  * @returns 全部课程加权平均绩点
  */
-function getAllCoursesGPA (arr) {
+function getAllCoursesGPA(arr: Course[]) {
   return reserveDigits(getWeightedAverage(mapGPA(arr)))
 }
 
 /**
  * 输入课程数组，得到全部课程加权平均分
  *
- * @param {*} arr 课程数组
+ * @param {Course[]} arr 课程数组
  * @returns 全部课程加权平均分
  */
-function getAllCoursesScore (arr) {
+function getAllCoursesScore(arr: Course[]) {
   return reserveDigits(getWeightedAverage(mapScore(arr)))
 }
 
 /**
  * 一次性获得必修加权平均分、必修加权平均绩点、全部课程加权平均分、全部课程加权平均绩点4个值
  *
- * @param {*} arr 一个由课程对象组成的数组
+ * @param {Course[]} arr 一个由课程对象组成的数组
  * @returns 必修加权平均分、必修加权平均绩点、全部课程加权平均分、全部课程加权平均绩点4个值
  */
-function getFourTypesValue (arr) {
+function getFourTypesValue(arr: Course[]) {
   return {
     compulsoryCoursesGPA: getCompulsoryCoursesGPA(arr),
     compulsoryCoursesScore: getCompulsoryCoursesScore(arr),
@@ -514,12 +593,17 @@ function getFourTypesValue (arr) {
 /**
  * 根据分数返回对应的绩点
  *
- * @param {*} score 分数
+ * @param {number} score 分数
+ * @param {string} semester 学期
  * @returns 绩点
  */
-function getPointByScore (score, semester) {
+function getPointByScore(score: number, semester: string) {
   // 2017年起，川大修改了绩点政策，因此要检测学期的年份
-  const enrollmentYear = Number(semester.match(/^\d+/)[0])
+  const r = semester.match(/^\d+/)
+  if (!r) {
+    return 0
+  }
+  const enrollmentYear = Number(r[0])
   if (enrollmentYear >= 2017) {
     // 2017-2018秋季学期起使用如下标准（Fall Term 2017-2018~Present）
     if (score >= 90) {
@@ -597,7 +681,7 @@ const templates = {
       </div>
     </div>
   `,
-  totalTranscript (semestersQuantity, courses) {
+  totalTranscript(semestersQuantity: number, courses: Course[]) {
     const {
       allCoursesGPA,
       allCoursesScore,
@@ -680,7 +764,7 @@ const templates = {
       </div>
     `
   },
-  semesterTranscriptHeader (semester, courses) {
+  semesterTranscriptHeader(semester: string, courses: Course[]) {
     const coursesQuantity = courses.length
     const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
     return `
@@ -713,7 +797,7 @@ const templates = {
       </h4>
     `
   },
-  semesterTranscriptLabels (semester, courses) {
+  semesterTranscriptLabels(semester: string, courses: Course[]) {
     const {
       allCoursesGPA,
       allCoursesScore,
@@ -760,7 +844,7 @@ const templates = {
       </p>
     `
   },
-  semesterTranscriptContent (semester, courses) {
+  semesterTranscriptContent(semester: string, courses: Course[]) {
     const courseList = () =>
       courses
         .map(
@@ -803,7 +887,7 @@ const templates = {
       </table>
     `
   },
-  semesterTranscriptWrapper (header, labels, content) {
+  semesterTranscriptWrapper(header: string, labels: string, content: string) {
     return `<div class="gpa-st col-sm-6">${header + labels + content}</div>`
   }
 }

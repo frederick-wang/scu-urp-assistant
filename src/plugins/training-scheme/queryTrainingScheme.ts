@@ -1,13 +1,25 @@
-import { trainingSchemeList, getSelfMajorNumber, getTrainingSchemeData, showLoadingAnimation, hideLoadingAnimation } from './common'
+import {
+  trainingSchemeList,
+  getSelfMajorNumber,
+  getTrainingSchemeData,
+  showLoadingAnimation,
+  hideLoadingAnimation
+} from './common'
+import {
+  JhFajhb,
+  TrainingSchemeYearItem,
+  TrainingSchemeSemesterItem,
+  TrainingSchemeCourse
+} from './types'
 import { initCourseInfoPopover } from './popover'
 import { getChineseNumber } from '../../utils/basic'
 
-async function query () {
+async function query() {
   const $ = window.$
   const number = $('#major').val()
   if (number !== '无') {
     showLoadingAnimation('.training-scheme-wrapper')
-    const { info, list } = await getTrainingSchemeData(number)
+    const { info, list } = await getTrainingSchemeData(number as string)
     hideLoadingAnimation()
     $('.training-scheme-wrapper').append(genInfoHTML(info))
     $('.training-scheme-wrapper').append(genSchemeHTML(list))
@@ -15,7 +27,7 @@ async function query () {
   }
 }
 
-function updateMajorList () {
+function updateMajorList() {
   const $ = window.$
   const grade = $('#grade').val()
   const department = $('#department').val()
@@ -23,34 +35,38 @@ function updateMajorList () {
     .filter(v => v[1] === grade && v[2] === department)
     .map(v => `<option value="${v[0]}">${v[3]}</option>`)
     .join('')
-  $('#major').empty().append(res || `<option value="无">无</option>`)
+  $('#major')
+    .empty()
+    .append(res || `<option value="无">无</option>`)
 }
 
-export function render (root) {
+export function render(root: HTMLElement) {
   initFunc()
   initDOM(root)
   selectSelfMajorAndQuery()
 }
 
-function initFunc () {
+function initFunc() {
   window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = updateMajorList
   window.__$SUA_TRAINING_SCHEME_QUERY__ = query
 }
 
-function initDOM (root) {
+function initDOM(root: HTMLElement) {
   const $ = window.$
   const template = `
       <div class="training-scheme-wrapper">
-        ${genQueryHTML(trainingSchemeList)}
+        ${genQueryHTML()}
       </div>
     `
   $(root).append(template)
 }
 
-async function selectSelfMajorAndQuery () {
+async function selectSelfMajorAndQuery() {
   const $ = window.$
   const selfMajorNumber = await getSelfMajorNumber()
-  const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
+  const selfSchemeInfo = trainingSchemeList.filter(
+    v => v[0] === selfMajorNumber
+  )[0]
   $('#grade').val(selfSchemeInfo[1])
   $('#department').val(selfSchemeInfo[2])
   updateMajorList()
@@ -58,11 +74,18 @@ async function selectSelfMajorAndQuery () {
   query()
 }
 
-function genQueryHTML (trainingSchemeList) {
-  const { gradeList, departmentList } = trainingSchemeList.reduce((acc, cur) => ({
-    gradeList: acc.gradeList.includes(cur[1]) ? acc.gradeList : acc.gradeList.concat(cur[1]),
-    departmentList: acc.departmentList.includes(cur[2]) ? acc.departmentList : acc.departmentList.concat(cur[2])
-  }), { gradeList: [], departmentList: [] })
+function genQueryHTML() {
+  const { gradeList, departmentList } = trainingSchemeList.reduce(
+    (acc, cur) => ({
+      gradeList: acc.gradeList.includes(cur[1])
+        ? acc.gradeList
+        : acc.gradeList.concat(cur[1]),
+      departmentList: acc.departmentList.includes(cur[2])
+        ? acc.departmentList
+        : acc.departmentList.concat(cur[2])
+    }),
+    { gradeList: [] as string[], departmentList: [] as string[] }
+  )
   return `
       <div class="query-container">
         <div class="row">
@@ -81,14 +104,23 @@ function genQueryHTML (trainingSchemeList) {
                 <div class="profile-info-value">
                   <select name="grade" id="grade" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__()">
                     <option value="请选择年级">请选择年级</option>
-                    ${gradeList.sort((a, b) => Number(b.replace('级', '')) - Number(a.replace('级', ''))).map(v => `<option value="${v}">${v}</option>`).join('')}
+                    ${gradeList
+                      .sort(
+                        (a, b) =>
+                          Number(b.replace('级', '')) -
+                          Number(a.replace('级', ''))
+                      )
+                      .map(v => `<option value="${v}">${v}</option>`)
+                      .join('')}
                   </select>
                 </div>
                 <div class="profile-info-name">院系</div>
                 <div class="profile-info-value">
                   <select name="department" id="department" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__()">
                     <option value="请选择学院">请选择学院</option>
-                    ${departmentList.map(v => `<option value="${v}">${v}</option>`).join('')}
+                    ${departmentList
+                      .map(v => `<option value="${v}">${v}</option>`)
+                      .join('')}
                   </select>
                 </div>
                 <div class="profile-info-name">专业</div>
@@ -105,7 +137,7 @@ function genQueryHTML (trainingSchemeList) {
     `
 }
 
-function genInfoHTML (info) {
+function genInfoHTML(info: JhFajhb) {
   for (const key of Object.keys(info)) {
     if (!info[key]) {
       info[key] = '-'
@@ -238,10 +270,12 @@ function genInfoHTML (info) {
     `
 }
 
-function genSchemeHTML (list) {
-  const courseItemTemplate = (course, number) => `
+function genSchemeHTML(list: TrainingSchemeYearItem[]) {
+  const courseItemTemplate = (course: TrainingSchemeCourse, number: number) => `
       <div class="course-item-wrapper">
-        <div class="course-item" data-course-number="${course.courseNumber}" data-course-name="${course.courseName}">
+        <div class="course-item" data-course-number="${
+          course.courseNumber
+        }" data-course-name="${course.courseName}">
           <div class="course-item-info">
             <div class="info-primary">
               <div class="course-name">
@@ -249,28 +283,47 @@ function genSchemeHTML (list) {
               </div>
             </div>
             <div class="info-secondary">
-              <div class="info-tag course-number">课程号：${course.courseNumber}</div>
-              ${course.coursePropertyName ? `<div class="info-tag course-property-name${course.coursePropertyName === '必修' || course.coursePropertyName.includes('中华文化') ? ' required' : ''}">${course.coursePropertyName}</div>` : ''}
-              ${course.courseAttributes.map(v => `<div class="info-tag course-attribute">${v}</div>`).join('&nbsp;')}
+              <div class="info-tag course-number">课程号：${
+                course.courseNumber
+              }</div>
+              ${
+                course.coursePropertyName
+                  ? `<div class="info-tag course-property-name${
+                      course.coursePropertyName === '必修' ||
+                      course.coursePropertyName.includes('中华文化')
+                        ? ' required'
+                        : ''
+                    }">${course.coursePropertyName}</div>`
+                  : ''
+              }
+              ${course.courseAttributes
+                .map(v => `<div class="info-tag course-attribute">${v}</div>`)
+                .join('&nbsp;')}
             </div>
           </div>
         </div>
       </div>
     `
-  const semesterItemTemplate = (semester) => `
+  const semesterItemTemplate = (semester: TrainingSchemeSemesterItem) => `
       <div class="semester-item">
         <div class="semester-item-title">${semester.name}</div>
         <div class="semester-item-content">
-          ${semester.children.map((v, i) => courseItemTemplate(v, i + 1)).join('')}
+          ${semester.children
+            .map((v, i) => courseItemTemplate(v, i + 1))
+            .join('')}
         </div>
       </div>
     `
 
-  const yearItemTemplate = (year, grade) => `
+  const yearItemTemplate = (year: TrainingSchemeYearItem, grade: number) => `
     <div class="year-item">
-      <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${year.name}（${getChineseNumber(grade)}年级）</div>
+      <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${
+        year.name
+      }（${getChineseNumber(grade)}年级）</div>
       <div class="year-item-content">
-        ${year.children.map(v => semesterItemTemplate(v)).join('<div class="semester-divider"></div>')}
+        ${year.children
+          .map(v => semesterItemTemplate(v))
+          .join('<div class="semester-divider"></div>')}
       </div>
     </div>
     `

@@ -18,10 +18,17 @@ const banner = `// ==UserScript==
 module.exports = {
   mode: 'production',
   entry: {
-    'scu-urp-assistant.user': './src/scu-urp-assistant.user.js',
-    'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.js'
+    'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
+    'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
   },
-  plugins: [new CleanWebpackPlugin(), new webpack.BannerPlugin({ banner })],
+  plugins: [
+    new CleanWebpackPlugin(),
+    new webpack.BannerPlugin({ banner })
+    // new webpack.ProvidePlugin({
+    //   $: 'jquery',
+    //   jQuery: 'jquery'
+    // })
+  ],
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist')
@@ -29,29 +36,10 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.m?js$/,
+        test: /\.(ts|js)x?$/,
         exclude: /(node_modules|bower_components)/,
         use: {
-          loader: 'babel-loader',
-          options: {
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  targets: {
-                    browsers: [
-                      'last 5 versions',
-                      '> 1%',
-                      'maintained node versions',
-                      'not dead',
-                      'ie >= 8'
-                    ]
-                  }
-                }
-              ]
-            ],
-            plugins: ['@babel/plugin-transform-runtime']
-          }
+          loader: 'babel-loader'
         }
       },
       {
@@ -79,6 +67,7 @@ module.exports = {
     ]
   },
   resolve: {
-    alias: { '@': path.resolve('src') }
+    alias: { '@': path.resolve('src') },
+    extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json', '.ts', '.tsx']
   }
 }

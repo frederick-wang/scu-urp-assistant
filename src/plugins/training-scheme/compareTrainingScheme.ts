@@ -1,32 +1,75 @@
-import { trainingSchemeList, getSelfMajorNumber, getTrainingSchemeData, showLoadingAnimation, hideLoadingAnimation } from './common'
+import {
+  trainingSchemeList,
+  getSelfMajorNumber,
+  getTrainingSchemeData,
+  showLoadingAnimation,
+  hideLoadingAnimation
+} from './common'
+import {
+  JhFajhb,
+  TrainingSchemeYearItem as TrainingSchemeYearItemBase,
+  TrainingSchemeCourse as TrainingSchemeCourseBase
+} from './types'
 import { getChineseNumber } from '../../utils/basic'
 
-export function render (root) {
+interface TrainingSchemeYearItem {
+  name: string
+  children: TrainingSchemeSemesterItem[]
+}
+
+interface TrainingSchemeSemesterItem {
+  name: string
+  children: TrainingSchemeCourse[]
+}
+
+interface TrainingSchemeCourse extends TrainingSchemeCourseBase {
+  courseNumber1: string
+  courseNumber2: string
+  courseName1: string
+  courseName2: string
+  coursePropertyName1: string
+  coursePropertyName2: string
+  courseAttributes1: string[]
+  courseAttributes2: string[]
+  courseMajor1: string
+  courseMajor2: string
+  comparedResult: number
+  [key: string]: string | string[] | number
+}
+
+export function render(root: HTMLElement) {
   initFunc()
   initDOM(root)
   selectSelfMajorAndQuery()
 }
 
-function initFunc () {
+function initFunc() {
   window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = updateMajorList
   window.__$SUA_TRAINING_SCHEME_QUERY__ = query
 }
 
-function initDOM (root) {
+function initDOM(root: HTMLElement) {
   const $ = window.$
   const template = `
       <div class="compare-training-scheme-wrapper">
-        ${genQueryHTML(trainingSchemeList)}
+        ${genQueryHTML()}
       </div>
     `
   $(root).append(template)
 }
 
-function genQueryHTML (trainingSchemeList) {
-  const { gradeList, departmentList } = trainingSchemeList.reduce((acc, cur) => ({
-    gradeList: acc.gradeList.includes(cur[1]) ? acc.gradeList : acc.gradeList.concat(cur[1]),
-    departmentList: acc.departmentList.includes(cur[2]) ? acc.departmentList : acc.departmentList.concat(cur[2])
-  }), { gradeList: [], departmentList: [] })
+function genQueryHTML() {
+  const { gradeList, departmentList } = trainingSchemeList.reduce(
+    (acc, cur) => ({
+      gradeList: acc.gradeList.includes(cur[1])
+        ? acc.gradeList
+        : acc.gradeList.concat(cur[1]),
+      departmentList: acc.departmentList.includes(cur[2])
+        ? acc.departmentList
+        : acc.departmentList.concat(cur[2])
+    }),
+    { gradeList: [] as string[], departmentList: [] as string[] }
+  )
   return `
       <div class="query-container">
         <div id="query-major-1" class="row query-major">
@@ -46,14 +89,23 @@ function genQueryHTML (trainingSchemeList) {
                 <div class="profile-info-value">
                   <select name="grade" id="grade" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__('#query-major-1')">
                     <option value="请选择年级">请选择年级</option>
-                    ${gradeList.sort((a, b) => Number(b.replace('级', '')) - Number(a.replace('级', ''))).map(v => `<option value="${v}">${v}</option>`).join('')}
+                    ${gradeList
+                      .sort(
+                        (a, b) =>
+                          Number(b.replace('级', '')) -
+                          Number(a.replace('级', ''))
+                      )
+                      .map(v => `<option value="${v}">${v}</option>`)
+                      .join('')}
                   </select>
                 </div>
                 <div class="profile-info-name">院系</div>
                 <div class="profile-info-value">
                   <select name="department" id="department" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__('#query-major-1')">
                     <option value="请选择学院">请选择学院</option>
-                    ${departmentList.map(v => `<option value="${v}">${v}</option>`).join('')}
+                    ${departmentList
+                      .map(v => `<option value="${v}">${v}</option>`)
+                      .join('')}
                   </select>
                 </div>
                 <div class="profile-info-name">专业</div>
@@ -75,14 +127,23 @@ function genQueryHTML (trainingSchemeList) {
                 <div class="profile-info-value">
                   <select name="grade" id="grade" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__('#query-major-2')">
                     <option value="请选择年级">请选择年级</option>
-                    ${gradeList.sort((a, b) => Number(b.replace('级', '')) - Number(a.replace('级', ''))).map(v => `<option value="${v}">${v}</option>`).join('')}
+                    ${gradeList
+                      .sort(
+                        (a, b) =>
+                          Number(b.replace('级', '')) -
+                          Number(a.replace('级', ''))
+                      )
+                      .map(v => `<option value="${v}">${v}</option>`)
+                      .join('')}
                   </select>
                 </div>
                 <div class="profile-info-name">院系</div>
                 <div class="profile-info-value">
                   <select name="department" id="department" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__('#query-major-2')">
                     <option value="请选择学院">请选择学院</option>
-                    ${departmentList.map(v => `<option value="${v}">${v}</option>`).join('')}
+                    ${departmentList
+                      .map(v => `<option value="${v}">${v}</option>`)
+                      .join('')}
                   </select>
                 </div>
                 <div class="profile-info-name">专业</div>
@@ -99,10 +160,12 @@ function genQueryHTML (trainingSchemeList) {
     `
 }
 
-async function selectSelfMajorAndQuery () {
+async function selectSelfMajorAndQuery() {
   const $ = window.$
   const selfMajorNumber = await getSelfMajorNumber()
-  const selfSchemeInfo = trainingSchemeList.filter(v => v[0] === selfMajorNumber)[0]
+  const selfSchemeInfo = trainingSchemeList.filter(
+    v => v[0] === selfMajorNumber
+  )[0]
   $('#query-major-1 #grade').val(selfSchemeInfo[1])
   $('#query-major-2 #grade').val(selfSchemeInfo[1])
   $('#query-major-1 #department').val(selfSchemeInfo[2])
@@ -114,7 +177,7 @@ async function selectSelfMajorAndQuery () {
   // query()
 }
 
-function updateMajorList (containerSelector) {
+function updateMajorList(containerSelector: string) {
   const $ = window.$
   const grade = $(`${containerSelector} #grade`).val()
   const department = $(`${containerSelector} #department`).val()
@@ -127,7 +190,7 @@ function updateMajorList (containerSelector) {
     .append(res || `<option value="无">无</option>`)
 }
 
-async function query () {
+async function query() {
   const $ = window.$
   const number1 = $('#query-major-1 #major').val()
   const number2 = $('#query-major-2 #major').val()
@@ -137,8 +200,8 @@ async function query () {
       { info: info1, list: list1 },
       { info: info2, list: list2 }
     ] = await Promise.all([
-      getTrainingSchemeData(number1),
-      getTrainingSchemeData(number2)
+      getTrainingSchemeData(number1 as string),
+      getTrainingSchemeData(number2 as string)
     ])
     hideLoadingAnimation()
     $('.compare-training-scheme-wrapper').append(genInfoHTML(info1, info2))
@@ -146,21 +209,25 @@ async function query () {
   }
 }
 
-function genInfoHTML (info1, info2) {
-  const preprocess = (info) => {
+function genInfoHTML(info1: JhFajhb, info2: JhFajhb) {
+  const preprocess = (info: JhFajhb) => {
     for (const key of Object.keys(info)) {
       if (!info[key]) {
         info[key] = '-'
       }
     }
   }
-  [info1, info2].forEach(v => preprocess(v))
-  const genItemHTML = (info1, info2, key) =>
+  ;[info1, info2].forEach(v => preprocess(v))
+  const genItemHTML = (info1: JhFajhb, info2: JhFajhb, key: string) =>
     info1[key] === info2[key]
       ? `<span class="item-value-same">${info1[key]}</span>`
       : `
-          <div class="item-value-1">${info1.zym}（${info1.njmc}）：${info1[key]}</div>
-          <div class="item-value-2">${info2.zym}（${info2.njmc}）：${info2[key]}</div>
+          <div class="item-value-1">${info1.zym}（${info1.njmc}）：${
+          info1[key]
+        }</div>
+          <div class="item-value-2">${info2.zym}（${info2.njmc}）：${
+          info2[key]
+        }</div>
         `
   return `
       <div class="info-container">
@@ -294,30 +361,59 @@ function genInfoHTML (info1, info2) {
     `
 }
 
-function genSchemeHTML (list1, list2) {
-  const preprocess = (list1, list2) => {
+function genSchemeHTML(
+  list1: TrainingSchemeYearItemBase[],
+  list2: TrainingSchemeYearItemBase[]
+) {
+  const preprocess = (
+    list1: TrainingSchemeYearItemBase[],
+    list2: TrainingSchemeYearItemBase[]
+  ) => {
     const totalYear = Math.max(list1.length, list2.length)
     const result = []
     for (let i = 0; i < totalYear; i++) {
       // 第一层循环，处理每个学年数据的合并
-      const yearItem1 = list1[i] || { name: '', children: [] }
-      const yearItem2 = list2[i] || { name: '', children: [] }
-      const yearItem = {
-        name: yearItem1.name === yearItem2.name
-          ? yearItem1.name
-          : [yearItem1.name, yearItem2.name].filter(v => v).join(' / '),
-        children: []
+      const yearItem1: TrainingSchemeYearItem = (list1[
+        i
+      ] as TrainingSchemeYearItem) || {
+        name: '',
+        children: [] as TrainingSchemeSemesterItem[]
       }
-      const totalSemester = Math.max(yearItem1.children.length, yearItem2.children.length)
+      const yearItem2: TrainingSchemeYearItem = (list2[
+        i
+      ] as TrainingSchemeYearItem) || {
+        name: '',
+        children: [] as TrainingSchemeSemesterItem[]
+      }
+      const yearItem = {
+        name:
+          yearItem1.name === yearItem2.name
+            ? yearItem1.name
+            : [yearItem1.name, yearItem2.name].filter(v => v).join(' / '),
+        children: [] as TrainingSchemeSemesterItem[]
+      }
+      const totalSemester = Math.max(
+        yearItem1.children.length,
+        yearItem2.children.length
+      )
       for (let j = 0; j < totalSemester; j++) {
         // 第二层循环，处理每个学期数据的合并
-        const semesterItem1 = yearItem1.children[j] || { name: '', children: [] }
-        const semesterItem2 = yearItem2.children[j] || { name: '', children: [] }
+        const semesterItem1 = yearItem1.children[j] || {
+          name: '',
+          children: [] as TrainingSchemeCourse[]
+        }
+        const semesterItem2 = yearItem2.children[j] || {
+          name: '',
+          children: [] as TrainingSchemeCourse[]
+        }
         const semesterItem = {
-          name: semesterItem1.name === semesterItem2.name
-            ? semesterItem1.name
-            : [semesterItem1.name, semesterItem2.name].filter(v => v).join(' / '),
-          children: []
+          name:
+            semesterItem1.name === semesterItem2.name
+              ? semesterItem1.name
+              : [semesterItem1.name, semesterItem2.name]
+                  .filter(v => v)
+                  .join(' / '),
+          children: [] as TrainingSchemeCourse[]
         }
         // 所有Key对应的值都一样
         // const hasAllSameValues = (objs, keys) => {
@@ -329,22 +425,35 @@ function genSchemeHTML (list1, list2) {
         //   return true
         // }
         // 存在一个Key对应的值一样
-        const hasASameValue = (objs, keys) => {
+        const hasASameValue = (
+          objs: TrainingSchemeCourse[],
+          keys: string[]
+        ) => {
           for (const key of keys) {
-            if (objs.reduce((acc, cur, i, src) => acc ? cur[key] === src[0][key] : acc, true)) {
+            if (
+              objs.reduce(
+                (acc, cur, i, src) => (acc ? cur[key] === src[0][key] : acc),
+                true
+              )
+            ) {
               return true
             }
           }
           return false
         }
-        const sameCourses = []
-        const coursesOnly1 = []
+        const sameCourses = [] as any[]
+        const coursesOnly1 = [] as any[]
         while (semesterItem1.children.length) {
-          const courseItem1 = semesterItem1.children.shift()
+          const courseItem1 = semesterItem1.children.shift() as TrainingSchemeCourse
           let hasSameCourse = false
           for (let m = 0; m < semesterItem2.children.length; m++) {
             const courseItem2 = semesterItem2.children[m]
-            if (hasASameValue([courseItem1, courseItem2], ['courseName', 'courseNumber'])) {
+            if (
+              hasASameValue(
+                [courseItem1, courseItem2],
+                ['courseName', 'courseNumber']
+              )
+            ) {
               sameCourses.push({
                 courseNumber1: courseItem1.courseNumber,
                 courseNumber2: courseItem2.courseNumber,
@@ -367,7 +476,9 @@ function genSchemeHTML (list1, list2) {
             coursesOnly1.push(Object.assign(courseItem1, { comparedResult: 1 }))
           }
         }
-        const coursesOnly2 = semesterItem2.children.map(v => Object.assign(v, { comparedResult: 2 }))
+        const coursesOnly2 = semesterItem2.children.map(v =>
+          Object.assign(v, { comparedResult: 2 })
+        )
         semesterItem.children = sameCourses.concat(coursesOnly1, coursesOnly2)
         yearItem.children.push(semesterItem)
       }
@@ -376,54 +487,109 @@ function genSchemeHTML (list1, list2) {
     return result
   }
 
-  const courseItemTemplate = (course, number) => {
-    const getCourseItemClass = (course) => ({
-      0: 'item-value-same',
-      1: 'item-value-1',
-      2: 'item-value-2'
-    }[course.comparedResult])
-    const courseItemInfoSecondary = (course) => {
+  const courseItemTemplate = (course: TrainingSchemeCourse, number: number) => {
+    const getCourseItemClass = (course: TrainingSchemeCourse) => {
+      const classList = {
+        0: 'item-value-same',
+        1: 'item-value-1',
+        2: 'item-value-2'
+      } as {
+        [key: number]: string
+      }
+      return classList[course.comparedResult]
+    }
+    const courseItemInfoSecondary = (course: TrainingSchemeCourse) => {
       let courseNumberTemplate = ''
-      const getCoursePropertyNameClass = (coursePropertyName) => `info-tag course-property-name${coursePropertyName === '必修' ? ' required' : ''}`
+      const getCoursePropertyNameClass = (coursePropertyName: string) =>
+        `info-tag course-property-name${
+          coursePropertyName === '必修' ? ' required' : ''
+        }`
       let coursePropertyNameTemplate = ''
       let courseAttributesTemplate = ''
       switch (course.comparedResult) {
         case 0:
           if (course.courseNumber1 === course.courseNumber2) {
-            courseNumberTemplate = `<div class="info-tag course-number">${course.courseNumber1}</div>`
+            courseNumberTemplate = `<div class="info-tag course-number">${
+              course.courseNumber1
+            }</div>`
           } else {
             courseNumberTemplate = `
-                <div class="info-tag course-number"><span class="item-value-1">${course.courseMajor1}：</span>${course.courseNumber1}</div>
-                <div class="info-tag course-number"><span class="item-value-2">${course.courseMajor2}：</span>${course.courseNumber2}</div>
+                <div class="info-tag course-number"><span class="item-value-1">${
+                  course.courseMajor1
+                }：</span>${course.courseNumber1}</div>
+                <div class="info-tag course-number"><span class="item-value-2">${
+                  course.courseMajor2
+                }：</span>${course.courseNumber2}</div>
                `
           }
           if (course.coursePropertyName1 === course.coursePropertyName2) {
-            coursePropertyNameTemplate = course.coursePropertyName1 ? `<div class="${getCoursePropertyNameClass(course.coursePropertyName1)}">${course.coursePropertyName1}</div>` : ''
+            coursePropertyNameTemplate = course.coursePropertyName1
+              ? `<div class="${getCoursePropertyNameClass(
+                  course.coursePropertyName1
+                )}">${course.coursePropertyName1}</div>`
+              : ''
           } else {
             coursePropertyNameTemplate = `
-                ${course.coursePropertyName1 ? `<div class="${getCoursePropertyNameClass(course.coursePropertyName1)}"><span class="item-value-1">${course.courseMajor1}：</span>${course.coursePropertyName1}</div>` : ''}
-                ${course.coursePropertyName2 ? `<div class="${getCoursePropertyNameClass(course.coursePropertyName2)}"><span class="item-value-2">${course.courseMajor2}：</span>${course.coursePropertyName2}</div>` : ''}
+                ${
+                  course.coursePropertyName1
+                    ? `<div class="${getCoursePropertyNameClass(
+                        course.coursePropertyName1
+                      )}"><span class="item-value-1">${
+                        course.courseMajor1
+                      }：</span>${course.coursePropertyName1}</div>`
+                    : ''
+                }
+                ${
+                  course.coursePropertyName2
+                    ? `<div class="${getCoursePropertyNameClass(
+                        course.coursePropertyName2
+                      )}"><span class="item-value-2">${
+                        course.courseMajor2
+                      }：</span>${course.coursePropertyName2}</div>`
+                    : ''
+                }
               `
           }
           const sameAttributes = []
           const attributesOnly1 = []
           while (course.courseAttributes1.length) {
-            const attr = course.courseAttributes1.shift()
+            const attr = course.courseAttributes1.shift() as string
             if (course.courseAttributes2.includes(attr)) {
-              course.courseAttributes2.splice(course.courseAttributes2.indexOf(attr), 1)
+              course.courseAttributes2.splice(
+                course.courseAttributes2.indexOf(attr),
+                1
+              )
               sameAttributes.push(attr)
             } else {
-              attributesOnly1.push(`<span class="item-value-1">${course.courseMajor1}：</span>${attr}`)
+              attributesOnly1.push(
+                `<span class="item-value-1">${
+                  course.courseMajor1
+                }：</span>${attr}`
+              )
             }
           }
-          const attributesOnly2 = course.courseAttributes2.map(v => `<span class="item-value-2">${course.courseMajor2}：</span>${v}`)
-          courseAttributesTemplate = sameAttributes.concat(attributesOnly1, attributesOnly2).map(v => `<div class="info-tag course-attribute">${v}</div>`).join('&nbsp;')
+          const attributesOnly2 = course.courseAttributes2.map(
+            v =>
+              `<span class="item-value-2">${course.courseMajor2}：</span>${v}`
+          )
+          courseAttributesTemplate = sameAttributes
+            .concat(attributesOnly1, attributesOnly2)
+            .map(v => `<div class="info-tag course-attribute">${v}</div>`)
+            .join('&nbsp;')
           break
         case 1:
         case 2:
-          courseNumberTemplate = `<div class="info-tag course-number">${course.courseNumber}</div>`
-          coursePropertyNameTemplate = course.coursePropertyName ? `<div class="${getCoursePropertyNameClass(course.coursePropertyName)}">${course.coursePropertyName}</div>` : ''
-          courseAttributesTemplate = course.courseAttributes.map(v => `<div class="info-tag course-attribute">${v}</div>`).join('&nbsp;')
+          courseNumberTemplate = `<div class="info-tag course-number">${
+            course.courseNumber
+          }</div>`
+          coursePropertyNameTemplate = course.coursePropertyName
+            ? `<div class="${getCoursePropertyNameClass(
+                course.coursePropertyName
+              )}">${course.coursePropertyName}</div>`
+            : ''
+          courseAttributesTemplate = course.courseAttributes
+            .map(v => `<div class="info-tag course-attribute">${v}</div>`)
+            .join('&nbsp;')
           break
       }
       return `
@@ -434,7 +600,7 @@ function genSchemeHTML (list1, list2) {
           </div>
         `
     }
-    const getCourseName = (course) => {
+    const getCourseName = (course: TrainingSchemeCourse) => {
       switch (course.comparedResult) {
         case 0:
           if (course.courseName1 === course.courseName2) {
@@ -467,28 +633,36 @@ function genSchemeHTML (list1, list2) {
         </div>
       `
   }
-  const semesterItemTemplate = (semester) => `
+  const semesterItemTemplate = (semester: TrainingSchemeSemesterItem) => `
       <div class="semester-item">
         <div class="semester-item-title">${semester.name}</div>
         <div class="semester-item-content">
-          ${semester.children.map((v, i) => courseItemTemplate(v, i + 1)).join('')}
+          ${semester.children
+            .map((v, i) => courseItemTemplate(v, i + 1))
+            .join('')}
         </div>
       </div>
     `
 
-  const yearItemTemplate = (year, grade) => {
+  const yearItemTemplate = (year: TrainingSchemeYearItem, grade: number) => {
     const yearNames = year.name.split(' / ')
     let yearName
     if (yearNames.length > 1) {
-      yearName = `<span class="item-value-1">${yearNames[0]}</span> / <span class="item-value-2">${yearNames[1]}</span>`
+      yearName = `<span class="item-value-1">${
+        yearNames[0]
+      }</span> / <span class="item-value-2">${yearNames[1]}</span>`
     } else {
       yearName = `<span class="item-value-same">${yearNames[0]}</span>`
     }
     return `
         <div class="year-item">
-          <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${yearName}（${getChineseNumber(grade)}年级）</div>
+          <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${yearName}（${getChineseNumber(
+      grade
+    )}年级）</div>
           <div class="year-item-content">
-            ${year.children.map(v => semesterItemTemplate(v)).join('<div class="semester-divider"></div>')}
+            ${year.children
+              .map(v => semesterItemTemplate(v))
+              .join('<div class="semester-divider"></div>')}
           </div>
         </div>
       `
@@ -510,7 +684,9 @@ function genSchemeHTML (list1, list2) {
         <div class="row">
           <div class="col-xs-12">
             <div class="scheme-wrapper">
-              ${preprocess(list1, list2).map((v, i) => yearItemTemplate(v, i + 1)).join('')}
+              ${preprocess(list1, list2)
+                .map((v, i) => yearItemTemplate(v, i + 1))
+                .join('')}
             </div>
           </div>
         </div>
