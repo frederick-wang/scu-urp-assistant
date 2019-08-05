@@ -11,12 +11,13 @@
   }
   &.selected {
     & > td {
-      font-weight: bolder;
       color: #409eff;
       background-color: #ecf5ff !important;
     }
     &:hover > td {
-      background-color: #6a7681 !important;
+      font-weight: bolder;
+      background: #409eff !important;
+      border-color: #409eff;
       color: #fff;
     }
   }

@@ -21,6 +21,10 @@ module.exports = {
     'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
     'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
   },
+  // devtool: 'inline-source-map',
+  devServer: {
+    contentBase: './dist'
+  },
   plugins: [
     new CleanWebpackPlugin(),
     new webpack.BannerPlugin({ banner })
