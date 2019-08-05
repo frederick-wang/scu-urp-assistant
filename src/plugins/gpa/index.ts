@@ -1,4 +1,5 @@
 // 绩点计算插件
+// TODO: 修复因为pug忘了加空格导致的图标挤在一起的bug
 interface allTermScoresData {
   list: {
     pageSize: number
