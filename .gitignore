@@ -59,4 +59,4 @@ typings/
 
 .cache
 
-transformed/
+.vscode
