@@ -1,5 +1,5 @@
 import {
-  trainingSchemeList,
+  getTrainingSchemeList,
   getSelfMajorNumber,
   getTrainingSchemeData,
   showLoadingAnimation,
@@ -13,6 +13,8 @@ import {
 } from './types'
 import { initCourseInfoPopover } from './popover'
 import { getChineseNumber } from '../../utils/basic'
+
+let trainingSchemeList:string[][]
 
 async function query() {
   const number = $('#major').val()
@@ -38,9 +40,13 @@ function updateMajorList() {
     .append(res || `<option value="无">无</option>`)
 }
 
-export function render(root: HTMLElement) {
-  initFunc()
+export async function render(root: HTMLElement) {
   initDOM(root)
+  showLoadingAnimation('.training-scheme-wrapper')
+  trainingSchemeList = await getTrainingSchemeList()
+  hideLoadingAnimation()
+  initFunc()
+  initQueryDOM()
   selectSelfMajorAndQuery()
 }
 
@@ -52,10 +58,13 @@ function initFunc() {
 function initDOM(root: HTMLElement) {
   const template = `
       <div class="training-scheme-wrapper">
-        ${genQueryHTML()}
       </div>
     `
   $(root).append(template)
+}
+
+function initQueryDOM() {
+  $('.training-scheme-wrapper').append(genQueryHTML())
 }
 
 async function selectSelfMajorAndQuery() {

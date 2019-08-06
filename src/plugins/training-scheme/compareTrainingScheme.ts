@@ -1,5 +1,5 @@
 import {
-  trainingSchemeList,
+  getTrainingSchemeList,
   getSelfMajorNumber,
   getTrainingSchemeData,
   showLoadingAnimation,
@@ -11,6 +11,8 @@ import {
   TrainingSchemeCourse as TrainingSchemeCourseBase
 } from './types'
 import { getChineseNumber } from '../../utils/basic'
+
+let trainingSchemeList:string[][]
 
 interface TrainingSchemeYearItem {
   name: string
@@ -37,9 +39,13 @@ interface TrainingSchemeCourse extends TrainingSchemeCourseBase {
   [key: string]: string | string[] | number
 }
 
-export function render(root: HTMLElement) {
-  initFunc()
+export async function render(root: HTMLElement) {
   initDOM(root)
+  showLoadingAnimation('.compare-training-scheme-wrapper')
+  trainingSchemeList = await getTrainingSchemeList()
+  hideLoadingAnimation()
+  initFunc()
+  initQueryDOM()
   selectSelfMajorAndQuery()
 }
 
@@ -51,10 +57,13 @@ function initFunc() {
 function initDOM(root: HTMLElement) {
   const template = `
       <div class="compare-training-scheme-wrapper">
-        ${genQueryHTML()}
       </div>
     `
   $(root).append(template)
+}
+
+function initQueryDOM() {
+  $('.compare-training-scheme-wrapper').append(genQueryHTML())
 }
 
 function genQueryHTML() {

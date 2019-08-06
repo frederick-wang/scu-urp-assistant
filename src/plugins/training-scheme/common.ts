@@ -1,10 +1,6 @@
-import {
-  JhFajhb,
-  TrainingSchemeYearItem,
-  TrainingSchemeCourse
-} from './types'
+import { JhFajhb, TrainingSchemeYearItem, TrainingSchemeCourse } from './types'
 
-import trainingSchemeList from './training-scheme-list.json'
+import { API_PATH } from '@/utils/basic'
 
 interface InstructionalTeachingPlanAPIData {
   title: string
@@ -35,6 +31,15 @@ interface TrainingSchemeAPIItem {
   isDir: boolean
   coursePropertyName: string
   courseName: string
+}
+
+let trainingSchemeList: string[][]
+
+async function getTrainingSchemeList():Promise<string[][]> {
+  if (!trainingSchemeList) {
+    trainingSchemeList = await $.get(`${API_PATH}/student/training_scheme`)
+  }
+  return trainingSchemeList
 }
 
 function getSelfMajorNumber() {
@@ -250,7 +255,7 @@ function hideLoadingAnimation() {
 }
 
 export {
-  trainingSchemeList,
+  getTrainingSchemeList,
   getSelfMajorNumber,
   getTrainingSchemeData,
   showLoadingAnimation,

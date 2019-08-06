@@ -12,8 +12,10 @@ const chineseNumbers = [
   '十'
 ]
 
+const API_PATH = 'https://sua.zhaoji.wang/api/v1'
+
 function getChineseNumber(num: number) {
   return chineseNumbers[num] || ''
 }
 
-export { getChineseNumber }
+export { getChineseNumber, API_PATH }
