@@ -1,0 +1,31 @@
+.sua-container-scores-information {
+  span {
+    &.greater-than-avg {
+      color: #67c23a;
+    }
+
+    &.less-than-avg {
+      color: #f56c6c;
+    }
+  }
+
+  .greater-than-avg {
+    td {
+      background-color: #e1f3d8 !important;
+    }
+  }
+
+  .less-than-avg {
+    td {
+      background-color: #fde2e2 !important;
+    }
+  }
+
+  table {
+    td {
+      &:first-child {
+        font-weight: bold;
+      }
+    }
+  }
+}

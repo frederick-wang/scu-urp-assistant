@@ -711,3 +711,5 @@ export default {
     initSequence()
   }
 }
+
+export { getFourTypesValue, getCompulsoryCourse }

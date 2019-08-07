@@ -1,12 +1,23 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import minimatch from 'minimatch'
 import fastEvaluation from './plugins/fast-evaluation'
 import sharedData from './plugins/shared-data'
 import tooltip from './plugins/tooltip'
 import recoverRememberMe from './plugins/recover-remember-me'
 import gpa from './plugins/gpa'
 import trainingScheme from './plugins/training-scheme'
+import scoresInformation from './plugins/scores-information'
+import { urlTrigger } from './utils/basic'
+
+const plugins = [
+  sharedData,
+  tooltip,
+  fastEvaluation,
+  recoverRememberMe,
+  gpa,
+  trainingScheme,
+  scoresInformation
+]
 
 declare global {
   interface Window {
@@ -37,8 +48,8 @@ declare global {
     toSelect: (obj: HTMLElement) => void
     __$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__?: (
       containerSelector: string
-      ) => void
-      __$SUA_TRAINING_SCHEME_QUERY__?: () => Promise<void>
+    ) => void
+    __$SUA_TRAINING_SCHEME_QUERY__?: () => Promise<void>
   }
 }
 
@@ -75,14 +86,7 @@ export default {
   /**
    * 插件
    */
-  plugins: [
-    sharedData,
-    tooltip,
-    fastEvaluation,
-    recoverRememberMe,
-    gpa,
-    trainingScheme
-  ],
+  plugins,
   /**
    * 初始化任务的队列
    */
@@ -211,9 +215,7 @@ export default {
                 $(v.element).removeClass('active')
               }
             })
-            const $breadcrumbs = $(
-              '.main-content>.breadcrumbs>ul.breadcrumb'
-            )
+            const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
             $breadcrumbs.empty().append(`
               <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
                 <i class="ace-icon fa fa-home home-icon"></i>
@@ -247,42 +249,6 @@ export default {
           menuItem.element.click()
         }
       })
-    }
-
-    /**
-     * 检测当前的location.pathname是否满足插件触发要求
-     *
-     * @param {*} plugin 插件对象，pathname 属性可以是 Boolean、String、Array、Object、Function等类型。
-     * 如果 pathname 属性不存在，则默认对全体 url 均生效
-     * @returns 检测的结果
-     */
-    function urlTrigger(plugin: any) {
-      const { pathname } = plugin
-      // 如果pathname不存在，默认对全部url生效
-      if (!pathname) {
-        return true
-      } else if (typeof pathname === 'boolean') {
-        return pathname
-      } else if (typeof pathname === 'string') {
-        return minimatch(window.location.pathname, pathname)
-      } else if (Array.isArray(pathname)) {
-        for (const item of pathname) {
-          if (minimatch(window.location.pathname, item)) {
-            return true
-          }
-        }
-        return false
-      } else if (typeof pathname === 'object') {
-        for (const item of Object.values(pathname)) {
-          if (minimatch(window.location.pathname, item as string)) {
-            return true
-          }
-        }
-        return false
-      } else if (typeof pathname === 'function') {
-        return pathname.bind(plugin)()
-      }
-      return false
     }
   }
 }
