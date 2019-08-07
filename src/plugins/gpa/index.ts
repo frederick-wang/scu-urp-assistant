@@ -338,7 +338,7 @@ function getWeightedAverage(arr: Array<{ value: number; weight: number }>) {
       (acc, cur) => [acc[0] + cur.value * cur.weight, acc[1] + cur.weight],
       [0, 0]
     )
-    .reduce((valueSum, weightSum) => valueSum / weightSum)
+    .reduce((valueSum, weightSum) => (weightSum ? valueSum / weightSum : 0))
 }
 
 /**
@@ -712,4 +712,4 @@ export default {
   }
 }
 
-export { getFourTypesValue, getCompulsoryCourse }
+export { getFourTypesValue, getCompulsoryCourse, getSemesterCourses }

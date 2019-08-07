@@ -1,8 +1,9 @@
 {
-  "parser": "@typescript-eslint/parser",
+  "parser": "vue-eslint-parser",
   "plugins": ["@typescript-eslint"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
+    "plugin:vue/recommended",
     "prettier",
     "prettier/@typescript-eslint"
   ],
@@ -12,7 +13,8 @@
     },
     "useJSXTextNode": true,
     "project": "./tsconfig.json",
-    "extraFileExtensions": [".vue"]
+    "extraFileExtensions": [".vue"],
+    "parser": "@typescript-eslint/parser"
   },
   "rules": {
     "@typescript-eslint/no-var-requires": "off"

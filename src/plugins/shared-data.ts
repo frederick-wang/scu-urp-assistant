@@ -1,4 +1,27 @@
 // 共享数据插件
+
+function getCurrentSemesterNumber() {
+  if (!window.__$SUA_SHARED_DATA__) {
+    return ''
+  }
+  return window.__$SUA_SHARED_DATA__.academicInfo.currentSemester
+}
+
+function getCurrentSemesterText() {
+  if (!window.__$SUA_SHARED_DATA__) {
+    return ''
+  }
+  const r = window.__$SUA_SHARED_DATA__.academicInfo.currentSemester.match(
+    /(\d+)-(\d+)-(\d)/
+  )
+  if (!r) {
+    return ''
+  }
+  return `${r[1]}-${r[2]}学年 ${r[3] === '1' ? '秋' : '春'}季学期`
+}
+
+export { getCurrentSemesterNumber, getCurrentSemesterText }
+
 export default {
   name: 'shared-data',
   pathname: '/**',

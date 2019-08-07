@@ -1,12 +1,5 @@
-import { getThisTermScoresList } from '@/utils/api'
-import { getFourTypesValue, getCompulsoryCourse } from '@/plugins/gpa'
-import {
-  showLoadingAnimation,
-  hideLoadingAnimation
-} from '@/plugins/training-scheme/common'
-
-const indexTemplate = require('./index.pug')
-const css = require('./index.scss').toString()
+import Vue from 'vue'
+import App from './ScoresInformation.vue'
 
 function render(root: HTMLElement) {
   window.urp.confirm(
@@ -17,10 +10,9 @@ function render(root: HTMLElement) {
     async (res: boolean) => {
       if (res) {
         $(root).append(`<div class="sua-container-scores-information"></div>`)
-        showLoadingAnimation('.sua-container-scores-information')
-        const data = await getData()
-        hideLoadingAnimation()
-        $('.sua-container-scores-information').append(indexTemplate(data))
+        new Vue({
+          render: (h: any) => h(App)
+        }).$mount('.sua-container-scores-information')
       } else {
         $(root).append(`
         <div class="sua-container-scores-information">
@@ -31,57 +23,9 @@ function render(root: HTMLElement) {
   )
 }
 
-async function getData() {
-  const courseScoresList = await getThisTermScoresList()
-  const convertSemesterNumberToText = (number: string) => {
-    const r = number.match(/(\d+)-(\d+)-(.+)/)
-    if (r) {
-      const begin = r[1]
-      const end = r[2]
-      const season = r[3] === '1-1' ? '秋' : '春'
-      return `${begin}-${end}学年 ${season}季学期`
-    }
-    return number
-  }
-  const semester = convertSemesterNumberToText(
-    courseScoresList[0].executiveEducationPlanNumber
-  )
-  const courses = courseScoresList.map(v => ({
-    name: v.courseName,
-    score: v.courseScore,
-    level: v.levelName,
-    gpa: v.gradePoint,
-    credit: v.credit,
-    attribute: v.coursePropertyName,
-    selected: false
-  }))
-  const {
-    allCoursesGPA,
-    allCoursesScore,
-    compulsoryCoursesGPA,
-    compulsoryCoursesScore
-  } = getFourTypesValue(courses)
-  const coursesQuantity = courses.length
-  const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
-  const compulsoryCourses = getCompulsoryCourse(courses)
-  const compulsoryCoursesQuantity = compulsoryCourses.length
-  return {
-    semester,
-    allCoursesGPA,
-    allCoursesScore,
-    compulsoryCoursesGPA,
-    compulsoryCoursesScore,
-    coursesQuantity,
-    totalCourseCredits,
-    compulsoryCoursesQuantity,
-    courseScoresList
-  }
-}
-
 export default {
   name: 'scores-information',
   pathname: '/**',
-  style: css,
   menu: [
     {
       rootMenuId: 'sua-menu-list',

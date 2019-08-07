@@ -1,7 +1,7 @@
 interface CourseScoreData {
   courseName: string
   courseNumber: string
-  coureSequenceNumber: string
+  courseSequenceNumber: string
   credit: number
   coursePropertyCode: string
   coursePropertyName: string
@@ -22,14 +22,15 @@ interface CourseScoreData {
 async function getThisTermScoresList() {
   const url = '/student/integratedQuery/scoreQuery/thisTermScores/data'
   const [{ state, list }]: [{ state: string; list: any[] }] = await $.get(url)
-  console.log(`state: ${state}`)
+  // console.log(`state: ${state}`)
   const res = list
     .map(
       v =>
         ({
           courseName: v.courseName,
           courseNumber: v.id.courseNumber,
-          coureSequenceNumber: v.coureSequenceNumber,
+          // 对，你没看错，这个地方教务处接口是错别字，把course打成了coure
+          courseSequenceNumber: v.coureSequenceNumber,
           credit: Number(v.credit),
           coursePropertyCode: v.coursePropertyCode,
           coursePropertyName: v.coursePropertyName,
@@ -59,4 +60,4 @@ async function getThisTermScoresList() {
   return res
 }
 
-export { getThisTermScoresList }
+export { getThisTermScoresList, CourseScoreData }
