@@ -347,7 +347,7 @@ function getWeightedAverage(arr: Array<{ value: number; weight: number }>) {
  * @param {Course[]} arr 一个课程数组
  * @returns 筛选出的只包括必修课程的数组
  */
-function getCompulsoryCourse(arr: Course[]) {
+function getCompulsoryCourses(arr: Course[]) {
   return arr.filter(v => v.attribute === '必修')
 }
 
@@ -389,7 +389,7 @@ function reserveDigits(num: number, fractionDigits = 3) {
  * @returns 必修加权平均绩点
  */
 function getCompulsoryCoursesGPA(arr: Course[]) {
-  return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))))
+  return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourses(arr))))
 }
 
 /**
@@ -399,7 +399,7 @@ function getCompulsoryCoursesGPA(arr: Course[]) {
  * @returns 必修加权平均分
  */
 function getCompulsoryCoursesScore(arr: Course[]) {
-  return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))))
+  return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourses(arr))))
 }
 
 /**
@@ -511,7 +511,7 @@ const templates = {
       compulsoryCoursesGPA,
       compulsoryCoursesScore
     } = getFourTypesValue(courses)
-    const compulsoryCourses = getCompulsoryCourse(courses)
+    const compulsoryCourses = getCompulsoryCourses(courses)
     const coursesQuantity = courses.length
     const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
     const compulsoryCoursesQuantity = compulsoryCourses.length
@@ -535,7 +535,7 @@ const templates = {
     } = getFourTypesValue(courses)
     const coursesQuantity = courses.length
     const totalCourseCredits = courses.reduce((acc, cur) => acc + cur.credit, 0)
-    const compulsoryCourses = getCompulsoryCourse(courses)
+    const compulsoryCourses = getCompulsoryCourses(courses)
     const compulsoryCoursesQuantity = compulsoryCourses.length
     return require('./semesterTranscript.pug')({
       allCoursesGPA,
@@ -712,4 +712,4 @@ export default {
   }
 }
 
-export { getFourTypesValue, getCompulsoryCourse, getSemesterCourses }
+export { getFourTypesValue, getCompulsoryCourses, getSemesterCourses }

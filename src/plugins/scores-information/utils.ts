@@ -82,7 +82,7 @@ function mapScore(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 一个课程数组
  * @returns 筛选出的只包括必修课程的数组
  */
-function getCompulsoryCourse(arr: CourseScoreRecord[]) {
+function getCompulsoryCourses(arr: CourseScoreRecord[]) {
   return arr.filter(v => v.coursePropertyName === '必修')
 }
 
@@ -92,7 +92,7 @@ function getCompulsoryCourse(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 一个课程数组
  * @returns 筛选出的被选中的课程的数组
  */
-function getSelectedCourse(arr: CourseScoreRecord[]) {
+function getSelectedCourses(arr: CourseScoreRecord[]) {
   return arr.filter(v => v.selected)
 }
 
@@ -103,7 +103,7 @@ function getSelectedCourse(arr: CourseScoreRecord[]) {
  * @returns 必修加权平均绩点
  */
 function getCompulsoryCoursesGPA(arr: CourseScoreRecord[]) {
-  return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourse(arr))))
+  return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourses(arr))))
 }
 
 /**
@@ -113,7 +113,7 @@ function getCompulsoryCoursesGPA(arr: CourseScoreRecord[]) {
  * @returns 必修加权平均分
  */
 function getSelectedCoursesScore(arr: CourseScoreRecord[]) {
-  return reserveDigits(getWeightedAverage(mapScore(getSelectedCourse(arr))))
+  return reserveDigits(getWeightedAverage(mapScore(getSelectedCourses(arr))))
 }
 
 /**
@@ -123,7 +123,7 @@ function getSelectedCoursesScore(arr: CourseScoreRecord[]) {
  * @returns 选中课程加权平均绩点
  */
 function getSelectedCoursesGPA(arr: CourseScoreRecord[]) {
-  return reserveDigits(getWeightedAverage(mapGPA(getSelectedCourse(arr))))
+  return reserveDigits(getWeightedAverage(mapGPA(getSelectedCourses(arr))))
 }
 
 /**
@@ -133,7 +133,7 @@ function getSelectedCoursesGPA(arr: CourseScoreRecord[]) {
  * @returns 必修加权平均分
  */
 function getCompulsoryCoursesScore(arr: CourseScoreRecord[]) {
-  return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourse(arr))))
+  return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourses(arr))))
 }
 
 /**
@@ -162,8 +162,8 @@ export {
   getCompulsoryCoursesScore,
   getAllCoursesGPA,
   getAllCoursesScore,
-  getCompulsoryCourse,
-  getSelectedCourse,
+  getCompulsoryCourses,
+  getSelectedCourses,
   getSelectedCoursesScore,
   getSelectedCoursesGPA
 }
