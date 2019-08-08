@@ -1,24 +1,11 @@
-import { getThisTermScoresList } from '@/utils/api'
+import { requestThisTermCourseScoreInfoList } from '@/utils/api'
 import { CourseScoreRecord } from './types'
 
-function convertSemesterNumberToText(number: string) {
-  const r = number.match(/(\d+)-(\d+)-(.+)/)
-  if (r) {
-    const begin = r[1]
-    const end = r[2]
-    const season = r[3] === '1-1' ? '秋' : '春'
-    return `${begin}-${end}学年 ${season}季学期`
-  }
-  return number
-}
-
 async function getScoreRecords() {
-  const thisTermScoresList = await getThisTermScoresList()
+  const thisTermScoresList = await requestThisTermCourseScoreInfoList()
   return [
     {
-      semester: convertSemesterNumberToText(
-        thisTermScoresList[0].executiveEducationPlanNumber
-      ),
+      semester: thisTermScoresList[0].executiveEducationPlanName,
       courses: thisTermScoresList.map(
         v =>
           ({

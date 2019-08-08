@@ -1,6 +1,6 @@
-import { CourseScoreData } from '@/utils/api'
+import { CourseScoreInfo } from '@/utils/api'
 
-interface CourseScoreRecord extends CourseScoreData {
+interface CourseScoreRecord extends CourseScoreInfo {
   selected: boolean
 }
 
