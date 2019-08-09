@@ -7,7 +7,7 @@ import {
   TrainingSchemeCourseInfo
 } from '@/utils/api/types'
 import { initCourseInfoPopover } from './popover'
-import { getChineseNumber } from '../../utils/basic'
+import { getChineseNumber } from '@/utils'
 
 let trainingSchemeList: string[][]
 

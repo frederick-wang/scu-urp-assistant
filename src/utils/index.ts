@@ -20,6 +20,10 @@ function getChineseNumber(num: number) {
   return chineseNumbers[num] || ''
 }
 
+function sleep(time: number) {
+  return new Promise(resolve => setTimeout(() => resolve(), time))
+}
+
 /**
  * 检测当前的location.pathname是否满足插件触发要求
  *
@@ -56,4 +60,4 @@ function urlTrigger(plugin: any) {
   return false
 }
 
-export { getChineseNumber, API_PATH, urlTrigger }
+export { getChineseNumber, API_PATH, urlTrigger, sleep }

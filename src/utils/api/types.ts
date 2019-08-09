@@ -1,3 +1,80 @@
+interface CourseScheduleInfoAPIData {
+  pfcx: number
+  list?: {
+    pageSize: number
+    pageNum: number
+    pageContext: {
+      totalCount: number
+    }
+    records: Array<{
+      id: string
+      zxjxjhh: string
+      kch: string
+      kxh: string
+      kcm: string
+      xf: number
+      xs: number
+      kkxsh: string
+      kkxsjc: string
+      kslxdm: string
+      kslxmc: string
+      skjs: string
+      bkskrl: number
+      bkskyl: number
+      xkmsdm: string
+      xkmssm: string
+      xkkzdm: string
+      xkkzsm: string
+      xkkzh?: any
+      xkxzsm: string
+      kkxqh: string
+      kkxqm: string
+      sfxzxslx?: any
+      sfxzxsnj?: any
+      sfxzxsxs?: string
+      sfxzxxkc?: any
+      sfxzxdlx: string
+      xqh: string
+      jxlh: string
+      jash: string
+      jclxdm: string
+      skzc: string
+      skxq: number
+      skjc: number
+      cxjc: number
+      xqlxdm: string
+      xqdm: string
+      xss: number
+      zcsm: string
+      kclbdm: string
+      kclbmc: string
+      xkbz?: any
+      xqm: string
+      jxlm: string
+      jasm: string
+    }>
+  }
+}
+
+interface CourseScheduleInfo {
+  courseName: string
+  courseNumber: string
+  courseSequenceNumber: string
+  departmentCode: string
+  departmentName: string
+  credit: number
+  courseTypeCode: string
+  courseTypeName: string
+  examTypeCode: string
+  examTypeName: string
+  teacherName: string
+  courseTime: string
+  courseSite: string
+  availibleCapacity: string
+  note: string
+  [key: string]: any
+}
+
 interface TrainingSchemeCourseInfo {
   courseName: string
   courseNumber: string
@@ -149,5 +226,7 @@ export {
   InstructionalTeachingPlanAPIData,
   TrainingSchemeAPIData,
   TrainingSchemeNodeAPIData,
-  TrainingSchemeBaseInfo
+  TrainingSchemeBaseInfo,
+  CourseScheduleInfoAPIData,
+  CourseScheduleInfo
 }

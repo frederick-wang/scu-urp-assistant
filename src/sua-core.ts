@@ -1,13 +1,13 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
-import fastEvaluation from './plugins/fast-evaluation'
-import sharedData from './plugins/shared-data'
-import tooltip from './plugins/tooltip'
-import recoverRememberMe from './plugins/recover-remember-me'
-import gpa from './plugins/gpa'
-import trainingScheme from './plugins/training-scheme'
-import scoresInformation from './plugins/scores-information'
-import { urlTrigger } from './utils/basic'
+import fastEvaluation from '@/plugins/fast-evaluation'
+import sharedData from '@/plugins/shared-data'
+import tooltip from '@/plugins/tooltip'
+import recoverRememberMe from '@/plugins/recover-remember-me'
+import gpa from '@/plugins/gpa'
+import trainingScheme from '@/plugins/training-scheme'
+import scoresInformation from '@/plugins/scores-information'
+import { urlTrigger } from '@/utils'
 
 const plugins = [
   sharedData,

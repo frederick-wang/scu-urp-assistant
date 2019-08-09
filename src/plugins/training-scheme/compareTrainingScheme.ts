@@ -4,7 +4,7 @@ import {
   TrainingSchemeYearInfo as SingleTrainingSchemeYearInfo,
   TrainingSchemeCourseInfo as SingleTrainingSchemeCourseInfoBase
 } from '@/utils/api/types'
-import { getChineseNumber } from '../../utils/basic'
+import { getChineseNumber } from '@/utils'
 import { Request, action } from '@/utils/api'
 
 let trainingSchemeList: string[][]

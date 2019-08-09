@@ -4,7 +4,8 @@ import {
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
-  requestSelfMajorNumber
+  requestSelfMajorNumber,
+  requestCourseSchedule
 } from './requestActions'
 
 enum Request {
@@ -13,28 +14,18 @@ enum Request {
   CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO,
   TRAINING_SCHEME_LIST,
   TRAINING_SCHEME,
-  SELF_MAJOR_NUMBER
+  SELF_MAJOR_NUMBER,
+  COURSE_Schedule
 }
 
 const action = {
-  [Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]() {
-    return requestAllTermsCourseScoreInfoList()
-  },
-  [Request.THIS_TERM_COURSE_SCORE_INFO_LIST]() {
-    return requestThisTermCourseScoreInfoList()
-  },
-  [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]() {
-    return requestCurrentSemesterStudentAcademicInfo()
-  },
-  [Request.TRAINING_SCHEME_LIST]() {
-    return requestTrainingSchemeList()
-  },
-  [Request.TRAINING_SCHEME](num: number) {
-    return requestTrainingScheme(num)
-  },
-  [Request.SELF_MAJOR_NUMBER]() {
-    return requestSelfMajorNumber()
-  }
+  [Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]: requestAllTermsCourseScoreInfoList,
+  [Request.THIS_TERM_COURSE_SCORE_INFO_LIST]: requestThisTermCourseScoreInfoList,
+  [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]: requestCurrentSemesterStudentAcademicInfo,
+  [Request.TRAINING_SCHEME_LIST]: requestTrainingSchemeList,
+  [Request.TRAINING_SCHEME]: requestTrainingScheme,
+  [Request.SELF_MAJOR_NUMBER]: requestSelfMajorNumber,
+  [Request.COURSE_Schedule]: requestCourseSchedule
 }
 
 export { Request, action }

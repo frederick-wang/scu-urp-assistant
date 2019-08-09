@@ -1,4 +1,4 @@
-import { API_PATH } from '@/utils/basic'
+import { API_PATH, getChineseNumber, sleep } from '@/utils'
 import {
   AllTermScoresAPIData,
   CourseScoreBaseInfo,
@@ -8,8 +8,133 @@ import {
   InstructionalTeachingPlanAPIData,
   TrainingSchemeAPIData,
   TrainingSchemeNodeAPIData,
-  TrainingSchemeCourseInfo
+  TrainingSchemeCourseInfo,
+  CourseScheduleInfoAPIData,
+  CourseScheduleInfo
 } from './types'
+
+// 根据测试，教务处的课程信息查询时间间隔为5秒，否则会报频繁查询
+const QUERY_TIME_INTERVAL = 5000
+let robustnessAdditionalInterval = 1000
+let lastTimeScheduleQuery: number = new Date().getTime()
+let currentcourseNameScheduleQuery = ''
+let currentcourseNumberScheduleQuery = ''
+async function requestCourseSchedule(
+  semester: string,
+  courseName: string,
+  courseNumber: string
+) {
+  currentcourseNameScheduleQuery = courseName
+  currentcourseNumberScheduleQuery = courseNumber
+  const delta = new Date().getTime() - lastTimeScheduleQuery
+  if (delta < QUERY_TIME_INTERVAL) {
+    await sleep(QUERY_TIME_INTERVAL - delta + robustnessAdditionalInterval)
+  }
+  if (
+    currentcourseNameScheduleQuery === courseName &&
+    currentcourseNumberScheduleQuery === courseNumber
+  ) {
+    lastTimeScheduleQuery = new Date().getTime()
+    const res: CourseScheduleInfoAPIData = await $.post(
+      // 对，你没看错，这里教务处系统打错字了，把Schedule打成了Schdule
+      '/student/integratedQuery/course/courseSchdule/courseInfo',
+      {
+        zxjxjhh: semester,
+        kch: courseNumber,
+        kcm: courseName,
+        pageNum: 1,
+        pageSize: 1000
+      }
+    )
+    if (!res.list) {
+      robustnessAdditionalInterval *= 2
+      return {
+        response: 'network_error'
+      }
+    }
+    return {
+      response: '',
+      sequence: res.list.records
+        .map(
+          ({
+            kcm,
+            kch,
+            kxh,
+            kkxsh,
+            kkxsjc,
+            xf,
+            kclbdm,
+            kclbmc,
+            kslxdm,
+            kslxmc,
+            skjs,
+            zcsm,
+            skxq,
+            skjc,
+            xqm,
+            jxlm,
+            jasm,
+            bkskrl,
+            bkskyl,
+            xkxzsm
+          }) => ({
+            courseName: kcm || '',
+            courseNumber: kch || '',
+            courseSequenceNumber: kxh || '',
+            departmentCode: kkxsh || '',
+            departmentName: kkxsjc || '',
+            credit: xf || 0,
+            courseTypeCode: kclbdm || '',
+            courseTypeName: kclbmc || '',
+            examTypeCode: kslxdm || '',
+            examTypeName: kslxmc || '',
+            teacherName: skjs || '',
+            courseTime: `${zcsm}星期${getChineseNumber(skxq)}${skjc}节`,
+            courseSite: `${xqm}校区${jxlm}${jasm}`,
+            availibleCapacity: `${bkskyl} / ${bkskrl}`,
+            note: xkxzsm && xkxzsm !== ';' ? xkxzsm : ''
+          })
+        )
+        .reduce(
+          (acc, cur) => {
+            let index = -1
+            for (let i = 0; i < acc.length; i++) {
+              if (acc[i].courseSequenceNumber === cur.courseSequenceNumber) {
+                index = i
+                break
+              }
+            }
+            const merge = (
+              obj1: CourseScheduleInfo,
+              obj2: CourseScheduleInfo
+            ) => {
+              const result = {} as CourseScheduleInfo
+              for (const key in obj1) {
+                result[key] =
+                  obj1[key] === obj2[key]
+                    ? obj1[key]
+                    : `${obj1[key]}，${obj2[key]}`
+              }
+              return result
+            }
+            if (index === -1) {
+              return acc.concat(cur)
+            }
+            acc[index] = merge(acc[index], cur)
+            return acc
+          },
+          [] as CourseScheduleInfo[]
+        )
+        .sort(
+          (a, b) =>
+            Number(a.courseSequenceNumber) - Number(b.courseSequenceNumber)
+        )
+    }
+  }
+  return {
+    response: 'no_render'
+  }
+}
 
 function requestTrainingScheme(num: number) {
   $.ajaxSetup({
@@ -436,5 +561,6 @@ export {
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
-  requestSelfMajorNumber
+  requestSelfMajorNumber,
+  requestCourseSchedule
 }

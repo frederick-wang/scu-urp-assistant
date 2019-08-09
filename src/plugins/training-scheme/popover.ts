@@ -1,92 +1,5 @@
-import { getChineseNumber } from '../../utils/basic'
-
-interface CourseInfoAPIData {
-  pfcx: number
-  list: {
-    pageSize: number
-    pageNum: number
-    pageContext: {
-      totalCount: number
-    }
-    records: RawRecord[]
-  }
-}
-
-interface RawRecord {
-  id: string
-  zxjxjhh: string
-  kch: string
-  kxh: string
-  kcm: string
-  xf: number
-  xs: number
-  kkxsh: string
-  kkxsjc: string
-  kslxdm: string
-  kslxmc: string
-  skjs: string
-  bkskrl: number
-  bkskyl: number
-  xkmsdm: string
-  xkmssm: string
-  xkkzdm: string
-  xkkzsm: string
-  xkkzh?: any
-  xkxzsm: string
-  kkxqh: string
-  kkxqm: string
-  sfxzxslx?: any
-  sfxzxsnj?: any
-  sfxzxsxs?: string
-  sfxzxxkc?: any
-  sfxzxdlx: string
-  xqh: string
-  jxlh: string
-  jash: string
-  jclxdm: string
-  skzc: string
-  skxq: number
-  skjc: number
-  cxjc: number
-  xqlxdm: string
-  xqdm: string
-  xss: number
-  zcsm: string
-  kclbdm: string
-  kclbmc: string
-  xkbz?: any
-  xqm: string
-  jxlm: string
-  jasm: string
-}
-
-interface CourseInfoRecord {
-  courseName: string
-  courseNumber: string
-  courseSequenceNumber: string
-  departmentCode: string
-  departmentName: string
-  credit: number
-  courseTypeCode: string
-  courseTypeName: string
-  examTypeCode: string
-  examTypeName: string
-  teacherName: string
-  courseTime: string
-  courseSite: string
-  availibleCapacity: string
-  note: string
-  [key: string]: any
-}
-
-interface CourseInfo {
-  semester: string
-  number: string
-  name: string
-  records: CourseInfoRecord[]
-}
-
-let currentQueryCourse: HTMLElement | null = null
+import { action, Request } from '@/utils/api'
+import { CourseScheduleInfo } from '@/utils/api/types'
 
 export function initCourseInfoPopover() {
   if (!window.__$SUA_SHARED_DATA__) {
@@ -127,12 +40,10 @@ export function initCourseInfoPopover() {
       const $courseInfo = $(this)
       const courseName = $courseInfo.data('course-name')
       const courseNumber = $courseInfo.data('course-number')
-      currentQueryCourse = this
       initDOM(this, courseName, courseNumber)
-      getCourseInfoData(currentSemester, courseName, courseNumber, this)
+      showCourseSchedulePop(currentSemester, courseName, courseNumber)
     },
     function(e) {
-      currentQueryCourse = null
       $(this)
         .children('.course-info-popover')
         .remove()
@@ -140,136 +51,42 @@ export function initCourseInfoPopover() {
   )
 }
 
-async function getCourseInfoData(
-  currentSemester: string,
+async function showCourseSchedulePop(
+  semester: string,
   courseName: string,
-  courseNumber: string,
-  element: Element
-): Promise<CourseInfo> {
-  if (currentQueryCourse === element) {
-    const res: CourseInfoAPIData = await $.post(
-      '/student/integratedQuery/course/courseSchdule/courseInfo',
-      {
-        zxjxjhh: currentSemester,
-        kcm: courseName,
-        kch: courseNumber,
-        pageNum: 1,
-        pageSize: 1000
-      }
-    )
-    if (currentQueryCourse !== element) {
-      return {
-        semester: currentSemester,
-        number: courseNumber,
-        name: courseName,
-        records: []
-      }
-    }
-    // pfcx 是「频繁查询的意思」
-    if (!res.pfcx) {
-      const records = res.list.records
-        .map(
-          ({
-            kcm,
-            kch,
-            kxh,
-            kkxsh,
-            kkxsjc,
-            xf,
-            kclbdm,
-            kclbmc,
-            kslxdm,
-            kslxmc,
-            skjs,
-            zcsm,
-            skxq,
-            skjc,
-            xqm,
-            jxlm,
-            jasm,
-            bkskrl,
-            bkskyl,
-            xkxzsm
-          }) => ({
-            courseName: kcm || '',
-            courseNumber: kch || '',
-            courseSequenceNumber: kxh || '',
-            departmentCode: kkxsh || '',
-            departmentName: kkxsjc || '',
-            credit: xf || 0,
-            courseTypeCode: kclbdm || '',
-            courseTypeName: kclbmc || '',
-            examTypeCode: kslxdm || '',
-            examTypeName: kslxmc || '',
-            teacherName: skjs || '',
-            courseTime: `${zcsm}星期${getChineseNumber(skxq)}${skjc}节`,
-            courseSite: `${xqm}校区${jxlm}${jasm}`,
-            availibleCapacity: `${bkskyl} / ${bkskrl}`,
-            note: xkxzsm && xkxzsm !== ';' ? xkxzsm : ''
-          })
-        )
-        .reduce(
-          (acc, cur) => {
-            let index = -1
-            for (let i = 0; i < acc.length; i++) {
-              if (acc[i].courseSequenceNumber === cur.courseSequenceNumber) {
-                index = i
-                break
-              }
-            }
-            const merge = (obj1: CourseInfoRecord, obj2: CourseInfoRecord) => {
-              const result = {} as CourseInfoRecord
-              for (const key in obj1) {
-                result[key] =
-                  obj1[key] === obj2[key]
-                    ? obj1[key]
-                    : `${obj1[key]}，${obj2[key]}`
-              }
-              return result
-            }
-            if (index === -1) {
-              return acc.concat(cur)
-            }
-            acc[index] = merge(acc[index], cur)
-            return acc
-          },
-          [] as CourseInfoRecord[]
-        )
-        .sort(
-          (a, b) =>
-            Number(a.courseSequenceNumber) - Number(b.courseSequenceNumber)
-        )
-      const data = {
-        semester: currentSemester,
-        number: courseNumber,
-        name: courseName,
-        records
-      }
-      const $pop = $('.course-info-popover')
-      const $popTitle = $pop.children('.ci-popover-title')
-      const $popContent = $pop.children('.ci-popover-content')
-      let titleText
-      let templateHTML
-      if (records.length) {
-        titleText = `${courseName}（${courseNumber}）- 共${
-          records.length
-        }个课序号`
-        const genRowsHTML = (records: CourseInfoRecord[]) =>
-          records
-            .map(
-              ({
-                courseSequenceNumber,
-                departmentName,
-                credit,
-                courseTypeName,
-                examTypeName,
-                teacherName,
-                courseTime,
-                courseSite,
-                availibleCapacity,
-                note
-              }) =>
-                `<tr>
+  courseNumber: string
+) {
+  const { response, sequence } = await action[Request.COURSE_Schedule](
+    semester,
+    courseName,
+    courseNumber
+  )
+  let titleText = ''
+  let templateHTML = ''
+  const $pop = $('.course-info-popover')
+  const $popTitle = $pop.children('.ci-popover-title')
+  const $popContent = $pop.children('.ci-popover-content')
+  if (sequence) {
+    if (sequence.length) {
+      titleText = `${courseName}（${courseNumber}）- 共${
+        sequence.length
+      }个课序号`
+      const genRowsHTML = (sequence: CourseScheduleInfo[]) =>
+        sequence
+          .map(
+            ({
+              courseSequenceNumber,
+              departmentName,
+              credit,
+              courseTypeName,
+              examTypeName,
+              teacherName,
+              courseTime,
+              courseSite,
+              availibleCapacity,
+              note
+            }) =>
+              `<tr>
                 <td>${courseSequenceNumber}</td>
                 <td>${departmentName}</td>
                 <td>${credit}</td>
@@ -281,9 +98,9 @@ async function getCourseInfoData(
                 <td>${availibleCapacity}</td>
                 <td>${note}</td>
               </tr>`
-            )
-            .join('')
-        templateHTML = `
+          )
+          .join('')
+      templateHTML = `
           <table class="table table-striped table-bordered table-hover">
             <thead>
               <tr>
@@ -300,37 +117,24 @@ async function getCourseInfoData(
               </tr>
             </thead>
             <tbody>
-              ${genRowsHTML(records)}
+              ${genRowsHTML(sequence)}
             </tbody>
           </table>
         `
-      } else {
-        titleText = `${courseName}（${courseNumber}）`
-        templateHTML = `<p style="color: #CB1B45;">${courseName}（${courseNumber}）并未在本学期开课</p>`
-      }
-      $popTitle.text(titleText)
-      $popContent.html(templateHTML)
-      return data
+    } else {
+      titleText = `${courseName}（${courseNumber}）`
+      templateHTML = `<p style="color: #CB1B45;">【${courseName}（${courseNumber}）】并未在本学期开课</p>`
     }
-    return new Promise(resolve =>
-      setTimeout(
-        () =>
-          resolve(
-            getCourseInfoData(
-              currentSemester,
-              courseName,
-              courseNumber,
-              element
-            )
-          ),
-        1000
-      )
-    )
+  } else {
+    if (response === 'network_error') {
+      titleText = `${courseName}（${courseNumber}）`
+      templateHTML = `<p style="color: #CB1B45;">因网络原因，【${courseName}（${courseNumber}）】的课程信息查询失败，请稍后再试</p>`
+    }
   }
-  return {
-    semester: currentSemester,
-    number: courseNumber,
-    name: courseName,
-    records: []
+  if (titleText) {
+    $popTitle.text(titleText)
+  }
+  if (templateHTML) {
+    $popContent.html(templateHTML)
   }
 }
