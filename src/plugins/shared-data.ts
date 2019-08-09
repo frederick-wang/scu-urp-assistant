@@ -1,6 +1,5 @@
 // 共享数据插件
-import { requestData, Request } from '@/utils/api'
-import { CurrentSemesterStudentAcademicInfo } from '@/utils/api/types'
+import { action, Request } from '@/utils/api'
 
 function getCurrentSemesterNumber() {
   if (!window.__$SUA_SHARED_DATA__) {
@@ -50,9 +49,9 @@ export default {
       }
       window.__$SUA_SHARED_DATA__.core = { suaPath }
       // 设置值
-      window.__$SUA_SHARED_DATA__.academicInfo = (await requestData(
+      window.__$SUA_SHARED_DATA__.academicInfo = await action[
         Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO
-      )) as CurrentSemesterStudentAcademicInfo
+      ]()
     }
   }
 }

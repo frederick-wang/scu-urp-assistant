@@ -1,26 +1,23 @@
+import { showLoadingAnimation, hideLoadingAnimation } from './common'
+import { action, Request } from '@/utils/api'
 import {
-  getTrainingSchemeList,
-  getSelfMajorNumber,
-  getTrainingSchemeData,
-  showLoadingAnimation,
-  hideLoadingAnimation
-} from './common'
-import {
-  JhFajhb,
-  TrainingSchemeYearItem,
-  TrainingSchemeSemesterItem,
-  TrainingSchemeCourse
-} from './types'
+  TrainingSchemeBaseInfo,
+  TrainingSchemeYearInfo,
+  TrainingSchemeSemesterInfo,
+  TrainingSchemeCourseInfo
+} from '@/utils/api/types'
 import { initCourseInfoPopover } from './popover'
 import { getChineseNumber } from '../../utils/basic'
 
-let trainingSchemeList:string[][]
+let trainingSchemeList: string[][]
 
 async function query() {
-  const number = $('#major').val()
-  if (number !== '无') {
+  const majorNumber = $('#major').val()
+  if (majorNumber !== '无') {
     showLoadingAnimation('.training-scheme-wrapper')
-    const { info, list } = await getTrainingSchemeData(number as string)
+    const { info, list } = await action[Request.TRAINING_SCHEME](
+      Number(majorNumber)
+    )
     hideLoadingAnimation()
     $('.training-scheme-wrapper').append(genInfoHTML(info))
     $('.training-scheme-wrapper').append(genSchemeHTML(list))
@@ -43,7 +40,7 @@ function updateMajorList() {
 export async function render(root: HTMLElement) {
   initDOM(root)
   showLoadingAnimation('.training-scheme-wrapper')
-  trainingSchemeList = await getTrainingSchemeList()
+  trainingSchemeList = await action[Request.TRAINING_SCHEME_LIST]()
   hideLoadingAnimation()
   initFunc()
   initQueryDOM()
@@ -68,9 +65,9 @@ function initQueryDOM() {
 }
 
 async function selectSelfMajorAndQuery() {
-  const selfMajorNumber = await getSelfMajorNumber()
+  const selfMajorNumber = await action[Request.SELF_MAJOR_NUMBER]()
   const selfSchemeInfo = trainingSchemeList.filter(
-    v => v[0] === selfMajorNumber
+    v => Number(v[0]) === selfMajorNumber
   )[0]
   $('#grade').val(selfSchemeInfo[1] as string)
   $('#department').val(selfSchemeInfo[2] as string)
@@ -142,7 +139,7 @@ function genQueryHTML() {
     `
 }
 
-function genInfoHTML(info: JhFajhb) {
+function genInfoHTML(info: TrainingSchemeBaseInfo) {
   for (const key of Object.keys(info)) {
     if (!info[key]) {
       info[key] = '-'
@@ -275,8 +272,11 @@ function genInfoHTML(info: JhFajhb) {
     `
 }
 
-function genSchemeHTML(list: TrainingSchemeYearItem[]) {
-  const courseItemTemplate = (course: TrainingSchemeCourse, number: number) => `
+function genSchemeHTML(list: TrainingSchemeYearInfo[]) {
+  const courseItemTemplate = (
+    course: TrainingSchemeCourseInfo,
+    number: number
+  ) => `
       <div class="course-item-wrapper">
         <div class="course-item" data-course-number="${
           course.courseNumber
@@ -309,7 +309,7 @@ function genSchemeHTML(list: TrainingSchemeYearItem[]) {
         </div>
       </div>
     `
-  const semesterItemTemplate = (semester: TrainingSchemeSemesterItem) => `
+  const semesterItemTemplate = (semester: TrainingSchemeSemesterInfo) => `
       <div class="semester-item">
         <div class="semester-item-title">${semester.name}</div>
         <div class="semester-item-content">
@@ -320,7 +320,7 @@ function genSchemeHTML(list: TrainingSchemeYearItem[]) {
       </div>
     `
 
-  const yearItemTemplate = (year: TrainingSchemeYearItem, grade: number) => `
+  const yearItemTemplate = (year: TrainingSchemeYearInfo, grade: number) => `
     <div class="year-item">
       <div class="year-item-title"><i class="fa fa-cubes" aria-hidden="true"></i> ${
         year.name

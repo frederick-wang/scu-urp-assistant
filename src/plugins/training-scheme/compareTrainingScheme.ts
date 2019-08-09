@@ -1,30 +1,25 @@
+import { showLoadingAnimation, hideLoadingAnimation } from './common'
 import {
-  getTrainingSchemeList,
-  getSelfMajorNumber,
-  getTrainingSchemeData,
-  showLoadingAnimation,
-  hideLoadingAnimation
-} from './common'
-import {
-  JhFajhb,
-  TrainingSchemeYearItem as TrainingSchemeYearItemBase,
-  TrainingSchemeCourse as TrainingSchemeCourseBase
-} from './types'
+  TrainingSchemeBaseInfo,
+  TrainingSchemeYearInfo as SingleTrainingSchemeYearInfo,
+  TrainingSchemeCourseInfo as SingleTrainingSchemeCourseInfoBase
+} from '@/utils/api/types'
 import { getChineseNumber } from '../../utils/basic'
+import { Request, action } from '@/utils/api'
 
-let trainingSchemeList:string[][]
+let trainingSchemeList: string[][]
 
-interface TrainingSchemeYearItem {
+interface TrainingSchemeYearInfo {
   name: string
-  children: TrainingSchemeSemesterItem[]
+  children: TrainingSchemeSemesterInfo[]
 }
 
-interface TrainingSchemeSemesterItem {
+interface TrainingSchemeSemesterInfo {
   name: string
-  children: TrainingSchemeCourse[]
+  children: TrainingSchemeCourseInfo[]
 }
 
-interface TrainingSchemeCourse extends TrainingSchemeCourseBase {
+interface TrainingSchemeCourseInfo extends SingleTrainingSchemeCourseInfoBase {
   courseNumber1: string
   courseNumber2: string
   courseName1: string
@@ -42,7 +37,7 @@ interface TrainingSchemeCourse extends TrainingSchemeCourseBase {
 export async function render(root: HTMLElement) {
   initDOM(root)
   showLoadingAnimation('.compare-training-scheme-wrapper')
-  trainingSchemeList = await getTrainingSchemeList()
+  trainingSchemeList = await action[Request.TRAINING_SCHEME_LIST]()
   hideLoadingAnimation()
   initFunc()
   initQueryDOM()
@@ -169,9 +164,9 @@ function genQueryHTML() {
 }
 
 async function selectSelfMajorAndQuery() {
-  const selfMajorNumber = await getSelfMajorNumber()
+  const selfMajorNumber = await action[Request.SELF_MAJOR_NUMBER]()
   const selfSchemeInfo = trainingSchemeList.filter(
-    v => v[0] === selfMajorNumber
+    v => Number(v[0]) === selfMajorNumber
   )[0]
   $('#query-major-1 #grade').val(selfSchemeInfo[1] as string)
   $('#query-major-2 #grade').val(selfSchemeInfo[1] as string)
@@ -205,8 +200,8 @@ async function query() {
       { info: info1, list: list1 },
       { info: info2, list: list2 }
     ] = await Promise.all([
-      getTrainingSchemeData(number1 as string),
-      getTrainingSchemeData(number2 as string)
+      action[Request.TRAINING_SCHEME](Number(number1)),
+      action[Request.TRAINING_SCHEME](Number(number2))
     ])
     hideLoadingAnimation()
     $('.compare-training-scheme-wrapper').append(genInfoHTML(info1, info2))
@@ -214,8 +209,11 @@ async function query() {
   }
 }
 
-function genInfoHTML(info1: JhFajhb, info2: JhFajhb) {
-  const preprocess = (info: JhFajhb) => {
+function genInfoHTML(
+  info1: TrainingSchemeBaseInfo,
+  info2: TrainingSchemeBaseInfo
+) {
+  const preprocess = (info: TrainingSchemeBaseInfo) => {
     for (const key of Object.keys(info)) {
       if (!info[key]) {
         info[key] = '-'
@@ -223,7 +221,11 @@ function genInfoHTML(info1: JhFajhb, info2: JhFajhb) {
     }
   }
   ;[info1, info2].forEach(v => preprocess(v))
-  const genItemHTML = (info1: JhFajhb, info2: JhFajhb, key: string) =>
+  const genItemHTML = (
+    info1: TrainingSchemeBaseInfo,
+    info2: TrainingSchemeBaseInfo,
+    key: string
+  ) =>
     info1[key] === info2[key]
       ? `<span class="item-value-same">${info1[key]}</span>`
       : `
@@ -367,35 +369,35 @@ function genInfoHTML(info1: JhFajhb, info2: JhFajhb) {
 }
 
 function genSchemeHTML(
-  list1: TrainingSchemeYearItemBase[],
-  list2: TrainingSchemeYearItemBase[]
+  list1: SingleTrainingSchemeYearInfo[],
+  list2: SingleTrainingSchemeYearInfo[]
 ) {
   const preprocess = (
-    list1: TrainingSchemeYearItemBase[],
-    list2: TrainingSchemeYearItemBase[]
+    list1: SingleTrainingSchemeYearInfo[],
+    list2: SingleTrainingSchemeYearInfo[]
   ) => {
     const totalYear = Math.max(list1.length, list2.length)
     const result = []
     for (let i = 0; i < totalYear; i++) {
       // 第一层循环，处理每个学年数据的合并
-      const yearItem1: TrainingSchemeYearItem = (list1[
+      const yearItem1: TrainingSchemeYearInfo = (list1[
         i
-      ] as TrainingSchemeYearItem) || {
+      ] as TrainingSchemeYearInfo) || {
         name: '',
-        children: [] as TrainingSchemeSemesterItem[]
+        children: [] as TrainingSchemeSemesterInfo[]
       }
-      const yearItem2: TrainingSchemeYearItem = (list2[
+      const yearItem2: TrainingSchemeYearInfo = (list2[
         i
-      ] as TrainingSchemeYearItem) || {
+      ] as TrainingSchemeYearInfo) || {
         name: '',
-        children: [] as TrainingSchemeSemesterItem[]
+        children: [] as TrainingSchemeSemesterInfo[]
       }
       const yearItem = {
         name:
           yearItem1.name === yearItem2.name
             ? yearItem1.name
             : [yearItem1.name, yearItem2.name].filter(v => v).join(' / '),
-        children: [] as TrainingSchemeSemesterItem[]
+        children: [] as TrainingSchemeSemesterInfo[]
       }
       const totalSemester = Math.max(
         yearItem1.children.length,
@@ -405,11 +407,11 @@ function genSchemeHTML(
         // 第二层循环，处理每个学期数据的合并
         const semesterItem1 = yearItem1.children[j] || {
           name: '',
-          children: [] as TrainingSchemeCourse[]
+          children: [] as TrainingSchemeCourseInfo[]
         }
         const semesterItem2 = yearItem2.children[j] || {
           name: '',
-          children: [] as TrainingSchemeCourse[]
+          children: [] as TrainingSchemeCourseInfo[]
         }
         const semesterItem = {
           name:
@@ -418,7 +420,7 @@ function genSchemeHTML(
               : [semesterItem1.name, semesterItem2.name]
                   .filter(v => v)
                   .join(' / '),
-          children: [] as TrainingSchemeCourse[]
+          children: [] as TrainingSchemeCourseInfo[]
         }
         // 所有Key对应的值都一样
         // const hasAllSameValues = (objs, keys) => {
@@ -431,7 +433,7 @@ function genSchemeHTML(
         // }
         // 存在一个Key对应的值一样
         const hasASameValue = (
-          objs: TrainingSchemeCourse[],
+          objs: TrainingSchemeCourseInfo[],
           keys: string[]
         ) => {
           for (const key of keys) {
@@ -449,7 +451,7 @@ function genSchemeHTML(
         const sameCourses = [] as any[]
         const coursesOnly1 = [] as any[]
         while (semesterItem1.children.length) {
-          const courseItem1 = semesterItem1.children.shift() as TrainingSchemeCourse
+          const courseItem1 = semesterItem1.children.shift() as TrainingSchemeCourseInfo
           let hasSameCourse = false
           for (let m = 0; m < semesterItem2.children.length; m++) {
             const courseItem2 = semesterItem2.children[m]
@@ -492,8 +494,11 @@ function genSchemeHTML(
     return result
   }
 
-  const courseItemTemplate = (course: TrainingSchemeCourse, number: number) => {
-    const getCourseItemClass = (course: TrainingSchemeCourse) => {
+  const courseItemTemplate = (
+    course: TrainingSchemeCourseInfo,
+    number: number
+  ) => {
+    const getCourseItemClass = (course: TrainingSchemeCourseInfo) => {
       const classList = {
         0: 'item-value-same',
         1: 'item-value-1',
@@ -503,7 +508,7 @@ function genSchemeHTML(
       }
       return classList[course.comparedResult]
     }
-    const courseItemInfoSecondary = (course: TrainingSchemeCourse) => {
+    const courseItemInfoSecondary = (course: TrainingSchemeCourseInfo) => {
       let courseNumberTemplate = ''
       const getCoursePropertyNameClass = (coursePropertyName: string) =>
         `info-tag course-property-name${
@@ -605,7 +610,7 @@ function genSchemeHTML(
           </div>
         `
     }
-    const getCourseName = (course: TrainingSchemeCourse) => {
+    const getCourseName = (course: TrainingSchemeCourseInfo) => {
       switch (course.comparedResult) {
         case 0:
           if (course.courseName1 === course.courseName2) {
@@ -638,7 +643,7 @@ function genSchemeHTML(
         </div>
       `
   }
-  const semesterItemTemplate = (semester: TrainingSchemeSemesterItem) => `
+  const semesterItemTemplate = (semester: TrainingSchemeSemesterInfo) => `
       <div class="semester-item">
         <div class="semester-item-title">${semester.name}</div>
         <div class="semester-item-content">
@@ -649,7 +654,7 @@ function genSchemeHTML(
       </div>
     `
 
-  const yearItemTemplate = (year: TrainingSchemeYearItem, grade: number) => {
+  const yearItemTemplate = (year: TrainingSchemeYearInfo, grade: number) => {
     const yearNames = year.name.split(' / ')
     let yearName
     if (yearNames.length > 1) {
