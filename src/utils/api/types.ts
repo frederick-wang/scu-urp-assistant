@@ -39,4 +39,17 @@ interface AllTermScoresAPIData {
   }
 }
 
-export { CourseScoreBaseInfo, CourseScoreInfo, AllTermScoresAPIData }
+interface CurrentSemesterStudentAcademicInfo {
+  courseNumber: number
+  currentSemester: string
+  gpa: number
+  currentSemesterCourseNumber: number
+  failedCourseNumber: number
+}
+
+export {
+  CourseScoreBaseInfo,
+  CourseScoreInfo,
+  AllTermScoresAPIData,
+  CurrentSemesterStudentAcademicInfo
+}

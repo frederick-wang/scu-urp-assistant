@@ -1,4 +1,6 @@
 // 共享数据插件
+import { requestData, Request } from '@/utils/api'
+import { CurrentSemesterStudentAcademicInfo } from '@/utils/api/types'
 
 function getCurrentSemesterNumber() {
   if (!window.__$SUA_SHARED_DATA__) {
@@ -47,24 +49,10 @@ export default {
         suaPath = regexp[1]
       }
       window.__$SUA_SHARED_DATA__.core = { suaPath }
-      // 加载本学期基本信息
-      const [
-        {
-          zxjxjhh: currentSemester,
-          gpa,
-          courseNum: courseNumber,
-          courseNum_bxqyxd: currentSemesterCourseNumber,
-          coursePas: failedCourseNumber
-        }
-      ] = JSON.parse(await $.post('/main/academicInfo'))
       // 设置值
-      window.__$SUA_SHARED_DATA__.academicInfo = {
-        courseNumber,
-        currentSemester,
-        gpa,
-        currentSemesterCourseNumber,
-        failedCourseNumber
-      }
+      window.__$SUA_SHARED_DATA__.academicInfo = (await requestData(
+        Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO
+      )) as CurrentSemesterStudentAcademicInfo
     }
   }
 }

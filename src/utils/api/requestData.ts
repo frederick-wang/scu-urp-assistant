@@ -1,8 +1,31 @@
 import {
   AllTermScoresAPIData,
   CourseScoreBaseInfo,
-  CourseScoreInfo
+  CourseScoreInfo,
+  CurrentSemesterStudentAcademicInfo
 } from './types'
+
+async function requestCurrentSemesterStudentAcademicInfo(): Promise<
+  CurrentSemesterStudentAcademicInfo
+> {
+  // 加载本学期基本信息
+  const [
+    {
+      zxjxjhh: currentSemester,
+      gpa,
+      courseNum: courseNumber,
+      courseNum_bxqyxd: currentSemesterCourseNumber,
+      coursePas: failedCourseNumber
+    }
+  ] = JSON.parse(await $.post('/main/academicInfo'))
+  return {
+    courseNumber,
+    currentSemester,
+    gpa,
+    currentSemesterCourseNumber,
+    failedCourseNumber
+  }
+}
 
 function convertSemesterNumberToText(number: string) {
   const r = number.match(/(\d+)-(\d+)-(.+)/)
@@ -196,5 +219,6 @@ async function requestThisTermCourseScoreInfoList(): Promise<
 
 export {
   requestThisTermCourseScoreInfoList,
-  requestAllTermsCourseScoreInfoList
+  requestAllTermsCourseScoreInfoList,
+  requestCurrentSemesterStudentAcademicInfo
 }

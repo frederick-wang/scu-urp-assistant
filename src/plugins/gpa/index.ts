@@ -428,7 +428,9 @@ const templates = {
 }
 
 async function getAllTermScoresData(): Promise<Record[]> {
-  const rawList = await requestData(Request.ALL_TERMS_COURSE_SCORE_INFO_LIST)
+  const rawList = (await requestData(
+    Request.ALL_TERMS_COURSE_SCORE_INFO_LIST
+  )) as CourseScoreBaseInfo[]
   // 第一次请求只是为了获得课程总数 totalCount
   // 将获取的全部课程成绩列表按照学期分组
   return (
