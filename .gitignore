@@ -60,3 +60,4 @@ typings/
 .cache
 
 .vscode/
+dist/
