@@ -1,8 +1,10 @@
-import { requestThisTermCourseScoreInfoList } from '@/utils/api'
+import { requestData, Request } from '@/utils/api'
 import { CourseScoreRecord } from './types'
 
 async function getScoreRecords() {
-  const thisTermScoresList = await requestThisTermCourseScoreInfoList()
+  const thisTermScoresList = await requestData(
+    Request.THIS_TERM_COURSE_SCORE_INFO_LIST
+  )
   return [
     {
       semester: thisTermScoresList[0].executiveEducationPlanName,

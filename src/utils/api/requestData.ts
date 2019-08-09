@@ -1,43 +1,8 @@
-interface CourseScoreBaseInfo {
-  executiveEducationPlanNumber: string
-  executiveEducationPlanName: string
-  courseNumber: string
-  courseSequenceNumber: string
-  examtime: string
-  inputStatusCode: string
-  coursePropertyCode: string
-  inputMethodCode: string
-  courseScore: number
-  levelCode: string
-  courseName: string
-  englishCourseName: string
-  credit: number
-  studyHour: number
-  coursePropertyName: string
-  examTypeName: string
-  levelName: string
-  unpassedReasonExplain: string
-  gradePoint: number
-}
-
-interface CourseScoreInfo extends CourseScoreBaseInfo {
-  maxScore: number
-  avgScore: number
-  minScore: number
-  rank: number
-  unpassedReasonCode: string
-}
-
-interface AllTermScoresAPIData {
-  list: {
-    pageSize: number
-    pageNum: number
-    pageContext: {
-      totalCount: number
-    }
-    records: (null | string | number)[][]
-  }
-}
+import {
+  AllTermScoresAPIData,
+  CourseScoreBaseInfo,
+  CourseScoreInfo
+} from './types'
 
 function convertSemesterNumberToText(number: string) {
   const r = number.match(/(\d+)-(\d+)-(.+)/)
@@ -177,7 +142,9 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
   )
 }
 
-async function requestThisTermCourseScoreInfoList() {
+async function requestThisTermCourseScoreInfoList(): Promise<
+  CourseScoreInfo[]
+> {
   const url = '/student/integratedQuery/scoreQuery/thisTermScores/data'
   const [{ state, list }]: [{ state: string; list: any[] }] = await $.get(url)
   // console.log(`state: ${state}`)
@@ -224,12 +191,10 @@ async function requestThisTermCourseScoreInfoList() {
       a.credit
     )
   })
-  return res
+  return res as CourseScoreInfo[]
 }
 
 export {
   requestThisTermCourseScoreInfoList,
-  requestAllTermsCourseScoreInfoList,
-  CourseScoreInfo,
-  CourseScoreBaseInfo
+  requestAllTermsCourseScoreInfoList
 }
