@@ -166,26 +166,35 @@ interface TrainingSchemeNodeAPIData {
   courseName: string
 }
 
-interface CourseScoreBaseInfo {
-  executiveEducationPlanNumber: string
-  executiveEducationPlanName: string
-  courseNumber: string
-  courseSequenceNumber: string
-  examtime: string
-  inputStatusCode: string
-  coursePropertyCode: string
-  inputMethodCode: string
-  courseScore: number
-  levelCode: string
+interface CourseScoreCoreInfo {
   courseName: string
   englishCourseName: string
+  courseNumber: string
+  courseSequenceNumber: string
+  executiveEducationPlanNumber: string
+  executiveEducationPlanName: string
   credit: number
-  studyHour: number
-  coursePropertyName: string
+  examtime: string
   examTypeName: string
-  levelName: string
-  unpassedReasonExplain: string
+  studyHour: number
+}
+
+interface CourseScorePublicInfo extends CourseScoreCoreInfo {
+  maxScore: number
+  avgScore: number
+  minScore: number
+}
+
+interface CourseScoreBaseInfo extends CourseScoreCoreInfo {
+  courseScore: number
   gradePoint: number
+  levelCode: string
+  levelName: string
+  inputStatusCode: string
+  inputMethodCode: string
+  coursePropertyCode: string
+  coursePropertyName: string
+  unpassedReasonExplain: string
 }
 
 interface CourseScoreInfo extends CourseScoreBaseInfo {
@@ -216,6 +225,7 @@ interface CurrentSemesterStudentAcademicInfo {
 }
 
 export {
+  CourseScorePublicInfo,
   CourseScoreBaseInfo,
   CourseScoreInfo,
   AllTermScoresAPIData,
