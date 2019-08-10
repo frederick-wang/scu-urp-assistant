@@ -6,7 +6,7 @@ import recoverRememberMe from '@/plugins/recover-remember-me'
 import gpa from '@/plugins/gpa'
 import trainingScheme from '@/plugins/training-scheme'
 import scoresInformation from '@/plugins/scores-information'
-import submitData from '@/plugins/submit-data'
+import submitData from '@/plugins/customer-experience-improvement-program'
 import { urlTrigger } from '@/utils'
 import { init as initStore, state } from './store'
 

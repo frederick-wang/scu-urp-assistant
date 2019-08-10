@@ -1,9 +1,9 @@
-// 提交公共数据到服务器插件
+// 用户体验改善计划插件
 import { actions, Request, Submit } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
 
 export default {
-  name: 'submit-data',
+  name: 'customer-experience-improvement-program',
   pathname: '/**',
   async init() {
     // 保证处在登陆后界面
