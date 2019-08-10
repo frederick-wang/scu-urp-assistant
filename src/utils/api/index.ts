@@ -5,7 +5,8 @@ import {
   requestTrainingSchemeList,
   requestTrainingScheme,
   requestSelfMajorNumber,
-  requestCourseSchedule
+  requestCourseSchedule,
+  requestUserId
 } from './requestActions'
 
 import {
@@ -20,7 +21,8 @@ enum Request {
   TRAINING_SCHEME_LIST = 'training_scheme_list',
   TRAINING_SCHEME = 'training_scheme',
   SELF_MAJOR_NUMBER = 'self_major_number',
-  COURSE_Schedule = 'course_schedule'
+  COURSE_Schedule = 'course_schedule',
+  REQUEST_USER_ID = 'request_user_id'
 }
 
 enum Submit {
@@ -36,6 +38,7 @@ const action = {
   [Request.TRAINING_SCHEME]: requestTrainingScheme,
   [Request.SELF_MAJOR_NUMBER]: requestSelfMajorNumber,
   [Request.COURSE_Schedule]: requestCourseSchedule,
+  [Request.REQUEST_USER_ID]: requestUserId,
   [Submit.COURSE_SCORE_PUBLIC_INFO]: submitCourseScorePublicInfo,
   [Submit.COURSE_SCORE_PUBLIC_INFOS]: submitCourseScorePublicInfos
 }

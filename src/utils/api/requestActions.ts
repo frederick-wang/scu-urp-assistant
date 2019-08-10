@@ -12,6 +12,41 @@ import {
   CourseScheduleInfoAPIData,
   CourseScheduleInfo
 } from './types'
+import crypto from 'crypto'
+
+async function requestUserId() {
+  $.ajaxSetup({
+    beforeSend: xhr =>
+      xhr.setRequestHeader('X-Requested-With', {
+        toString() {
+          return ''
+        }
+      } as any)
+  })
+  const url = '/student/rollManagement/rollInfo/index'
+  const rawHTML = await $.get(url)
+  const secret = Array.from($('.profile-info-value', rawHTML))
+    .map(v =>
+      $(v)
+        .text()
+        .trim()
+    )
+    .filter(v => v)
+    .filter(
+      (v, i) =>
+        i === 3 || i === 7 || i === 10 || i === 21 || i === 29 || i === 33
+    )
+    .join('')
+  const userId = crypto
+    .createHmac('sha256', secret)
+    .update('scu-urp-assistant')
+    .digest('hex')
+  // 还原Ajax配置
+  $.ajaxSetup({
+    beforeSend: null as any
+  })
+  return userId
+}
 
 // 根据测试，教务处的课程信息查询时间间隔为5秒，否则会报频繁查询
 const QUERY_TIME_INTERVAL = 5000
@@ -562,5 +597,6 @@ export {
   requestTrainingSchemeList,
   requestTrainingScheme,
   requestSelfMajorNumber,
-  requestCourseSchedule
+  requestCourseSchedule,
+  requestUserId
 }

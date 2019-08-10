@@ -8,8 +8,8 @@ export default {
   async init() {
     // 保证处在登陆后界面
     if (window.location.pathname !== '/login') {
-      const res = await action[Request.THIS_TERM_COURSE_SCORE_INFO_LIST]()
-      const courseScorePublicList: CourseScorePublicInfo[] = res.map(
+      const thisTermCourseScoreInfoList = await action[Request.THIS_TERM_COURSE_SCORE_INFO_LIST]()
+      const courseScorePublicList: CourseScorePublicInfo[] = thisTermCourseScoreInfoList.map(
         ({
           courseName,
           englishCourseName,
@@ -40,7 +40,8 @@ export default {
           minScore
         })
       )
-      action[Submit.COURSE_SCORE_PUBLIC_INFOS](courseScorePublicList)
+      // action[Submit.COURSE_SCORE_PUBLIC_INFOS](courseScorePublicList)
+      const userId = await action[Request.REQUEST_USER_ID]()
     }
   }
 }
