@@ -1,7 +1,7 @@
 import {
   requestCurrentSemesterStudentAcademicInfo,
   requestUserId
-} from './requestActions'
+} from './actions/request'
 import { convertSemesterNumberToName } from '@/utils'
 
 interface AcademicInfo {

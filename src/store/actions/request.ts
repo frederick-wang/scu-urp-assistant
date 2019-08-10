@@ -12,7 +12,7 @@ import {
   CourseScheduleInfoAPIData,
   CourseScheduleInfo,
   AjaxStudentScheduleAPIData
-} from './types'
+} from '../types'
 import crypto from 'crypto'
 
 let courseTeachersTable: {
