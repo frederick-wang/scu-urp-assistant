@@ -41,7 +41,9 @@ export default {
         })
       )
       // action[Submit.COURSE_SCORE_PUBLIC_INFOS](courseScorePublicList)
-      const userId = await action[Request.REQUEST_USER_ID]()
+      // const userId = await action[Request.USER_ID]()
+      // await action[Request.COURSE_INFO_LIST_BY_SEMESTER]('2017-2018-1-1')
+      console.log(await action[Request.STUDENT_SEMESTER_CODE_LIST]())
     }
   }
 }

@@ -10,9 +10,98 @@ import {
   TrainingSchemeNodeAPIData,
   TrainingSchemeCourseInfo,
   CourseScheduleInfoAPIData,
-  CourseScheduleInfo
+  CourseScheduleInfo,
+  AjaxStudentScheduleAPIData
 } from './types'
 import crypto from 'crypto'
+
+async function requestStudentSemesterCodeList() {
+  $.ajaxSetup({
+    beforeSend: xhr =>
+      xhr.setRequestHeader('X-Requested-With', {
+        toString() {
+          return ''
+        }
+      } as any)
+  })
+  const url = '/student/courseSelect/calendarSemesterCurriculum/index'
+  const rawHTML = await $.get(url)
+  const codeList = Array.from($('#planCode', rawHTML).find('option')).map(
+    v => $(v).val() as string
+  )
+  // 还原Ajax配置
+  $.ajaxSetup({
+    beforeSend: null as any
+  })
+  return codeList
+}
+
+async function requestCourseInfoListBySemester(semesterCode: string) {
+  const {
+    xkxx: [rawCourseInfoList]
+  } = (await $.post(
+    '/student/courseSelect/thisSemesterCurriculum/ajaxStudentSchedule/callback',
+    { planCode: semesterCode }
+  )) as AjaxStudentScheduleAPIData
+  const courseInfoList = Object.values(rawCourseInfoList).map(
+    ({
+      courseCategoryCode,
+      courseCategoryName,
+      courseName,
+      coursePropertiesCode,
+      coursePropertiesName,
+      dgFlag,
+      examTypeCode,
+      examTypeName,
+      id: { coureNumber, coureSequenceNumber, executiveEducationPlanNumber },
+      restrictedCondition,
+      timeAndPlaceList
+    }) => ({
+      courseCategoryCode,
+      courseCategoryName,
+      courseName,
+      coursePropertiesCode,
+      coursePropertiesName,
+      courseTeacherList: dgFlag
+        .split('|')
+        .map(s => s.split(','))
+        .map(v => ({
+          teacherCode: v[0],
+          teacherName: v[1].replace(/[（\(].+[）\)]/, '')
+        })),
+      examTypeCode,
+      examTypeName,
+      coureNumber,
+      coureSequenceNumber,
+      executiveEducationPlanNumber,
+      restrictedCondition,
+      timeAndPlaceList: timeAndPlaceList
+        ? timeAndPlaceList.map(
+            ({
+              campusName,
+              classDay,
+              classSessions,
+              classWeek,
+              classroomName,
+              continuingSession,
+              teachingBuildingName,
+              weekDescription
+            }) => ({
+              campusName,
+              classDay,
+              classSessions,
+              classWeek,
+              classroomName,
+              continuingSession,
+              teachingBuildingName,
+              weekDescription
+            })
+          )
+        : []
+    })
+  )
+  return courseInfoList
+}
 
 async function requestUserId() {
   $.ajaxSetup({
@@ -598,5 +687,7 @@ export {
   requestTrainingScheme,
   requestSelfMajorNumber,
   requestCourseSchedule,
-  requestUserId
+  requestUserId,
+  requestCourseInfoListBySemester,
+  requestStudentSemesterCodeList
 }

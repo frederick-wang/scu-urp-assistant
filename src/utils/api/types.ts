@@ -1,3 +1,117 @@
+interface AjaxStudentScheduleAPIData {
+  allUnits: number
+  xkxx: [
+    {
+      [key: string]: {
+        attendClassTeacher: string
+        courseCategoryCode: string
+        courseCategoryName: string
+        courseName: string
+        coursePropertiesCode: string
+        coursePropertiesName: string
+        dgFlag: string
+        examTypeCode: string
+        examTypeName: string
+        flag: string
+        id: {
+          coureNumber: string
+          coureSequenceNumber: string
+          executiveEducationPlanNumber: string
+          studentNumber: string
+        }
+        programPlanName: string
+        programPlanNumber: string
+        restrictedCondition: string
+        rlFlag: string
+        selectCourseStatusCode: string
+        selectCourseStatusName: string
+        studyModeCode: string
+        studyModeName: string
+        timeAndPlaceList?: Array<{
+          campusName: string
+          classDay: number
+          classSessions: number
+          classWeek: string
+          classroomName: string
+          continuingSession: number
+          coureName: string
+          coureNumber: string
+          coureSequenceNumber: string
+          coursePropertiesName: string
+          courseTeacher: string
+          executiveEducationPlanNumber: string
+          id: string
+          kcm: string
+          sksj: string
+          studentNumber: string
+          teachingBuildingName: string
+          time: string
+          weekDescription: string
+          xf: string
+        }>
+        unit: number
+        ywdgFlag: string
+      }
+    }
+  ]
+  dateList: Array<{
+    programPlanCode: string
+    programPlanName: string
+    totalUnits: number
+    selectCourseList: Array<{
+      id: {
+        coureNumber: string
+        coureSequenceNumber: string
+        executiveEducationPlanNumber: string
+        studentNumber: string
+      }
+      programPlanNumber: string
+      courseName: string
+      unit: number
+      programPlanName: string
+      attendClassTeacher: string
+      studyModeCode: string
+      studyModeName: string
+      coursePropertiesCode: string
+      coursePropertiesName: string
+      examTypeCode?: string
+      examTypeName?: string
+      courseCategoryCode?: string
+      courseCategoryName?: string
+      restrictedCondition: string
+      timeAndPlaceList?: Array<{
+        id: string
+        executiveEducationPlanNumber: string
+        coureNumber: string
+        coureSequenceNumber: string
+        studentNumber: string
+        classWeek: string
+        classDay: number
+        classSessions: number
+        campusName: string
+        teachingBuildingName: string
+        classroomName: string
+        weekDescription: string
+        continuingSession: number
+        coursePropertiesName: string
+        coureName: string
+        courseTeacher?: any
+        sksj?: any
+        time?: any
+        xf?: any
+        kcm?: any
+      }>
+      flag?: any
+      dgFlag: string
+      ywdgFlag: string
+      rlFlag: string
+      selectCourseStatusName: string
+      selectCourseStatusCode: string
+    }>
+    courseCalendarList?: any
+  }>
+}
+
 interface CourseScheduleInfoAPIData {
   pfcx: number
   list?: {
@@ -238,5 +352,6 @@ export {
   TrainingSchemeNodeAPIData,
   TrainingSchemeBaseInfo,
   CourseScheduleInfoAPIData,
-  CourseScheduleInfo
+  CourseScheduleInfo,
+  AjaxStudentScheduleAPIData
 }
