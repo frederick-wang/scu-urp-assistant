@@ -4,11 +4,9 @@ import {
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
-  requestSelfMajorNumber,
   requestCourseSchedule,
-  requestUserId,
   requestCourseInfoListBySemester,
-  requestStudentSemesterCodeList,
+  requestStudentSemesterNumberList,
   requestCourseTeacherList
 } from './request'
 
@@ -44,11 +42,9 @@ const actions = {
   [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]: requestCurrentSemesterStudentAcademicInfo,
   [Request.TRAINING_SCHEME_LIST]: requestTrainingSchemeList,
   [Request.TRAINING_SCHEME]: requestTrainingScheme,
-  [Request.SELF_MAJOR_NUMBER]: requestSelfMajorNumber,
   [Request.COURSE_Schedule]: requestCourseSchedule,
-  [Request.USER_ID]: requestUserId,
   [Request.COURSE_INFO_LIST_BY_SEMESTER]: requestCourseInfoListBySemester,
-  [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterCodeList,
+  [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList,
   [Request.COURSE_TEACHER_LIST]: requestCourseTeacherList,
   [Submit.COURSE_SCORE_PUBLIC_INFO]: submitCourseScorePublicInfo,
   [Submit.COURSE_SCORE_PUBLIC_INFOS]: submitCourseScorePublicInfos,

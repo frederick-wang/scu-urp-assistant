@@ -1,8 +1,9 @@
 import {
   requestCurrentSemesterStudentAcademicInfo,
-  requestUserId
+  requestStudentInfo,
+  requestStudentSemesterNumberList
 } from './actions/request'
-import { convertSemesterNumberToName } from '@/utils'
+import { convertSemesterNumberToName, getUserId } from '@/utils'
 
 interface AcademicInfo {
   courseNumber: number
@@ -11,24 +12,23 @@ interface AcademicInfo {
   currentSemesterCourseNumber: number
   failedCourseNumber: number
 }
-
-let ready: boolean = false
 let academicInfo: AcademicInfo
-let userId: string
-;(async () => {
+let studentInfos: Map<string, string>
+let userSemesterNumberList: string[]
+
+async function init() {
   const res = await Promise.all([
     requestCurrentSemesterStudentAcademicInfo(),
-    requestUserId()
+    requestStudentInfo(),
+    requestStudentSemesterNumberList()
   ])
   academicInfo = res[0]
-  userId = res[1]
-  ready = true
-})()
+  studentInfos = res[1]
+  userSemesterNumberList = res[2]
+}
 
 export default {
-  get ready() {
-    return ready
-  },
+  init,
   get core() {
     let suaPath = ''
     if (window.location.pathname !== '/login') {
@@ -43,9 +43,11 @@ export default {
   },
   get user() {
     return {
-      id: userId,
+      id: getUserId(studentInfos),
+      programPlanNumber: Number(studentInfos.get('培养方案代码')),
+      programPlanName: studentInfos.get('培养方案名称'),
+      semesterNumberList: userSemesterNumberList,
       courseNumber: academicInfo.courseNumber,
-      currentSemester: academicInfo.currentSemester,
       gpa: academicInfo.gpa,
       currentSemesterCourseNumber: academicInfo.currentSemesterCourseNumber,
       failedCourseNumber: academicInfo.failedCourseNumber

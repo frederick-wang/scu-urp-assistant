@@ -13,7 +13,6 @@ import {
   CourseScheduleInfo,
   AjaxStudentScheduleAPIData
 } from '../types'
-import crypto from 'crypto'
 
 let courseTeachersTable: {
   // 学期
@@ -62,7 +61,7 @@ async function requestCourseTeacherList(
   return courseTeachersTable[semesterCode][courseNumber][courseSequenceNumber]
 }
 
-async function requestStudentSemesterCodeList() {
+async function requestStudentSemesterNumberList() {
   $.ajaxSetup({
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
@@ -154,7 +153,7 @@ async function requestCourseInfoListBySemester(semesterCode: string) {
   return courseInfoList
 }
 
-async function requestUserId() {
+async function requestStudentInfo() {
   $.ajaxSetup({
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
@@ -165,27 +164,56 @@ async function requestUserId() {
   })
   const url = '/student/rollManagement/rollInfo/index'
   const rawHTML = await $.get(url)
-  const secret = Array.from($('.profile-info-value', rawHTML))
+  const programPlanNumber = $('#zx', rawHTML).val() as string
+  const programPlanName = $('#zx', rawHTML)
+    .parent()
+    .text()
+    .trim()
+  const infos = Array.from($('.profile-info-row', rawHTML))
+    .map(
+      (v): HTMLElement[][] => {
+        const num = $(v).children('.profile-info-name').length
+        if (num === 1) {
+          return [
+            [
+              $(v).children('.profile-info-name')[0] as HTMLElement,
+              $(v).children('.profile-info-value')[0] as HTMLElement
+            ]
+          ]
+        } else if (num === 2) {
+          return [
+            [
+              $(v).children('.profile-info-name')[0] as HTMLElement,
+              $(v).children('.profile-info-value')[0] as HTMLElement
+            ],
+            [
+              $(v).children('.profile-info-name')[1] as HTMLElement,
+              $(v).children('.profile-info-value')[1] as HTMLElement
+            ]
+          ]
+        }
+        return [[]]
+      }
+    )
+    .flat(1)
+    .filter(v => v.length)
     .map(v =>
-      $(v)
-        .text()
-        .trim()
+      v.map(element =>
+        $(element)
+          .text()
+          .trim()
+      )
     )
-    .filter(v => v)
-    .filter(
-      (v, i) =>
-        i === 3 || i === 7 || i === 10 || i === 21 || i === 29 || i === 33
-    )
-    .join('')
-  const userId = crypto
-    .createHmac('sha256', secret)
-    .update('scu-urp-assistant')
-    .digest('hex')
+    .filter(v => v[0])
+    .concat([
+      ['培养方案名称', programPlanName],
+      ['培养方案代码', programPlanNumber]
+    ])
   // 还原Ajax配置
   $.ajaxSetup({
     beforeSend: null as any
   })
-  return userId
+  return new Map(infos as [string, string][])
 }
 
 // 根据测试，教务处的课程信息查询时间间隔为5秒，否则会报频繁查询
@@ -488,27 +516,6 @@ function requestTrainingScheme(num: number) {
   return res
 }
 
-async function requestSelfMajorNumber() {
-  $.ajaxSetup({
-    beforeSend: xhr =>
-      xhr.setRequestHeader('X-Requested-With', {
-        toString() {
-          return ''
-        }
-      } as any)
-  })
-  const res = await $.get('/student/rollManagement/rollInfo/index')
-  const r = res.match(/name="zx" value="(\d+)"/)
-  if (r) {
-    return Number(r[1])
-  }
-  // 还原Ajax配置
-  $.ajaxSetup({
-    beforeSend: null as any
-  })
-  return 0
-}
-
 let trainingSchemeList: string[][]
 
 async function requestTrainingSchemeList(): Promise<string[][]> {
@@ -737,10 +744,9 @@ export {
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
-  requestSelfMajorNumber,
   requestCourseSchedule,
-  requestUserId,
   requestCourseInfoListBySemester,
-  requestStudentSemesterCodeList,
-  requestCourseTeacherList
+  requestStudentSemesterNumberList,
+  requestCourseTeacherList,
+  requestStudentInfo
 }

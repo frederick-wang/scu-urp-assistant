@@ -1,4 +1,24 @@
 import minimatch from 'minimatch'
+import crypto from 'crypto'
+
+function getUserId(studentInfos: Map<string, string>) {
+  const name = studentInfos.get('姓名')
+  const studentNumber = studentInfos.get('学号')
+  const identificationNumber = studentInfos.get('证件号码')
+  const enrollDate = studentInfos.get('入学日期')
+  const birthday = studentInfos.get('出生日期')
+  const secret = [
+    name,
+    studentNumber,
+    identificationNumber,
+    enrollDate,
+    birthday
+  ].join('')
+  return crypto
+    .createHmac('sha256', secret)
+    .update('scu-urp-assistant')
+    .digest('hex')
+}
 
 const chineseNumbers = [
   '零',
@@ -85,5 +105,6 @@ export {
   urlTrigger,
   sleep,
   convertSemesterNumberToName,
-  convertSemesterNameToNumber
+  convertSemesterNameToNumber,
+  getUserId
 }

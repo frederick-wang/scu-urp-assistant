@@ -2,9 +2,6 @@ import { actions, Request, state } from '@/store'
 import { CourseScheduleInfo } from '@/store/types'
 
 export function initCourseInfoPopover() {
-  if (!state.ready) {
-    return
-  }
   const { currentSemesterNumber } = state.basic
   // 教务系统课程信息频繁查询的阈值
   const initDOM = function(

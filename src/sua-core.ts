@@ -8,7 +8,7 @@ import trainingScheme from '@/plugins/training-scheme'
 import scoresInformation from '@/plugins/scores-information'
 import submitData from '@/plugins/submit-data'
 import { urlTrigger } from '@/utils'
-import { state } from './store'
+import { init as initStore, state } from './store'
 
 const plugins = [
   tooltip,
@@ -99,9 +99,12 @@ export default {
   /**
    * 初始化 SCU URP 助手
    */
-  init() {
+  async init() {
     // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
     window.$sua = Object.assign(this, this.data)
+    // 初始化Store
+    await initStore()
+    console.log(state.user)
     // 加载插件
     for (let plugin of this.plugins) {
       if (urlTrigger(plugin)) {

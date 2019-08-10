@@ -1,4 +1,8 @@
 import state from './state'
 import { Request, Submit, actions } from './actions'
 
-export { Request, Submit, actions, state }
+async function init() {
+  await state.init()
+}
+
+export { Request, Submit, actions, state, init }
