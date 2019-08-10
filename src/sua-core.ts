@@ -7,10 +7,12 @@ import recoverRememberMe from '@/plugins/recover-remember-me'
 import gpa from '@/plugins/gpa'
 import trainingScheme from '@/plugins/training-scheme'
 import scoresInformation from '@/plugins/scores-information'
+import submitData from '@/plugins/submit-data'
 import { urlTrigger } from '@/utils'
 
 const plugins = [
   sharedData,
+  submitData,
   tooltip,
   fastEvaluation,
   recoverRememberMe,

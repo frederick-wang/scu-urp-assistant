@@ -170,11 +170,10 @@ interface CourseScoreCoreInfo {
   courseName: string
   englishCourseName: string
   courseNumber: string
-  courseSequenceNumber: string
   executiveEducationPlanNumber: string
   executiveEducationPlanName: string
   credit: number
-  examtime: string
+  examTime: string
   examTypeName: string
   studyHour: number
 }
@@ -186,6 +185,7 @@ interface CourseScorePublicInfo extends CourseScoreCoreInfo {
 }
 
 interface CourseScoreBaseInfo extends CourseScoreCoreInfo {
+  courseSequenceNumber: string
   courseScore: number
   gradePoint: number
   levelCode: string
