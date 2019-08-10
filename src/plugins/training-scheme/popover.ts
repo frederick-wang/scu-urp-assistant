@@ -1,13 +1,11 @@
-import { action, Request } from '@/utils/api'
-import { CourseScheduleInfo } from '@/utils/api/types'
+import { actions, Request, state } from '@/store'
+import { CourseScheduleInfo } from '@/store/types'
 
 export function initCourseInfoPopover() {
-  if (!window.__$SUA_SHARED_DATA__) {
+  if (!state.ready) {
     return
   }
-  const {
-    academicInfo: { currentSemester }
-  } = window.__$SUA_SHARED_DATA__
+  const { currentSemesterNumber } = state.basic
   // 教务系统课程信息频繁查询的阈值
   const initDOM = function(
     element: HTMLElement,
@@ -41,7 +39,7 @@ export function initCourseInfoPopover() {
       const courseName = $courseInfo.data('course-name')
       const courseNumber = $courseInfo.data('course-number')
       initDOM(this, courseName, courseNumber)
-      showCourseSchedulePop(currentSemester, courseName, courseNumber)
+      showCourseSchedulePop(currentSemesterNumber, courseName, courseNumber)
     },
     function(e) {
       $(this)
@@ -56,7 +54,7 @@ async function showCourseSchedulePop(
   courseName: string,
   courseNumber: string
 ) {
-  const { response, sequence } = await action[Request.COURSE_Schedule](
+  const { response, sequence } = await actions[Request.COURSE_Schedule](
     semester,
     courseName,
     courseNumber

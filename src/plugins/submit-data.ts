@@ -1,6 +1,6 @@
 // 提交公共数据到服务器插件
-import { action, Request, Submit } from '@/utils/api'
-import { CourseScorePublicInfo } from '@/utils/api/types'
+import { actions, Request, Submit } from '@/store'
+import { CourseScorePublicInfo } from '@/store/types'
 
 export default {
   name: 'submit-data',
@@ -8,7 +8,7 @@ export default {
   async init() {
     // 保证处在登陆后界面
     if (window.location.pathname !== '/login') {
-      const thisTermCourseScoreInfoList = await action[Request.THIS_TERM_COURSE_SCORE_INFO_LIST]()
+      const thisTermCourseScoreInfoList = await actions[Request.THIS_TERM_COURSE_SCORE_INFO_LIST]()
       const courseScorePublicList: CourseScorePublicInfo[] = thisTermCourseScoreInfoList.map(
         ({
           courseName,

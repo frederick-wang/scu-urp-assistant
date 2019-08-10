@@ -1,8 +1,8 @@
-import { action, Request } from '@/utils/api'
+import { actions, Request } from '@/store'
 import { CourseScoreRecord } from './types'
 
 async function getScoreRecords() {
-  const thisTermScoresList = await action[
+  const thisTermScoresList = await actions[
     Request.THIS_TERM_COURSE_SCORE_INFO_LIST
   ]()
   return [

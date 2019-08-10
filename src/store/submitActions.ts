@@ -1,6 +1,6 @@
 import { API_PATH } from '@/utils'
 
-import { CourseScorePublicInfo } from '@/utils/api/types'
+import { CourseScorePublicInfo } from '@/store/types'
 
 async function submitCourseScorePublicInfo(item: CourseScorePublicInfo) {
   const url = `${API_PATH}/course/course_score_info`

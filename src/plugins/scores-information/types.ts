@@ -1,4 +1,4 @@
-import { CourseScoreInfo } from '@/utils/api/types'
+import { CourseScoreInfo } from '@/store/types'
 
 interface CourseScoreRecord extends CourseScoreInfo {
   courseTeacherList: Array<{

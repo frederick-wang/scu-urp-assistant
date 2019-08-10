@@ -1,3 +1,5 @@
+import state from './state'
+
 import {
   requestAllTermsCourseScoreInfoList,
   requestThisTermCourseScoreInfoList,
@@ -38,7 +40,7 @@ enum Submit {
   STUDENT_COURSE_SCORE_PUBLIC_INFOS = 'student_course_score_public_infos'
 }
 
-const action = {
+const actions = {
   [Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]: requestAllTermsCourseScoreInfoList,
   [Request.THIS_TERM_COURSE_SCORE_INFO_LIST]: requestThisTermCourseScoreInfoList,
   [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]: requestCurrentSemesterStudentAcademicInfo,
@@ -55,4 +57,4 @@ const action = {
   [Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS]: submitStudentCourseScorePublicInfos
 }
 
-export { Request, Submit, action }
+export { Request, Submit, actions, state }

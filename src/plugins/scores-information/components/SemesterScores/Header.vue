@@ -7,7 +7,7 @@ h4.header.smaller.lighter.grey
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { getCurrentSemesterNumber } from '@/plugins/shared-data'
+import { state } from '@/store'
 
 @Component
 export default class Header extends Vue {
@@ -18,7 +18,7 @@ export default class Header extends Vue {
   title!: string
 
   getSemesterTitle(semesterText: string) {
-    const currentSemesterNumber = getCurrentSemesterNumber()
+    const currentSemesterNumber = state.basic.currentSemesterNumber
     const rC = currentSemesterNumber.match(/(\d+)-(\d+)-(\d)/)
     const r = semesterText.match(/(\d+)-(\d+)学年\s(.)季学期/)
     if (!rC || !r) {

@@ -11,7 +11,7 @@ import { SemesterScoreRecord } from './types'
 import { getScoreRecords } from './utils'
 import Loading from './components/Loading.vue'
 import SemesterScores from './components/SemesterScores/SemesterScores.vue'
-import { action, Request } from '@/utils/api'
+import { actions, Request } from '@/store'
 import { convertSemesterNameToNumber } from '@/utils'
 
 @Component({
@@ -25,7 +25,7 @@ export default class ScoresInformation extends Vue {
     const res = await getScoreRecords()
     for (const s of res) {
       for (const c of s.courses) {
-        c.courseTeacherList = await action[Request.COURSE_TEACHER_LIST](
+        c.courseTeacherList = await actions[Request.COURSE_TEACHER_LIST](
           convertSemesterNameToNumber(s.semester),
           c.courseNumber,
           c.courseSequenceNumber

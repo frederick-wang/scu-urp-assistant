@@ -1,7 +1,6 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import fastEvaluation from '@/plugins/fast-evaluation'
-import sharedData from '@/plugins/shared-data'
 import tooltip from '@/plugins/tooltip'
 import recoverRememberMe from '@/plugins/recover-remember-me'
 import gpa from '@/plugins/gpa'
@@ -9,37 +8,22 @@ import trainingScheme from '@/plugins/training-scheme'
 import scoresInformation from '@/plugins/scores-information'
 import submitData from '@/plugins/submit-data'
 import { urlTrigger } from '@/utils'
+import { state } from './store'
 
 const plugins = [
-  sharedData,
-  submitData,
   tooltip,
   fastEvaluation,
   recoverRememberMe,
   gpa,
   trainingScheme,
-  scoresInformation
+  scoresInformation,
+  submitData
 ]
 
 declare global {
   interface Window {
     $sua: {
       menuItems: MenuItem[]
-    }
-    __$SUA_SHARED_DATA__?: {
-      user: {
-        userId: string
-      }
-      core: {
-        suaPath: string
-      }
-      academicInfo: {
-        courseNumber: number
-        currentSemester: string
-        gpa: number
-        currentSemesterCourseNumber: number
-        failedCourseNumber: number
-      }
     }
     layer: {
       open: (a: any) => number
@@ -247,10 +231,7 @@ export default {
           }
         }
         this.menuItems.push(menuItem)
-        if (
-          window.__$SUA_SHARED_DATA__ &&
-          window.__$SUA_SHARED_DATA__.core.suaPath === path
-        ) {
+        if (state.core.suaPath === path) {
           menuItem.element.click()
         }
       })
