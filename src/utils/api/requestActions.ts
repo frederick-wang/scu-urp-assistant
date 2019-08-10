@@ -655,25 +655,26 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
 
   return filterCourseScoreInfoList(
     records.map(v => ({
-      executiveEducationPlanNumber: v[0] as string,
-      executiveEducationPlanName: convertSemesterNumberToText(v[0] as string),
-      courseNumber: v[1] as string,
-      courseSequenceNumber: v[2] as string,
-      examTime: v[3] as string,
-      inputStatusCode: v[4] as string,
-      coursePropertyCode: v[5] as string,
-      inputMethodCode: v[7] as string,
-      courseScore: Number(v[8]),
-      levelCode: v[9] as string,
-      courseName: v[11] as string,
-      englishCourseName: v[12] as string,
-      credit: Number(v[13]),
-      studyHour: Number(v[14]),
-      coursePropertyName: v[15] as string,
-      examTypeName: v[16] as string,
-      levelName: v[17] as string,
-      unpassedReasonExplain: v[18] as string,
-      gradePoint: getPointByScore(v[8] as number, v[0] as string)
+      executiveEducationPlanNumber: (v[0] as string) || '',
+      executiveEducationPlanName:
+        convertSemesterNumberToText(v[0] as string) || '',
+      courseNumber: (v[1] as string) || '',
+      courseSequenceNumber: (v[2] as string) || '',
+      examTime: (v[3] as string) || '',
+      inputStatusCode: (v[4] as string) || '',
+      coursePropertyCode: (v[5] as string) || '',
+      inputMethodCode: (v[7] as string) || '',
+      courseScore: Number(v[8]) || 0,
+      levelCode: (v[9] as string) || '',
+      courseName: (v[11] as string) || '',
+      englishCourseName: (v[12] as string) || '',
+      credit: Number(v[13]) || 0,
+      studyHour: Number(v[14]) || 0,
+      coursePropertyName: (v[15] as string) || '',
+      examTypeName: (v[16] as string) || '',
+      levelName: (v[17] as string) || '',
+      unpassedReasonExplain: (v[18] as string) || '',
+      gradePoint: getPointByScore(v[8] as number, v[0] as string) || 0
     }))
   )
 }
@@ -688,34 +689,34 @@ async function requestThisTermCourseScoreInfoList(): Promise<
     list.map(
       v =>
         ({
-          courseName: v.courseName,
-          englishCourseName: v.englishCourseName,
-          courseNumber: v.id.courseNumber,
+          courseName: v.courseName || '',
+          englishCourseName: v.englishCourseName || '',
+          courseNumber: v.id.courseNumber || '',
           // 对，你没看错，这个地方教务处接口是错别字，把course打成了coure
-          courseSequenceNumber: v.coureSequenceNumber,
-          credit: Number(v.credit),
-          coursePropertyCode: v.coursePropertyCode,
-          coursePropertyName: v.coursePropertyName,
-          maxScore: Number(v.maxcj),
-          avgScore: Number(v.avgcj),
-          minScore: Number(v.mincj),
-          courseScore: Number(v.courseScore),
+          courseSequenceNumber: v.coureSequenceNumber || '',
+          credit: Number(v.credit) || 0,
+          coursePropertyCode: v.coursePropertyCode || '',
+          coursePropertyName: v.coursePropertyName || '',
+          maxScore: Number(v.maxcj) || 0,
+          avgScore: Number(v.avgcj) || 0,
+          minScore: Number(v.mincj) || 0,
+          courseScore: Number(v.courseScore) || 0,
           // 对，你没看错，这个地方教务处接口是错别字，把level打成了levle
-          levelCode: v.levlePoint,
-          levelName: v.levelName,
-          gradePoint: Number(v.gradePoint),
-          rank: Number(v.rank),
-          examTime: v.id.examtime,
-          unpassedReasonCode: v.unpassedReasonCode,
-          unpassedReasonExplain: v.unpassedReasonExplain,
-          executiveEducationPlanNumber: v.id.executiveEducationPlanNumber,
-          executiveEducationPlanName: convertSemesterNumberToText(
-            v.id.executiveEducationPlanNumber
-          ),
-          inputStatusCode: v.inputStatusCode,
-          inputMethodCode: v.inputMethodCode,
-          studyHour: Number(v.studyHour),
-          examTypeName: v.examTypeName
+          levelCode: v.levlePoint || '',
+          levelName: v.levelName || '',
+          gradePoint: Number(v.gradePoint) || 0,
+          rank: Number(v.rank) || 0,
+          examTime: v.id.examtime || '',
+          unpassedReasonCode: v.unpassedReasonCode || '',
+          unpassedReasonExplain: v.unpassedReasonExplain || '',
+          executiveEducationPlanNumber: v.id.executiveEducationPlanNumber || '',
+          executiveEducationPlanName:
+            convertSemesterNumberToText(v.id.executiveEducationPlanNumber) ||
+            '',
+          inputStatusCode: v.inputStatusCode || '',
+          inputMethodCode: v.inputMethodCode || '',
+          studyHour: Number(v.studyHour) || 0,
+          examTypeName: v.examTypeName || ''
         } as CourseScoreInfo)
     )
   ).sort((a, b) => {

@@ -27,6 +27,9 @@ declare global {
       menuItems: MenuItem[]
     }
     __$SUA_SHARED_DATA__?: {
+      user: {
+        userId: string
+      }
       core: {
         suaPath: string
       }

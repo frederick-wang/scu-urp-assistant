@@ -28,6 +28,9 @@ export default {
   pathname: '/**',
   async init() {
     window.__$SUA_SHARED_DATA__ = {
+      user: {
+        userId: ''
+      },
       core: {
         suaPath: ''
       },
@@ -49,9 +52,12 @@ export default {
       }
       window.__$SUA_SHARED_DATA__.core = { suaPath }
       // 设置值
-      window.__$SUA_SHARED_DATA__.academicInfo = await action[
-        Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO
-      ]()
+      const [academicInfo, userId] = await Promise.all([
+        action[Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO](),
+        action[Request.USER_ID]()
+      ])
+      window.__$SUA_SHARED_DATA__.academicInfo = academicInfo
+      window.__$SUA_SHARED_DATA__.user.userId = userId
     }
   }
 }

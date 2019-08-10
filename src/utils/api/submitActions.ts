@@ -91,4 +91,25 @@ async function submitCourseScorePublicInfos(items: CourseScorePublicInfo[]) {
   return res
 }
 
-export { submitCourseScorePublicInfo, submitCourseScorePublicInfos }
+async function submitStudentCourseScorePublicInfos(items: any[]) {
+  const url = `${API_PATH}/student/course_score_infos`
+  const req = {
+    api: {
+      client: 'web'
+    },
+    data: {
+      student_course_score_infos: items
+    }
+  }
+  const res = await $.post(url, req)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS:', res)
+  }
+  return res
+}
+
+export {
+  submitCourseScorePublicInfo,
+  submitCourseScorePublicInfos,
+  submitStudentCourseScorePublicInfos
+}

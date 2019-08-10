@@ -14,7 +14,8 @@ import {
 
 import {
   submitCourseScorePublicInfo,
-  submitCourseScorePublicInfos
+  submitCourseScorePublicInfos,
+  submitStudentCourseScorePublicInfos
 } from './submitActions'
 
 enum Request {
@@ -33,7 +34,8 @@ enum Request {
 
 enum Submit {
   COURSE_SCORE_PUBLIC_INFO = 'course_score_public_info',
-  COURSE_SCORE_PUBLIC_INFOS = 'course_score_public_infos'
+  COURSE_SCORE_PUBLIC_INFOS = 'course_score_public_infos',
+  STUDENT_COURSE_SCORE_PUBLIC_INFOS = 'student_course_score_public_infos'
 }
 
 const action = {
@@ -49,7 +51,8 @@ const action = {
   [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterCodeList,
   [Request.COURSE_TEACHER_LIST]: requestCourseTeacherList,
   [Submit.COURSE_SCORE_PUBLIC_INFO]: submitCourseScorePublicInfo,
-  [Submit.COURSE_SCORE_PUBLIC_INFOS]: submitCourseScorePublicInfos
+  [Submit.COURSE_SCORE_PUBLIC_INFOS]: submitCourseScorePublicInfos,
+  [Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS]: submitStudentCourseScorePublicInfos
 }
 
 export { Request, Submit, action }
