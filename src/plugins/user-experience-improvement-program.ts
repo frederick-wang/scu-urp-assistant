@@ -3,7 +3,7 @@ import { actions, Request, Submit } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
 
 export default {
-  name: 'customer-experience-improvement-program',
+  name: 'user-experience-improvement-program',
   pathname: '/**',
   async init() {
     // 保证处在登陆后界面

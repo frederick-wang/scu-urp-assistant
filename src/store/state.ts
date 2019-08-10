@@ -4,6 +4,7 @@ import {
   requestStudentSemesterNumberList
 } from './actions/request'
 import { convertSemesterNumberToName, getUserId } from '@/utils'
+import { version } from '@/../package.json'
 
 interface AcademicInfo {
   courseNumber: number
@@ -38,6 +39,7 @@ export default {
       }
     }
     return {
+      version,
       suaPath
     }
   },

@@ -1,5 +1,6 @@
 import minimatch from 'minimatch'
 import crypto from 'crypto'
+import * as logger from './logger'
 
 function getUserId(studentInfos: Map<string, string>) {
   const name = studentInfos.get('姓名')
@@ -106,5 +107,6 @@ export {
   sleep,
   convertSemesterNumberToName,
   convertSemesterNameToNumber,
-  getUserId
+  getUserId,
+  logger
 }
