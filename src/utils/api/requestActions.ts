@@ -15,6 +15,53 @@ import {
 } from './types'
 import crypto from 'crypto'
 
+let courseTeachersTable: {
+  // 学期
+  [key: string]: {
+    // 课程号
+    [key: string]: {
+      // 课序号
+      [key: string]: Array<{
+        teacherNumber: string
+        teacherName: string
+      }>
+    }
+  }
+} = {}
+async function requestCourseTeacherList(
+  semesterCode: string,
+  courseNumber: string,
+  courseSequenceNumber: string
+) {
+  if (!courseTeachersTable[semesterCode]) {
+    const courseInfoList = await requestCourseInfoListBySemester(semesterCode)
+    courseTeachersTable[semesterCode] = courseInfoList.reduce(
+      (acc, cur) => {
+        if (!acc[cur.courseNumber]) {
+          acc[cur.courseNumber] = {
+            [cur.courseSequenceNumber]: cur.courseTeacherList
+          }
+        } else {
+          acc[cur.courseNumber][cur.courseSequenceNumber] =
+            cur.courseTeacherList
+        }
+        return acc
+      },
+      {} as {
+        // 课程号
+        [key: string]: {
+          // 课序号
+          [key: string]: Array<{
+            teacherNumber: string
+            teacherName: string
+          }>
+        }
+      }
+    )
+  }
+  return courseTeachersTable[semesterCode][courseNumber][courseSequenceNumber]
+}
+
 async function requestStudentSemesterCodeList() {
   $.ajaxSetup({
     beforeSend: xhr =>
@@ -53,7 +100,11 @@ async function requestCourseInfoListBySemester(semesterCode: string) {
       dgFlag,
       examTypeCode,
       examTypeName,
-      id: { coureNumber, coureSequenceNumber, executiveEducationPlanNumber },
+      id: {
+        coureNumber: courseNumber,
+        coureSequenceNumber: courseSequenceNumber,
+        executiveEducationPlanNumber
+      },
       restrictedCondition,
       timeAndPlaceList
     }) => ({
@@ -66,13 +117,13 @@ async function requestCourseInfoListBySemester(semesterCode: string) {
         .split('|')
         .map(s => s.split(','))
         .map(v => ({
-          teacherCode: v[0],
+          teacherNumber: v[0],
           teacherName: v[1].replace(/[（\(].+[）\)]/, '')
         })),
       examTypeCode,
       examTypeName,
-      coureNumber,
-      coureSequenceNumber,
+      courseNumber,
+      courseSequenceNumber,
       executiveEducationPlanNumber,
       restrictedCondition,
       timeAndPlaceList: timeAndPlaceList
@@ -689,5 +740,6 @@ export {
   requestCourseSchedule,
   requestUserId,
   requestCourseInfoListBySemester,
-  requestStudentSemesterCodeList
+  requestStudentSemesterCodeList,
+  requestCourseTeacherList
 }

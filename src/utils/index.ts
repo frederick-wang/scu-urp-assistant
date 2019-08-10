@@ -19,6 +19,22 @@ const API_PATH =
     ? 'http://localhost/scu-urp-assistant-server/public'
     : 'https://sua.zhaoji.wang/api/v1'
 
+function convertSemesterNumberToName(semesterNumber: string) {
+  const r = semesterNumber.match(/(\d+)-(\d+)-(\d)/)
+  if (!r) {
+    return semesterNumber
+  }
+  return `${r[1]}-${r[2]}学年 ${r[3] === '1' ? '秋' : '春'}季学期`
+}
+
+function convertSemesterNameToNumber(semesterName: string) {
+  const r = semesterName.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
+  if (!r) {
+    return semesterName
+  }
+  return `${r[1]}-${r[2]}-${r[3] === '秋' ? 1 : 2}-1`
+}
+
 function getChineseNumber(num: number) {
   return chineseNumbers[num] || ''
 }
@@ -63,4 +79,11 @@ function urlTrigger(plugin: any) {
   return false
 }
 
-export { getChineseNumber, API_PATH, urlTrigger, sleep }
+export {
+  getChineseNumber,
+  API_PATH,
+  urlTrigger,
+  sleep,
+  convertSemesterNumberToName,
+  convertSemesterNameToNumber
+}

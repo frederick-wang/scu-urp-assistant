@@ -7,6 +7,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       th.center 绩点
       th.center 学分
       th.center 属性
+      th.center 任课教师
   tbody
     each v in courses
       tr.gpa-st-item(data-semester=semester, data-name=v.courseName, data-score=v.courseScore, data-level=v.levelName, data-gpa=v.gradePoint, data-credit=v.credit, data-attribute=v.coursePropertyName)
@@ -16,3 +17,4 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
         td.center #{v.gradePoint}
         td.center #{v.credit}
         td.center #{v.coursePropertyName}
+        td.center #{v.courseTeacherList[0].teacherName}#{v.courseTeacherList.filter(({ teacherNumber }) => Number(teacherNumber).toString() === teacherNumber).length > 1 ? ' 等' : ''}
