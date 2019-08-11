@@ -1,6 +1,7 @@
 import minimatch from 'minimatch'
 import crypto from 'crypto'
 import * as logger from './logger'
+import { state } from '@/store'
 
 function getUserId(studentInfos: Map<string, string>) {
   const name = studentInfos.get('姓名')
@@ -65,39 +66,52 @@ function sleep(time: number) {
 }
 
 /**
- * 检测当前的location.pathname是否满足插件触发要求
+ * 检测当前的url是否满足插件触发要求
  *
- * @param {*} plugin 插件对象，pathname 属性可以是 Boolean、String、Array、Object、Function等类型。
- * 如果 pathname 属性不存在，则默认对全体 url 均生效
+ * @param plugin 插件对象，pathname 属性可以是 Boolean、String、Array、Object、Function等类型。
  * @returns 检测的结果
  */
-function urlTrigger(plugin: any) {
-  const { pathname } = plugin
-  // 如果pathname不存在，默认对全部url生效
-  if (!pathname) {
-    return true
-  } else if (typeof pathname === 'boolean') {
-    return pathname
-  } else if (typeof pathname === 'string') {
-    return minimatch(window.location.pathname, pathname)
-  } else if (Array.isArray(pathname)) {
-    for (const item of pathname) {
-      if (minimatch(window.location.pathname, item)) {
-        return true
+function urlTrigger(plugin: SUAPlugin) {
+  const { pathname, route } = plugin
+  const match = (
+    str:
+      | string
+      | boolean
+      | string[]
+      | (() => boolean)
+      | {
+          [key: string]: string
+        }
+      | undefined
+  ) => {
+    if (!str) {
+      return false
+    } else if (typeof str === 'boolean') {
+      return str
+    } else if (typeof str === 'string') {
+      return minimatch(window.location.pathname, str)
+    } else if (Array.isArray(str)) {
+      for (const item of str) {
+        if (minimatch(window.location.pathname, item)) {
+          return true
+        }
       }
-    }
-    return false
-  } else if (typeof pathname === 'object') {
-    for (const item of Object.values(pathname)) {
-      if (minimatch(window.location.pathname, item as string)) {
-        return true
+      return false
+    } else if (typeof str === 'object') {
+      for (const item of Object.values(str)) {
+        if (minimatch(window.location.pathname, item)) {
+          return true
+        }
       }
+      return false
+    } else if (typeof str === 'function') {
+      return str.bind(plugin)()
     }
-    return false
-  } else if (typeof pathname === 'function') {
-    return pathname.bind(plugin)()
   }
-  return false
+  const result =
+    (window.location.pathname !== '/login' && match(route)) ||
+    (!state.core.route && match(pathname))
+  return result
 }
 
 export {

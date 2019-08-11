@@ -8,6 +8,8 @@ import {
 } from '@/plugins/training-scheme/common'
 import * as ueip from '@/plugins/user-experience-improvement-program'
 
+const style = require('./index.scss').toString()
+
 interface Record {
   semester: string
   courses: (CourseScoreBaseRecord & {
@@ -591,16 +593,10 @@ function reset() {
 export default {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
-  style: require('./index.scss').toString(),
+  style,
   init() {
-    if (
-      !state.core.suaPath &&
-      (window.location.pathname === '/' ||
-        window.location.pathname === '/index.jsp')
-    ) {
-      initSequence()
-    }
+    initSequence()
   }
-}
+} as SUAPlugin
 
 export { getFourTypesValue, getCompulsoryCourses, getSemesterCourses }

@@ -11,22 +11,10 @@ import { urlTrigger } from '@/utils'
 import { init as initStore, state } from './store'
 import { logger } from '@/utils'
 
-const plugins =
-  window.location.pathname === '/login'
-    ? [tooltip, recoverRememberMe]
-    : [
-        tooltip,
-        fastEvaluation,
-        gpa,
-        trainingScheme,
-        scoresInformation,
-        submitData
-      ]
-
 declare global {
   interface Window {
     $sua: {
-      menuItems: MenuItem[]
+      [key: string]: any
     }
     layer: {
       open: (a: any) => number
@@ -45,36 +33,25 @@ declare global {
   }
 }
 
-interface Menu {
-  rootMenuId: string
-  rootMenuName: string
-  id: string
-  name: string
-  items: Array<{
-    name: string
-    path: string
-    breadcrumbs: string[]
-    render: (root: any) => void
-  }>
-}
+const plugins: SUAPlugin[] =
+  window.location.pathname === '/login'
+    ? [tooltip, recoverRememberMe]
+    : [
+        tooltip,
+        fastEvaluation,
+        gpa,
+        trainingScheme,
+        scoresInformation,
+        submitData
+      ]
 
-interface MenuItem {
-  element: HTMLElement
-  id: string
-  name: string
-  path: string
-  clickHandler: () => void
-}
+/**
+ * 定时任务的执行间隔
+ */
+const taskTimeInterval = 100
 
 // 挂载到 window 上的全局对象
 export default {
-  // 属性值的存放处
-  data: {
-    /**
-     * 定时任务的执行间隔
-     */
-    taskTimeInterval: 100
-  },
   /**
    * 插件
    */
@@ -94,18 +71,13 @@ export default {
   /**
    * 加载菜单的队列
    */
-  menuQueue: [] as Menu[],
-  /**
-   * 存储菜单的对象
-   */
-  menuItems: [] as MenuItem[],
+  menuQueue: [] as SUAPluginMenu[],
   /**
    * 初始化 SCU URP 助手
    */
   async init() {
     logger.info('程序初始化')
-    // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
-    window.$sua = Object.assign(this, this.data)
+    window.$sua = this
     if (window.location.pathname !== '/login') {
       // 初始化Store
       await initStore()
@@ -114,21 +86,21 @@ export default {
     for (let plugin of this.plugins) {
       if (urlTrigger(plugin)) {
         // 将样式推入队列中
-        if ((plugin as any).style) {
-          this.styleQueue.push((plugin as any).style)
-        }
-        // 将菜单推入队列中
-        if ((plugin as any).menu) {
-          this.menuQueue = this.menuQueue.concat((plugin as any).menu)
+        if (plugin.style) {
+          this.styleQueue.push(plugin.style)
         }
         // 将初始化方法推入队列中
-        if ((plugin as any).init) {
-          this.initQueue.push((plugin as any).init.bind(plugin))
+        if (plugin.init) {
+          this.initQueue.push(plugin.init.bind(plugin))
         }
         // 将需要定时执行的任务推入队列中
-        if ((plugin as any).task) {
-          this.taskQueue.push((plugin as any).task.bind(plugin))
+        if (plugin.task) {
+          this.taskQueue.push(plugin.task.bind(plugin))
         }
+      }
+      // 将菜单推入队列中
+      if (plugin.menu) {
+        this.menuQueue = this.menuQueue.concat(plugin.menu)
       }
     }
     // 加载样式
@@ -155,10 +127,16 @@ export default {
       for (const t of this.taskQueue) {
         t()
       }
-    }, this.data.taskTimeInterval)
+    }, taskTimeInterval)
     // 加载菜单
     for (const m of this.menuQueue) {
-      const { rootMenuId, rootMenuName, id: menuId, name: menuName, items } = m
+      let {
+        rootMenuId,
+        rootMenuName,
+        id: menuId,
+        name: menuName,
+        item: items
+      } = m
       const $rootMenuList = $('#menus')
       // 检查根菜单是否存在，如不存在则新建
       if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
@@ -190,57 +168,55 @@ export default {
         `)
       }
       const $menu = $rootMenu.find(`li#${menuId}>ul.submenu`)
-      items.forEach(({ name, path, breadcrumbs, render }) => {
+      if (!Array.isArray(items)) {
+        items = [items]
+      }
+      items.forEach(({ name, style, route, breadcrumbs, render }) => {
+        const id = `menu-item-${name}`
         $menu.append(`
-          <li class="sua-menu-item" id="menu-item-${name}" onclick="$sua.menuItems[${
-          this.menuItems.length
-        }].clickHandler()">
+          <li class="sua-menu-item" id="${id}">
             <a href="#">&nbsp;&nbsp; ${name}</a>
             <b class="arrow"></b>
           </li>
         `)
-        const menuItem = {
-          element: $menu.children(`#menu-item-${name}`)[0],
-          id: `menu-item-${name}`,
-          name,
-          path,
-          clickHandler() {
-            window.$sua.menuItems.forEach(v => {
-              if (v.id === this.element.id) {
-                $(v.element).addClass('active')
-              } else {
-                $(v.element).removeClass('active')
-              }
-            })
-            const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
-            $breadcrumbs.empty().append(`
-              <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
-                <i class="ace-icon fa fa-home home-icon"></i>
-                首页
-              </li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${
-              breadcrumbs[0]
-            }</li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${
-              breadcrumbs[1]
-            }</li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${
-                this.element.id
-              }">${breadcrumbs[2]}</li>
+        const $menuItem = $menu.children(`#${id}`)
+        $menuItem.click(() => {
+          $menu.children('.sua-menu-item').removeClass('active')
+          $menuItem.addClass('active')
+          const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
+          $breadcrumbs.empty().append(`
+            <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
+              <i class="ace-icon fa fa-home home-icon"></i>
+              首页
+            </li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${
+            breadcrumbs[0]
+          }</li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${
+            breadcrumbs[1]
+          }</li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${
+            breadcrumbs[2]
+          }</li>
+          `)
+          const $pageContent = $('.main-content>.page-content')
+          $pageContent.empty()
+          const hash = `#sua_route=${route}`
+          // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
+          setTimeout(() => {
+            window.location.hash = hash
+          }, 0)
+          if (style) {
+            $('head').append(`
+              <style type="text/css">
+                ${style}
+              </style>
             `)
-            const $pageContent = $('.main-content>.page-content')
-            $pageContent.empty()
-            const hash = `#suapath=${this.path}`
-            // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
-            setTimeout(() => {
-              window.location.hash = hash
-            }, 0)
-            render($('.main-content>.page-content')[0])
           }
-        }
-        this.menuItems.push(menuItem)
-        if (state.core.suaPath === path) {
-          menuItem.element.click()
+          render($('.main-content>.page-content')[0])
+        })
+        if (state.core.route === route) {
+          $menuItem.click()
         }
       })
     }

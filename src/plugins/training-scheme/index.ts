@@ -5,32 +5,34 @@
 import { render as queryRender } from './queryTrainingScheme'
 import { render as compareRender } from './compareTrainingScheme'
 
-const css = require('./index.scss').toString()
+const style = require('./index.scss').toString()
 
 export default {
   name: 'training-scheme',
-  pathname: '/**',
-  style: css,
-  menu: [
-    {
-      rootMenuId: 'sua-menu-list',
-      rootMenuName: 'SCU URP 助手',
-      id: 'menu-advanced-query',
-      name: '高级查询',
-      items: [
-        {
-          name: '培养方案查询',
-          path: 'advancedQuery/queryTrainingScheme',
-          breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案查询'],
-          render: queryRender
-        },
-        {
-          name: '培养方案比较',
-          path: 'advancedQuery/compareTrainingScheme',
-          breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案比较'],
-          render: compareRender
-        }
-      ]
-    }
-  ]
-}
+  route: [
+    'advanced_query/query_training_scheme',
+    'advanced_query/compare_training_scheme'
+  ],
+  menu: {
+    rootMenuId: 'sua-menu-list',
+    rootMenuName: 'SCU URP 助手',
+    id: 'menu-advanced-query',
+    name: '高级查询',
+    item: [
+      {
+        name: '培养方案查询',
+        style,
+        route: 'advanced_query/query_training_scheme',
+        breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案查询'],
+        render: queryRender
+      },
+      {
+        name: '培养方案比较',
+        style,
+        route: 'advanced_query/compare_training_scheme',
+        breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案比较'],
+        render: compareRender
+      }
+    ]
+  }
+} as SUAPlugin

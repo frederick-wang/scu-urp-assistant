@@ -18,4 +18,4 @@ export default {
         .before($navTooltip)
     }
   }
-}
+} as SUAPlugin
