@@ -453,7 +453,9 @@ async function getAllTermScoresData(): Promise<Record[]> {
         )
         const record = {
           ...cur,
-          courseTeacherList: [],
+          courseTeacherList: state.getData('teacherTable')[
+            convertSemesterNameToNumber(cur.executiveEducationPlanNumber)
+          ][cur.courseNumber][cur.courseSequenceNumber],
           selected: false
         }
         if (currentSemesterRecords.length) {
@@ -478,11 +480,6 @@ async function getAllTermScoresData(): Promise<Record[]> {
       // 从大到小排
       return getWeightSum(b) - getWeightSum(a)
     })
-  for (const s of res) {
-    for (const c of s.courses) {
-      c.courseTeacherList = state.getData('teacherTable')[convertSemesterNameToNumber(s.semester)][c.courseNumber][c.courseSequenceNumber]
-    }
-  }
   return res
 }
 
