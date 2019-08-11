@@ -13,11 +13,10 @@ import { logger } from '@/utils'
 
 const plugins =
   window.location.pathname === '/login'
-    ? [tooltip]
+    ? [tooltip, recoverRememberMe]
     : [
         tooltip,
         fastEvaluation,
-        recoverRememberMe,
         gpa,
         trainingScheme,
         scoresInformation,
