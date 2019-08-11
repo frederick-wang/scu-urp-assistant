@@ -51,7 +51,10 @@ async function saveData(
     }
   }
   localStore = await localforage.setItem('sua_store', res)
-  logger.info('LocalStore保存成功:', localStore)
+  logger.info(
+    `LocalStore${data ? `[key=${data.key}]` : ''}保存成功:`,
+    localStore
+  )
   return localStore
 }
 
