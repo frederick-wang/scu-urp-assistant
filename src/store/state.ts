@@ -25,8 +25,10 @@ let data = {} as {
 }
 
 async function init(localStore: LocalStore) {
-  for (const key of Object.keys(localStore.state.data)) {
-    data[key] = local.get(key)
+  if (localStore) {
+    for (const key of Object.keys(localStore.state.data)) {
+      data[key] = local.get(key)
+    }
   }
   const res = await Promise.all([
     requestCurrentSemesterStudentAcademicInfo(),
@@ -42,9 +44,10 @@ async function init(localStore: LocalStore) {
       s => !Object.keys(teacherTable).includes(s)
     )
     if (uncachedsemesterNumberList.length) {
-      const courseInfoLists = await Promise.all(
-        uncachedsemesterNumberList.map(s => requestCourseInfoListBySemester(s))
-      )
+      let courseInfoLists = []
+      for (const s of uncachedsemesterNumberList) {
+        courseInfoLists.push(await requestCourseInfoListBySemester(s))
+      }
       // 这里和地下重复了，等吧interface抽出了记得把这个也抽出函数
       teacherTable = {
         ...teacherTable,
@@ -84,9 +87,10 @@ async function init(localStore: LocalStore) {
       }
     }
   } else {
-    const courseInfoLists = await Promise.all(
-      state.user.semesterNumberList.map(s => requestCourseInfoListBySemester(s))
-    )
+    let courseInfoLists = []
+    for (const s of state.user.semesterNumberList) {
+      courseInfoLists.push(await requestCourseInfoListBySemester(s))
+    }
     teacherTable = courseInfoLists
       .map(courseInfoList =>
         courseInfoList.reduce(

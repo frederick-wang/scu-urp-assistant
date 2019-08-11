@@ -7,9 +7,11 @@ let localStore: LocalStore
 
 async function load() {
   localStore = await localforage.getItem('sua_store')
-  clearExpiredData()
   if (localStore) {
+    clearExpiredData()
     logger.info('加载LocalStore成功:', localStore)
+  } else {
+    await saveData()
   }
   return localStore
 }
@@ -31,14 +33,16 @@ async function saveData(
 ) {
   const time = new Date().getTime()
   const { version } = state.core
-  clearExpiredData()
+  if (localStore) {
+    clearExpiredData()
+  }
   const res: LocalStore = {
     time,
     state: {
       core: {
         version
       },
-      data: localStore.state.data
+      data: localStore ? localStore.state.data : {}
     }
   }
   if (data) {
