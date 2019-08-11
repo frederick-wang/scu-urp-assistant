@@ -5,7 +5,7 @@ import {
   TrainingSchemeCourseInfo as SingleTrainingSchemeCourseInfoBase
 } from '@/store/types'
 import { getChineseNumber } from '@/utils'
-import { Request, actions } from '@/store'
+import { Request, actions, state } from '@/store'
 
 let trainingSchemeList: string[][]
 
@@ -164,7 +164,7 @@ function genQueryHTML() {
 }
 
 async function selectSelfMajorAndQuery() {
-  const selfMajorNumber = await actions[Request.SELF_MAJOR_NUMBER]()
+  const selfMajorNumber = state.user.programPlanNumber
   const selfSchemeInfo = trainingSchemeList.filter(
     v => Number(v[0]) === selfMajorNumber
   )[0]
