@@ -6,7 +6,7 @@ import {
   showLoadingAnimation,
   hideLoadingAnimation
 } from '@/plugins/training-scheme/common'
-import * as ueip from '@/plugins/user-experience-improvement-program';
+import * as ueip from '@/plugins/user-experience-improvement-program'
 
 interface Record {
   semester: string
@@ -593,7 +593,11 @@ export default {
   pathname: ['/', '/index.jsp'],
   style: require('./index.scss').toString(),
   init() {
-    if (window.location.pathname === '/' && !state.core.suaPath) {
+    if (
+      !state.core.suaPath &&
+      (window.location.pathname === '/' ||
+        window.location.pathname === '/index.jsp')
+    ) {
       initSequence()
     }
   }
