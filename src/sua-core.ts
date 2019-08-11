@@ -11,15 +11,18 @@ import { urlTrigger } from '@/utils'
 import { init as initStore, state } from './store'
 import { logger } from '@/utils'
 
-const plugins = [
-  tooltip,
-  fastEvaluation,
-  recoverRememberMe,
-  gpa,
-  trainingScheme,
-  scoresInformation,
-  submitData
-]
+const plugins =
+  window.location.pathname === '/login'
+    ? [tooltip]
+    : [
+        tooltip,
+        fastEvaluation,
+        recoverRememberMe,
+        gpa,
+        trainingScheme,
+        scoresInformation,
+        submitData
+      ]
 
 declare global {
   interface Window {
@@ -104,8 +107,10 @@ export default {
     logger.info('程序初始化')
     // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
     window.$sua = Object.assign(this, this.data)
-    // 初始化Store
-    await initStore()
+    if (window.location.pathname !== '/login') {
+      // 初始化Store
+      await initStore()
+    }
     // 加载插件
     for (let plugin of this.plugins) {
       if (urlTrigger(plugin)) {
