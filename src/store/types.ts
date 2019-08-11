@@ -1,3 +1,33 @@
+interface TeacherTable {
+  // 学期
+  [key: string]: {
+    // 课程号
+    [key: string]: {
+      // 课序号
+      [key: string]: Array<{
+        teacherNumber: string
+        teacherName: string
+      }>
+    }
+  }
+}
+
+interface LocalStore {
+  time: number
+  state: {
+    core: {
+      version: string
+    }
+    data: {
+      [key: string]: {
+        time: number
+        expirationTime: number
+        payload: any
+      }
+    }
+  }
+}
+
 interface AjaxStudentScheduleAPIData {
   allUnits: number
   xkxx: [
@@ -353,5 +383,7 @@ export {
   TrainingSchemeBaseInfo,
   CourseScheduleInfoAPIData,
   CourseScheduleInfo,
-  AjaxStudentScheduleAPIData
+  AjaxStudentScheduleAPIData,
+  LocalStore,
+  TeacherTable
 }

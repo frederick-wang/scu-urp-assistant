@@ -1,4 +1,4 @@
-const prefix = '%c[SCU URP Assistent]:'
+const prefix = '%c[SCU URP Assistent]'
 
 function log(...rest: any) {
   if (process.env.NODE_ENV === 'development') {

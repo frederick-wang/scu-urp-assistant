@@ -1,7 +1,7 @@
 // 绩点计算插件
 import { CourseScoreBaseInfo } from '@/store/types'
 import { state, actions, Request, Submit } from '@/store'
-import { convertSemesterNameToNumber } from '@/utils'
+import { convertSemesterNameToNumber, logger } from '@/utils'
 import {
   showLoadingAnimation,
   hideLoadingAnimation
@@ -480,11 +480,7 @@ async function getAllTermScoresData(): Promise<Record[]> {
     })
   for (const s of res) {
     for (const c of s.courses) {
-      c.courseTeacherList = await actions[Request.COURSE_TEACHER_LIST](
-        convertSemesterNameToNumber(s.semester),
-        c.courseNumber,
-        c.courseSequenceNumber
-      )
+      c.courseTeacherList = state.getData('teacherTable')[convertSemesterNameToNumber(s.semester)][c.courseNumber][c.courseSequenceNumber]
     }
   }
   return res

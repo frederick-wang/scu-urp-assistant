@@ -11,55 +11,9 @@ import {
   TrainingSchemeCourseInfo,
   CourseScheduleInfoAPIData,
   CourseScheduleInfo,
-  AjaxStudentScheduleAPIData
+  AjaxStudentScheduleAPIData,
+  TeacherTable
 } from '../types'
-
-let courseTeachersTable: {
-  // 学期
-  [key: string]: {
-    // 课程号
-    [key: string]: {
-      // 课序号
-      [key: string]: Array<{
-        teacherNumber: string
-        teacherName: string
-      }>
-    }
-  }
-} = {}
-async function requestCourseTeacherList(
-  semesterCode: string,
-  courseNumber: string,
-  courseSequenceNumber: string
-) {
-  if (!courseTeachersTable[semesterCode]) {
-    const courseInfoList = await requestCourseInfoListBySemester(semesterCode)
-    courseTeachersTable[semesterCode] = courseInfoList.reduce(
-      (acc, cur) => {
-        if (!acc[cur.courseNumber]) {
-          acc[cur.courseNumber] = {
-            [cur.courseSequenceNumber]: cur.courseTeacherList
-          }
-        } else {
-          acc[cur.courseNumber][cur.courseSequenceNumber] =
-            cur.courseTeacherList
-        }
-        return acc
-      },
-      {} as {
-        // 课程号
-        [key: string]: {
-          // 课序号
-          [key: string]: Array<{
-            teacherNumber: string
-            teacherName: string
-          }>
-        }
-      }
-    )
-  }
-  return courseTeachersTable[semesterCode][courseNumber][courseSequenceNumber]
-}
 
 async function requestStudentSemesterNumberList() {
   $.ajaxSetup({
@@ -747,6 +701,5 @@ export {
   requestCourseSchedule,
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
-  requestCourseTeacherList,
   requestStudentInfo
 }
