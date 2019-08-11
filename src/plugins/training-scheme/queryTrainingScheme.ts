@@ -1,5 +1,5 @@
 import { showLoadingAnimation, hideLoadingAnimation } from './common'
-import { actions, Request } from '@/store'
+import { actions, Request, state } from '@/store'
 import {
   TrainingSchemeBaseInfo,
   TrainingSchemeYearInfo,
@@ -65,7 +65,7 @@ function initQueryDOM() {
 }
 
 async function selectSelfMajorAndQuery() {
-  const selfMajorNumber = await actions[Request.SELF_MAJOR_NUMBER]()
+  const selfMajorNumber = state.user.programPlanNumber
   const selfSchemeInfo = trainingSchemeList.filter(
     v => Number(v[0]) === selfMajorNumber
   )[0]
