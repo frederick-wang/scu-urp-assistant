@@ -1,42 +1,30 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import fastEvaluation from '@/plugins/fast-evaluation'
-import sharedData from '@/plugins/shared-data'
 import tooltip from '@/plugins/tooltip'
 import recoverRememberMe from '@/plugins/recover-remember-me'
 import gpa from '@/plugins/gpa'
 import trainingScheme from '@/plugins/training-scheme'
 import scoresInformation from '@/plugins/scores-information'
-import submitData from '@/plugins/submit-data'
+import submitData from '@/plugins/user-experience-improvement-program'
 import { urlTrigger } from '@/utils'
+import { init as initStore, state } from './store'
+import { logger } from '@/utils'
 
 const plugins = [
-  sharedData,
-  submitData,
   tooltip,
   fastEvaluation,
   recoverRememberMe,
   gpa,
   trainingScheme,
-  scoresInformation
+  scoresInformation,
+  submitData
 ]
 
 declare global {
   interface Window {
     $sua: {
       menuItems: MenuItem[]
-    }
-    __$SUA_SHARED_DATA__?: {
-      core: {
-        suaPath: string
-      }
-      academicInfo: {
-        courseNumber: number
-        currentSemester: string
-        gpa: number
-        currentSemesterCourseNumber: number
-        failedCourseNumber: number
-      }
     }
     layer: {
       open: (a: any) => number
@@ -112,9 +100,12 @@ export default {
   /**
    * 初始化 SCU URP 助手
    */
-  init() {
+  async init() {
+    logger.info('程序初始化')
     // 将data中的属性注入$sua对象中，使其内部可以用this直接访问
     window.$sua = Object.assign(this, this.data)
+    // 初始化Store
+    await initStore()
     // 加载插件
     for (let plugin of this.plugins) {
       if (urlTrigger(plugin)) {
@@ -244,10 +235,7 @@ export default {
           }
         }
         this.menuItems.push(menuItem)
-        if (
-          window.__$SUA_SHARED_DATA__ &&
-          window.__$SUA_SHARED_DATA__.core.suaPath === path
-        ) {
+        if (state.core.suaPath === path) {
           menuItem.element.click()
         }
       })

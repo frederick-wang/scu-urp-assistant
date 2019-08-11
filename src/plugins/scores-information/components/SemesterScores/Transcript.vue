@@ -15,6 +15,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       th.center 绩点
       th.center 名次
       th.center 考试时间
+      th.center 任课教师
       th.center 未通过原因
   tbody#scoretbody
     tr.gpa-st-item(
@@ -34,7 +35,8 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       td.center {{ courseItem.levelName }}
       td.center {{ courseItem.gradePoint }}
       td.center {{ courseItem.rank}}
-      td.center {{ courseItem.examtime }}
+      td.center {{ courseItem.examTime }}
+      td.center {{ courseItem.courseTeacherList[0].teacherName}}{{ courseItem.courseTeacherList.filter(({ teacherNumber }) => Number(teacherNumber).toString() === teacherNumber).length > 1 ? ' 等' : ''}}
       td.center {{ courseItem.unpassedReasonExplain }}
 </template>
 

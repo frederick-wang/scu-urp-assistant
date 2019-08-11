@@ -3,9 +3,9 @@ import {
   TrainingSchemeBaseInfo,
   TrainingSchemeYearInfo as SingleTrainingSchemeYearInfo,
   TrainingSchemeCourseInfo as SingleTrainingSchemeCourseInfoBase
-} from '@/utils/api/types'
+} from '@/store/types'
 import { getChineseNumber } from '@/utils'
-import { Request, action } from '@/utils/api'
+import { Request, actions } from '@/store'
 
 let trainingSchemeList: string[][]
 
@@ -37,7 +37,7 @@ interface TrainingSchemeCourseInfo extends SingleTrainingSchemeCourseInfoBase {
 export async function render(root: HTMLElement) {
   initDOM(root)
   showLoadingAnimation('.compare-training-scheme-wrapper')
-  trainingSchemeList = await action[Request.TRAINING_SCHEME_LIST]()
+  trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
   hideLoadingAnimation()
   initFunc()
   initQueryDOM()
@@ -164,7 +164,7 @@ function genQueryHTML() {
 }
 
 async function selectSelfMajorAndQuery() {
-  const selfMajorNumber = await action[Request.SELF_MAJOR_NUMBER]()
+  const selfMajorNumber = await actions[Request.SELF_MAJOR_NUMBER]()
   const selfSchemeInfo = trainingSchemeList.filter(
     v => Number(v[0]) === selfMajorNumber
   )[0]
@@ -200,8 +200,8 @@ async function query() {
       { info: info1, list: list1 },
       { info: info2, list: list2 }
     ] = await Promise.all([
-      action[Request.TRAINING_SCHEME](Number(number1)),
-      action[Request.TRAINING_SCHEME](Number(number2))
+      actions[Request.TRAINING_SCHEME](Number(number1)),
+      actions[Request.TRAINING_SCHEME](Number(number2))
     ])
     hideLoadingAnimation()
     $('.compare-training-scheme-wrapper').append(genInfoHTML(info1, info2))

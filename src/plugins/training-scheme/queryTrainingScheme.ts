@@ -1,11 +1,11 @@
 import { showLoadingAnimation, hideLoadingAnimation } from './common'
-import { action, Request } from '@/utils/api'
+import { actions, Request } from '@/store'
 import {
   TrainingSchemeBaseInfo,
   TrainingSchemeYearInfo,
   TrainingSchemeSemesterInfo,
   TrainingSchemeCourseInfo
-} from '@/utils/api/types'
+} from '@/store/types'
 import { initCourseInfoPopover } from './popover'
 import { getChineseNumber } from '@/utils'
 
@@ -15,7 +15,7 @@ async function query() {
   const majorNumber = $('#major').val()
   if (majorNumber !== '无') {
     showLoadingAnimation('.training-scheme-wrapper')
-    const { info, list } = await action[Request.TRAINING_SCHEME](
+    const { info, list } = await actions[Request.TRAINING_SCHEME](
       Number(majorNumber)
     )
     hideLoadingAnimation()
@@ -40,7 +40,7 @@ function updateMajorList() {
 export async function render(root: HTMLElement) {
   initDOM(root)
   showLoadingAnimation('.training-scheme-wrapper')
-  trainingSchemeList = await action[Request.TRAINING_SCHEME_LIST]()
+  trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
   hideLoadingAnimation()
   initFunc()
   initQueryDOM()
@@ -65,7 +65,7 @@ function initQueryDOM() {
 }
 
 async function selectSelfMajorAndQuery() {
-  const selfMajorNumber = await action[Request.SELF_MAJOR_NUMBER]()
+  const selfMajorNumber = await actions[Request.SELF_MAJOR_NUMBER]()
   const selfSchemeInfo = trainingSchemeList.filter(
     v => Number(v[0]) === selfMajorNumber
   )[0]

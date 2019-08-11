@@ -1,10 +1,18 @@
 // 绩点计算插件
-import { CourseScoreBaseInfo } from '@/utils/api/types'
-import { action, Request } from '@/utils/api'
+import { CourseScoreBaseInfo } from '@/store/types'
+import { state, actions, Request, Submit } from '@/store'
+import { convertSemesterNameToNumber, logger } from '@/utils'
+import {
+  showLoadingAnimation,
+  hideLoadingAnimation
+} from '@/plugins/training-scheme/common'
+import * as ueip from '@/plugins/user-experience-improvement-program';
 
 interface Record {
   semester: string
-  courses: CourseScoreBaseRecord[]
+  courses: (CourseScoreBaseRecord & {
+    courseTeacherList: Array<{ teacherNumber: string; teacherName: string }>
+  })[]
 }
 
 interface CourseScoreBaseRecord extends CourseScoreBaseInfo {
@@ -428,56 +436,63 @@ const templates = {
 }
 
 async function getAllTermScoresData(): Promise<Record[]> {
-  const rawList = await action[Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]()
-  // 第一次请求只是为了获得课程总数 totalCount
+  const rawList = await actions[Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]()
   // 将获取的全部课程成绩列表按照学期分组
-  return (
-    rawList
-      .reduce(
-        (acc, cur) => {
-          // 如果没有挂科，那么 unpassedReasonExplain ≡ null
-          // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
-          const failReason = cur.unpassedReasonExplain
-            ? (cur.unpassedReasonExplain as string)
-            : null
-          if (failReason && failReason.includes('缓考')) {
-            return acc
-          }
-          const currentSemesterRecords = acc.filter(
-            v => v.semester === cur.executiveEducationPlanName
-          )
-          const record: CourseScoreBaseRecord = { ...cur, selected: false }
-          if (currentSemesterRecords.length) {
-            currentSemesterRecords[0].courses.push(record)
-          } else {
-            acc.push({
-              semester: record.executiveEducationPlanName,
-              courses: [record]
-            })
-          }
+  const res = rawList
+    .reduce(
+      (acc, cur) => {
+        // 如果没有挂科，那么 unpassedReasonExplain ≡ null
+        // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
+        const failReason = cur.unpassedReasonExplain
+          ? (cur.unpassedReasonExplain as string)
+          : null
+        if (failReason && failReason.includes('缓考')) {
           return acc
-        },
-        [] as Record[]
-      )
-      // 不显示还没有课程成绩的学期
-      .filter(v => v.courses && v.courses.length)
-      .sort((a, b) => {
-        const getWeightSum = ({ semester }: Record) => {
-          const r = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
-          return r ? Number(r[1]) + Number(r[2]) + (r[3] === '秋' ? 0 : 1) : 0
         }
-        // 从大到小排
-        return getWeightSum(b) - getWeightSum(a)
-      })
-  )
+        const currentSemesterRecords = acc.filter(
+          v => v.semester === cur.executiveEducationPlanName
+        )
+        const record = {
+          ...cur,
+          courseTeacherList: state.getData('teacherTable')[
+            convertSemesterNameToNumber(cur.executiveEducationPlanNumber)
+          ][cur.courseNumber][cur.courseSequenceNumber],
+          selected: false
+        }
+        if (currentSemesterRecords.length) {
+          currentSemesterRecords[0].courses.push(record)
+        } else {
+          acc.push({
+            semester: record.executiveEducationPlanName,
+            courses: [record]
+          })
+        }
+        return acc
+      },
+      [] as Record[]
+    )
+    // 不显示还没有课程成绩的学期
+    .filter(v => v.courses && v.courses.length)
+    .sort((a, b) => {
+      const getWeightSum = ({ semester }: Record) => {
+        const r = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
+        return r ? Number(r[1]) + Number(r[2]) + (r[3] === '秋' ? 0 : 1) : 0
+      }
+      // 从大到小排
+      return getWeightSum(b) - getWeightSum(a)
+    })
+  return res
 }
 
 async function initSequence() {
   initDOM()
+  showLoadingAnimation('.gpa-content')
   records = await getAllTermScoresData()
   renderSemesterTranscript()
   renderTotalTranscript()
   initEvent()
+  hideLoadingAnimation()
+  ueip.sendStudentCourseScorePublicList(records)
 }
 
 /**
@@ -578,7 +593,9 @@ export default {
   pathname: ['/', '/index.jsp'],
   style: require('./index.scss').toString(),
   init() {
-    initSequence()
+    if (window.location.pathname === '/' && !state.core.suaPath) {
+      initSequence()
+    }
   }
 }
 
