@@ -74,7 +74,7 @@ function sleep(time: number) {
 function urlTrigger(plugin: SUAPlugin) {
   const { pathname, route } = plugin
   const match = (
-    str:
+    value:
       | string
       | boolean
       | string[]
@@ -84,33 +84,40 @@ function urlTrigger(plugin: SUAPlugin) {
         }
       | undefined
   ) => {
-    if (!str) {
+    if (!value) {
       return false
-    } else if (typeof str === 'boolean') {
-      return str
-    } else if (typeof str === 'string') {
-      return minimatch(window.location.pathname, str)
-    } else if (Array.isArray(str)) {
-      for (const item of str) {
+    } else if (typeof value === 'boolean') {
+      return value
+    } else if (typeof value === 'string') {
+      return minimatch(window.location.pathname, value)
+    } else if (Array.isArray(value)) {
+      for (const item of value) {
         if (minimatch(window.location.pathname, item)) {
           return true
         }
       }
       return false
-    } else if (typeof str === 'object') {
-      for (const item of Object.values(str)) {
+    } else if (typeof value === 'object') {
+      for (const item of Object.values(value)) {
         if (minimatch(window.location.pathname, item)) {
           return true
         }
       }
       return false
-    } else if (typeof str === 'function') {
-      return str.bind(plugin)()
+    } else if (typeof value === 'function') {
+      return value.bind(plugin)()
     }
+    return false
   }
-  const result =
-    (window.location.pathname !== '/login' && match(route)) ||
-    (!state.core.route && match(pathname))
+  let result: boolean
+  if (pathname && !route) {
+    result = match(pathname)
+  } else if (!pathname && route) {
+    result = window.location.pathname !== '/login' && match(route)
+  } else {
+    result =
+      window.location.pathname !== '/login' && match(route) && match(pathname)
+  }
   return result
 }
 
