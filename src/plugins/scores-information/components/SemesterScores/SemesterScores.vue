@@ -1,7 +1,17 @@
 <template lang="pug">
 .gpa-st.col-xs-12.self-margin
-  Header(:title='semester')
-  LabelBar(:semester='semester' :courses='courses' @selectAllCourses='selectAllCourses()' @unselectAllCourses='unselectAllCourses()')
+  Header(
+    :semester='semester'
+    :courses='courses'
+    :selectedCourses='selectedCourses'
+    @selectAllCourses='selectAllCourses()'
+    @unselectAllCourses='unselectAllCourses()'
+  )
+  LabelBar(
+    :semester='semester'
+    :courses='courses'
+    :selectedCourses='selectedCourses'
+  )
   Tips
   Transcript(:courses='courses' @toggleCourseStatus='toggleCourseStatus($event)')
 </template>
@@ -13,6 +23,7 @@ import Header from './Header.vue'
 import LabelBar from './LabelBar.vue'
 import Tips from './Tips.vue'
 import Transcript from './Transcript.vue'
+import { getSelectedCourses } from '@/plugins/scores-information/utils'
 
 @Component({
   components: { Header, LabelBar, Tips, Transcript }
@@ -28,6 +39,10 @@ export default class SemesterScores extends Vue {
     required: true
   })
   courses!: CourseScoreRecord[]
+
+  get selectedCourses() {
+    return getSelectedCourses(this.courses)
+  }
 
   /**
    * 当「课程块」被点击时，做出相应的反应

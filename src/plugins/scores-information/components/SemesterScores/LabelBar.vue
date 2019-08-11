@@ -36,18 +36,6 @@ p
     :title='`在${semester}，您当前选出了 ${selectedCourses.length} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(courses)}`'
   )
     | 选中课程绩点：{{ getSelectedCoursesGPA(courses) }}
-  button.btn.btn-white.btn-minier.gpa-st-select-all-btn(
-    v-if='!selectedCourses.length'
-    @click='$emit(`selectAllCourses`)'
-  )
-    i.ace-icon.fa.fa-check.green
-    | 全选
-  button.btn.btn-white.btn-minier.gpa-st-cancel-btn(
-    v-else
-    @click='$emit(`unselectAllCourses`)'
-  )
-    i.ace-icon.fa.fa-times.red2
-    | 全不选
 </template>
 
 <script lang="ts">
@@ -59,7 +47,6 @@ import {
   getAllCoursesGPA,
   getAllCoursesScore,
   getCompulsoryCourses,
-  getSelectedCourses,
   getSelectedCoursesScore,
   getSelectedCoursesGPA
 } from '@/plugins/scores-information/utils'
@@ -76,10 +63,11 @@ export default class LabelBar extends Vue {
     required: true
   })
   courses!: CourseScoreRecord[]
-
-  get selectedCourses() {
-    return getSelectedCourses(this.courses)
-  }
+  @Prop({
+    type: Array,
+    required: true
+  })
+  selectedCourses!: CourseScoreRecord[]
 
   get compulsoryCourses() {
     return getCompulsoryCourses(this.courses)
@@ -112,10 +100,6 @@ export default class LabelBar extends Vue {
   getCompulsoryCourses(arr: CourseScoreRecord[]) {
     return getCompulsoryCourses(arr)
   }
-
-  getSelectedCourses(arr: CourseScoreRecord[]) {
-    return getSelectedCourses(arr)
-  }
 }
 </script>
 
@@ -125,13 +109,5 @@ export default class LabelBar extends Vue {
 .gpa-tt-tag-selected-score,
 .gpa-tt-tag-selected-gpa {
   display: inline;
-}
-
-.gpa-st-cancel-btn,
-.gpa-tt-cancel-btn {
-  display: block;
-  position: relative;
-  top: 2.5px;
-  float: right;
 }
 </style>
