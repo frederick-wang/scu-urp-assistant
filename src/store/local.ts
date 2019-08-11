@@ -18,6 +18,7 @@ function clearExpiredData() {
   const time = new Date().getTime()
   for (const [key, item] of Object.entries(localStore.state.data)) {
     if (item.expirationTime !== -1 && item.expirationTime < time) {
+      logger.log(`LocalStore.clearExpiredData: [key=${key}]`)
       remove(key)
     }
   }

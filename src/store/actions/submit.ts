@@ -1,4 +1,4 @@
-import { API_PATH } from '@/utils'
+import { API_PATH, logger } from '@/utils'
 
 import { CourseScorePublicInfo } from '@/store/types'
 
@@ -39,9 +39,15 @@ async function submitCourseScorePublicInfo(item: CourseScorePublicInfo) {
       }
     }
   }
-  const res = await $.post(url, req)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Submit.COURSE_SCORE_PUBLIC_INFO:', res)
+  let res
+  try {
+    res = await $.post(url, req)
+    if (res.error) {
+      throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFO Failed: ${res.msg}`)
+    }
+    logger.info('Submit.COURSE_SCORE_PUBLIC_INFO Successfully:', res.data)
+  } catch (error) {
+    logger.error(error)
   }
   return res
 }
@@ -84,9 +90,15 @@ async function submitCourseScorePublicInfos(items: CourseScorePublicInfo[]) {
       )
     }
   }
-  const res = await $.post(url, req)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Submit.COURSE_SCORE_PUBLIC_INFOS:', res)
+  let res
+  try {
+    res = await $.post(url, req)
+    if (res.error) {
+      throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`)
+    }
+    logger.info('Submit.COURSE_SCORE_PUBLIC_INFOS Successfully:', res.data)
+  } catch (error) {
+    logger.error(error)
   }
   return res
 }
@@ -101,9 +113,20 @@ async function submitStudentCourseScorePublicInfos(items: any[]) {
       student_course_score_infos: items
     }
   }
-  const res = await $.post(url, req)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS:', res)
+  let res
+  try {
+    res = await $.post(url, req)
+    if (res.error) {
+      throw new Error(
+        `Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`
+      )
+    }
+    logger.info(
+      'Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Successfully:',
+      res.data
+    )
+  } catch (error) {
+    logger.error(error)
   }
   return res
 }
