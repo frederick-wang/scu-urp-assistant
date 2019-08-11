@@ -10,6 +10,7 @@ const banner = `// ==UserScript==
 // @version      ${version}
 // @description  ${description}
 // @author       ${author}
+// @license      Apache-2.0
 // @include      http://202.115.47.141/*
 // @include      http://zhjw.scu.edu.cn/*
 // @grant        none
