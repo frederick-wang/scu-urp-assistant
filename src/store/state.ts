@@ -135,16 +135,16 @@ async function init(localStore: LocalStore) {
 export default {
   init,
   get core() {
-    let suaPath = ''
+    let suaRoute = ''
     if (window.location.pathname !== '/login') {
-      const regexp = window.location.hash.match(/suapath=(.+)$/)
+      const regexp = window.location.hash.match(/sua_route=(.+)$/)
       if (regexp) {
-        suaPath = regexp[1]
+        suaRoute = regexp[1]
       }
     }
     return {
       version,
-      suaPath
+      route: suaRoute
     }
   },
   get user() {

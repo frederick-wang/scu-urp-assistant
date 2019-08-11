@@ -1,9 +1,10 @@
 // 提示信息插件
-import { version } from '../../../package.json'
+import { version } from '@/../package.json'
+import { logger } from '@/utils';
 
 export default {
   name: 'tooltip',
-  pathname: '/**',
+  pathname: true,
   init() {
     if (window.location.pathname === '/login') {
       const $loginTooltip = $(require('./loginTooltip.pug')({ version }))
@@ -18,4 +19,4 @@ export default {
         .before($navTooltip)
     }
   }
-}
+} as SUAPlugin

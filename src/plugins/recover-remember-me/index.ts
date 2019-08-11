@@ -6,4 +6,4 @@ export default {
     const $rememberMe = $(require('./rememberMe.pug')())
     $('#loginButton').before($rememberMe)
   }
-}
+} as SUAPlugin

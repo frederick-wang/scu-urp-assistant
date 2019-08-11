@@ -318,4 +318,4 @@ export default {
 
     $btn.click(onClickBtn.bind(this))
   }
-}
+} as SUAPlugin

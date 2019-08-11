@@ -133,12 +133,9 @@ async function sendSourseScorePublicList() {
 
 export default {
   name: 'user-experience-improvement-program',
-  pathname: '/**',
+  pathname: true,
   async init() {
-    // 保证处在登陆后界面
-    if (window.location.pathname !== '/login') {
-      sendSourseScorePublicList()
-    }
+    sendSourseScorePublicList()
   }
 }
 

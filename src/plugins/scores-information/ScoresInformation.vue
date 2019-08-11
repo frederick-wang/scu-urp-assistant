@@ -11,7 +11,7 @@ import { SemesterScoreRecord } from './types'
 import { getScoreRecords } from './utils'
 import Loading from './components/Loading.vue'
 import SemesterScores from './components/SemesterScores/SemesterScores.vue'
-import { actions, Request, state } from '@/store'
+import { state } from '@/store'
 import { convertSemesterNameToNumber } from '@/utils'
 
 @Component({

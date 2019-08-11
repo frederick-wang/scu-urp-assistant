@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import App from './ScoresInformation.vue'
 
+const style = require('@/plugins/gpa/index.scss').toString()
+
 function render(root: HTMLElement) {
   window.urp.confirm(
     `<p style="font-weight: 700; color: red;">警告：</p>
@@ -25,21 +27,18 @@ function render(root: HTMLElement) {
 
 export default {
   name: 'scores-information',
-  pathname: '/**',
-  menu: [
-    {
-      rootMenuId: 'sua-menu-list',
-      rootMenuName: 'SCU URP 助手',
-      id: 'menu-advanced-query',
-      name: '高级查询',
-      items: [
-        {
-          name: '成绩信息查询',
-          path: 'advancedQuery/scoresInformation',
-          breadcrumbs: ['SCU URP 助手', '高级查询', '成绩信息查询'],
-          render
-        }
-      ]
+  route: 'advanced_query/scores_information',
+  menu: {
+    rootMenuId: 'sua-menu-list',
+    rootMenuName: 'SCU URP 助手',
+    id: 'menu-advanced-query',
+    name: '高级查询',
+    item: {
+      name: '成绩信息查询',
+      style,
+      route: 'advanced_query/scores_information',
+      breadcrumbs: ['SCU URP 助手', '高级查询', '成绩信息查询'],
+      render
     }
-  ]
-}
+  }
+} as SUAPlugin
