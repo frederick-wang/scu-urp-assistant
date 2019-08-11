@@ -11,8 +11,7 @@ import {
   TrainingSchemeCourseInfo,
   CourseScheduleInfoAPIData,
   CourseScheduleInfo,
-  AjaxStudentScheduleAPIData,
-  TeacherTable
+  AjaxStudentScheduleAPIData
 } from '../types'
 
 async function requestStudentSemesterNumberList() {
