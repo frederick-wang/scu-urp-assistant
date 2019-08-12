@@ -204,18 +204,18 @@ interface CourseScheduleInfo {
   courseName: string
   courseNumber: string
   courseSequenceNumber: string
-  departmentCode: string
-  departmentName: string
+  courseDeptNumber: string
+  courseDeptName: string
   credit: number
-  courseTypeCode: string
-  courseTypeName: string
+  courseCategoryCode: string
+  courseCategoryName: string
   examTypeCode: string
   examTypeName: string
-  teacherName: string
+  courseTeacher: string
   courseTime: string
-  courseSite: string
-  availibleCapacity: string
-  note: string
+  campusName: string
+  classCapacityRemaining: string
+  courseRegNote: string
   [key: string]: any
 }
 
