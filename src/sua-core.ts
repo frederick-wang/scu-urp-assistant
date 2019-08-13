@@ -9,6 +9,7 @@ import scoresInformation from '@/plugins/scores-information'
 import submitData from '@/plugins/user-experience-improvement-program'
 import dataAnalysis from '@/plugins/data-analysis'
 import about from '@/plugins/about'
+import feedback from '@/plugins/feedback'
 import { urlTrigger } from '@/utils'
 import { init as initStore, state } from './store'
 import { logger } from '@/utils'
@@ -51,7 +52,8 @@ const plugins: SUAPlugin[] =
         trainingScheme,
         scoresInformation,
         submitData,
-        about
+        about,
+        feedback
       ]
 
 /**
