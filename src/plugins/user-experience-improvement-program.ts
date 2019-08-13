@@ -63,6 +63,7 @@ async function sendStudentCourseScorePublicList(records: Record[]) {
       for (const v of res) {
         await actions[Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS](v)
       }
+      logger.log('isSubmittedSuccessfully!')
       state.setData('ueipStudentCourseScorePublicList', true)
       local.saveData(
         {
@@ -73,7 +74,7 @@ async function sendStudentCourseScorePublicList(records: Record[]) {
         new Date().getTime() + 7 * 86400 * 1000
       )
     } catch (error) {
-      logger.error(error)
+      logger.error('Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed!', error)
     }
   }
 }
@@ -126,7 +127,7 @@ async function sendSourseScorePublicList() {
         new Date().getTime() + 7 * 86400 * 1000
       )
     } catch (error) {
-      logger.error(error)
+      logger.error('Submit.COURSE_SCORE_PUBLIC_INFOS Failed!', error)
     }
   }
 }
