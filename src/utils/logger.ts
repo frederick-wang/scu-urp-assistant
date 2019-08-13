@@ -10,21 +10,21 @@ function log(...rest: any) {
 function info(...rest: any) {
   if (process.env.NODE_ENV === 'development') {
     const style = 'color: #227D51;'
-    console.log(prefix(), style, ...rest)
+    console.info(prefix(), style, ...rest)
   }
 }
 
 function warn(...rest: any) {
   if (process.env.NODE_ENV === 'development') {
     const style = 'color: #F9BF45;'
-    console.log(prefix(), style, ...rest)
+    console.warn(prefix(), style, ...rest)
   }
 }
 
 function error(...rest: any) {
   if (process.env.NODE_ENV === 'development') {
     const style = 'color: #CB4042;'
-    console.log(prefix(), style, ...rest)
+    console.error(prefix(), style, ...rest)
   }
 }
 
