@@ -8,7 +8,7 @@
     cite
       | ——
       |
-      a(href='https://www.zhihu.com/topic/19802381', title='用户脚本（UserScript） - 知乎') 用户脚本（UserScript） - 知乎
+      a(href='https://www.zhihu.com/topic/19802381', title='用户脚本（UserScript） - 知乎' target='blank') 用户脚本（UserScript） - 知乎
   p.indent 四川大学综合教务系统助手，是一个优化四川大学综合教务系统的「Userscript」，即用户脚本。这不是一个独立的软件，也不是一个浏览器的插件，但可以依赖浏览器的插件运行，或者作为一个 Bookmarklet 在点击后运行。
   p.indent 该脚本可以为综合教务系统增加以下功能：
   p(style='padding-left: 2em;')
