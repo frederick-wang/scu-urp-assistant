@@ -15,14 +15,14 @@ let trainingSchemeList: string[][]
 async function query() {
   const majorNumber = $('#major').val()
   if (majorNumber !== '无') {
-    showLoadingAnimation('.training-scheme-wrapper')
+    showLoadingAnimation('.sua-container-query-training-scheme')
     try {
       const { info, list } = await actions[Request.TRAINING_SCHEME](
         Number(majorNumber)
       )
       hideLoadingAnimation()
-      $('.training-scheme-wrapper').append(genInfoHTML(info))
-      $('.training-scheme-wrapper').append(genSchemeHTML(list))
+      $('.sua-container-query-training-scheme').append(genInfoHTML(info))
+      $('.sua-container-query-training-scheme').append(genSchemeHTML(list))
       initCourseInfoPopover()
       const majorName = trainingSchemeList.filter(
         ([v]) => v === majorNumber
@@ -51,7 +51,7 @@ function updateMajorList() {
 
 export async function render(root: HTMLElement) {
   initDOM(root)
-  showLoadingAnimation('.training-scheme-wrapper')
+  showLoadingAnimation('.sua-container-query-training-scheme')
   try {
     trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
     hideLoadingAnimation()
@@ -70,14 +70,14 @@ function initFunc() {
 
 function initDOM(root: HTMLElement) {
   const template = `
-      <div class="training-scheme-wrapper">
+      <div class="sua-container-query-training-scheme">
       </div>
     `
   $(root).append(template)
 }
 
 function initQueryDOM() {
-  $('.training-scheme-wrapper').append(genQueryHTML())
+  $('.sua-container-query-training-scheme').append(genQueryHTML())
 }
 
 async function selectSelfMajorAndQuery() {
