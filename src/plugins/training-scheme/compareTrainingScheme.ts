@@ -6,6 +6,7 @@ import {
 } from '@/store/types'
 import { getChineseNumber } from '@/utils'
 import { Request, actions, state } from '@/store'
+import { emitDataAnalysisEvent } from '../data-analysis';
 
 let trainingSchemeList: string[][]
 
@@ -44,7 +45,7 @@ export async function render(root: HTMLElement) {
     initQueryDOM()
     selectSelfMajorAndQuery()
   } catch (error) {
-    window.TDAPP.onEvent('培养方案比较', '培养方案列表数据获取失败')
+    emitDataAnalysisEvent('培养方案比较', '培养方案列表数据获取失败')
   }
 }
 
@@ -213,14 +214,14 @@ async function query() {
       $('.compare-training-scheme-wrapper').append(genSchemeHTML(list1, list2))
       const majorName1 = trainingSchemeList.filter(([v]) => v === number1)[0][3]
       const majorName2 = trainingSchemeList.filter(([v]) => v === number2)[0][3]
-      window.TDAPP.onEvent('培养方案比较', '查询成功', {
+      emitDataAnalysisEvent('培养方案比较', '查询成功', {
         '专业-1代码': number1,
         '专业-1名称': majorName1,
         '专业-2代码': number2,
         '专业-2名称': majorName2
       })
     } catch (error) {
-      window.TDAPP.onEvent('培养方案比较', '数据获取失败')
+      emitDataAnalysisEvent('培养方案比较', '数据获取失败')
     }
   }
 }

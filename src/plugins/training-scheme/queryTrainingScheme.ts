@@ -8,6 +8,7 @@ import {
 } from '@/store/types'
 import { initCourseInfoPopover } from './popover'
 import { getChineseNumber, logger } from '@/utils'
+import { emitDataAnalysisEvent } from '../data-analysis';
 
 let trainingSchemeList: string[][]
 
@@ -26,13 +27,12 @@ async function query() {
       const majorName = trainingSchemeList.filter(
         ([v]) => v === majorNumber
       )[0][3]
-      logger.log(window.TDAPP.onEvent)
-      window.TDAPP.onEvent('培养方案查询', '查询成功', {
+      emitDataAnalysisEvent('培养方案查询', '查询成功', {
         专业代码: majorNumber,
         专业名称: majorName
       })
     } catch (error) {
-      window.TDAPP.onEvent('培养方案查询', '数据获取失败')
+      emitDataAnalysisEvent('培养方案查询', '数据获取失败')
     }
   }
 }
@@ -59,7 +59,7 @@ export async function render(root: HTMLElement) {
     initQueryDOM()
     selectSelfMajorAndQuery()
   } catch (error) {
-    window.TDAPP.onEvent('培养方案查询', '培养方案列表数据获取失败')
+    emitDataAnalysisEvent('培养方案查询', '培养方案列表数据获取失败')
   }
 }
 
