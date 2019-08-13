@@ -6,6 +6,7 @@ import {
 } from '@/store/types'
 import { getChineseNumber } from '@/utils'
 import { Request, actions, state } from '@/store'
+import { emitDataAnalysisEvent } from '../data-analysis';
 
 let trainingSchemeList: string[][]
 
@@ -36,7 +37,7 @@ interface TrainingSchemeCourseInfo extends SingleTrainingSchemeCourseInfoBase {
 
 export async function render(root: HTMLElement) {
   initDOM(root)
-  showLoadingAnimation('.compare-training-scheme-wrapper')
+  showLoadingAnimation('.sua-container-compare-training-scheme')
   try {
     trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
     hideLoadingAnimation()
@@ -44,7 +45,7 @@ export async function render(root: HTMLElement) {
     initQueryDOM()
     selectSelfMajorAndQuery()
   } catch (error) {
-    window.TDAPP.onEvent('培养方案比较', '培养方案列表数据获取失败')
+    emitDataAnalysisEvent('培养方案比较', '培养方案列表数据获取失败')
   }
 }
 
@@ -55,14 +56,14 @@ function initFunc() {
 
 function initDOM(root: HTMLElement) {
   const template = `
-      <div class="compare-training-scheme-wrapper">
+      <div class="sua-container-compare-training-scheme">
       </div>
     `
   $(root).append(template)
 }
 
 function initQueryDOM() {
-  $('.compare-training-scheme-wrapper').append(genQueryHTML())
+  $('.sua-container-compare-training-scheme').append(genQueryHTML())
 }
 
 function genQueryHTML() {
@@ -199,7 +200,7 @@ async function query() {
   const number1 = $('#query-major-1 #major').val()
   const number2 = $('#query-major-2 #major').val()
   if (number1 !== '无' && number2 !== '无') {
-    showLoadingAnimation('.compare-training-scheme-wrapper')
+    showLoadingAnimation('.sua-container-compare-training-scheme')
     try {
       const [
         { info: info1, list: list1 },
@@ -209,18 +210,18 @@ async function query() {
         actions[Request.TRAINING_SCHEME](Number(number2))
       ])
       hideLoadingAnimation()
-      $('.compare-training-scheme-wrapper').append(genInfoHTML(info1, info2))
-      $('.compare-training-scheme-wrapper').append(genSchemeHTML(list1, list2))
+      $('.sua-container-compare-training-scheme').append(genInfoHTML(info1, info2))
+      $('.sua-container-compare-training-scheme').append(genSchemeHTML(list1, list2))
       const majorName1 = trainingSchemeList.filter(([v]) => v === number1)[0][3]
       const majorName2 = trainingSchemeList.filter(([v]) => v === number2)[0][3]
-      window.TDAPP.onEvent('培养方案比较', '查询成功', {
+      emitDataAnalysisEvent('培养方案比较', '查询成功', {
         '专业-1代码': number1,
         '专业-1名称': majorName1,
         '专业-2代码': number2,
         '专业-2名称': majorName2
       })
     } catch (error) {
-      window.TDAPP.onEvent('培养方案比较', '数据获取失败')
+      emitDataAnalysisEvent('培养方案比较', '数据获取失败')
     }
   }
 }

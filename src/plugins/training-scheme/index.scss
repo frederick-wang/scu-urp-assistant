@@ -53,8 +53,8 @@
   }
 }
 
-.training-scheme-wrapper,
-.compare-training-scheme-wrapper {
+.sua-container-query-training-scheme,
+.sua-container-compare-training-scheme {
   position: relative;
 
   .info-container {
@@ -255,7 +255,7 @@
   }
 }
 
-.compare-training-scheme-wrapper {
+.sua-container-compare-training-scheme {
   $major-colors: (
     // 绿 MIDORI
       'same': #227d51,

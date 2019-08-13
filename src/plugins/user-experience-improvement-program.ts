@@ -3,6 +3,7 @@ import { actions, Request, Submit, state } from '@/store'
 import { CourseScorePublicInfo, CourseScoreBaseInfo } from '@/store/types'
 import local from '@/store/local'
 import { logger } from '@/utils'
+import { emitDataAnalysisEvent } from './data-analysis';
 
 interface Record {
   semester: string
@@ -73,8 +74,10 @@ async function sendStudentCourseScorePublicList(records: Record[]) {
         // 7天更新一次
         new Date().getTime() + 7 * 86400 * 1000
       )
+      emitDataAnalysisEvent('UEIP-匿名用户课程成绩信息', '上传成功')
     } catch (error) {
       logger.error('Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed!', error)
+      emitDataAnalysisEvent('UEIP-匿名用户课程成绩信息', '上传失败')
     }
   }
 }
@@ -126,8 +129,10 @@ async function sendSourseScorePublicList() {
         // 7天更新一次
         new Date().getTime() + 7 * 86400 * 1000
       )
+      emitDataAnalysisEvent('UEIP-课程成绩信息', '上传成功')
     } catch (error) {
       logger.error('Submit.COURSE_SCORE_PUBLIC_INFOS Failed!', error)
+      emitDataAnalysisEvent('UEIP-课程成绩信息', '上传失败')
     }
   }
 }

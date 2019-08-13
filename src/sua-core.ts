@@ -8,9 +8,13 @@ import trainingScheme from '@/plugins/training-scheme'
 import scoresInformation from '@/plugins/scores-information'
 import submitData from '@/plugins/user-experience-improvement-program'
 import dataAnalysis from '@/plugins/data-analysis'
+import about from '@/plugins/about'
+import feedback from '@/plugins/feedback'
 import { urlTrigger } from '@/utils'
 import { init as initStore, state } from './store'
 import { logger } from '@/utils'
+
+const typoCSS = require('./typo.css').toString()
 
 declare global {
   interface Window {
@@ -47,7 +51,9 @@ const plugins: SUAPlugin[] =
         gpa,
         trainingScheme,
         scoresInformation,
-        submitData
+        submitData,
+        about,
+        feedback
       ]
 
 /**
@@ -83,6 +89,12 @@ export default {
   async init() {
     logger.info('程序初始化')
     window.$sua = this
+    // 加载Typo.css样式
+    $('head').append(`
+      <style type="text/css">
+        ${typoCSS}
+      </style>
+    `)
     if (window.location.pathname !== '/login') {
       // 初始化Store
       await initStore()
@@ -108,14 +120,6 @@ export default {
         this.menuQueue = this.menuQueue.concat(plugin.menu)
       }
     }
-    // 加载样式
-    $('head').append(`
-      <style type="text/css">
-        body, h1, h2, h3, h4, h5, h6 {
-          font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-        }
-      </style>
-    `)
     for (const s of this.styleQueue) {
       $('head').append(`
         <style type="text/css">

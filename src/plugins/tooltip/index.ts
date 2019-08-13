@@ -6,11 +6,14 @@ export default {
   name: 'tooltip',
   pathname: true,
   init() {
+    const versionName = `${version} (${
+      process.env.NODE_ENV === 'development' ? 'dev' : 'stable'
+    })`
     if (window.location.pathname === '/login') {
-      const $loginTooltip = $(require('./loginTooltip.pug')({ version }))
+      const $loginTooltip = $(require('./loginTooltip.pug')({ version: versionName }))
       $('#formContent').prepend($loginTooltip)
     } else {
-      const $navTooltip = $(require('./navTooltip.pug')({ version }))
+      const $navTooltip = $(require('./navTooltip.pug')({ version: versionName }))
       $('#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul')
         .children('li')
         .eq(1)

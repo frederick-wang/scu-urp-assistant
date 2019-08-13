@@ -8,31 +8,31 @@ import {
 } from '@/store/types'
 import { initCourseInfoPopover } from './popover'
 import { getChineseNumber, logger } from '@/utils'
+import { emitDataAnalysisEvent } from '../data-analysis';
 
 let trainingSchemeList: string[][]
 
 async function query() {
   const majorNumber = $('#major').val()
   if (majorNumber !== '无') {
-    showLoadingAnimation('.training-scheme-wrapper')
+    showLoadingAnimation('.sua-container-query-training-scheme')
     try {
       const { info, list } = await actions[Request.TRAINING_SCHEME](
         Number(majorNumber)
       )
       hideLoadingAnimation()
-      $('.training-scheme-wrapper').append(genInfoHTML(info))
-      $('.training-scheme-wrapper').append(genSchemeHTML(list))
+      $('.sua-container-query-training-scheme').append(genInfoHTML(info))
+      $('.sua-container-query-training-scheme').append(genSchemeHTML(list))
       initCourseInfoPopover()
       const majorName = trainingSchemeList.filter(
         ([v]) => v === majorNumber
       )[0][3]
-      logger.log(window.TDAPP.onEvent)
-      window.TDAPP.onEvent('培养方案查询', '查询成功', {
+      emitDataAnalysisEvent('培养方案查询', '查询成功', {
         专业代码: majorNumber,
         专业名称: majorName
       })
     } catch (error) {
-      window.TDAPP.onEvent('培养方案查询', '数据获取失败')
+      emitDataAnalysisEvent('培养方案查询', '数据获取失败')
     }
   }
 }
@@ -51,7 +51,7 @@ function updateMajorList() {
 
 export async function render(root: HTMLElement) {
   initDOM(root)
-  showLoadingAnimation('.training-scheme-wrapper')
+  showLoadingAnimation('.sua-container-query-training-scheme')
   try {
     trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
     hideLoadingAnimation()
@@ -59,7 +59,7 @@ export async function render(root: HTMLElement) {
     initQueryDOM()
     selectSelfMajorAndQuery()
   } catch (error) {
-    window.TDAPP.onEvent('培养方案查询', '培养方案列表数据获取失败')
+    emitDataAnalysisEvent('培养方案查询', '培养方案列表数据获取失败')
   }
 }
 
@@ -70,14 +70,14 @@ function initFunc() {
 
 function initDOM(root: HTMLElement) {
   const template = `
-      <div class="training-scheme-wrapper">
+      <div class="sua-container-query-training-scheme">
       </div>
     `
   $(root).append(template)
 }
 
 function initQueryDOM() {
-  $('.training-scheme-wrapper').append(genQueryHTML())
+  $('.sua-container-query-training-scheme').append(genQueryHTML())
 }
 
 async function selectSelfMajorAndQuery() {

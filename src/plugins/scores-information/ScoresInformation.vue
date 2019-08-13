@@ -13,6 +13,7 @@ import Loading from './components/Loading.vue'
 import SemesterScores from './components/SemesterScores/SemesterScores.vue'
 import { state } from '@/store'
 import { convertSemesterNameToNumber } from '@/utils'
+import { emitDataAnalysisEvent } from '../data-analysis';
 
 @Component({
   components: { Loading, SemesterScores }
@@ -33,9 +34,9 @@ export default class ScoresInformation extends Vue {
       }
       this.records = res
       this.loadingIsDone = true
-      window.TDAPP.onEvent('成绩信息查询', '查询成功')
+      emitDataAnalysisEvent('成绩信息查询', '查询成功')
     } catch (error) {
-      window.TDAPP.onEvent('成绩信息查询', '数据获取失败')
+      emitDataAnalysisEvent('成绩信息查询', '数据获取失败')
     }
   }
 }
