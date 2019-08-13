@@ -237,18 +237,18 @@ async function requestCourseSchedule(
             courseName: kcm || '',
             courseNumber: kch || '',
             courseSequenceNumber: kxh || '',
-            departmentCode: kkxsh || '',
-            departmentName: kkxsjc || '',
+            courseDeptNumber: kkxsh || '',
+            courseDeptName: kkxsjc || '',
             credit: xf || 0,
-            courseTypeCode: kclbdm || '',
-            courseTypeName: kclbmc || '',
+            courseCategoryCode: kclbdm || '',
+            courseCategoryName: kclbmc || '',
             examTypeCode: kslxdm || '',
             examTypeName: kslxmc || '',
-            teacherName: skjs || '',
+            courseTeacher: skjs || '',
             courseTime: `${zcsm}星期${getChineseNumber(skxq)}${skjc}节`,
-            courseSite: `${xqm}校区${jxlm}${jasm}`,
-            availibleCapacity: `${bkskyl} / ${bkskrl}`,
-            note: xkxzsm && xkxzsm !== ';' ? xkxzsm : ''
+            campusName: `${xqm}校区${jxlm}${jasm}`,
+            classCapacityRemaining: `${bkskyl} / ${bkskrl}`,
+            courseRegNote: xkxzsm && xkxzsm !== ';' ? xkxzsm : ''
           })
         )
         .reduce(

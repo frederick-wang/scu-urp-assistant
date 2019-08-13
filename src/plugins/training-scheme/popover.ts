@@ -71,27 +71,27 @@ async function showCourseSchedulePop(
           .map(
             ({
               courseSequenceNumber,
-              departmentName,
+              courseDeptName,
               credit,
-              courseTypeName,
+              courseCategoryName,
               examTypeName,
-              teacherName,
+              courseTeacher,
               courseTime,
-              courseSite,
-              availibleCapacity,
-              note
+              campusName,
+              classCapacityRemaining,
+              courseRegNote
             }) =>
               `<tr>
                 <td>${courseSequenceNumber}</td>
-                <td>${departmentName}</td>
+                <td>${courseDeptName}</td>
                 <td>${credit}</td>
-                <td>${courseTypeName}</td>
+                <td>${courseCategoryName}</td>
                 <td>${examTypeName}</td>
-                <td>${teacherName}</td>
+                <td>${courseTeacher}</td>
                 <td>${courseTime}</td>
-                <td>${courseSite}</td>
-                <td>${availibleCapacity}</td>
-                <td>${note}</td>
+                <td>${campusName}</td>
+                <td>${classCapacityRemaining}</td>
+                <td>${courseRegNote}</td>
               </tr>`
           )
           .join('')

@@ -7,6 +7,7 @@ import gpa from '@/plugins/gpa'
 import trainingScheme from '@/plugins/training-scheme'
 import scoresInformation from '@/plugins/scores-information'
 import submitData from '@/plugins/user-experience-improvement-program'
+import dataAnalysis from '@/plugins/data-analysis'
 import { urlTrigger } from '@/utils'
 import { init as initStore, state } from './store'
 import { logger } from '@/utils'
@@ -15,6 +16,9 @@ declare global {
   interface Window {
     $sua: {
       [key: string]: any
+    }
+    TDAPP: {
+      onEvent: (EventId: string, Label?: string, MapKv?: Object) => void
     }
     layer: {
       open: (a: any) => number
@@ -35,8 +39,9 @@ declare global {
 
 const plugins: SUAPlugin[] =
   window.location.pathname === '/login'
-    ? [tooltip, recoverRememberMe]
+    ? [dataAnalysis, tooltip, recoverRememberMe]
     : [
+        dataAnalysis,
         tooltip,
         fastEvaluation,
         gpa,

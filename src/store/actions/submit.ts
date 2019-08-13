@@ -91,15 +91,11 @@ async function submitCourseScorePublicInfos(items: CourseScorePublicInfo[]) {
     }
   }
   let res
-  try {
-    res = await $.post(url, req)
-    if (res.error) {
-      throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`)
-    }
-    logger.info('Submit.COURSE_SCORE_PUBLIC_INFOS Successfully:', res.data)
-  } catch (error) {
-    logger.error(error)
+  res = await $.post(url, req)
+  if (res.error) {
+    throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`)
   }
+  logger.info('Submit.COURSE_SCORE_PUBLIC_INFOS Successfully:', res.data)
   return res
 }
 
@@ -114,20 +110,16 @@ async function submitStudentCourseScorePublicInfos(items: any[]) {
     }
   }
   let res
-  try {
-    res = await $.post(url, req)
-    if (res.error) {
-      throw new Error(
-        `Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`
-      )
-    }
-    logger.info(
-      'Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Successfully:',
-      res.data
+  res = await $.post(url, req)
+  if (res.error) {
+    throw new Error(
+      `Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`
     )
-  } catch (error) {
-    logger.error(error)
   }
+  logger.info(
+    'Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Successfully:',
+    res.data
+  )
   return res
 }
 

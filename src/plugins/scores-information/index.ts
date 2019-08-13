@@ -13,13 +13,15 @@ function render(root: HTMLElement) {
       if (res) {
         $(root).append(`<div class="sua-container-scores-information"></div>`)
         new Vue({
-          render: (h: any) => h(App)
+          render: h => h(App)
         }).$mount('.sua-container-scores-information')
+        window.TDAPP.onEvent('成绩信息查询', '成功')
       } else {
         $(root).append(`
         <div class="sua-container-scores-information">
           <p>很抱歉，因为您拒绝了使用协议，SCU URP 助手 无法显示您希望看到的数据。</p>
         </div>`)
+        window.TDAPP.onEvent('成绩信息查询', '拒绝使用协议')
       }
     }
   )

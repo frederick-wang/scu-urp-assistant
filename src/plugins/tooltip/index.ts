@@ -1,6 +1,6 @@
 // 提示信息插件
 import { version } from '@/../package.json'
-import { logger } from '@/utils';
+import { logger } from '@/utils'
 
 export default {
   name: 'tooltip',
@@ -11,9 +11,7 @@ export default {
       $('#formContent').prepend($loginTooltip)
     } else {
       const $navTooltip = $(require('./navTooltip.pug')({ version }))
-      $(
-          '#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul'
-        )
+      $('#navbar-container > div.navbar-buttons.navbar-header.pull-right > ul')
         .children('li')
         .eq(1)
         .before($navTooltip)

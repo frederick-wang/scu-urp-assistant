@@ -22,16 +22,21 @@ export default class ScoresInformation extends Vue {
   records: SemesterScoreRecord[] = []
 
   async created() {
-    const res = await getScoreRecords()
-    for (const s of res) {
-      for (const c of s.courses) {
-        c.courseTeacherList = state.getData('teacherTable')[
-          convertSemesterNameToNumber(s.semester)
-        ][c.courseNumber][c.courseSequenceNumber]
+    try {
+      const res = await getScoreRecords()
+      for (const s of res) {
+        for (const c of s.courses) {
+          c.courseTeacherList = state.getData('teacherTable')[
+            convertSemesterNameToNumber(s.semester)
+          ][c.courseNumber][c.courseSequenceNumber]
+        }
       }
+      this.records = res
+      this.loadingIsDone = true
+      window.TDAPP.onEvent('成绩信息查询', '查询成功')
+    } catch (error) {
+      window.TDAPP.onEvent('成绩信息查询', '数据获取失败')
     }
-    this.records = res
-    this.loadingIsDone = true
   }
 }
 </script>

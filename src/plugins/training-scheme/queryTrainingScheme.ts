@@ -7,7 +7,7 @@ import {
   TrainingSchemeCourseInfo
 } from '@/store/types'
 import { initCourseInfoPopover } from './popover'
-import { getChineseNumber } from '@/utils'
+import { getChineseNumber, logger } from '@/utils'
 
 let trainingSchemeList: string[][]
 
@@ -15,13 +15,25 @@ async function query() {
   const majorNumber = $('#major').val()
   if (majorNumber !== '无') {
     showLoadingAnimation('.training-scheme-wrapper')
-    const { info, list } = await actions[Request.TRAINING_SCHEME](
-      Number(majorNumber)
-    )
-    hideLoadingAnimation()
-    $('.training-scheme-wrapper').append(genInfoHTML(info))
-    $('.training-scheme-wrapper').append(genSchemeHTML(list))
-    initCourseInfoPopover()
+    try {
+      const { info, list } = await actions[Request.TRAINING_SCHEME](
+        Number(majorNumber)
+      )
+      hideLoadingAnimation()
+      $('.training-scheme-wrapper').append(genInfoHTML(info))
+      $('.training-scheme-wrapper').append(genSchemeHTML(list))
+      initCourseInfoPopover()
+      const majorName = trainingSchemeList.filter(
+        ([v]) => v === majorNumber
+      )[0][3]
+      logger.log(window.TDAPP.onEvent)
+      window.TDAPP.onEvent('培养方案查询', '查询成功', {
+        专业代码: majorNumber,
+        专业名称: majorName
+      })
+    } catch (error) {
+      window.TDAPP.onEvent('培养方案查询', '数据获取失败')
+    }
   }
 }
 
@@ -40,11 +52,15 @@ function updateMajorList() {
 export async function render(root: HTMLElement) {
   initDOM(root)
   showLoadingAnimation('.training-scheme-wrapper')
-  trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
-  hideLoadingAnimation()
-  initFunc()
-  initQueryDOM()
-  selectSelfMajorAndQuery()
+  try {
+    trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
+    hideLoadingAnimation()
+    initFunc()
+    initQueryDOM()
+    selectSelfMajorAndQuery()
+  } catch (error) {
+    window.TDAPP.onEvent('培养方案查询', '培养方案列表数据获取失败')
+  }
 }
 
 function initFunc() {
