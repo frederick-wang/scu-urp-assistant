@@ -73,8 +73,10 @@ async function sendStudentCourseScorePublicList(records: Record[]) {
         // 7天更新一次
         new Date().getTime() + 7 * 86400 * 1000
       )
+      window.TDAPP.onEvent('UEIP-匿名用户课程成绩信息', '上传成功')
     } catch (error) {
       logger.error('Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed!', error)
+      window.TDAPP.onEvent('UEIP-匿名用户课程成绩信息', '上传失败')
     }
   }
 }
@@ -126,8 +128,10 @@ async function sendSourseScorePublicList() {
         // 7天更新一次
         new Date().getTime() + 7 * 86400 * 1000
       )
+      window.TDAPP.onEvent('UEIP-课程成绩信息', '上传成功')
     } catch (error) {
       logger.error('Submit.COURSE_SCORE_PUBLIC_INFOS Failed!', error)
+      window.TDAPP.onEvent('UEIP-课程成绩信息', '上传失败')
     }
   }
 }
