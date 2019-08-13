@@ -13,7 +13,7 @@ function render(root: HTMLElement) {
       if (res) {
         $(root).append(`<div class="sua-container-scores-information"></div>`)
         new Vue({
-          render: (h: any) => h(App)
+          render: h => h(App)
         }).$mount('.sua-container-scores-information')
       } else {
         $(root).append(`
