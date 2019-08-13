@@ -36,7 +36,6 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { version } from '@/../package.json'
 import { description } from '@/../package.json'
-import { logger } from '../../utils'
 
 @Component
 export default class ScoresInformation extends Vue {
