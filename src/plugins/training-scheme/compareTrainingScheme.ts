@@ -37,11 +37,15 @@ interface TrainingSchemeCourseInfo extends SingleTrainingSchemeCourseInfoBase {
 export async function render(root: HTMLElement) {
   initDOM(root)
   showLoadingAnimation('.compare-training-scheme-wrapper')
-  trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
-  hideLoadingAnimation()
-  initFunc()
-  initQueryDOM()
-  selectSelfMajorAndQuery()
+  try {
+    trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
+    hideLoadingAnimation()
+    initFunc()
+    initQueryDOM()
+    selectSelfMajorAndQuery()
+  } catch (error) {
+    window.TDAPP.onEvent('培养方案比较', '培养方案列表数据获取失败')
+  }
 }
 
 function initFunc() {
@@ -196,16 +200,28 @@ async function query() {
   const number2 = $('#query-major-2 #major').val()
   if (number1 !== '无' && number2 !== '无') {
     showLoadingAnimation('.compare-training-scheme-wrapper')
-    const [
-      { info: info1, list: list1 },
-      { info: info2, list: list2 }
-    ] = await Promise.all([
-      actions[Request.TRAINING_SCHEME](Number(number1)),
-      actions[Request.TRAINING_SCHEME](Number(number2))
-    ])
-    hideLoadingAnimation()
-    $('.compare-training-scheme-wrapper').append(genInfoHTML(info1, info2))
-    $('.compare-training-scheme-wrapper').append(genSchemeHTML(list1, list2))
+    try {
+      const [
+        { info: info1, list: list1 },
+        { info: info2, list: list2 }
+      ] = await Promise.all([
+        actions[Request.TRAINING_SCHEME](Number(number1)),
+        actions[Request.TRAINING_SCHEME](Number(number2))
+      ])
+      hideLoadingAnimation()
+      $('.compare-training-scheme-wrapper').append(genInfoHTML(info1, info2))
+      $('.compare-training-scheme-wrapper').append(genSchemeHTML(list1, list2))
+      const majorName1 = trainingSchemeList.filter(([v]) => v === number1)[0][3]
+      const majorName2 = trainingSchemeList.filter(([v]) => v === number2)[0][3]
+      window.TDAPP.onEvent('培养方案比较', '查询成功', {
+        '专业-1代码': number1,
+        '专业-1名称': majorName1,
+        '专业-2代码': number2,
+        '专业-2名称': majorName2
+      })
+    } catch (error) {
+      window.TDAPP.onEvent('培养方案比较', '数据获取失败')
+    }
   }
 }
 
