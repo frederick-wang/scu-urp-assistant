@@ -11,9 +11,8 @@ import { SemesterScoreRecord } from './types'
 import { getScoreRecords } from './utils'
 import Loading from './components/Loading.vue'
 import SemesterScores from './components/SemesterScores/SemesterScores.vue'
-import { state } from '@/store'
-import { convertSemesterNameToNumber } from '@/utils'
-import { emitDataAnalysisEvent } from '../data-analysis';
+import { getCourseTeacherList } from '@/utils'
+import { emitDataAnalysisEvent } from '../data-analysis'
 
 @Component({
   components: { Loading, SemesterScores }
@@ -27,9 +26,11 @@ export default class ScoresInformation extends Vue {
       const res = await getScoreRecords()
       for (const s of res) {
         for (const c of s.courses) {
-          c.courseTeacherList = state.getData('teacherTable')[
-            convertSemesterNameToNumber(s.semester)
-          ][c.courseNumber][c.courseSequenceNumber]
+          c.courseTeacherList = await getCourseTeacherList(
+            s.semester,
+            c.courseNumber,
+            c.courseSequenceNumber
+          )
         }
       }
       this.records = res
