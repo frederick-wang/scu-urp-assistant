@@ -368,6 +368,34 @@ interface CurrentSemesterStudentAcademicInfo {
   failedCourseNumber: number
 }
 
+interface CourseInfoList {
+  courseCategoryCode: string
+  courseCategoryName: string
+  courseName: string
+  coursePropertiesCode: string
+  coursePropertiesName: string
+  courseTeacherList: Array<{
+    teacherNumber: string
+    teacherName: string
+  }>
+  examTypeCode: string
+  examTypeName: string
+  courseNumber: string
+  courseSequenceNumber: string
+  executiveEducationPlanNumber: string
+  restrictedCondition: string
+  timeAndPlaceList: Array<{
+    campusName: string
+    classDay: number
+    classSessions: number
+    classWeek: string
+    classroomName: string
+    continuingSession: number
+    teachingBuildingName: string
+    weekDescription: string
+  }>
+}
+
 export {
   CourseScorePublicInfo,
   CourseScoreBaseInfo,
@@ -385,5 +413,6 @@ export {
   CourseScheduleInfo,
   AjaxStudentScheduleAPIData,
   LocalStore,
-  TeacherTable
+  TeacherTable,
+  CourseInfoList
 }

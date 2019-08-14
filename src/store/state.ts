@@ -4,7 +4,12 @@ import {
   requestStudentSemesterNumberList,
   requestCourseInfoListBySemester
 } from './actions/request'
-import { convertSemesterNumberToName, getUserId, logger } from '@/utils'
+import {
+  convertSemesterNumberToName,
+  getUserId,
+  logger,
+  convertCourseInfoListsToTeacherTable
+} from '@/utils'
 import { version } from '@/../package.json'
 import { LocalStore, TeacherTable } from './types'
 import local from './local'
@@ -38,98 +43,24 @@ async function init(localStore: LocalStore) {
   academicInfo = res[0]
   studentInfos = res[1]
   userSemesterNumberList = res[2]
+  await initTeacherTable()
+}
+
+async function initTeacherTable() {
   let teacherTable: TeacherTable = state.getData('teacherTable')
-  if (teacherTable) {
-    const uncachedsemesterNumberList = state.user.semesterNumberList.filter(
-      s => !Object.keys(teacherTable).includes(s)
-    )
-    if (uncachedsemesterNumberList.length) {
-      let courseInfoLists = []
-      for (const s of uncachedsemesterNumberList) {
-        courseInfoLists.push(await requestCourseInfoListBySemester(s))
-      }
-      // 这里和地下重复了，等吧interface抽出了记得把这个也抽出函数
-      teacherTable = {
-        ...teacherTable,
-        ...courseInfoLists
-          .map(courseInfoList =>
-            courseInfoList.reduce(
-              (acc, cur) => {
-                if (!acc[cur.courseNumber]) {
-                  acc[cur.courseNumber] = {
-                    [cur.courseSequenceNumber]: cur.courseTeacherList
-                  }
-                } else {
-                  acc[cur.courseNumber][cur.courseSequenceNumber] =
-                    cur.courseTeacherList
-                }
-                return acc
-              },
-              {} as {
-                // 课程号
-                [key: string]: {
-                  // 课序号
-                  [key: string]: Array<{
-                    teacherNumber: string
-                    teacherName: string
-                  }>
-                }
-              }
-            )
-          )
-          .reduce(
-            (acc, cur, i) => {
-              acc[state.user.semesterNumberList[i]] = cur
-              return acc
-            },
-            {} as TeacherTable
-          )
-      }
-    }
-  } else {
-    let courseInfoLists = []
-    for (const s of state.user.semesterNumberList) {
-      courseInfoLists.push(await requestCourseInfoListBySemester(s))
-    }
-    teacherTable = courseInfoLists
-      .map(courseInfoList =>
-        courseInfoList.reduce(
-          (acc, cur) => {
-            if (!acc[cur.courseNumber]) {
-              acc[cur.courseNumber] = {
-                [cur.courseSequenceNumber]: cur.courseTeacherList
-              }
-            } else {
-              acc[cur.courseNumber][cur.courseSequenceNumber] =
-                cur.courseTeacherList
-            }
-            return acc
-          },
-          {} as {
-            // 课程号
-            [key: string]: {
-              // 课序号
-              [key: string]: Array<{
-                teacherNumber: string
-                teacherName: string
-              }>
-            }
-          }
-        )
-      )
-      .reduce(
-        (acc, cur, i) => {
-          acc[state.user.semesterNumberList[i]] = cur
-          return acc
-        },
-        {} as TeacherTable
-      )
+  if (!teacherTable) {
+    teacherTable = await getFreshTeacherTableWhenNoCache()
   }
   state.setData('teacherTable', teacherTable)
-  // 不缓存当前学期的老师
-  const newTeacherTable = JSON.parse(JSON.stringify(teacherTable))
-  delete newTeacherTable[state.basic.currentSemesterNumber]
-  await local.saveData({ key: 'teacherTable', payload: newTeacherTable })
+  await local.saveData({ key: 'teacherTable', payload: teacherTable })
+}
+
+async function getFreshTeacherTableWhenNoCache() {
+  let courseInfoLists = []
+  for (const s of state.user.semesterNumberList) {
+    courseInfoLists.push(await requestCourseInfoListBySemester(s))
+  }
+  return convertCourseInfoListsToTeacherTable(courseInfoLists)
 }
 
 export default {

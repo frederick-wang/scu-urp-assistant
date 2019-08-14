@@ -11,7 +11,8 @@ import {
   TrainingSchemeCourseInfo,
   CourseScheduleInfoAPIData,
   CourseScheduleInfo,
-  AjaxStudentScheduleAPIData
+  AjaxStudentScheduleAPIData,
+  CourseInfoList
 } from '../types'
 
 async function requestStudentSemesterNumberList() {
@@ -101,7 +102,7 @@ async function requestCourseInfoListBySemester(semesterCode: string) {
             })
           )
         : []
-    })
+    } as CourseInfoList)
   )
   return courseInfoList
 }
