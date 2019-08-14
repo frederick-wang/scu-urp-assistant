@@ -139,10 +139,7 @@ function pathnameTrigger(
       }
     | undefined
 ) {
-  let result =
-    pathname === true
-      ? true
-      : !state.core.route && matchTrigger(window.location.pathname, pathname)
+  let result = matchTrigger(window.location.pathname, pathname)
   return result
 }
 function routeTrigger(
@@ -302,108 +299,6 @@ async function getCourseTeacherList(
   return []
 }
 
-function convertCourseInfoListToSemesterTeacherTable(
-  courseInfoList: CourseInfoList[]
-) {
-  return courseInfoList.reduce(
-    (acc, cur) => {
-      if (!acc[cur.courseNumber]) {
-        acc[cur.courseNumber] = {
-          [cur.courseSequenceNumber]: cur.courseTeacherList
-        }
-      } else {
-        acc[cur.courseNumber][cur.courseSequenceNumber] = cur.courseTeacherList
-      }
-      return acc
-    },
-    {} as {
-      // 课程号
-      [key: string]: {
-        // 课序号
-        [key: string]: Array<{
-          teacherNumber: string
-          teacherName: string
-        }>
-      }
-    }
-  )
-}
-
-function convertCourseInfoListsToTeacherTable(
-  courseInfoLists: CourseInfoList[][]
-) {
-  return courseInfoLists
-    .map(courseInfoList =>
-      convertCourseInfoListToSemesterTeacherTable(courseInfoList)
-    )
-    .reduce(
-      (acc, cur, i) => {
-        acc[courseInfoLists[i][0].executiveEducationPlanNumber] = cur
-        return acc
-      },
-      {} as TeacherTable
-    )
-}
-
-async function getCourseTeacherList(
-  semester: string,
-  courseNumber: string,
-  courseSequenceNumber: string
-): Promise<
-  {
-    teacherNumber: string
-    teacherName: string
-  }[]
-> {
-  const rName = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
-  if (rName) {
-    semester = convertSemesterNameToNumber(semester)
-  }
-  const rNumber = semester.match(/(\d+)-(\d+)-(\d)/)
-  if (rNumber) {
-    // 确实是标准学期号格式
-    const teacherTable: TeacherTable = state.getData('teacherTable')
-    try {
-      return teacherTable[semester][courseNumber][courseSequenceNumber]
-    } catch (error) {
-      logger.info(
-        `读取courseTeacherList失败: [${convertSemesterNumberToName(
-          semester
-        )}] ${courseNumber}-${courseSequenceNumber}\n Error:`,
-        error
-      )
-      // 说明当前的teacherTable缓存中没有这个课程的课序号的任课老师列表信息
-      // 应该重新获取一下这个学期的老师情况，缓存进teacherTable中
-      const courseInfoList = await actions[
-        Request.COURSE_INFO_LIST_BY_SEMESTER
-      ](semester)
-      const newSemesterTeacherTable = convertCourseInfoListToSemesterTeacherTable(
-        courseInfoList
-      )
-      if (!teacherTable[semester]) {
-        // 缓存里根本没有这个学期的老师对应表
-        teacherTable[semester] = newSemesterTeacherTable
-      } else {
-        // 缓存里有这个学期的老师对应表，只是缺这个课程的老师
-        teacherTable[semester] = {
-          ...teacherTable[semester],
-          ...newSemesterTeacherTable
-        }
-      }
-      state.setData('teacherTable', teacherTable)
-      await local.saveData({ key: 'teacherTable', payload: teacherTable })
-      logger.info(
-        `二次读取courseTeacherList成功: [${convertSemesterNumberToName(
-          semester
-        )}] ${courseNumber}-${courseSequenceNumber}\n Value:`,
-        teacherTable[semester][courseNumber][courseSequenceNumber]
-      )
-      return teacherTable[semester][courseNumber][courseSequenceNumber]
-    }
-  }
-  return []
-}
-
 export {
   getChineseNumber,
   API_PATH,
@@ -415,10 +310,5 @@ export {
   getUserId,
   logger,
   convertCourseInfoListsToTeacherTable,
-<<<<<<< HEAD
-  getCourseTeacherList,
-  convertCourseScoreInfoListToScoreRecords
-=======
   getCourseTeacherList
->>>>>>> fix(Soore.state): 修复了teacherTable缓存在切换账号时会数据出错的bug
 }
