@@ -10,7 +10,7 @@ import submitData from '@/plugins/user-experience-improvement-program'
 import dataAnalysis from '@/plugins/data-analysis'
 import about from '@/plugins/about'
 import feedback from '@/plugins/feedback'
-import { urlTrigger } from '@/utils'
+import { pathnameTrigger, routeTrigger } from '@/utils'
 import { init as initStore, state } from './store'
 import { logger } from '@/utils'
 
@@ -101,7 +101,7 @@ export default {
     }
     // 加载插件
     for (let plugin of this.plugins) {
-      if (urlTrigger(plugin)) {
+      if (pathnameTrigger(plugin.pathname)) {
         // 将样式推入队列中
         if (plugin.style) {
           this.styleQueue.push(plugin.style)
@@ -224,7 +224,7 @@ export default {
           }
           render($('.main-content>.page-content')[0])
         })
-        if (state.core.route === route) {
+        if (routeTrigger(route)) {
           $menuItem.click()
         }
       })

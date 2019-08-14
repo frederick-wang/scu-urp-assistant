@@ -70,57 +70,76 @@ function sleep(time: number) {
 /**
  * 检测当前的url是否满足插件触发要求
  *
- * @param plugin 插件对象，pathname 属性可以是 Boolean、String、Array、Object、Function等类型。
+ * @param pathname 可以是 Boolean、String、Array、Object、Function等类型。
  * @returns 检测的结果
  */
-function urlTrigger(plugin: SUAPlugin) {
-  const { pathname, route } = plugin
-  const match = (
-    value:
-      | string
-      | boolean
-      | string[]
-      | (() => boolean)
-      | {
-          [key: string]: string
-        }
-      | undefined
-  ) => {
-    if (!value) {
-      return false
-    } else if (typeof value === 'boolean') {
-      return value
-    } else if (typeof value === 'string') {
-      return minimatch(window.location.pathname, value)
-    } else if (Array.isArray(value)) {
-      for (const item of value) {
-        if (minimatch(window.location.pathname, item)) {
-          return true
-        }
+function pathnameTrigger(
+  pathname:
+    | string
+    | boolean
+    | string[]
+    | (() => boolean)
+    | {
+        [key: string]: string
       }
-      return false
-    } else if (typeof value === 'object') {
-      for (const item of Object.values(value)) {
-        if (minimatch(window.location.pathname, item)) {
-          return true
-        }
+    | undefined
+) {
+  let result = matchTrigger(window.location.pathname, pathname)
+  return result
+}
+function routeTrigger(
+  route:
+    | string
+    | boolean
+    | string[]
+    | (() => boolean)
+    | {
+        [key: string]: string
       }
-      return false
-    } else if (typeof value === 'function') {
-      return value.bind(plugin)()
+    | undefined
+) {
+  let result =
+    window.location.pathname !== '/login' &&
+    matchTrigger(state.core.route, route)
+  return result
+}
+
+function matchTrigger(
+  subject: string,
+  object:
+    | string
+    | boolean
+    | string[]
+    | (() => boolean)
+    | {
+        [key: string]: string
+      }
+    | undefined
+) {
+  if (!object) {
+    return false
+  } else if (typeof object === 'boolean') {
+    return object
+  } else if (typeof object === 'string') {
+    return minimatch(subject, object)
+  } else if (Array.isArray(object)) {
+    for (const item of object) {
+      if (minimatch(subject, item)) {
+        return true
+      }
     }
     return false
+  } else if (typeof object === 'object') {
+    for (const item of Object.values(object)) {
+      if (minimatch(subject, item)) {
+        return true
+      }
+    }
+    return false
+  } else if (typeof object === 'function') {
+    return object.bind(object)()
   }
-  let result: boolean
-  if (pathname && !route) {
-    result = match(pathname)
-  } else if (!pathname && route) {
-    result = window.location.pathname !== '/login' && match(route)
-  } else {
-    result =
-      window.location.pathname !== '/login' && match(route) && match(pathname)
-  }
-  return result
+  return false
 }
 
 function convertCourseInfoListToSemesterTeacherTable(
@@ -228,7 +247,8 @@ async function getCourseTeacherList(
 export {
   getChineseNumber,
   API_PATH,
-  urlTrigger,
+  pathnameTrigger,
+  routeTrigger,
   sleep,
   convertSemesterNumberToName,
   convertSemesterNameToNumber,
