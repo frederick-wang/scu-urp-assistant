@@ -11,8 +11,14 @@
       |
       span.gpa-info-badge.badge.badge-yellow(title=`在 ${semestersQuantity} 个学期中，您一共修读了 ${totalCourseCredits} 学分`)
         | #{totalCourseCredits} 学分
+        | #{coursesQuantity} 门
+      |
+      |
       span.gpa-info-badge.gpa-info-badge-tt-selected-course-quantity.badge.badge-pink(title=`在 ${semestersQuantity} 个学期中，您当前一共选中了 0 门课程`)
         | 0 门
+        | #{coursesQuantity} 门
+      |
+      |
       span.gpa-info-badge.gpa-info-badge-tt-selected-course-credits.badge.badge-pink(title=`在 ${semestersQuantity} 个学期中，您当前选中的全部课程总学分为 0`)
         | 0 学分
       button.btn.btn-white.btn-minier.gpa-tt-select-all-btn
