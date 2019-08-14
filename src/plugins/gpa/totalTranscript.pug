@@ -1,0 +1,51 @@
+.gpa-tt.row(style='margin-bottom: 20px;')
+  .col-sm-12
+    h4.header.smaller.lighter.grey(style='margin-top: 0;')
+      i.menu-icon.fa.fa-calendar
+      |
+      | 全部成绩
+      |
+      span.gpa-info-badge.badge.badge-yellow(title=`在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程`)
+        | #{coursesQuantity} 门
+      |
+      |
+      span.gpa-info-badge.badge.badge-yellow(title=`在 ${semestersQuantity} 个学期中，您一共修读了 ${totalCourseCredits} 学分`)
+        | #{totalCourseCredits} 学分
+        | #{coursesQuantity} 门
+      |
+      |
+      span.gpa-info-badge.gpa-info-badge-tt-selected-course-quantity.badge.badge-pink(title=`在 ${semestersQuantity} 个学期中，您当前一共选中了 0 门课程`)
+        | 0 门
+        | #{coursesQuantity} 门
+      |
+      |
+      span.gpa-info-badge.gpa-info-badge-tt-selected-course-credits.badge.badge-pink(title=`在 ${semestersQuantity} 个学期中，您当前选中的全部课程总学分为 0`)
+        | 0 学分
+      button.btn.btn-white.btn-minier.gpa-tt-select-all-btn
+        i.ace-icon.fa.fa-check.green
+        | 全选
+      button.btn.btn-white.btn-minier.gpa-tt-cancel-btn
+        i.ace-icon.fa.fa-times.red2
+        | 全不选
+    span.gpa-tt-tag.label.label-success(title=`在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均分为 ${compulsoryCoursesScore}`)
+      | 必修平均分：#{compulsoryCoursesScore}
+    |
+    |
+    span.gpa-tt-tag.label.label-success(title=`在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCoursesQuantity} 门必修课程，必修加权平均绩点为 ${compulsoryCoursesGPA}`)
+      | 必修绩点：#{compulsoryCoursesGPA}
+    |
+    |
+    span.gpa-tt-tag.label.label-purple(title=`在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程，全部加权平均分为 ${allCoursesScore}`)
+      | 全部平均分：#{allCoursesScore}
+    |
+    |
+    span.gpa-st-tag.label.label-purple(title=`在 ${semestersQuantity} 个学期中，您一共修读了 ${coursesQuantity} 门课程，全部加权平均绩点为 ${allCoursesGPA}`)
+      | 全部绩点：#{allCoursesGPA}
+    |
+    |
+    span.gpa-tt-tag.gpa-tt-tag-selected-score.label.label-pink
+      | 所有选中课程平均分：0
+    |
+    |
+    span.gpa-tt-tag.gpa-tt-tag-selected-gpa.label.label-pink
+      | 所有选中课程绩点：0
