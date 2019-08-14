@@ -38,7 +38,7 @@ import { version } from '@/../package.json'
 import { description } from '@/../package.json'
 
 @Component
-export default class ScoresInformation extends Vue {
+export default class About extends Vue {
   get version() {
     return `${version} (${
       process.env.NODE_ENV === 'development' ? 'dev' : 'stable'
