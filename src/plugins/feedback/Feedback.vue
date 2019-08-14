@@ -13,7 +13,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component
-export default class ScoresInformation extends Vue {}
+export default class Feedback extends Vue {}
 </script>
 
 <style lang="scss" scoped>
