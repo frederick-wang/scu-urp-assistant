@@ -190,7 +190,7 @@ export default {
         `)
         const $menuItem = $menu.children(`#${id}`)
         $menuItem.click(() => {
-          $menu.children('.sua-menu-item').removeClass('active')
+          $rootMenu.find('.sua-menu-item').removeClass('active')
           $menuItem.addClass('active')
           const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
           $breadcrumbs.empty().append(`
