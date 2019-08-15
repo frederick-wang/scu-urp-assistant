@@ -89,13 +89,13 @@ export default {
   async init() {
     logger.info('程序初始化')
     window.$sua = this
-    // 加载Typo.css样式
-    $('head').append(`
-      <style type="text/css">
-        ${typoCSS}
-      </style>
-    `)
     if (window.location.pathname !== '/login') {
+      // 加载Typo.css样式
+      $('head').append(`
+        <style type="text/css">
+          ${typoCSS}
+        </style>
+      `)
       // 初始化Store
       await initStore()
     }
