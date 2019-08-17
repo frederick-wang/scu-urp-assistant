@@ -2,7 +2,7 @@
 import { actions, Request, Submit, state } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
 import local from '@/store/local'
-import { logger } from '@/utils'
+import { logger, getCourseTeacherList } from '@/utils'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 
