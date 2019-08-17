@@ -1,4 +1,8 @@
-import { showLoadingAnimation, hideLoadingAnimation } from './common'
+import {
+  showLoadingAnimation,
+  hideLoadingAnimation,
+  genFooterHTML
+} from './common'
 import { actions, Request, state } from '@/store'
 import {
   TrainingSchemeBaseInfo,
@@ -28,6 +32,8 @@ async function query() {
       )
       $('.program-plan-wrapper').append(genInfoHTML(info))
       $('.program-plan-wrapper').append(genSchemeHTML(list))
+      $('.program-plan-wrapper').append(genFooterHTML())
+      $('.footer-container').hide()
       initCourseInfoPopover()
       const majorName = trainingSchemeList.filter(
         ([v]) => v === majorNumber
@@ -70,9 +76,12 @@ export async function render(root: HTMLElement) {
 
 function save() {
   if ($('.program-plan-wrapper').length) {
+    $('.footer-container').show()
     window.urp.alert('正在生成培养方案长图，请稍作等待')
     setTimeout(async () => {
-      const canvas = await html2canvas($('.program-plan-wrapper')[0])
+      const canvas = await html2canvas($('.program-plan-wrapper')[0], {
+        useCORS: true
+      })
       canvas.toBlob(blob => {
         const majorName = trainingSchemeList.filter(
           ([v]) => v === $('#major').val()
@@ -103,6 +112,7 @@ function save() {
           null
         )
         a.dispatchEvent(e)
+        $('.footer-container').hide()
         window.urp.alert('图片文件下载已启动，请注意保存哦')
       })
     }, 0)

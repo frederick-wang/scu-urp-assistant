@@ -1,4 +1,8 @@
-import { showLoadingAnimation, hideLoadingAnimation } from './common'
+import {
+  showLoadingAnimation,
+  hideLoadingAnimation,
+  genFooterHTML
+} from './common'
 import {
   TrainingSchemeBaseInfo,
   TrainingSchemeYearInfo as SingleTrainingSchemeYearInfo,
@@ -52,9 +56,12 @@ export async function render(root: HTMLElement) {
 
 function save() {
   if ($('.program-plan-wrapper').length) {
+    $('.footer-container').show()
     window.urp.alert('正在生成培养方案比较结果长图，请稍作等待')
     setTimeout(async () => {
-      const canvas = await html2canvas($('.program-plan-wrapper')[0])
+      const canvas = await html2canvas($('.program-plan-wrapper')[0], {
+        useCORS: true
+      })
       canvas.toBlob(blob => {
         const majorName1 = trainingSchemeList.filter(
           ([v]) => v === $('#query-major-1 #major').val()
@@ -90,6 +97,7 @@ function save() {
           null
         )
         a.dispatchEvent(e)
+        $('.footer-container').hide()
         window.urp.alert('图片文件下载已启动，请注意保存哦')
       })
     }, 0)
@@ -245,7 +253,6 @@ async function selectSelfMajorAndQuery() {
   updateMajorList('#query-major-2')
   $('#query-major-1 #major').val(selfSchemeInfo[0] as string)
   $('#query-major-2 #major').val(selfSchemeInfo[0] as string)
-  // query()
 }
 
 function updateMajorList(containerSelector: string) {
@@ -280,6 +287,8 @@ async function query() {
       )
       $('.program-plan-wrapper').append(genInfoHTML(info1, info2))
       $('.program-plan-wrapper').append(genSchemeHTML(list1, list2))
+      $('.program-plan-wrapper').append(genFooterHTML())
+      $('.footer-container').hide()
       const majorName1 = trainingSchemeList.filter(([v]) => v === number1)[0][3]
       const majorName2 = trainingSchemeList.filter(([v]) => v === number2)[0][3]
       emitDataAnalysisEvent('培养方案比较', '查询成功', {
