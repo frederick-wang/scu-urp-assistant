@@ -215,10 +215,8 @@ async function query() {
       const majorName1 = trainingSchemeList.filter(([v]) => v === number1)[0][3]
       const majorName2 = trainingSchemeList.filter(([v]) => v === number2)[0][3]
       emitDataAnalysisEvent('培养方案比较', '查询成功', {
-        '专业-1代码': number1,
-        '专业-1名称': majorName1,
-        '专业-2代码': number2,
-        '专业-2名称': majorName2
+        '专业代码': `${number1}-${number2}`,
+        '专业名称': `${majorName1}-${majorName2}`
       })
     } catch (error) {
       emitDataAnalysisEvent('培养方案比较', '数据获取失败')
