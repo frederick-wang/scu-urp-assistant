@@ -1,22 +1,14 @@
 // 用户体验改善计划插件
 import { actions, Request, Submit, state } from '@/store'
-import { CourseScorePublicInfo, CourseScoreBaseInfo } from '@/store/types'
+import { CourseScorePublicInfo } from '@/store/types'
 import local from '@/store/local'
 import { logger } from '@/utils'
-import { emitDataAnalysisEvent } from './data-analysis';
+import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
+import { SemesterScoreRecord } from '@/plugins/score/types'
 
-interface Record {
-  semester: string
-  courses: (CourseScoreBaseRecord & {
-    courseTeacherList: Array<{ teacherNumber: string; teacherName: string }>
-  })[]
-}
-
-interface CourseScoreBaseRecord extends CourseScoreBaseInfo {
-  selected: boolean
-}
-
-async function sendStudentCourseScorePublicList(records: Record[]) {
+async function sendStudentCourseScorePublicList(
+  records: SemesterScoreRecord[]
+) {
   if (!state.getData('ueipStudentCourseScorePublicList')) {
     const res = Object.values(records).map(v =>
       v.courses.map(
@@ -82,7 +74,7 @@ async function sendStudentCourseScorePublicList(records: Record[]) {
   }
 }
 
-async function sendSourseScorePublicList() {
+async function sendCourseScorePublicList() {
   if (!state.getData('ueipCourseScorePublicList')) {
     const thisTermCourseScoreInfoList = await actions[
       Request.THIS_TERM_COURSE_SCORE_INFO_LIST
@@ -113,9 +105,9 @@ async function sendSourseScorePublicList() {
         examTime,
         examTypeName,
         studyHour,
-        maxScore,
-        avgScore,
-        minScore
+        maxScore: maxScore as number,
+        avgScore: avgScore as number,
+        minScore: minScore as number
       })
     )
     try {
@@ -141,8 +133,8 @@ export default {
   name: 'user-experience-improvement-program',
   pathname: true,
   async init() {
-    sendSourseScorePublicList()
+    sendCourseScorePublicList()
   }
 }
 
-export { sendSourseScorePublicList, sendStudentCourseScorePublicList }
+export { sendCourseScorePublicList, sendStudentCourseScorePublicList }

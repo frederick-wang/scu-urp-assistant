@@ -1,6 +1,7 @@
 <template lang="pug">
-.gpa-st.col-xs-12.self-margin
+.gpa-st.col-xs-12.self-margin(:style='{ width: type === `compact` ? `50%` : `100%` }')
   Header(
+    :type='type'
     :semester='semester'
     :courses='courses'
     :selectedCourses='selectedCourses'
@@ -8,27 +9,37 @@
     @unselectAllCourses='unselectAllCourses()'
   )
   LabelBar(
+    :type='type'
     :semester='semester'
     :courses='courses'
     :selectedCourses='selectedCourses'
   )
-  Tips
-  Transcript(:courses='courses' @toggleCourseStatus='toggleCourseStatus($event)')
+  Tips(v-if='type === `full`')
+  Transcript(
+    :type='type'
+    :courses='courses'
+    @toggleCourseStatus='toggleCourseStatus($event)'
+  )
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { CourseScoreRecord } from '@/plugins/scores-information/types'
+import { CourseScoreRecord } from '@/plugins/score/types'
 import Header from './Header.vue'
 import LabelBar from './LabelBar.vue'
 import Tips from './Tips.vue'
 import Transcript from './Transcript.vue'
-import { getSelectedCourses } from '@/plugins/scores-information/utils'
+import { getSelectedCourses } from '@/plugins/score/utils'
 
 @Component({
   components: { Header, LabelBar, Tips, Transcript }
 })
 export default class SemesterScores extends Vue {
+  @Prop({
+    type: String,
+    required: true
+  })
+  type!: string
   @Prop({
     type: String,
     required: true

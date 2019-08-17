@@ -57,5 +57,5 @@
 import { Vue, Component } from 'vue-property-decorator'
 
 @Component
-export default class MyComponent extends Vue {}
+export default class Loading extends Vue {}
 </script>

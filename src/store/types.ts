@@ -328,7 +328,7 @@ interface CourseScorePublicInfo extends CourseScoreCoreInfo {
   minScore: number
 }
 
-interface CourseScoreBaseInfo extends CourseScoreCoreInfo {
+interface CourseScoreInfo extends CourseScoreCoreInfo {
   courseSequenceNumber: string
   courseScore: number
   gradePoint: number
@@ -339,14 +339,11 @@ interface CourseScoreBaseInfo extends CourseScoreCoreInfo {
   coursePropertyCode: string
   coursePropertyName: string
   unpassedReasonExplain: string
-}
-
-interface CourseScoreInfo extends CourseScoreBaseInfo {
-  maxScore: number
-  avgScore: number
-  minScore: number
-  rank: number
-  unpassedReasonCode: string
+  maxScore?: number
+  avgScore?: number
+  minScore?: number
+  rank?: number
+  unpassedReasonCode?: string
 }
 
 interface AllTermScoresAPIData {
@@ -398,7 +395,6 @@ interface CourseInfoList {
 
 export {
   CourseScorePublicInfo,
-  CourseScoreBaseInfo,
   CourseScoreInfo,
   AllTermScoresAPIData,
   CurrentSemesterStudentAcademicInfo,

@@ -1,23 +1,4 @@
-import { actions, Request } from '@/store'
 import { CourseScoreRecord } from './types'
-
-async function getScoreRecords() {
-  const thisTermScoresList = await actions[
-    Request.THIS_TERM_COURSE_SCORE_INFO_LIST
-  ]()
-  return [
-    {
-      semester: thisTermScoresList[0].executiveEducationPlanName,
-      courses: thisTermScoresList.map(
-        v =>
-          ({
-            ...v,
-            selected: false
-          } as CourseScoreRecord)
-      )
-    }
-  ]
-}
 
 /**
  * 将数值保留3位小数，再作为number返回
@@ -146,7 +127,6 @@ function getAllCoursesScore(arr: CourseScoreRecord[]) {
 }
 
 export {
-  getScoreRecords,
   getCompulsoryCoursesGPA,
   getCompulsoryCoursesScore,
   getAllCoursesGPA,
