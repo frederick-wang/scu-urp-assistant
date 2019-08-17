@@ -268,9 +268,9 @@ function updateMajorList(containerSelector: string) {
 }
 
 async function query() {
-  const number1 = $('#query-major-1 #major').val()
-  const number2 = $('#query-major-2 #major').val()
-  if (number1 !== '无' && number2 !== '无') {
+  const majorNumber1 = $('#query-major-1 #major').val()
+  const majorNumber2 = $('#query-major-2 #major').val()
+  if (majorNumber1 !== '无' && majorNumber2 !== '无') {
     $('.program-plan-wrapper').remove()
     showLoadingAnimation('.sua-container-compare-training-scheme')
     try {
@@ -278,8 +278,8 @@ async function query() {
         { info: info1, list: list1 },
         { info: info2, list: list2 }
       ] = await Promise.all([
-        actions[Request.TRAINING_SCHEME](Number(number1)),
-        actions[Request.TRAINING_SCHEME](Number(number2))
+        actions[Request.TRAINING_SCHEME](Number(majorNumber1)),
+        actions[Request.TRAINING_SCHEME](Number(majorNumber2))
       ])
       hideLoadingAnimation()
       $('.sua-container-compare-training-scheme').append(
@@ -289,11 +289,13 @@ async function query() {
       $('.program-plan-wrapper').append(genSchemeHTML(list1, list2))
       $('.program-plan-wrapper').append(genFooterHTML())
       $('.footer-container').hide()
-      const majorName1 = trainingSchemeList.filter(([v]) => v === number1)[0][3]
-      const majorName2 = trainingSchemeList.filter(([v]) => v === number2)[0][3]
+      const majorName1 = trainingSchemeList.filter(([v]) => v === majorNumber1)[0][3]
+      const majorName2 = trainingSchemeList.filter(([v]) => v === majorNumber2)[0][3]
+      const grade1 = $('#query-major-1 #grade').val()
+      const grade2 = $('#query-major-2 #grade').val()
       emitDataAnalysisEvent('培养方案比较', '查询成功', {
-        专业代码: `${number1}-${number2}`,
-        专业名称: `${majorName1}-${majorName2}`
+        专业代码: `${majorNumber1}-${majorNumber2}`,
+        专业名称: `${majorName1}（${grade1}）-${majorName2}（${grade2}）`
       })
     } catch (error) {
       emitDataAnalysisEvent('培养方案比较', '数据获取失败')

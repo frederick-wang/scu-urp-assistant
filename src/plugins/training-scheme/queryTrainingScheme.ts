@@ -38,9 +38,10 @@ async function query() {
       const majorName = trainingSchemeList.filter(
         ([v]) => v === majorNumber
       )[0][3]
+      const grade = $('#grade').val()
       emitDataAnalysisEvent('培养方案查询', '查询成功', {
         专业代码: majorNumber,
-        专业名称: majorName
+        专业名称: `${majorName}（${grade}）`
       })
     } catch (error) {
       emitDataAnalysisEvent('培养方案查询', '数据获取失败')
