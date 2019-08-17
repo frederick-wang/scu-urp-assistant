@@ -2,7 +2,7 @@
 import { actions, Request, Submit, state } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
 import local from '@/store/local'
-import { logger } from '@/utils'
+import { logger, getCourseTeacherList } from '@/utils'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 
@@ -10,6 +10,15 @@ async function sendStudentCourseScorePublicList(
   records: SemesterScoreRecord[]
 ) {
   if (!state.getData('ueipStudentCourseScorePublicList')) {
+    for (const s of records) {
+      for (const c of s.courses) {
+        c.courseTeacherList = await getCourseTeacherList(
+          s.semester,
+          c.courseNumber,
+          c.courseSequenceNumber
+        )
+      }
+    }
     const res = Object.values(records).map(v =>
       v.courses.map(
         ({
