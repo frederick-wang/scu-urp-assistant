@@ -8,7 +8,7 @@
         span.badge.badge-primary(style='padding-top:3px;position:relative;top:-3px;') SCU URP 助手
       .widget-toolbar
         .widget-menu
-          a#gpa-toolbar-detail(data-action='settings', data-toggle='dropdown' @click='openFullGPACalculator()')
+          a#gpa-toolbar-detail(data-action='settings', data-toggle='dropdown')
             i.ace-icon.fa.fa-bars
     .widget-body
       .widget-main
@@ -22,11 +22,7 @@ import GPACalculator from './GPACalculator.vue'
 @Component({
   components: { GPACalculator }
 })
-export default class GPACalculatorWidget extends Vue {
-  openFullGPACalculator() {
-    $('#menu-item-均分绩点计算器').click()
-  }
-}
+export default class GPACalculatorWidget extends Vue {}
 </script>
 
 <style lang="scss" scoped>

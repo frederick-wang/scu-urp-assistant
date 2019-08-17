@@ -2,8 +2,9 @@ import minimatch from 'minimatch'
 import crypto from 'crypto'
 import * as logger from './logger'
 import { state, actions, Request } from '@/store'
-import { CourseInfoList, TeacherTable } from '@/store/types'
+import { CourseInfoList, TeacherTable, CourseScoreInfo } from '@/store/types'
 import local from '@/store/local'
+import { SemesterScoreRecord } from '@/plugins/score/types';
 
 function getUserId(studentInfos: Map<string, string>) {
   const name = studentInfos.get('姓名')
@@ -139,7 +140,10 @@ function pathnameTrigger(
       }
     | undefined
 ) {
-  let result = matchTrigger(window.location.pathname, pathname)
+  let result =
+    pathname === true
+      ? true
+      : !state.core.route && matchTrigger(window.location.pathname, pathname)
   return result
 }
 function routeTrigger(
@@ -310,5 +314,6 @@ export {
   getUserId,
   logger,
   convertCourseInfoListsToTeacherTable,
-  getCourseTeacherList
+  getCourseTeacherList,
+  convertCourseScoreInfoListToScoreRecords
 }

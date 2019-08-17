@@ -14,6 +14,7 @@ function renderGPACalculator(root: HTMLElement) {
         }
       })
   }).$mount('.sua-container-gpa-calculator')
+  emitDataAnalysisEvent('均分绩点计算器', '显示成功')
 }
 
 function renderScoresInformation(root: HTMLElement) {
@@ -45,17 +46,43 @@ function renderScoresInformation(root: HTMLElement) {
   )
 }
 
+/**
+ * 初始化首页Widget
+ */
+function initDOM() {
+  $('.page-content').append(
+    `<div class="row"><div class="sua-widget-container-gpa-calculator"></div></div>`
+  )
+  new Vue({
+    render: h => h(GPACalculatorWidgetApp)
+  }).$mount('.sua-widget-container-gpa-calculator')
+}
+
+async function initSequence() {
+  initDOM()
+  initEvent()
+}
+
+/**
+ * 初始化按钮
+ */
+function initEvent() {
+  $('#gpa-toolbar-detail').click(() => {
+    const menu = document.getElementById('125803405')
+    if (menu) {
+      window.toSelect(menu)
+      window.location.href =
+        '/student/integratedQuery/scoreQuery/allTermScores/index'
+    }
+  })
+}
+
 export default {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
   route: ['help/gpa_calculator', 'advanced_query/scores_information'],
   init() {
-    $('.page-content').append(
-      `<div class="row"><div class="sua-widget-container-gpa-calculator"></div></div>`
-    )
-    new Vue({
-      render: h => h(GPACalculatorWidgetApp)
-    }).$mount('.sua-widget-container-gpa-calculator')
+    initSequence()
   },
   menu: [
     {
