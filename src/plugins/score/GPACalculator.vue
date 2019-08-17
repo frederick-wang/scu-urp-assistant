@@ -88,9 +88,29 @@ export default class GPACalculator extends Vue {
       this.records = records
       this.loadingIsDone = true
       ueip.sendStudentCourseScorePublicList(records)
-      emitDataAnalysisEvent('成绩信息查询', '查询成功')
+      switch (this.type) {
+        case 'compact':
+          emitDataAnalysisEvent('均分绩点计算器挂件', '查询成功')
+          break
+        case 'basic':
+          emitDataAnalysisEvent('均分绩点计算器', '查询成功')
+          break
+        case 'full':
+          emitDataAnalysisEvent('成绩信息查询', '查询成功')
+          break
+      }
     } catch (error) {
-      emitDataAnalysisEvent('成绩信息查询', '数据获取失败')
+      switch (this.type) {
+        case 'compact':
+          emitDataAnalysisEvent('均分绩点计算器挂件', '查询失败')
+          break
+        case 'basic':
+          emitDataAnalysisEvent('均分绩点计算器', '查询失败')
+          break
+        case 'full':
+          emitDataAnalysisEvent('成绩信息查询', '查询失败')
+          break
+      }
     }
   }
 }
