@@ -2,8 +2,9 @@ import minimatch from 'minimatch'
 import crypto from 'crypto'
 import * as logger from './logger'
 import { state, actions, Request } from '@/store'
-import { CourseInfoList, TeacherTable } from '@/store/types'
+import { CourseInfoList, TeacherTable, CourseScoreInfo } from '@/store/types'
 import local from '@/store/local'
+import { SemesterScoreRecord } from '@/plugins/score/types';
 
 function getUserId(studentInfos: Map<string, string>) {
   const name = studentInfos.get('姓名')
@@ -42,6 +43,61 @@ const API_PATH =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost/scu-urp-assistant-server/public'
     : 'https://sua.zhaoji.wang/api/v1'
+
+function convertCourseScoreInfoListToScoreRecords(list: CourseScoreInfo[]) {
+  return (
+    list
+      .sort((a, b) => {
+        const weights = new Map([['必修', 100], ['选修', 75], ['任选', 50]])
+        return (
+          (weights.get(b.coursePropertyName) || 0) +
+          b.credit -
+          (weights.get(a.coursePropertyName) || 0) -
+          a.credit
+        )
+      })
+      .reduce(
+        (acc, cur) => {
+          // 如果没有挂科，那么 unpassedReasonExplain ≡ null
+          // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
+          const failReason = cur.unpassedReasonExplain
+            ? (cur.unpassedReasonExplain as string)
+            : null
+          if (failReason && failReason.includes('缓考')) {
+            return acc
+          }
+          const currentSemesterRecords = acc.filter(
+            v => v.semester === cur.executiveEducationPlanName
+          )
+          const record = {
+            ...cur,
+            courseTeacherList: [],
+            selected: false
+          }
+          if (currentSemesterRecords.length) {
+            currentSemesterRecords[0].courses.push(record)
+          } else {
+            acc.push({
+              semester: record.executiveEducationPlanName,
+              courses: [record]
+            })
+          }
+          return acc
+        },
+        [] as SemesterScoreRecord[]
+      )
+      // 不显示还没有课程成绩的学期
+      .filter(v => v.courses && v.courses.length)
+      .sort((a, b) => {
+        const getWeightSum = ({ semester }: SemesterScoreRecord) => {
+          const r = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
+          return r ? Number(r[1]) + Number(r[2]) + (r[3] === '秋' ? 0 : 1) : 0
+        }
+        // 从大到小排
+        return getWeightSum(b) - getWeightSum(a)
+      })
+  )
+}
 
 function convertSemesterNumberToName(semesterNumber: string) {
   const r = semesterNumber.match(/(\d+)-(\d+)-(\d)/)
@@ -84,7 +140,10 @@ function pathnameTrigger(
       }
     | undefined
 ) {
-  let result = matchTrigger(window.location.pathname, pathname)
+  let result =
+    pathname === true
+      ? true
+      : !state.core.route && matchTrigger(window.location.pathname, pathname)
   return result
 }
 function routeTrigger(
@@ -255,5 +314,6 @@ export {
   getUserId,
   logger,
   convertCourseInfoListsToTeacherTable,
-  getCourseTeacherList
+  getCourseTeacherList,
+  convertCourseScoreInfoListToScoreRecords
 }

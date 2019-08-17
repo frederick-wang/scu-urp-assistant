@@ -1,7 +1,6 @@
 import { API_PATH, getChineseNumber, sleep } from '@/utils'
 import {
   AllTermScoresAPIData,
-  CourseScoreBaseInfo,
   CourseScoreInfo,
   CurrentSemesterStudentAcademicInfo,
   TrainingSchemeYearInfo,
@@ -575,7 +574,7 @@ function getPointByScore(score: number, semester: string) {
   }
 }
 
-function filterCourseScoreInfoList(list: CourseScoreBaseInfo[]) {
+function filterCourseScoreInfoList(list: CourseScoreInfo[]) {
   return (
     list
       // 根据 http://jwc.scu.edu.cn/detail/122/6891.htm 《网上登录成绩的通知》 的说明
@@ -589,7 +588,7 @@ function filterCourseScoreInfoList(list: CourseScoreBaseInfo[]) {
 }
 
 async function requestAllTermsCourseScoreInfoList(): Promise<
-  CourseScoreBaseInfo[]
+  CourseScoreInfo[]
 > {
   const url = '/student/integratedQuery/scoreQuery/allTermScores/data'
   const {
@@ -680,15 +679,7 @@ async function requestThisTermCourseScoreInfoList(): Promise<
           examTypeName: v.examTypeName || ''
         } as CourseScoreInfo)
     )
-  ).sort((a, b) => {
-    const weights = new Map([['必修', 100], ['选修', 75], ['任选', 50]])
-    return (
-      (weights.get(b.coursePropertyName) || 0) +
-      b.credit -
-      (weights.get(a.coursePropertyName) || 0) -
-      a.credit
-    )
-  })
+  )
   return res as CourseScoreInfo[]
 }
 

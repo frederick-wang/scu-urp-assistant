@@ -43,10 +43,15 @@ h4.header.smaller.lighter.grey
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { state } from '@/store'
-import { CourseScoreRecord } from '@/plugins/scores-information/types'
+import { CourseScoreRecord } from '@/plugins/score/types'
 
 @Component
 export default class Header extends Vue {
+  @Prop({
+    type: String,
+    required: true
+  })
+  type!: string
   @Prop({
     type: String,
     required: true
@@ -72,6 +77,10 @@ export default class Header extends Vue {
   }
 
   getSemesterTitle(semesterText: string) {
+    if (this.type === 'compact') {
+      return semesterText
+    }
+
     const currentSemesterNumber = state.basic.currentSemesterNumber
     const rC = currentSemesterNumber.match(/(\d+)-(\d+)-(\d)/)
     const r = semesterText.match(/(\d+)-(\d+)学年\s(.)季学期/)
@@ -92,13 +101,4 @@ export default class Header extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.gpa-st-cancel-btn,
-.gpa-tt-cancel-btn {
-  display: inline-block;
-}
-
-.gpa-info-badge-st-selected-course-quantity,
-.gpa-info-badge-st-selected-course-credits {
-  display: inline-block;
-}
 </style>

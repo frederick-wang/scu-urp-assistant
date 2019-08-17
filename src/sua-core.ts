@@ -3,9 +3,8 @@ import 'regenerator-runtime/runtime'
 import fastEvaluation from '@/plugins/fast-evaluation'
 import tooltip from '@/plugins/tooltip'
 import recoverRememberMe from '@/plugins/recover-remember-me'
-import gpa from '@/plugins/gpa'
+import score from '@/plugins/score'
 import trainingScheme from '@/plugins/training-scheme'
-import scoresInformation from '@/plugins/scores-information'
 import submitData from '@/plugins/user-experience-improvement-program'
 import dataAnalysis from '@/plugins/data-analysis'
 import about from '@/plugins/about'
@@ -48,9 +47,8 @@ const plugins: SUAPlugin[] =
         dataAnalysis,
         tooltip,
         fastEvaluation,
-        gpa,
+        score,
         trainingScheme,
-        scoresInformation,
         submitData,
         about,
         feedback
