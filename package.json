@@ -72,6 +72,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "core-js": "^3.1.4",
+    "html2canvas": "^1.0.0-rc.3",
     "jquery": "^3.4.1",
     "localforage": "^1.7.3",
     "minimatch": "^3.0.4",
