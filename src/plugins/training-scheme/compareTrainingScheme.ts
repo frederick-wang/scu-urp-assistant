@@ -6,7 +6,8 @@ import {
 } from '@/store/types'
 import { getChineseNumber } from '@/utils'
 import { Request, actions, state } from '@/store'
-import { emitDataAnalysisEvent } from '../data-analysis';
+import { emitDataAnalysisEvent } from '../data-analysis'
+import html2canvas from 'html2canvas'
 
 let trainingSchemeList: string[][]
 
@@ -41,17 +42,77 @@ export async function render(root: HTMLElement) {
   try {
     trainingSchemeList = await actions[Request.TRAINING_SCHEME_LIST]()
     hideLoadingAnimation()
-    initFunc()
     initQueryDOM()
+    initEvents()
     selectSelfMajorAndQuery()
   } catch (error) {
     emitDataAnalysisEvent('培养方案比较', '培养方案列表数据获取失败')
   }
 }
 
-function initFunc() {
-  window.__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__ = updateMajorList
-  window.__$SUA_TRAINING_SCHEME_QUERY__ = query
+function save() {
+  if ($('.program-plan-wrapper').length) {
+    window.urp.alert('正在生成培养方案比较结果长图，请稍作等待')
+    setTimeout(async () => {
+      const canvas = await html2canvas($('.program-plan-wrapper')[0])
+      canvas.toBlob(blob => {
+        const majorName1 = trainingSchemeList.filter(
+          ([v]) => v === $('#query-major-1 #major').val()
+        )[0][3]
+        const majorName2 = trainingSchemeList.filter(
+          ([v]) => v === $('#query-major-2 #major').val()
+        )[0][3]
+        const grade1 = $('#query-major-1 #grade').val()
+        const grade2 = $('#query-major-2 #grade').val()
+        const department1 = $('#query-major-1 #department').val()
+        const department2 = $('#query-major-2 #department').val()
+        const e = document.createEvent('MouseEvents')
+        const a = document.createElement('a')
+        const filename = `【${department1}-${majorName1}（${grade1}）】与【${department2}-${majorName2}（${grade2}）】的培养方案比较结果`
+        a.download = filename
+        a.href = window.URL.createObjectURL(blob)
+        a.dataset.downloadurl = ['image/png', a.download, a.href].join(':')
+        e.initMouseEvent(
+          'click',
+          true,
+          false,
+          window,
+          0,
+          0,
+          0,
+          0,
+          0,
+          false,
+          false,
+          false,
+          false,
+          0,
+          null
+        )
+        a.dispatchEvent(e)
+        window.urp.alert('图片文件下载已启动，请注意保存哦')
+      })
+    }, 0)
+  } else {
+    window.urp.alert('请先按查询按钮，再保存结果哦')
+  }
+}
+
+function initEvents() {
+  $('#query-major-1 #grade').change(() => {
+    updateMajorList('#query-major-1')
+  })
+  $('#query-major-1 #department').change(() => {
+    updateMajorList('#query-major-1')
+  })
+  $('#query-major-2 #grade').change(() => {
+    updateMajorList('#query-major-2')
+  })
+  $('#query-major-2 #department').change(() => {
+    updateMajorList('#query-major-2')
+  })
+  $('#queryButton').click(query)
+  $('#saveButton').click(save)
 }
 
 function initDOM(root: HTMLElement) {
@@ -85,8 +146,11 @@ function genQueryHTML() {
             <h4 class="header smaller lighter grey">
               <i class="ace-icon fa fa-search"></i>查询条件
               <span class="right_top_oper">
-                <button id="queryButton" title="查询" class="btn btn-info btn-xs btn-round" onclick="__$SUA_TRAINING_SCHEME_QUERY__()">
-                  <i class="ace-con fa fa-search white bigger-120"></i>查询
+                <button id="queryButton" title="查询" class="btn btn-info btn-xs btn-round">
+                  <i class="ace-con fa fa-search white bigger-120"></i> 查询
+                </button>
+                <button id="saveButton" title="导出长图" class="btn btn-success btn-xs btn-round">
+                  <i class="ace-con fa fa-cloud-download white bigger-120"></i> 导出长图
                 </button>
               </span>
             </h4>
@@ -95,7 +159,7 @@ function genQueryHTML() {
                 <div class="profile-info-value">专业-1</div>
                 <div class="profile-info-name">年级</div>
                 <div class="profile-info-value">
-                  <select name="grade" id="grade" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__('#query-major-1')">
+                  <select name="grade" id="grade" class="select form-control value_element">
                     <option value="请选择年级">请选择年级</option>
                     ${gradeList
                       .sort(
@@ -109,7 +173,7 @@ function genQueryHTML() {
                 </div>
                 <div class="profile-info-name">院系</div>
                 <div class="profile-info-value">
-                  <select name="department" id="department" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__('#query-major-1')">
+                  <select name="department" id="department" class="select form-control value_element">
                     <option value="请选择学院">请选择学院</option>
                     ${departmentList
                       .map(v => `<option value="${v}">${v}</option>`)
@@ -133,7 +197,7 @@ function genQueryHTML() {
                 <div class="profile-info-value">专业-2</div>
                 <div class="profile-info-name">年级</div>
                 <div class="profile-info-value">
-                  <select name="grade" id="grade" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__('#query-major-2')">
+                  <select name="grade" id="grade" class="select form-control value_element">
                     <option value="请选择年级">请选择年级</option>
                     ${gradeList
                       .sort(
@@ -147,7 +211,7 @@ function genQueryHTML() {
                 </div>
                 <div class="profile-info-name">院系</div>
                 <div class="profile-info-value">
-                  <select name="department" id="department" class="select form-control value_element" onchange="__$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__('#query-major-2')">
+                  <select name="department" id="department" class="select form-control value_element">
                     <option value="请选择学院">请选择学院</option>
                     ${departmentList
                       .map(v => `<option value="${v}">${v}</option>`)
@@ -200,6 +264,7 @@ async function query() {
   const number1 = $('#query-major-1 #major').val()
   const number2 = $('#query-major-2 #major').val()
   if (number1 !== '无' && number2 !== '无') {
+    $('.program-plan-wrapper').remove()
     showLoadingAnimation('.sua-container-compare-training-scheme')
     try {
       const [
@@ -210,13 +275,16 @@ async function query() {
         actions[Request.TRAINING_SCHEME](Number(number2))
       ])
       hideLoadingAnimation()
-      $('.sua-container-compare-training-scheme').append(genInfoHTML(info1, info2))
-      $('.sua-container-compare-training-scheme').append(genSchemeHTML(list1, list2))
+      $('.sua-container-compare-training-scheme').append(
+        `<div class="program-plan-wrapper"></div>`
+      )
+      $('.program-plan-wrapper').append(genInfoHTML(info1, info2))
+      $('.program-plan-wrapper').append(genSchemeHTML(list1, list2))
       const majorName1 = trainingSchemeList.filter(([v]) => v === number1)[0][3]
       const majorName2 = trainingSchemeList.filter(([v]) => v === number2)[0][3]
       emitDataAnalysisEvent('培养方案比较', '查询成功', {
-        '专业代码': `${number1}-${number2}`,
-        '专业名称': `${majorName1}-${majorName2}`
+        专业代码: `${number1}-${number2}`,
+        专业名称: `${majorName1}-${majorName2}`
       })
     } catch (error) {
       emitDataAnalysisEvent('培养方案比较', '数据获取失败')

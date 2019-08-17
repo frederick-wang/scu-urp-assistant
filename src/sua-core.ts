@@ -33,10 +33,6 @@ declare global {
       confirm: (msg: string, callback?: Function) => void
     }
     toSelect: (obj: HTMLElement) => void
-    __$SUA_TRAINING_SCHEME_UPDATE_MAJOR_LIST__?: (
-      containerSelector: string
-    ) => void
-    __$SUA_TRAINING_SCHEME_QUERY__?: () => Promise<void>
   }
 }
 

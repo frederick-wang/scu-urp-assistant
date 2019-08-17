@@ -5,8 +5,6 @@ function showLoadingAnimation(containerSelector: string) {
         <div class="lds-title">( º﹃º ) 兆基祈祷中……</div>
       </div>
     `
-  $('.info-container').remove()
-  $('.scheme-container').remove()
   $(containerSelector).append(template)
 }
 
