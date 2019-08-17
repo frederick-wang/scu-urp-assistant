@@ -49,18 +49,10 @@ async function init(localStore: LocalStore) {
 async function initTeacherTable() {
   let teacherTable: TeacherTable = state.getData('teacherTable')
   if (!teacherTable) {
-    teacherTable = await getFreshTeacherTableWhenNoCache()
+    teacherTable = {}
   }
   state.setData('teacherTable', teacherTable)
   await local.saveData({ key: 'teacherTable', payload: teacherTable })
-}
-
-async function getFreshTeacherTableWhenNoCache() {
-  let courseInfoLists = []
-  for (const s of state.user.semesterNumberList) {
-    courseInfoLists.push(await requestCourseInfoListBySemester(s))
-  }
-  return convertCourseInfoListsToTeacherTable(courseInfoLists)
 }
 
 export default {
