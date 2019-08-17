@@ -294,7 +294,7 @@ function genSchemeHTML(list: TrainingSchemeYearInfo[]) {
     number: number
   ) => `
       <div class="course-item-wrapper">
-        <div class="course-item" data-course-number="${
+        <div class="course-item" title="点击查看详细开课情况" data-course-number="${
           course.courseNumber
         }" data-course-name="${course.courseName}">
           <div class="course-item-info">

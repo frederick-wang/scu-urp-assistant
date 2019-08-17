@@ -29,21 +29,17 @@ export function initCourseInfoPopover() {
     } else if (left < 0) {
       $pop.offset({ left: 50 })
     }
+    $pop.mouseleave(function() {
+      $(this).remove()
+    })
   }
-  $('.course-item').hover(
-    async function() {
-      const $courseInfo = $(this)
-      const courseName = $courseInfo.data('course-name')
-      const courseNumber = $courseInfo.data('course-number')
-      initDOM(this, courseName, courseNumber)
-      showCourseSchedulePop(currentSemesterNumber, courseName, courseNumber)
-    },
-    function(e) {
-      $(this)
-        .children('.course-info-popover')
-        .remove()
-    }
-  )
+  $('.course-item').click(async function() {
+    const $courseInfo = $(this)
+    const courseName = $courseInfo.data('course-name')
+    const courseNumber = $courseInfo.data('course-number')
+    initDOM(this, courseName, courseNumber)
+    showCourseSchedulePop(currentSemesterNumber, courseName, courseNumber)
+  })
 }
 
 async function showCourseSchedulePop(
