@@ -29,15 +29,15 @@ export function initCourseInfoPopover() {
     } else if (left < 0) {
       $pop.offset({ left: 50 })
     }
-    $pop.mouseleave(function() {
-      $(this).remove()
+    $(element).mouseleave(function() {
+      $pop.remove()
     })
   }
-  $('.course-item').click(async function() {
-    const $courseInfo = $(this)
-    const courseName = $courseInfo.data('course-name')
-    const courseNumber = $courseInfo.data('course-number')
-    initDOM(this, courseName, courseNumber)
+  $('.course-item-info').click(async function() {
+    const $courseItem = $(this).parent()
+    const courseName = $courseItem.data('course-name')
+    const courseNumber = $courseItem.data('course-number')
+    initDOM($courseItem[0], courseName, courseNumber)
     showCourseSchedulePop(currentSemesterNumber, courseName, courseNumber)
   })
 }
