@@ -2,7 +2,15 @@
 import Vue from 'vue'
 import GPACalculatorApp from './GPACalculator.vue'
 import GPACalculatorWidgetApp from './GPACalculatorWidget.vue'
+import ExpectedGradesEstimationApp from './ExpectedGradesEstimation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
+
+function renderExpectedGradesEstimation(root: HTMLElement) {
+  $(root).append(`<div class="sua-container-expected-grades-estimation"></div>`)
+  new Vue({
+    render: h => h(ExpectedGradesEstimationApp)
+  }).$mount('.sua-container-expected-grades-estimation')
+}
 
 function renderGPACalculator(root: HTMLElement) {
   $(root).append(`<div class="sua-container-gpa-calculator"></div>`)
@@ -61,13 +69,25 @@ export default {
     {
       rootMenuId: 'sua-menu-list',
       rootMenuName: 'SCU URP 助手',
-      id: 'menu-gpa-tools',
+      id: 'menu-utility-tools',
       name: '实用工具',
       item: {
         name: '均分绩点计算器',
         route: 'help/gpa_calculator',
         breadcrumbs: ['SCU URP 助手', '实用工具', '均分绩点计算器'],
         render: renderGPACalculator
+      }
+    },
+    {
+      rootMenuId: 'sua-menu-list',
+      rootMenuName: 'SCU URP 助手',
+      id: 'menu-utility-tools',
+      name: '实用工具',
+      item: {
+        name: '预期成绩估计',
+        route: 'help/expected_grades_estimation',
+        breadcrumbs: ['SCU URP 助手', '实用工具', '预期成绩估计'],
+        render: renderExpectedGradesEstimation
       }
     },
     {

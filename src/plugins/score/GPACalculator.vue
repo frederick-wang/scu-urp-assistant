@@ -2,7 +2,7 @@
 .sua-container-gpa-calculator
   Loading(v-if='!loadingIsDone')
   TotalTranscript(
-    v-if='records.length > 1'
+    v-if='loadingIsDone && records.length > 1'
     :semestersQuantity='records.length'
     :courses='allCourses'
     :selectedCourses='allSelectedCourses'
