@@ -42,28 +42,29 @@
       )
         i.ace-icon.fa.fa-times.red2
         | 全不选
-    span.gpa-tt-tag.label.label-success(
-      :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均分为 ${getCompulsoryCoursesScore(courses)}`'
-    )
-      | 必修平均分：{{ getCompulsoryCoursesScore(courses) }}
-    |
-    |
-    span.gpa-tt-tag.label.label-success(
-      :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均绩点为 ${getCompulsoryCoursesGPA(courses)}`'
-    )
-      | 必修绩点：{{ getCompulsoryCoursesGPA(courses) }}
-    |
-    |
-    span.gpa-tt-tag.label.label-purple(
-      :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${courses.length} 门课程，全部加权平均分为 ${getAllCoursesScore(courses)}`'
-    )
-      | 全部平均分：{{ getAllCoursesScore(courses) }}
-    |
-    |
-    span.gpa-st-tag.label.label-purple(
-      :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${courses.length} 门课程，全部加权平均绩点为 ${getAllCoursesGPA(courses)}`'
-    )
-      | 全部绩点：{{ getAllCoursesGPA(courses) }}
+    div(style='display: inline-block;')
+      span.gpa-tt-tag.label.label-success(
+        :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均分为 ${getCompulsoryCoursesScore(courses)}`'
+      )
+        | 必修平均分：{{ getCompulsoryCoursesScore(courses) }}
+      |
+      |
+      span.gpa-tt-tag.label.label-success(
+        :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均绩点为 ${getCompulsoryCoursesGPA(courses)}`'
+      )
+        | 必修绩点：{{ getCompulsoryCoursesGPA(courses) }}
+      |
+      |
+      span.gpa-tt-tag.label.label-purple(
+        :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${courses.length} 门课程，全部加权平均分为 ${getAllCoursesScore(courses)}`'
+      )
+        | 全部平均分：{{ getAllCoursesScore(courses) }}
+      |
+      |
+      span.gpa-st-tag.label.label-purple(
+        :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${courses.length} 门课程，全部加权平均绩点为 ${getAllCoursesGPA(courses)}`'
+      )
+        | 全部绩点：{{ getAllCoursesGPA(courses) }}
     |
     |
     span.gpa-tt-tag.gpa-tt-tag-selected-score.label.label-pink(
