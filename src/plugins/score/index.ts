@@ -53,10 +53,49 @@ function renderScoresInformation(root: HTMLElement) {
   )
 }
 
+const menu = [
+  {
+    rootMenuId: 'sua-menu-list',
+    rootMenuName: 'SCU URP 助手',
+    id: 'menu-utility-tools',
+    name: '实用工具',
+    item: {
+      name: '均分绩点计算器',
+      route: 'utility_tools/gpa_calculator',
+      breadcrumbs: ['SCU URP 助手', '实用工具', '均分绩点计算器'],
+      render: renderGPACalculator
+    }
+  },
+  {
+    rootMenuId: 'sua-menu-list',
+    rootMenuName: 'SCU URP 助手',
+    id: 'menu-utility-tools',
+    name: '实用工具',
+    item: {
+      name: '预期成绩估计',
+      route: 'utility_tools/expected_grades_estimation',
+      breadcrumbs: ['SCU URP 助手', '实用工具', '预期成绩估计'],
+      render: renderExpectedGradesEstimation
+    }
+  },
+  {
+    rootMenuId: 'sua-menu-list',
+    rootMenuName: 'SCU URP 助手',
+    id: 'menu-advanced-query',
+    name: '高级查询',
+    item: {
+      name: '成绩信息查询',
+      route: 'advanced_query/scores_information',
+      breadcrumbs: ['SCU URP 助手', '高级查询', '成绩信息查询'],
+      render: renderScoresInformation
+    }
+  }
+]
+
 export default {
   name: 'gpa',
   pathname: ['/', '/index.jsp'],
-  route: ['help/gpa_calculator', 'advanced_query/scores_information'],
+  route: menu.map(v => v.item.route),
   init() {
     $('.page-content').append(
       `<div class="row"><div class="sua-widget-container-gpa-calculator"></div></div>`
@@ -65,42 +104,5 @@ export default {
       render: h => h(GPACalculatorWidgetApp)
     }).$mount('.sua-widget-container-gpa-calculator')
   },
-  menu: [
-    {
-      rootMenuId: 'sua-menu-list',
-      rootMenuName: 'SCU URP 助手',
-      id: 'menu-utility-tools',
-      name: '实用工具',
-      item: {
-        name: '均分绩点计算器',
-        route: 'help/gpa_calculator',
-        breadcrumbs: ['SCU URP 助手', '实用工具', '均分绩点计算器'],
-        render: renderGPACalculator
-      }
-    },
-    {
-      rootMenuId: 'sua-menu-list',
-      rootMenuName: 'SCU URP 助手',
-      id: 'menu-utility-tools',
-      name: '实用工具',
-      item: {
-        name: '预期成绩估计',
-        route: 'help/expected_grades_estimation',
-        breadcrumbs: ['SCU URP 助手', '实用工具', '预期成绩估计'],
-        render: renderExpectedGradesEstimation
-      }
-    },
-    {
-      rootMenuId: 'sua-menu-list',
-      rootMenuName: 'SCU URP 助手',
-      id: 'menu-advanced-query',
-      name: '高级查询',
-      item: {
-        name: '成绩信息查询',
-        route: 'advanced_query/scores_information',
-        breadcrumbs: ['SCU URP 助手', '高级查询', '成绩信息查询'],
-        render: renderScoresInformation
-      }
-    }
-  ]
+  menu
 } as SUAPlugin
