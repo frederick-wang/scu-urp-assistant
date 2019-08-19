@@ -23,7 +23,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { actions, Request } from '@/store'
 import { SemesterScoreRecord, CourseScoreRecord } from '@/plugins/score/types'
-import Loading from './components/Loading.vue'
+import Loading from '@/plugins/common/components/Loading.vue'
 import TotalTranscript from './components/TotalTranscript.vue'
 import SemesterTranscript from './components/SemesterTranscript/SemesterTranscript.vue'
 import { getCourseTeacherList } from '@/utils'
