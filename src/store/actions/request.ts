@@ -478,6 +478,15 @@ async function requestTrainingSchemeList(): Promise<string[][]> {
   return trainingSchemeList
 }
 
+let bachelorDegreeList: string[][]
+
+async function requestBachelorDegreeList(): Promise<string[][]> {
+  if (!bachelorDegreeList) {
+    bachelorDegreeList = await $.get(`${API_PATH}/student/bachelor_degree_types`)
+  }
+  return bachelorDegreeList
+}
+
 async function requestCurrentSemesterStudentAcademicInfo(): Promise<
   CurrentSemesterStudentAcademicInfo
 > {
@@ -689,6 +698,7 @@ export {
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
+  requestBachelorDegreeList,
   requestCourseSchedule,
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,

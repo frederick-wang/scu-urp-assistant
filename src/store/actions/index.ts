@@ -4,6 +4,7 @@ import {
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
+  requestBachelorDegreeList,
   requestCourseSchedule,
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList
@@ -21,6 +22,7 @@ enum Request {
   CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO = 'current_semester_student_academic_info',
   TRAINING_SCHEME_LIST = 'training_scheme_list',
   TRAINING_SCHEME = 'training_scheme',
+  BACHELOR_DEGREE_LIST = 'bachelor_degree_list',
   COURSE_Schedule = 'course_schedule',
   COURSE_INFO_LIST_BY_SEMESTER = 'course_info_list_by_semester',
   STUDENT_SEMESTER_CODE_LIST = 'student_semester_code_list'
@@ -38,6 +40,7 @@ const actions = {
   [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]: requestCurrentSemesterStudentAcademicInfo,
   [Request.TRAINING_SCHEME_LIST]: requestTrainingSchemeList,
   [Request.TRAINING_SCHEME]: requestTrainingScheme,
+  [Request.BACHELOR_DEGREE_LIST]: requestBachelorDegreeList,
   [Request.COURSE_Schedule]: requestCourseSchedule,
   [Request.COURSE_INFO_LIST_BY_SEMESTER]: requestCourseInfoListBySemester,
   [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList,
