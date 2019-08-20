@@ -186,11 +186,14 @@ export default {
         `)
         const $menuItem = $menu.children(`#${id}`)
         $menuItem.click(() => {
-          $rootMenu
-            .find('.sua-menu-item')
-            .find('a>.menu-icon')
-            .remove()
-          $rootMenu.find('.sua-menu-item').removeClass('active')
+          $('.hsub').removeClass('open')
+          $('.submenu').css('display', 'none')
+          $('.submenu>li').removeClass('active')
+          $('.submenu>li>a>.menu-icon').remove()
+          $rootMenu.parent().addClass('open')
+          $rootMenu.css('display', 'block')
+          $menu.parent().addClass('open')
+          $menu.css('display', 'block')
           $menuItem.addClass('active')
           $menuItem
             .find('a')
@@ -228,10 +231,6 @@ export default {
           render($('.main-content>.page-content')[0])
         })
         if (routeTrigger(route)) {
-          $rootMenu.parent().addClass('open')
-          $rootMenu.css('display', 'block')
-          $menu.parent().addClass('open')
-          $menu.css('display', 'block')
           $menuItem.click()
         }
       })
