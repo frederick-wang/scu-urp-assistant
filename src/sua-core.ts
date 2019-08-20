@@ -162,12 +162,12 @@ export default {
       // 检查菜单是否存在，如不存在则新建
       if (!$rootMenu.children(`li#${menuId}`).length) {
         $rootMenu.append(`
-          <li class="hsub open sua-menu" id="${menuId}">
+          <li class="hsub sua-menu" id="${menuId}">
             <a href="#" class="dropdown-toggle">
               <i class="menu-icon fa fa-caret-right"></i>${menuName}
               <b class="arrow fa fa-angle-down"></b></a>
             <b class="arrow"></b>
-            <ul class="submenu nav-show" style="display: block;">
+            <ul class="submenu nav-show" style="display: none;">
             </ul>
           </li>
         `)
@@ -186,8 +186,15 @@ export default {
         `)
         const $menuItem = $menu.children(`#${id}`)
         $menuItem.click(() => {
+          $rootMenu
+            .find('.sua-menu-item')
+            .find('a>.menu-icon')
+            .remove()
           $rootMenu.find('.sua-menu-item').removeClass('active')
           $menuItem.addClass('active')
+          $menuItem
+            .find('a')
+            .prepend("<i class='menu-icon fa fa-caret-right'></i>")
           const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
           $breadcrumbs.empty().append(`
             <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
@@ -221,6 +228,10 @@ export default {
           render($('.main-content>.page-content')[0])
         })
         if (routeTrigger(route)) {
+          $rootMenu.parent().addClass('open')
+          $rootMenu.css('display', 'block')
+          $menu.parent().addClass('open')
+          $menu.css('display', 'block')
           $menuItem.click()
         }
       })
