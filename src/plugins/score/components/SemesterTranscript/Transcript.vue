@@ -23,7 +23,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       :class='{ selected: courseItem.selected }'
       @click='$emit(`toggleCourseStatus`, courseItem)'
     )
-      td {{ courseItem.courseName }}
+      td(:class='{ bold: type !== `compact` }') {{ courseItem.courseName }}
       td(v-if='type !== `compact`') {{ courseItem.courseNumber }}
       td.center(v-if='type !== `compact`') {{ courseItem.courseSequenceNumber }}
       td.center {{ courseItem.credit }}
@@ -69,7 +69,7 @@ table.gpa-st-table {
     > td {
       transition: 0.1s;
 
-      &:first-child {
+      &.bold {
         font-weight: bold;
       }
     }
