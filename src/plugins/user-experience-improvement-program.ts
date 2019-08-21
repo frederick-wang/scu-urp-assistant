@@ -44,6 +44,11 @@ async function sendStudentCourseScorePublicList(
           course_score,
           course_sequence_number,
           course_teacher_list: course_teacher_list
+            .filter(v => !v.teacherNumber.includes('zj'))
+            .map(v => Object.values(v).join('#'))
+            .join('|'),
+          course_ta_list: course_teacher_list
+            .filter(v => v.teacherNumber.includes('zj'))
             .map(v => Object.values(v).join('#'))
             .join('|'),
           credit,
