@@ -62,7 +62,7 @@ module.exports = {
               {
                 loader: 'sass-loader',
                 options: {
-                  outputStyle: 'expanded'
+                  sassOptions: { outputStyle: 'expanded' }
                 }
               }
             ]
@@ -75,7 +75,9 @@ module.exports = {
               {
                 loader: 'sass-loader',
                 options: {
-                  outputStyle: 'expanded'
+                  sassOptions: {
+                    outputStyle: 'expanded'
+                  }
                 }
               }
             ]
