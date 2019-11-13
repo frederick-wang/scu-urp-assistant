@@ -57,9 +57,9 @@ export default class BachelorDegree extends Vue {
   loadingIsDone = false
   // [专业, 专业名称, 授位学科门类, 批准文号, 备注][]
   bachelorDegreeList: string[][] = []
-  inputMajor: string = ''
+  inputMajor = ''
 
-  get similarList() {
+  get similarList(): string[][] {
     return !this.inputMajor
       ? []
       : this.bachelorDegreeList.filter(
@@ -71,7 +71,7 @@ export default class BachelorDegree extends Vue {
         )
   }
 
-  async created() {
+  async created():Promise<void> {
     try {
       this.bachelorDegreeList = await actions[Request.BACHELOR_DEGREE_LIST]()
       this.loadingIsDone = true

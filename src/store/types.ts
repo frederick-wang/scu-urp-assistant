@@ -393,6 +393,23 @@ interface CourseInfoList {
   }>
 }
 
+interface ScuUietpDTO {
+  query: string
+  number: number
+  list: Array<{
+    project_year: number
+    college_name: string
+    project_name: string
+    project_leader_name: string
+    participant_number: number
+    other_member_information?: string
+    school_supervisor_name: string
+    project_level: string
+    application_category?: string
+    project_category: string
+  }>
+}
+
 export {
   CourseScorePublicInfo,
   CourseScoreInfo,
@@ -410,5 +427,6 @@ export {
   AjaxStudentScheduleAPIData,
   LocalStore,
   TeacherTable,
-  CourseInfoList
+  CourseInfoList,
+  ScuUietpDTO
 }

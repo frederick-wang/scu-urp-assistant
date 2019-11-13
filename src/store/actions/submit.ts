@@ -53,6 +53,9 @@ async function submitCourseScorePublicInfo(item: CourseScorePublicInfo) {
 }
 
 async function submitCourseScorePublicInfos(items: CourseScorePublicInfo[]) {
+  if (!items || !items.length) {
+    return
+  }
   const url = `${API_PATH}/course/course_score_infos`
   const req = {
     api: {

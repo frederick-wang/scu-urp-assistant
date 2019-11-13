@@ -10,6 +10,7 @@ import dataAnalysis from '@/plugins/data-analysis'
 import about from '@/plugins/about'
 import feedback from '@/plugins/feedback'
 import bachelorDegree from '@/plugins/bachelor-degree'
+import scuUietp from '@/plugins/scu-uietp'
 import { pathnameTrigger, routeTrigger } from '@/utils'
 import { init as initStore, state } from './store'
 import { logger } from '@/utils'
@@ -47,6 +48,7 @@ const plugins: SUAPlugin[] =
         score,
         trainingScheme,
         bachelorDegree,
+        scuUietp,
         submitData,
         about,
         feedback

@@ -11,7 +11,8 @@ import {
   CourseScheduleInfoAPIData,
   CourseScheduleInfo,
   AjaxStudentScheduleAPIData,
-  CourseInfoList
+  CourseInfoList,
+  ScuUietpDTO
 } from '../types'
 
 async function requestStudentSemesterNumberList() {
@@ -59,49 +60,50 @@ async function requestCourseInfoListBySemester(semesterCode: string) {
       },
       restrictedCondition,
       timeAndPlaceList
-    }) => ({
-      courseCategoryCode,
-      courseCategoryName,
-      courseName,
-      coursePropertiesCode,
-      coursePropertiesName,
-      courseTeacherList: dgFlag
-        .split('|')
-        .map(s => s.split(','))
-        .map(v => ({
-          teacherNumber: v[0],
-          teacherName: v[1].replace(/[（\(].+[）\)]/, '')
-        })),
-      examTypeCode,
-      examTypeName,
-      courseNumber,
-      courseSequenceNumber,
-      executiveEducationPlanNumber,
-      restrictedCondition,
-      timeAndPlaceList: timeAndPlaceList
-        ? timeAndPlaceList.map(
-            ({
-              campusName,
-              classDay,
-              classSessions,
-              classWeek,
-              classroomName,
-              continuingSession,
-              teachingBuildingName,
-              weekDescription
-            }) => ({
-              campusName,
-              classDay,
-              classSessions,
-              classWeek,
-              classroomName,
-              continuingSession,
-              teachingBuildingName,
-              weekDescription
-            })
-          )
-        : []
-    } as CourseInfoList)
+    }) =>
+      ({
+        courseCategoryCode,
+        courseCategoryName,
+        courseName,
+        coursePropertiesCode,
+        coursePropertiesName,
+        courseTeacherList: dgFlag
+          .split('|')
+          .map(s => s.split(','))
+          .map(v => ({
+            teacherNumber: v[0],
+            teacherName: v[1].replace(/[（\(].+[）\)]/, '')
+          })),
+        examTypeCode,
+        examTypeName,
+        courseNumber,
+        courseSequenceNumber,
+        executiveEducationPlanNumber,
+        restrictedCondition,
+        timeAndPlaceList: timeAndPlaceList
+          ? timeAndPlaceList.map(
+              ({
+                campusName,
+                classDay,
+                classSessions,
+                classWeek,
+                classroomName,
+                continuingSession,
+                teachingBuildingName,
+                weekDescription
+              }) => ({
+                campusName,
+                classDay,
+                classSessions,
+                classWeek,
+                classroomName,
+                continuingSession,
+                teachingBuildingName,
+                weekDescription
+              })
+            )
+          : []
+      } as CourseInfoList)
   )
   return courseInfoList
 }
@@ -123,31 +125,29 @@ async function requestStudentInfo() {
     .text()
     .trim()
   const infos = Array.from($('.profile-info-row', rawHTML))
-    .map(
-      (v): HTMLElement[][] => {
-        const num = $(v).children('.profile-info-name').length
-        if (num === 1) {
-          return [
-            [
-              $(v).children('.profile-info-name')[0] as HTMLElement,
-              $(v).children('.profile-info-value')[0] as HTMLElement
-            ]
+    .map((v): HTMLElement[][] => {
+      const num = $(v).children('.profile-info-name').length
+      if (num === 1) {
+        return [
+          [
+            $(v).children('.profile-info-name')[0] as HTMLElement,
+            $(v).children('.profile-info-value')[0] as HTMLElement
           ]
-        } else if (num === 2) {
-          return [
-            [
-              $(v).children('.profile-info-name')[0] as HTMLElement,
-              $(v).children('.profile-info-value')[0] as HTMLElement
-            ],
-            [
-              $(v).children('.profile-info-name')[1] as HTMLElement,
-              $(v).children('.profile-info-value')[1] as HTMLElement
-            ]
+        ]
+      } else if (num === 2) {
+        return [
+          [
+            $(v).children('.profile-info-name')[0] as HTMLElement,
+            $(v).children('.profile-info-value')[0] as HTMLElement
+          ],
+          [
+            $(v).children('.profile-info-name')[1] as HTMLElement,
+            $(v).children('.profile-info-value')[1] as HTMLElement
           ]
-        }
-        return [[]]
+        ]
       }
-    )
+      return [[]]
+    })
     .flat(1)
     .filter(v => v.length)
     .map(v =>
@@ -251,36 +251,33 @@ async function requestCourseSchedule(
             courseRegNote: xkxzsm && xkxzsm !== ';' ? xkxzsm : ''
           })
         )
-        .reduce(
-          (acc, cur) => {
-            let index = -1
-            for (let i = 0; i < acc.length; i++) {
-              if (acc[i].courseSequenceNumber === cur.courseSequenceNumber) {
-                index = i
-                break
-              }
+        .reduce((acc, cur) => {
+          let index = -1
+          for (let i = 0; i < acc.length; i++) {
+            if (acc[i].courseSequenceNumber === cur.courseSequenceNumber) {
+              index = i
+              break
             }
-            const merge = (
-              obj1: CourseScheduleInfo,
-              obj2: CourseScheduleInfo
-            ) => {
-              const result = {} as CourseScheduleInfo
-              for (const key in obj1) {
-                result[key] =
-                  obj1[key] === obj2[key]
-                    ? obj1[key]
-                    : `${obj1[key]}，${obj2[key]}`
-              }
-              return result
+          }
+          const merge = (
+            obj1: CourseScheduleInfo,
+            obj2: CourseScheduleInfo
+          ) => {
+            const result = {} as CourseScheduleInfo
+            for (const key in obj1) {
+              result[key] =
+                obj1[key] === obj2[key]
+                  ? obj1[key]
+                  : `${obj1[key]}，${obj2[key]}`
             }
-            if (index === -1) {
-              return acc.concat(cur)
-            }
-            acc[index] = merge(acc[index], cur)
-            return acc
-          },
-          [] as CourseScheduleInfo[]
-        )
+            return result
+          }
+          if (index === -1) {
+            return acc.concat(cur)
+          }
+          acc[index] = merge(acc[index], cur)
+          return acc
+        }, [] as CourseScheduleInfo[])
         .sort(
           (a, b) =>
             Number(a.courseSequenceNumber) - Number(b.courseSequenceNumber)
@@ -307,34 +304,31 @@ function requestTrainingScheme(num: number) {
       ({ jhFajhb, treeList }: InstructionalTeachingPlanAPIData) => ({
         info: jhFajhb,
         list: treeList
-          .reduce(
-            (acc, cur) => {
-              if (cur.name.match(/^\d{4}-\d{4}学年$/)) {
-                acc.push({
-                  name: cur.name,
-                  children: []
-                })
-              } else if (cur.name === '春' || cur.name === '秋') {
-                acc[acc.length - 1].children.push({
-                  name: cur.name,
-                  children: []
-                })
-              } else {
-                const r = cur.urlPath.match(/project\/.+\/(\d+)$/)
-                acc[acc.length - 1].children[
-                  acc[acc.length - 1].children.length - 1
-                ].children.push({
-                  courseName: cur.name,
-                  courseNumber: r ? r[1] : '',
-                  courseAttributes: [],
-                  courseMajor: '',
-                  coursePropertyName: ''
-                })
-              }
-              return acc
-            },
-            [] as TrainingSchemeYearInfo[]
-          )
+          .reduce((acc, cur) => {
+            if (cur.name.match(/^\d{4}-\d{4}学年$/)) {
+              acc.push({
+                name: cur.name,
+                children: []
+              })
+            } else if (cur.name === '春' || cur.name === '秋') {
+              acc[acc.length - 1].children.push({
+                name: cur.name,
+                children: []
+              })
+            } else {
+              const r = cur.urlPath.match(/project\/.+\/(\d+)$/)
+              acc[acc.length - 1].children[
+                acc[acc.length - 1].children.length - 1
+              ].children.push({
+                courseName: cur.name,
+                courseNumber: r ? r[1] : '',
+                courseAttributes: [],
+                courseMajor: '',
+                coursePropertyName: ''
+              })
+            }
+            return acc
+          }, [] as TrainingSchemeYearInfo[])
           .sort((a, b) => {
             const regexpResultA = a.name.match(/^(\d+)-(\d+)学年$/)
             const regexpResultB = b.name.match(/^(\d+)-(\d+)学年$/)
@@ -482,9 +476,26 @@ let bachelorDegreeList: string[][]
 
 async function requestBachelorDegreeList(): Promise<string[][]> {
   if (!bachelorDegreeList) {
-    bachelorDegreeList = await $.get(`${API_PATH}/student/bachelor_degree_types`)
+    bachelorDegreeList = await $.get(
+      `${API_PATH}/student/bachelor_degree_types`
+    )
   }
   return bachelorDegreeList
+}
+
+async function requestScuUietpList(query: string) {
+  const url = `${API_PATH}/program/scu_uietp`
+  const req = {
+    api: {
+      client: 'web'
+    },
+    data: {
+      query
+    }
+  }
+  let res
+  res = await $.get(url, req)
+  return res.data as ScuUietpDTO
 }
 
 async function requestCurrentSemesterStudentAcademicInfo(): Promise<
@@ -702,5 +713,6 @@ export {
   requestCourseSchedule,
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
-  requestStudentInfo
+  requestStudentInfo,
+  requestScuUietpList
 }
