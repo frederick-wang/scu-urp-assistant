@@ -51,22 +51,22 @@ export default class SemesterScores extends Vue {
   })
   courses!: CourseScoreRecord[]
 
-  get selectedCourses() {
+  get selectedCourses(): CourseScoreRecord[] {
     return getSelectedCourses(this.courses)
   }
 
   /**
    * 当「课程块」被点击时，做出相应的反应
    */
-  toggleCourseStatus(item: CourseScoreRecord) {
+  toggleCourseStatus(item: CourseScoreRecord): void {
     item.selected = !item.selected
   }
 
-  selectAllCourses() {
+  selectAllCourses(): void {
     this.courses.forEach(v => (v.selected = true))
   }
 
-  unselectAllCourses() {
+  unselectAllCourses(): void {
     this.courses.forEach(v => (v.selected = false))
   }
 }

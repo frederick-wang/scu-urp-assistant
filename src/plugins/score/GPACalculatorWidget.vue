@@ -23,7 +23,7 @@ import GPACalculator from './GPACalculator.vue'
   components: { GPACalculator }
 })
 export default class GPACalculatorWidget extends Vue {
-  openFullGPACalculator() {
+  openFullGPACalculator(): void {
     $('#menu-item-均分绩点计算器').click()
   }
 }
