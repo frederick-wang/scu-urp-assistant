@@ -112,43 +112,43 @@ export default class TotalTranscript extends Vue {
   })
   selectedCourses!: CourseScoreRecord[]
 
-  get selectedCourseCredits() {
+  get selectedCourseCredits(): number {
     return this.selectedCourses.reduce((acc, cur) => acc + cur.credit, 0)
   }
 
-  get totalCourseCredits() {
+  get totalCourseCredits(): number {
     return this.courses.reduce((acc, cur) => acc + cur.credit, 0)
   }
 
-  get compulsoryCourses() {
+  get compulsoryCourses(): CourseScoreRecord[] {
     return getCompulsoryCourses(this.courses)
   }
 
-  getCompulsoryCoursesGPA(arr: CourseScoreRecord[]) {
+  getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
     return getCompulsoryCoursesGPA(arr)
   }
 
-  getCompulsoryCoursesScore(arr: CourseScoreRecord[]) {
+  getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
     return getCompulsoryCoursesScore(arr)
   }
 
-  getSelectedCoursesGPA(arr: CourseScoreRecord[]) {
+  getSelectedCoursesGPA(arr: CourseScoreRecord[]): number {
     return getSelectedCoursesGPA(arr)
   }
 
-  getSelectedCoursesScore(arr: CourseScoreRecord[]) {
+  getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
     return getSelectedCoursesScore(arr)
   }
 
-  getAllCoursesGPA(arr: CourseScoreRecord[]) {
+  getAllCoursesGPA(arr: CourseScoreRecord[]): number {
     return getAllCoursesGPA(arr)
   }
 
-  getAllCoursesScore(arr: CourseScoreRecord[]) {
+  getAllCoursesScore(arr: CourseScoreRecord[]): number {
     return getAllCoursesScore(arr)
   }
 
-  getCompulsoryCourses(arr: CourseScoreRecord[]) {
+  getCompulsoryCourses(arr: CourseScoreRecord[]): CourseScoreRecord[] {
     return getCompulsoryCourses(arr)
   }
 }

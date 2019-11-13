@@ -68,15 +68,15 @@ export default class Header extends Vue {
   })
   selectedCourses!: CourseScoreRecord[]
 
-  get selectedCourseCredits() {
+  get selectedCourseCredits(): number {
     return this.selectedCourses.reduce((acc, cur) => acc + cur.credit, 0)
   }
 
-  get totalCourseCredits() {
+  get totalCourseCredits(): number {
     return this.courses.reduce((acc, cur) => acc + cur.credit, 0)
   }
 
-  getSemesterTitle(semesterText: string) {
+  getSemesterTitle(semesterText: string): string {
     if (this.type === 'compact') {
       return semesterText
     }

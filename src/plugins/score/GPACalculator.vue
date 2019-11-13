@@ -45,26 +45,26 @@ export default class GPACalculator extends Vue {
   loadingIsDone = false
   records: SemesterScoreRecord[] = []
 
-  get allCourses() {
+  get allCourses(): CourseScoreRecord[] {
     return this.records.reduce(
       (acc, cur) => acc.concat(cur.courses),
       [] as CourseScoreRecord[]
     )
   }
 
-  get allSelectedCourses() {
+  get allSelectedCourses(): CourseScoreRecord[] {
     return getSelectedCourses(this.allCourses)
   }
 
-  selectAllCourses() {
+  selectAllCourses(): void {
     this.allCourses.forEach(v => (v.selected = true))
   }
 
-  unselectAllCourses() {
+  unselectAllCourses(): void {
     this.allCourses.forEach(v => (v.selected = false))
   }
 
-  async created() {
+  async created(): Promise<void> {
     try {
       const records =
         this.type === 'full'

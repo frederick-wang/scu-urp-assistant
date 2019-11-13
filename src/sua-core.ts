@@ -3,6 +3,7 @@ import 'regenerator-runtime/runtime'
 import fastEvaluation from '@/plugins/fast-evaluation'
 import tooltip from '@/plugins/tooltip'
 import recoverRememberMe from '@/plugins/recover-remember-me'
+import rearrange from '@/plugins/rearrange'
 import score from '@/plugins/score'
 import trainingScheme from '@/plugins/training-scheme'
 import submitData from '@/plugins/user-experience-improvement-program'
@@ -44,6 +45,7 @@ const plugins: SUAPlugin[] =
     : [
         dataAnalysis,
         tooltip,
+        rearrange,
         fastEvaluation,
         score,
         trainingScheme,
@@ -206,15 +208,9 @@ export default {
               <i class="ace-icon fa fa-home home-icon"></i>
               首页
             </li>
-            <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${
-            breadcrumbs[0]
-          }</li>
-            <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${
-            breadcrumbs[1]
-          }</li>
-            <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${
-            breadcrumbs[2]
-          }</li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${breadcrumbs[0]}</li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${breadcrumbs[1]}</li>
+            <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${breadcrumbs[2]}</li>
           `)
           const $pageContent = $('.main-content>.page-content')
           $pageContent.empty()

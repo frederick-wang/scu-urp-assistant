@@ -49,16 +49,16 @@
         tbody
           tr(v-for='(v, i) in scuUietpList' :key='v.projectYear+v.collegeName+v.projectName')
             td.center {{ i + 1 }}
-            td.center {{ v.projectYear }}
-            td.center {{ v.collegeName }}
-            td.center {{ v.projectName }}
-            td.center {{ v.projectLeaderName }}
-            td.center {{ v.participantNumber }}
-            td.center {{ v.otherMemberInformation }}
-            td.center {{ v.schoolSupervisorName }}
-            td.center {{ v.projectLevel }}
-            td.center {{ v.applicationCategory }}
-            td.center {{ v.projectCategory }}
+            td.center {{ v.project_year }}
+            td.center {{ v.college_name }}
+            td.center {{ v.project_name }}
+            td.center {{ v.project_leader_name }}
+            td.center {{ v.participant_number }}
+            td.center {{ v.other_member_information }}
+            td.center {{ v.school_supervisor_name }}
+            td.center {{ v.project_level }}
+            td.center {{ v.application_category }}
+            td.center {{ v.project_category }}
 </template>
 
 <script lang="ts">
@@ -67,6 +67,7 @@ import { actions, Request } from '@/store'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { debounce } from 'lodash-es'
+import { ScuUietpItemDTO } from '../../store/types'
 
 @Component({
   components: { Loading }
@@ -75,39 +76,21 @@ export default class ScuUietp extends Vue {
   hasNotQueried = true
   loadingIsDone = true
   // [立项年份，学院名称，项目名称，项目负责人姓名，参与学生人数，项目其他成员信息，学校导师姓名，立项级别，申请类别，立项类别][]
-  scuUietpList: Array<{
-    projectYear: number
-    collegeName: string
-    projectName: string
-    projectLeaderName: string
-    participantNumber: number
-    otherMemberInformation?: string
-    schoolSupervisorName: string
-    projectLevel: string
-    applicationCategory?: string
-    projectCategory: string
-  }> = []
+  scuUietpList: ScuUietpItemDTO[] = []
   queryStr = ''
   query = debounce(async function(this: ScuUietp, val: string): Promise<void> {
     this.loadingIsDone = false
     try {
       const { list } = await actions[Request.SCU_UIETP_LIST](val)
       this.scuUietpList = list.map(v => ({
-        projectYear: v.project_year,
-        collegeName: v.college_name,
-        projectName: v.project_name,
-        projectLeaderName: v.project_leader_name,
-        participantNumber: v.participant_number,
-        otherMemberInformation: v.other_member_information
+        ...v,
+        // eslint-disable-next-line
+        other_member_information: v.other_member_information
           ? v.other_member_information
               .split(',')
               .map(s => s.split('/')[0])
               .join('，')
-          : '',
-        schoolSupervisorName: v.school_supervisor_name,
-        projectLevel: v.project_level,
-        applicationCategory: v.application_category,
-        projectCategory: v.project_category
+          : ''
       }))
       this.loadingIsDone = true
       if (this.hasNotQueried) {

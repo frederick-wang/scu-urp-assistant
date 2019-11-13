@@ -114,25 +114,25 @@ import {
 export default class ExpectedGradeEstimation extends Vue {
   loadingIsDone = false
   records: SemesterScoreRecord[] = []
-  newCompulsoryCourseCredit: number = 0
-  newCompulsoryCourseScore: number = 0
-  newCompulsoryCourseGPA: number = 0
-  newOptionalCourseCredit: number = 0
-  newOptionalCourseScore: number = 0
-  newOptionalCourseGPA: number = 0
+  newCompulsoryCourseCredit = 0
+  newCompulsoryCourseScore = 0
+  newCompulsoryCourseGPA = 0
+  newOptionalCourseCredit = 0
+  newOptionalCourseScore = 0
+  newOptionalCourseGPA = 0
 
-  get allCourses() {
+  get allCourses(): CourseScoreRecord[] {
     return this.records.reduce(
       (acc, cur) => acc.concat(cur.courses),
       [] as CourseScoreRecord[]
     )
   }
 
-  get compulsoryCourses() {
+  get compulsoryCourses(): CourseScoreRecord[] {
     return getCompulsoryCourses(this.allCourses)
   }
 
-  get newCompulsoryCourses() {
+  get newCompulsoryCourses(): CourseScoreRecord[] {
     return getCompulsoryCourses(this.newAllCourses)
   }
 
@@ -188,50 +188,50 @@ export default class ExpectedGradeEstimation extends Vue {
     }
   }
 
-  get newAllCourses() {
+  get newAllCourses(): CourseScoreRecord[] {
     return this.allCourses.concat(
       this.newCompulsoryCourseRecord,
       this.newOptionalCourseRecord
     )
   }
 
-  get allCoursesCredits() {
+  get allCoursesCredits(): number {
     return this.allCourses.reduce((acc, cur) => acc + cur.credit, 0)
   }
 
-  get newAllCoursesCredits() {
+  get newAllCoursesCredits(): number {
     return this.newAllCourses.reduce((acc, cur) => acc + cur.credit, 0)
   }
 
-  get compulsoryCoursesCredits() {
+  get compulsoryCoursesCredits(): number {
     return this.compulsoryCourses.reduce((acc, cur) => acc + cur.credit, 0)
   }
 
-  get newCompulsoryCoursesCredits() {
+  get newCompulsoryCoursesCredits(): number {
     return this.newCompulsoryCourses.reduce((acc, cur) => acc + cur.credit, 0)
   }
 
-  getCompulsoryCoursesGPA(arr: CourseScoreRecord[]) {
+  getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
     return getCompulsoryCoursesGPA(arr)
   }
 
-  getCompulsoryCoursesScore(arr: CourseScoreRecord[]) {
+  getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
     return getCompulsoryCoursesScore(arr)
   }
 
-  getAllCoursesGPA(arr: CourseScoreRecord[]) {
+  getAllCoursesGPA(arr: CourseScoreRecord[]): number {
     return getAllCoursesGPA(arr)
   }
 
-  getAllCoursesScore(arr: CourseScoreRecord[]) {
+  getAllCoursesScore(arr: CourseScoreRecord[]): number {
     return getAllCoursesScore(arr)
   }
 
-  getCompulsoryCourses(arr: CourseScoreRecord[]) {
+  getCompulsoryCourses(arr: CourseScoreRecord[]): CourseScoreRecord[] {
     return getCompulsoryCourses(arr)
   }
 
-  async created() {
+  async created(): Promise<void> {
     try {
       const records = await convertCourseScoreInfoListToScoreRecords(
         await actions[Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]()

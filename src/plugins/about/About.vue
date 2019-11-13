@@ -39,13 +39,13 @@ import { description } from '@/../package.json'
 
 @Component
 export default class About extends Vue {
-  get version() {
+  get version(): string {
     return `${version} (${
       process.env.NODE_ENV === 'development' ? 'dev' : 'stable'
     })`
   }
 
-  get featureList() {
+  get featureList(): string[][] {
     const r = description.match(/该脚本可以为综合教务系统增加以下功能：(.+)$/)
     if (r) {
       const text = r[1].trim()
