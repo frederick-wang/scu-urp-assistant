@@ -2,13 +2,14 @@
 import comments from './comments.json'
 import checkboxWrapperSelectorsData from './checkboxWrapperSelectors.json'
 import questionsNumberRangeData from './questionsNumberRange.json'
+import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 
 const checkboxWrapperSelectors = new Map(
   Object.entries(checkboxWrapperSelectorsData)
 )
 const questionsNumberRange = new Map(Object.entries(questionsNumberRangeData))
 
-const evaluationInterval = 1000 * 61
+const evaluationInterval = 1000 * (10 + 1)
 
 const templates = {
   btn: require('./btn.pug')(),
@@ -145,7 +146,7 @@ function showSelectionModal() {
         $btn.remove()
         const { evaluatedPeople, evaluationContentContent } = list[0]
         changePrompt(
-          `即将在1分钟后开始评价${evaluatedPeople}（${evaluationContentContent}），请耐心等待，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+          `即将在10秒后开始评价${evaluatedPeople}（${evaluationContentContent}），请耐心等待，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
         )
         evaluate(0)
       }
@@ -160,6 +161,7 @@ function changePrompt(str: string) {
 function evaluate(index: number) {
   const origin = window.location.origin
   if (index >= list.length) {
+    emitDataAnalysisEvent('快捷评教', '全部老师评教成功')
     changePrompt(`本页上的老师已经全部评价完毕！正在刷新……`)
     window.location.href = `${origin}/student/teachingEvaluation/evaluation/index`
     return
@@ -193,6 +195,7 @@ function evaluate(index: number) {
       } as any)
     },
     error: xhr => {
+      emitDataAnalysisEvent('快捷评教', '获取数据失败')
       window.urp.alert(
         `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
       )
@@ -204,8 +207,9 @@ function evaluate(index: number) {
       count = data.match(/<input.+count.+value="(.*?)">/i)[1]
 
       if (!tokenValue || !count) {
+        emitDataAnalysisEvent('快捷评教', '教务系统不稳定')
         window.urp.confirm(
-          `因教务系统不稳定，当前暂时无法评教，请稍等一段时间后，刷新网页再尝试。如果还是无法评教，您可以更换浏览器或电脑后再尝试。`,
+          `因教务系统不稳定，当前暂时无法评教，请点击右上角头像注销，并在重新登录后再次尝试。如果还是无法评教，您可以更换浏览器或电脑后再尝试。`,
           function() {}
         )
         return
@@ -249,6 +253,7 @@ function evaluate2ndStage(
     url: '/student/teachingEvaluation/teachingEvaluation/evaluation',
     data: `tokenValue=${tokenValue}&${bodyStr}`,
     error: xhr => {
+      emitDataAnalysisEvent('快捷评教', '获取数据失败')
       window.urp.alert(
         `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
       )
@@ -259,6 +264,7 @@ function evaluate2ndStage(
     },
     success: data => {
       if (data['result'].indexOf('/') !== -1) {
+        emitDataAnalysisEvent('快捷评教', '登陆过期')
         window.urp.alert('登陆过期，将在3秒后自动刷新页面')
         changePrompt(
           `${evaluatedPeople}（${evaluationContentContent}）登陆过期 QAQ，进度：${index +
@@ -268,11 +274,12 @@ function evaluate2ndStage(
           window.location.reload()
         }, 3000)
       } else if (data['result'] === 'success') {
+        emitDataAnalysisEvent('快捷评教', '单位老师评教成功')
         changePrompt(
           `${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index +
             1}/${
             list.length
-          }，将在1分钟后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+          }，将在10秒后自动开始评价下一位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
         )
         evaluate(++index)
         // setTimeout(() => {
@@ -290,12 +297,13 @@ function evaluate2ndStage(
             )
           }, evaluationInterval)
         } else {
+          emitDataAnalysisEvent('快捷评教', '未知错误')
           window.urp.alert('保存失败')
           changePrompt(
             `${evaluatedPeople}（${evaluationContentContent}）遭遇未知错误 QAQ，进度：${index +
               1}/${
               list.length
-            }，将在1分钟后自动重新评价这位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+            }，将在10秒后自动重新评价这位老师，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
           )
           setTimeout(() => {
             evaluate(index)
