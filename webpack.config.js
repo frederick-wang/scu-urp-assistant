@@ -1,5 +1,6 @@
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack')
 const { version, description, author } = require('./package.json')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
@@ -25,13 +26,24 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new webpack.BannerPlugin({ banner }),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery'
     }),
     new VueLoaderPlugin()
   ],
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        extractComments: {
+          condition: 'some',
+          banner: banner,
+        },
+      }),
+    ],
+    concatenateModules: true
+  },
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist')
