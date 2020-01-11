@@ -4,12 +4,14 @@ div
     div(style='display: inline-block;')
       span.gpa-st-tag.label.label-success(
         :title='`在${semester}，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均分为 ${getCompulsoryCoursesScore(courses)}`'
+        @click='$emit(`selectCompulsoryCourses`)'
       )
         | 必修平均分：{{ getCompulsoryCoursesScore(courses) }}
       |
       |
       span.gpa-st-tag.label.label-success(
         :title='`在${semester}，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均绩点为 ${getCompulsoryCoursesGPA(courses)}`'
+        @click='$emit(`selectCompulsoryCourses`)'
       )
         | 必修绩点：{{ getCompulsoryCoursesGPA(courses) }}
       |
