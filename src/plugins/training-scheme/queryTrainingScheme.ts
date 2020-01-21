@@ -237,7 +237,12 @@ function genSchemeHTML(list: TrainingSchemeYearInfo[]): string {
 }
 
 async function query(): Promise<void> {
-  const majorNumber = $('#major').val()
+  let majorNumber = $('#major').val()
+  if (!majorNumber) {
+    emitDataAnalysisEvent('培养方案查询', '查询失败，专业代码为空')
+    return
+  }
+  majorNumber = String(majorNumber)
   if (majorNumber !== '无') {
     $('.program-plan-wrapper').remove()
     showLoadingAnimation('.sua-container-query-training-scheme')
