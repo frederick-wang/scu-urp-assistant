@@ -33,6 +33,7 @@
     "@babel/plugin-transform-typescript": "^7.7.4",
     "@babel/preset-env": "^7.7.7",
     "@babel/preset-typescript": "^7.7.7",
+    "@types/core-js": "^2.5.2",
     "@types/jquery": "^3.3.31",
     "@types/lodash-es": "^4.17.3",
     "@types/webpack-env": "^1.15.0",
