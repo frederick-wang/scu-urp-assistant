@@ -1,7 +1,7 @@
 import { version } from '@/../package.json'
 import { description } from '@/../package.json'
 
-function showLoadingAnimation(containerSelector: string) {
+function showLoadingAnimation(containerSelector: string): void {
   const template = `
       <div class="loading-container">
         <div class="lds-dual-ring"></div>
@@ -11,17 +11,20 @@ function showLoadingAnimation(containerSelector: string) {
   $(containerSelector).append(template)
 }
 
-function hideLoadingAnimation() {
+function hideLoadingAnimation(): void {
   $('.loading-container').remove()
 }
 
-function genFooterHTML() {
+function genFooterHTML(): string {
   const SUA_QRCODE_URL =
     'https://zhaoji.wang/wp-content/uploads/2019/08/scu-urp-assistant-qrcode.png'
   const versionName = `${version} (${
     process.env.NODE_ENV === 'development' ? 'dev' : 'stable'
   })`
-  const parseDescription = () => {
+  const parseDescription = (): {
+    intro: string
+    featureList: string[][]
+  } => {
     const introR = description.match(
       /^(.+)该脚本可以为综合教务系统增加以下功能：/
     )
@@ -72,8 +75,4 @@ function genFooterHTML() {
   `
 }
 
-export {
-  showLoadingAnimation,
-  hideLoadingAnimation,
-  genFooterHTML
-}
+export { showLoadingAnimation, hideLoadingAnimation, genFooterHTML }

@@ -7,7 +7,7 @@ import { CourseScoreRecord } from './types'
  * @param {number} [fractionDigits=3] 保留小数位数
  * @returns 保留对应位数后的小数
  */
-function reserveDigits(num: number, fractionDigits: number = 3) {
+function reserveDigits(num: number, fractionDigits = 3): number {
   return Number(num.toFixed(fractionDigits))
 }
 
@@ -17,7 +17,9 @@ function reserveDigits(num: number, fractionDigits: number = 3) {
  * @param {Array<{ value: number; weight: number }>} arr 一个数组，每个对象包括数值(value)和权值(weight)
  * @returns 计算好的加权平均数
  */
-function getWeightedAverage(arr: Array<{ value: number; weight: number }>) {
+function getWeightedAverage(
+  arr: Array<{ value: number; weight: number }>
+): number {
   return arr
     .reduce(
       (acc, cur) => [acc[0] + cur.value * cur.weight, acc[1] + cur.weight],
@@ -32,7 +34,12 @@ function getWeightedAverage(arr: Array<{ value: number; weight: number }>) {
  * @param {CourseScoreRecord[]} arr 一个课程数组
  * @returns 一个只包含gpa作为数值，学分作为权值的对象数组
  */
-function mapGPA(arr: CourseScoreRecord[]) {
+function mapGPA(
+  arr: CourseScoreRecord[]
+): {
+  value: number
+  weight: number
+}[] {
   return arr.map(v => ({ value: v.gradePoint, weight: v.credit }))
 }
 
@@ -42,7 +49,12 @@ function mapGPA(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 一个课程数组
  * @returns 一个只包含分数作为数值，学分作为权值的对象数组
  */
-function mapScore(arr: CourseScoreRecord[]) {
+function mapScore(
+  arr: CourseScoreRecord[]
+): {
+  value: number
+  weight: number
+}[] {
   return arr.map(v => ({ value: v.courseScore, weight: v.credit }))
 }
 
@@ -52,7 +64,7 @@ function mapScore(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 一个课程数组
  * @returns 筛选出的只包括必修课程的数组
  */
-function getCompulsoryCourses(arr: CourseScoreRecord[]) {
+function getCompulsoryCourses(arr: CourseScoreRecord[]): CourseScoreRecord[] {
   return arr.filter(v => v.coursePropertyName === '必修')
 }
 
@@ -62,7 +74,7 @@ function getCompulsoryCourses(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 一个课程数组
  * @returns 筛选出的被选中的课程的数组
  */
-function getSelectedCourses(arr: CourseScoreRecord[]) {
+function getSelectedCourses(arr: CourseScoreRecord[]): CourseScoreRecord[] {
   return arr.filter(v => v.selected)
 }
 
@@ -72,7 +84,7 @@ function getSelectedCourses(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} 课程数组
  * @returns 必修加权平均绩点
  */
-function getCompulsoryCoursesGPA(arr: CourseScoreRecord[]) {
+function getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
   return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourses(arr))))
 }
 
@@ -82,7 +94,7 @@ function getCompulsoryCoursesGPA(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 课程数组
  * @returns 必修加权平均分
  */
-function getSelectedCoursesScore(arr: CourseScoreRecord[]) {
+function getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
   return reserveDigits(getWeightedAverage(mapScore(getSelectedCourses(arr))))
 }
 
@@ -92,7 +104,7 @@ function getSelectedCoursesScore(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} 课程数组
  * @returns 选中课程加权平均绩点
  */
-function getSelectedCoursesGPA(arr: CourseScoreRecord[]) {
+function getSelectedCoursesGPA(arr: CourseScoreRecord[]): number {
   return reserveDigits(getWeightedAverage(mapGPA(getSelectedCourses(arr))))
 }
 
@@ -102,7 +114,7 @@ function getSelectedCoursesGPA(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 课程数组
  * @returns 必修加权平均分
  */
-function getCompulsoryCoursesScore(arr: CourseScoreRecord[]) {
+function getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
   return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourses(arr))))
 }
 
@@ -112,7 +124,7 @@ function getCompulsoryCoursesScore(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 课程数组
  * @returns 全部课程加权平均绩点
  */
-function getAllCoursesGPA(arr: CourseScoreRecord[]) {
+function getAllCoursesGPA(arr: CourseScoreRecord[]): number {
   return reserveDigits(getWeightedAverage(mapGPA(arr)))
 }
 
@@ -122,7 +134,7 @@ function getAllCoursesGPA(arr: CourseScoreRecord[]) {
  * @param {CourseScoreRecord[]} arr 课程数组
  * @returns 全部课程加权平均分
  */
-function getAllCoursesScore(arr: CourseScoreRecord[]) {
+function getAllCoursesScore(arr: CourseScoreRecord[]): number {
   return reserveDigits(getWeightedAverage(mapScore(arr)))
 }
 

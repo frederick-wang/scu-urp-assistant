@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 // 用户体验改善计划插件
 import { actions, Request, Submit, state } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
@@ -8,7 +9,7 @@ import { SemesterScoreRecord } from '@/plugins/score/types'
 
 async function sendStudentCourseScorePublicList(
   records: SemesterScoreRecord[]
-) {
+): Promise<void> {
   if (!state.getData('ueipStudentCourseScorePublicList')) {
     for (const s of records) {
       for (const c of s.courses) {
@@ -88,7 +89,7 @@ async function sendStudentCourseScorePublicList(
   }
 }
 
-async function sendCourseScorePublicList() {
+async function sendCourseScorePublicList(): Promise<void> {
   if (!state.getData('ueipCourseScorePublicList')) {
     const thisTermCourseScoreInfoList = await actions[
       Request.THIS_TERM_COURSE_SCORE_INFO_LIST
@@ -146,7 +147,7 @@ async function sendCourseScorePublicList() {
 export default {
   name: 'user-experience-improvement-program',
   pathname: true,
-  async init() {
+  async init(): Promise<void> {
     sendCourseScorePublicList()
   }
 }

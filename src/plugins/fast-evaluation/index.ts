@@ -19,9 +19,25 @@ const templates = {
 
 let $btn: JQuery<HTMLElement>
 let $prompt: JQuery<HTMLElement>
-let list: any[]
+let list: Array<{
+  questionnaireCode: string
+  questionnaireName: string
+  evaluatedPeopleNumber: string
+  evaluatedPeople: string
+  evaluationContentNumber: string
+  evaluationContentContent: string
+}>
 
-function parseName(raw: string) {
+function parseName(
+  raw: string
+): {
+  questionnaireCode: string
+  questionnaireName: string
+  evaluatedPeopleNumber: string
+  evaluatedPeople: string
+  evaluationContentNumber: string
+  evaluationContentContent: string
+} {
   const data = raw.split(`","`)
   const [
     questionnaireCode,
@@ -42,13 +58,13 @@ function parseName(raw: string) {
   return result
 }
 
-function getComment() {
+function getComment(): string {
   return encodeURIComponent(
     comments[Math.floor(Math.random() * comments.length)]
   )
 }
 
-function collectData() {
+function collectData(): boolean {
   const collectingMsgIndex = window.layer.msg('正在收集本页问卷数据……')
   const jxpgtbody = document.getElementById('jxpgtbody')
   if (jxpgtbody !== null) {
@@ -57,15 +73,19 @@ function collectData() {
       // 2018-8-31 20:21:20
       // 今天发现 urp 代码有修改，把 evaluationContentContent 从 onClick 函数调用里删除了。
       // 临时这样补上，尽量不做大修改，防止出错。
-      .map(
-        (item: any) =>
-          item
-            .getAttribute('onClick')
-            .replace(
-              /evaluationResult\("|evaluation\("|"\);return false;/gi,
-              ''
-            ) + `","${item.parentElement.parentElement.children[3].innerText}`
-      )
+      .map(item => {
+        const attr = item.getAttribute('onClick') as string
+        const itemParentElement = item.parentElement as HTMLElement
+        const item2ndOrderParentElement = itemParentElement.parentElement as HTMLElement
+        const evaluationContentContentElement = item2ndOrderParentElement
+          .children[3] as HTMLElement
+        return (
+          attr.replace(
+            /evaluationResult\("|evaluation\("|"\);return false;/gi,
+            ''
+          ) + `","${evaluationContentContentElement.innerText}`
+        )
+      })
     if (!items.length) {
       return false
     }
@@ -76,89 +96,11 @@ function collectData() {
   return false
 }
 
-function onClickBtn(e: any) {
-  e.preventDefault()
-  const hasUnevaluatedQuestionnaire = collectData()
-  if (hasUnevaluatedQuestionnaire) {
-    showSelectionModal()
-  } else {
-    window.urp.confirm(
-      '本页上的所有教师都已经评教过了，您可以换一页再使用。',
-      () => {}
-    )
-  }
-}
-
-function showSelectionModal() {
-  window.layer.open({
-    type: 1,
-    area: '90%',
-    title: '请选择需要「一键好评」的老师',
-    shadeClose: true,
-    offset: '50px',
-    btn: ['开始一键评教!'],
-    content: templates.selectionModal,
-    success: () => {
-      list.forEach(
-        (
-          {
-            evaluatedPeople: name,
-            evaluationContentContent: curriculum,
-            questionnaireName: type
-          }: {
-            evaluatedPeople: string
-            evaluationContentContent: string
-            questionnaireName: string
-          },
-          index
-        ) => {
-          const selector = checkboxWrapperSelectors.get(type)
-          if (selector) {
-            $(selector).append(
-              require('./checkbox.pug')({ name, index, curriculum })
-            )
-          } else {
-            const msg = `无效的问卷名称：${type}`
-            window.urp.alert(msg)
-            console.error(new Error(msg))
-          }
-        }
-      )
-      for (const key in checkboxWrapperSelectors) {
-        const selector = checkboxWrapperSelectors.get(key)
-        if (!selector) {
-          continue
-        }
-        if (!$(selector).children().length) {
-          $(selector)
-            .prev()
-            .remove()
-          $(selector).remove()
-        }
-      }
-    },
-    yes: (layerIndex: number) => {
-      list = $('#selection-form')
-        .serializeArray()
-        .map(v => list[Number(v.name.replace('selection-checkbox-', ''))])
-      window.layer.close(layerIndex)
-      if (list.length) {
-        $btn.remove()
-        const { evaluatedPeople, evaluationContentContent } = list[0]
-        changePrompt(
-          `即将在10秒后开始评价${evaluatedPeople}（${evaluationContentContent}），请耐心等待，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
-        )
-        evaluate(0)
-      }
-    }
-  })
-}
-
-function changePrompt(str: string) {
+function changePrompt(str: string): void {
   $prompt.text(str)
 }
 
-function evaluate(index: number) {
+function evaluate(index: number): void {
   const origin = window.location.origin
   if (index >= list.length) {
     emitDataAnalysisEvent('快捷评教', '全部老师评教成功')
@@ -192,7 +134,7 @@ function evaluate(index: number) {
     beforeSend: xhr => {
       xhr.setRequestHeader('X-Requested-With', {
         toString: () => ''
-      } as any)
+      } as string)
     },
     error: xhr => {
       emitDataAnalysisEvent('快捷评教', '获取数据失败')
@@ -210,7 +152,7 @@ function evaluate(index: number) {
         emitDataAnalysisEvent('快捷评教', '教务系统不稳定')
         window.urp.confirm(
           `因教务系统不稳定，当前暂时无法评教，请点击右上角头像注销，并在重新登录后再次尝试。如果还是无法评教，您可以更换浏览器或电脑后再尝试。`,
-          function() {}
+          () => null
         )
         return
       }
@@ -245,7 +187,7 @@ function evaluate2ndStage(
   evaluatedPeople: string,
   evaluationContentContent: string,
   tokenValue: string
-) {
+): void {
   $.ajax({
     cache: true,
     type: 'POST',
@@ -314,6 +256,84 @@ function evaluate2ndStage(
   })
 }
 
+function showSelectionModal(): void {
+  window.layer.open({
+    type: 1,
+    area: '90%',
+    title: '请选择需要「一键好评」的老师',
+    shadeClose: true,
+    offset: '50px',
+    btn: ['开始一键评教!'],
+    content: templates.selectionModal,
+    success: () => {
+      list.forEach(
+        (
+          {
+            evaluatedPeople: name,
+            evaluationContentContent: curriculum,
+            questionnaireName: type
+          }: {
+            evaluatedPeople: string
+            evaluationContentContent: string
+            questionnaireName: string
+          },
+          index
+        ) => {
+          const selector = checkboxWrapperSelectors.get(type)
+          if (selector) {
+            $(selector).append(
+              require('./checkbox.pug')({ name, index, curriculum })
+            )
+          } else {
+            const msg = `无效的问卷名称：${type}`
+            window.urp.alert(msg)
+            console.error(new Error(msg))
+          }
+        }
+      )
+      for (const key in checkboxWrapperSelectors) {
+        const selector = checkboxWrapperSelectors.get(key)
+        if (!selector) {
+          continue
+        }
+        if (!$(selector).children().length) {
+          $(selector)
+            .prev()
+            .remove()
+          $(selector).remove()
+        }
+      }
+    },
+    yes: (layerIndex: number) => {
+      list = $('#selection-form')
+        .serializeArray()
+        .map(v => list[Number(v.name.replace('selection-checkbox-', ''))])
+      window.layer.close(layerIndex)
+      if (list.length) {
+        $btn.remove()
+        const { evaluatedPeople, evaluationContentContent } = list[0]
+        changePrompt(
+          `即将在10秒后开始评价${evaluatedPeople}（${evaluationContentContent}），请耐心等待，评教过程中您可以去做些其他事情，只要不关闭此网页就可以~`
+        )
+        evaluate(0)
+      }
+    }
+  })
+}
+
+function onClickBtn(e: MouseEvent): void {
+  e.preventDefault()
+  const hasUnevaluatedQuestionnaire = collectData()
+  if (hasUnevaluatedQuestionnaire) {
+    showSelectionModal()
+  } else {
+    window.urp.confirm(
+      '本页上的所有教师都已经评教过了，您可以换一页再使用。',
+      () => null
+    )
+  }
+}
+
 export default {
   name: 'fast-evaluation',
   pathname: '/student/teachingEvaluation/evaluation/index',
@@ -324,6 +344,6 @@ export default {
 
     $('#close > h4').append($btn, $prompt)
 
-    $btn.click(onClickBtn.bind(this))
+    $btn.click(onClickBtn.bind(this) as () => void)
   }
 } as SUAPlugin

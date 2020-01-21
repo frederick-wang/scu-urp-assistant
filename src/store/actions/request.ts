@@ -12,17 +12,18 @@ import {
   CourseScheduleInfo,
   AjaxStudentScheduleAPIData,
   CourseInfoList,
-  ScuUietpDTO
+  ScuUietpDTO,
+  TrainingSchemeBaseInfo
 } from '../types'
 
-async function requestStudentSemesterNumberList() {
+async function requestStudentSemesterNumberList(): Promise<string[]> {
   $.ajaxSetup({
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
         toString() {
           return ''
         }
-      } as any)
+      } as string)
   })
   const url = '/student/courseSelect/calendarSemesterCurriculum/index'
   const rawHTML = await $.get(url)
@@ -31,12 +32,15 @@ async function requestStudentSemesterNumberList() {
   )
   // 还原Ajax配置
   $.ajaxSetup({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     beforeSend: null as any
   })
   return codeList
 }
 
-async function requestCourseInfoListBySemester(semesterCode: string) {
+async function requestCourseInfoListBySemester(
+  semesterCode: string
+): Promise<CourseInfoList[]> {
   const {
     xkxx: [rawCourseInfoList]
   } = (await $.post(
@@ -108,14 +112,14 @@ async function requestCourseInfoListBySemester(semesterCode: string) {
   return courseInfoList
 }
 
-async function requestStudentInfo() {
+async function requestStudentInfo(): Promise<Map<string, string>> {
   $.ajaxSetup({
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
         toString() {
           return ''
         }
-      } as any)
+      } as string)
   })
   const url = '/student/rollManagement/rollInfo/index'
   const rawHTML = await $.get(url)
@@ -164,6 +168,7 @@ async function requestStudentInfo() {
     ])
   // 还原Ajax配置
   $.ajaxSetup({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     beforeSend: null as any
   })
   return new Map(infos as [string, string][])
@@ -179,7 +184,10 @@ async function requestCourseSchedule(
   semester: string,
   courseName: string,
   courseNumber: string
-) {
+): Promise<{
+  response: string
+  sequence?: CourseScheduleInfo[]
+}> {
   currentcourseNameScheduleQuery = courseName
   currentcourseNumberScheduleQuery = courseNumber
   const delta = new Date().getTime() - lastTimeScheduleQuery
@@ -262,7 +270,7 @@ async function requestCourseSchedule(
           const merge = (
             obj1: CourseScheduleInfo,
             obj2: CourseScheduleInfo
-          ) => {
+          ): CourseScheduleInfo => {
             const result = {} as CourseScheduleInfo
             for (const key in obj1) {
               result[key] =
@@ -289,14 +297,19 @@ async function requestCourseSchedule(
   }
 }
 
-function requestTrainingScheme(num: number) {
+function requestTrainingScheme(
+  num: number
+): Promise<{
+  info: TrainingSchemeBaseInfo
+  list: TrainingSchemeYearInfo[]
+}> {
   $.ajaxSetup({
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
         toString() {
           return ''
         }
-      } as any)
+      } as string)
   })
   const coursePropertyNameList = ['必修', '选修']
   const res = Promise.all([
@@ -440,7 +453,7 @@ function requestTrainingScheme(num: number) {
             } as {
               [key: string]: number
             }
-            const getAttributesWeight = (attributes: string[]) =>
+            const getAttributesWeight = (attributes: string[]): number =>
               attributes.reduce(
                 (acc, cur) => acc + (attributeWeight[cur] || 0),
                 0
@@ -458,6 +471,7 @@ function requestTrainingScheme(num: number) {
   }))
   // 还原Ajax配置
   $.ajaxSetup({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     beforeSend: null as any
   })
   return res
@@ -483,7 +497,7 @@ async function requestBachelorDegreeList(): Promise<string[][]> {
   return bachelorDegreeList
 }
 
-async function requestScuUietpList(query: string) {
+async function requestScuUietpList(query: string): Promise<ScuUietpDTO> {
   const url = `${API_PATH}/program/scu_uietp`
   const req = {
     api: {
@@ -493,8 +507,7 @@ async function requestScuUietpList(query: string) {
       query
     }
   }
-  let res
-  res = await $.get(url, req)
+  const res = await $.get(url, req)
   return res.data as ScuUietpDTO
 }
 
@@ -520,7 +533,7 @@ async function requestCurrentSemesterStudentAcademicInfo(): Promise<
   }
 }
 
-function convertSemesterNumberToText(number: string) {
+function convertSemesterNumberToText(number: string): string {
   const r = number.match(/(\d+)-(\d+)-(.+)/)
   if (r) {
     const begin = r[1]
@@ -538,7 +551,7 @@ function convertSemesterNumberToText(number: string) {
  * @param {string} semester 学期
  * @returns 绩点
  */
-function getPointByScore(score: number, semester: string) {
+function getPointByScore(score: number, semester: string): number {
   // 2017年起，川大修改了绩点政策，因此要检测学期的年份
   const r = semester.match(/^\d+/)
   if (!r) {
@@ -594,7 +607,7 @@ function getPointByScore(score: number, semester: string) {
   }
 }
 
-function filterCourseScoreInfoList(list: CourseScoreInfo[]) {
+function filterCourseScoreInfoList(list: CourseScoreInfo[]): CourseScoreInfo[] {
   return (
     list
       // 根据 http://jwc.scu.edu.cn/detail/122/6891.htm 《网上登录成绩的通知》 的说明
@@ -663,7 +676,7 @@ async function requestThisTermCourseScoreInfoList(): Promise<
   CourseScoreInfo[]
 > {
   const url = '/student/integratedQuery/scoreQuery/thisTermScores/data'
-  const [{ state, list }]: [{ state: string; list: any[] }] = await $.get(url)
+  const [{ list }]: [{ list: any[] }] = await $.get(url)
   // console.log(`state: ${state}`)
   const res = filterCourseScoreInfoList(
     list.map(

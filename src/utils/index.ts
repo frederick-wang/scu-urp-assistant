@@ -2,11 +2,16 @@ import minimatch from 'minimatch'
 import crypto from 'crypto'
 import * as logger from './logger'
 import { state, actions, Request } from '@/store'
-import { CourseInfoList, TeacherTable, CourseScoreInfo } from '@/store/types'
+import {
+  CourseInfoList,
+  TeacherTable,
+  CourseScoreInfo,
+  SemesterTeacherTable
+} from '@/store/types'
 import local from '@/store/local'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 
-function getLevenshteinDistance(a: string, b: string) {
+function getLevenshteinDistance(a: string, b: string): number {
   // Create empty edit distance matrix for all possible modifications of
   // substrings of a to substrings of b.
   const distanceMatrix: number[][] = Array(b.length + 1)
@@ -41,13 +46,13 @@ function getLevenshteinDistance(a: string, b: string) {
   return distanceMatrix[b.length][a.length]
 }
 
-function getTextSimilarity(str1: string, str2: string) {
+function getTextSimilarity(str1: string, str2: string): number {
   return (
     1 - getLevenshteinDistance(str1, str2) / Math.max(str1.length, str2.length)
   )
 }
 
-function getUserId(studentInfos: Map<string, string>) {
+function getUserId(studentInfos: Map<string, string>): string {
   const name = studentInfos.get('姓名')
   const studentNumber = studentInfos.get('学号')
   const identificationNumber = studentInfos.get('证件号码')
@@ -85,11 +90,17 @@ const API_PATH =
     ? 'http://localhost/scu-urp-assistant-server/public'
     : 'https://sua.zhaoji.wang/api/v1'
 
-function convertCourseScoreInfoListToScoreRecords(list: CourseScoreInfo[]) {
+function convertCourseScoreInfoListToScoreRecords(
+  list: CourseScoreInfo[]
+): SemesterScoreRecord[] {
   return (
     list
       .sort((a, b) => {
-        const weights = new Map([['必修', 100], ['选修', 75], ['任选', 50]])
+        const weights = new Map([
+          ['必修', 100],
+          ['选修', 75],
+          ['任选', 50]
+        ])
         return (
           (weights.get(b.coursePropertyName) || 0) +
           b.credit -
@@ -97,40 +108,37 @@ function convertCourseScoreInfoListToScoreRecords(list: CourseScoreInfo[]) {
           a.credit
         )
       })
-      .reduce(
-        (acc, cur) => {
-          // 如果没有挂科，那么 unpassedReasonExplain ≡ null
-          // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
-          const failReason = cur.unpassedReasonExplain
-            ? (cur.unpassedReasonExplain as string)
-            : null
-          if (failReason && failReason.includes('缓考')) {
-            return acc
-          }
-          const currentSemesterRecords = acc.filter(
-            v => v.semester === cur.executiveEducationPlanName
-          )
-          const record = {
-            ...cur,
-            courseTeacherList: [],
-            selected: false
-          }
-          if (currentSemesterRecords.length) {
-            currentSemesterRecords[0].courses.push(record)
-          } else {
-            acc.push({
-              semester: record.executiveEducationPlanName,
-              courses: [record]
-            })
-          }
+      .reduce((acc, cur) => {
+        // 如果没有挂科，那么 unpassedReasonExplain ≡ null
+        // 如果挂科了，检查是否是因为「缓考」才在系统中记录为「未通过」，如果是缓考，则跳过这条记录
+        const failReason = cur.unpassedReasonExplain
+          ? (cur.unpassedReasonExplain as string)
+          : null
+        if (failReason && failReason.includes('缓考')) {
           return acc
-        },
-        [] as SemesterScoreRecord[]
-      )
+        }
+        const currentSemesterRecords = acc.filter(
+          v => v.semester === cur.executiveEducationPlanName
+        )
+        const record = {
+          ...cur,
+          courseTeacherList: [],
+          selected: false
+        }
+        if (currentSemesterRecords.length) {
+          currentSemesterRecords[0].courses.push(record)
+        } else {
+          acc.push({
+            semester: record.executiveEducationPlanName,
+            courses: [record]
+          })
+        }
+        return acc
+      }, [] as SemesterScoreRecord[])
       // 不显示还没有课程成绩的学期
       .filter(v => v.courses && v.courses.length)
       .sort((a, b) => {
-        const getWeightSum = ({ semester }: SemesterScoreRecord) => {
+        const getWeightSum = ({ semester }: SemesterScoreRecord): number => {
           const r = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
           return r ? Number(r[1]) + Number(r[2]) + (r[3] === '秋' ? 0 : 1) : 0
         }
@@ -140,7 +148,7 @@ function convertCourseScoreInfoListToScoreRecords(list: CourseScoreInfo[]) {
   )
 }
 
-function convertSemesterNumberToName(semesterNumber: string) {
+function convertSemesterNumberToName(semesterNumber: string): string {
   const r = semesterNumber.match(/(\d+)-(\d+)-(\d)/)
   if (!r) {
     return semesterNumber
@@ -148,7 +156,7 @@ function convertSemesterNumberToName(semesterNumber: string) {
   return `${r[1]}-${r[2]}学年 ${r[3] === '1' ? '秋' : '春'}季学期`
 }
 
-function convertSemesterNameToNumber(semesterName: string) {
+function convertSemesterNameToNumber(semesterName: string): string {
   const r = semesterName.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
   if (!r) {
     return semesterName
@@ -156,52 +164,12 @@ function convertSemesterNameToNumber(semesterName: string) {
   return `${r[1]}-${r[2]}-${r[3] === '秋' ? 1 : 2}-1`
 }
 
-function getChineseNumber(num: number) {
+function getChineseNumber(num: number): string {
   return chineseNumbers[num] || ''
 }
 
-function sleep(time: number) {
+function sleep(time: number): Promise<number> {
   return new Promise(resolve => setTimeout(() => resolve(), time))
-}
-
-/**
- * 检测当前的url是否满足插件触发要求
- *
- * @param pathname 可以是 Boolean、String、Array、Object、Function等类型。
- * @returns 检测的结果
- */
-function pathnameTrigger(
-  pathname:
-    | string
-    | boolean
-    | string[]
-    | (() => boolean)
-    | {
-        [key: string]: string
-      }
-    | undefined
-) {
-  let result =
-    pathname === true
-      ? true
-      : !state.core.route && matchTrigger(window.location.pathname, pathname)
-  return result
-}
-function routeTrigger(
-  route:
-    | string
-    | boolean
-    | string[]
-    | (() => boolean)
-    | {
-        [key: string]: string
-      }
-    | undefined
-) {
-  let result =
-    window.location.pathname !== '/login' &&
-    matchTrigger(state.core.route, route)
-  return result
 }
 
 function matchTrigger(
@@ -215,7 +183,7 @@ function matchTrigger(
         [key: string]: string
       }
     | undefined
-) {
+): boolean {
   if (!object) {
     return false
   } else if (typeof object === 'boolean') {
@@ -242,9 +210,50 @@ function matchTrigger(
   return false
 }
 
+/**
+ * 检测当前的url是否满足插件触发要求
+ *
+ * @param pathname 可以是 Boolean、String、Array、Object、Function等类型。
+ * @returns 检测的结果
+ */
+function pathnameTrigger(
+  pathname:
+    | string
+    | boolean
+    | string[]
+    | (() => boolean)
+    | {
+        [key: string]: string
+      }
+    | undefined
+): boolean {
+  const result =
+    pathname === true
+      ? true
+      : !state.core.route && matchTrigger(window.location.pathname, pathname)
+  return result
+}
+
+function routeTrigger(
+  route:
+    | string
+    | boolean
+    | string[]
+    | (() => boolean)
+    | {
+        [key: string]: string
+      }
+    | undefined
+): boolean {
+  const result =
+    window.location.pathname !== '/login' &&
+    matchTrigger(state.core.route, route)
+  return result
+}
+
 function convertCourseInfoListToSemesterTeacherTable(
   courseInfoList: CourseInfoList[]
-) {
+): SemesterTeacherTable {
   return courseInfoList.reduce(
     (acc, cur) => {
       if (!acc[cur.courseNumber]) {
@@ -271,18 +280,15 @@ function convertCourseInfoListToSemesterTeacherTable(
 
 function convertCourseInfoListsToTeacherTable(
   courseInfoLists: CourseInfoList[][]
-) {
+): TeacherTable {
   return courseInfoLists
     .map(courseInfoList =>
       convertCourseInfoListToSemesterTeacherTable(courseInfoList)
     )
-    .reduce(
-      (acc, cur, i) => {
-        acc[courseInfoLists[i][0].executiveEducationPlanNumber] = cur
-        return acc
-      },
-      {} as TeacherTable
-    )
+    .reduce((acc, cur, i) => {
+      acc[courseInfoLists[i][0].executiveEducationPlanNumber] = cur
+      return acc
+    }, {} as TeacherTable)
 }
 
 async function getCourseTeacherList(

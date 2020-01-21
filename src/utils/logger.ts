@@ -1,27 +1,28 @@
-const prefix = () => `%c[SCU URP Assistent](${new Date().toLocaleString()})\n`
+const prefix = (): string =>
+  `%c[SCU URP Assistent](${new Date().toLocaleString()})\n`
 
-function log(...rest: any) {
+function log(...rest: unknown[]): void {
   if (process.env.NODE_ENV === 'development') {
     const style = 'color: #2EA9DF;'
     console.log(prefix(), style, ...rest)
   }
 }
 
-function info(...rest: any) {
+function info(...rest: unknown[]): void {
   if (process.env.NODE_ENV === 'development') {
     const style = 'color: #227D51;'
     console.info(prefix(), style, ...rest)
   }
 }
 
-function warn(...rest: any) {
+function warn(...rest: unknown[]): void {
   if (process.env.NODE_ENV === 'development') {
     const style = 'color: #F9BF45;'
     console.warn(prefix(), style, ...rest)
   }
 }
 
-function error(...rest: any) {
+function error(...rest: unknown[]): void {
   if (process.env.NODE_ENV === 'development') {
     const style = 'color: #CB4042;'
     console.error(prefix(), style, ...rest)

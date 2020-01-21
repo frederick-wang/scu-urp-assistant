@@ -1,10 +1,10 @@
-import Vue from 'vue'
+import Vue, { VNode } from 'vue'
 import App from './BachelorDegree.vue'
 
-function render(root: HTMLElement) {
+function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-bachelor-degree"></div>`)
   new Vue({
-    render: h => h(App)
+    render: (h): VNode => h(App)
   }).$mount('.sua-container-bachelor-degree')
 }
 

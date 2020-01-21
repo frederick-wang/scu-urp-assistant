@@ -1,15 +1,17 @@
+interface SemesterTeacherTable {
+  // 课程号
+  [key: string]: {
+    // 课序号
+    [key: string]: Array<{
+      teacherNumber: string
+      teacherName: string
+    }>
+  }
+}
+
 interface TeacherTable {
   // 学期
-  [key: string]: {
-    // 课程号
-    [key: string]: {
-      // 课序号
-      [key: string]: Array<{
-        teacherNumber: string
-        teacherName: string
-      }>
-    }
-  }
+  [key: string]: SemesterTeacherTable
 }
 
 interface LocalStore {
@@ -22,7 +24,7 @@ interface LocalStore {
       [key: string]: {
         time: number
         expirationTime: number
-        payload: any
+        payload: unknown
       }
     }
   }
@@ -125,20 +127,20 @@ interface AjaxStudentScheduleAPIData {
         continuingSession: number
         coursePropertiesName: string
         coureName: string
-        courseTeacher?: any
-        sksj?: any
-        time?: any
-        xf?: any
-        kcm?: any
+        courseTeacher?: unknown
+        sksj?: unknown
+        time?: unknown
+        xf?: unknown
+        kcm?: unknown
       }>
-      flag?: any
+      flag?: unknown
       dgFlag: string
       ywdgFlag: string
       rlFlag: string
       selectCourseStatusName: string
       selectCourseStatusCode: string
     }>
-    courseCalendarList?: any
+    courseCalendarList?: unknown
   }>
 }
 
@@ -169,14 +171,14 @@ interface CourseScheduleInfoAPIData {
       xkmssm: string
       xkkzdm: string
       xkkzsm: string
-      xkkzh?: any
+      xkkzh?: unknown
       xkxzsm: string
       kkxqh: string
       kkxqm: string
-      sfxzxslx?: any
-      sfxzxsnj?: any
+      sfxzxslx?: unknown
+      sfxzxsnj?: unknown
       sfxzxsxs?: string
-      sfxzxxkc?: any
+      sfxzxxkc?: unknown
       sfxzxdlx: string
       xqh: string
       jxlh: string
@@ -192,7 +194,7 @@ interface CourseScheduleInfoAPIData {
       zcsm: string
       kclbdm: string
       kclbmc: string
-      xkbz?: any
+      xkbz?: unknown
       xqm: string
       jxlm: string
       jasm: string
@@ -216,7 +218,7 @@ interface CourseScheduleInfo {
   campusName: string
   classCapacityRemaining: string
   courseRegNote: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface TrainingSchemeCourseInfo {
@@ -225,7 +227,7 @@ interface TrainingSchemeCourseInfo {
   coursePropertyName: string
   courseAttributes: string[]
   courseMajor: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface TrainingSchemeYearInfo {
@@ -302,7 +304,7 @@ interface TrainingSchemeNodeAPIData {
   id: string
   pId: string
   name: string
-  title?: any
+  title?: unknown
   urlPath: string
   parent?: TrainingSchemeNodeAPIData
   isDir: boolean
@@ -428,6 +430,7 @@ export {
   CourseScheduleInfo,
   AjaxStudentScheduleAPIData,
   LocalStore,
+  SemesterTeacherTable,
   TeacherTable,
   CourseInfoList,
   ScuUietpDTO,
