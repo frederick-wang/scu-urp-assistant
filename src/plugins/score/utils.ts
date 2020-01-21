@@ -138,6 +138,46 @@ function getAllCoursesScore(arr: CourseScoreRecord[]): number {
   return reserveDigits(getWeightedAverage(mapScore(arr)))
 }
 
+/**
+ * 当课程数组存在重修课程时，仅保留该课程的最新成绩
+ *
+ * @param {CourseScoreRecord[]} arr 课程数组
+ * @returns {CourseScoreRecord[]} 去除重复课程后的课程数组
+ */
+function reserveNewerCoursesForRetakenCourses(
+  arr: CourseScoreRecord[]
+): CourseScoreRecord[] {
+  return Object.values(
+    arr
+      .sort((a, b) => Number(a.examTime) - Number(b.examTime))
+      .reduceRight(
+        (acc, cur) =>
+          acc[cur.courseNumber] ? acc : { ...acc, [cur.courseNumber]: cur },
+        {} as Record<string, CourseScoreRecord>
+      )
+  )
+}
+
+/**
+ * 当课程数组存在重修课程时，仅保留该课程的第一次成绩
+ *
+ * @param {CourseScoreRecord[]} arr 课程数组
+ * @returns {CourseScoreRecord[]} 去除重复课程后的课程数组
+ */
+function reserveOlderCoursesForRetakenCourses(
+  arr: CourseScoreRecord[]
+): CourseScoreRecord[] {
+  return Object.values(
+    arr
+      .sort((a, b) => Number(a.examTime) - Number(b.examTime))
+      .reduce(
+        (acc, cur) =>
+          acc[cur.courseNumber] ? acc : { ...acc, [cur.courseNumber]: cur },
+        {} as Record<string, CourseScoreRecord>
+      )
+  )
+}
+
 export {
   getCompulsoryCoursesGPA,
   getCompulsoryCoursesScore,
@@ -146,5 +186,7 @@ export {
   getCompulsoryCourses,
   getSelectedCourses,
   getSelectedCoursesScore,
-  getSelectedCoursesGPA
+  getSelectedCoursesGPA,
+  reserveNewerCoursesForRetakenCourses,
+  reserveOlderCoursesForRetakenCourses
 }
