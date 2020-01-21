@@ -1,17 +1,17 @@
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin')
 const webpack = require('webpack')
-const { version, description, author } = require('./package.json')
+const { version, description, author, license } = require('./package.json')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const banner = `// ==UserScript==
 // @name         四川大学综合教务系统助手
-// @namespace    http://zhaoji.wang/
+// @namespace    https://zhaoji.wang/
 // @version      ${version}
 // @description  ${description}
 // @author       ${author}
-// @license      Apache-2.0
+// @license      ${license}
 // @include      http://202.115.47.141/*
 // @include      http://zhjw.scu.edu.cn/*
 // @grant        none
@@ -38,9 +38,9 @@ module.exports = {
       new TerserPlugin({
         extractComments: {
           condition: 'some',
-          banner: banner,
-        },
-      }),
+          banner: banner
+        }
+      })
     ],
     concatenateModules: true
   },
