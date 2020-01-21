@@ -308,7 +308,7 @@ async function getCourseTeacherList(
   const rNumber = semester.match(/(\d+)-(\d+)-(\d)/)
   if (rNumber) {
     // 确实是标准学期号格式
-    const teacherTable: TeacherTable = state.getData('teacherTable')
+    const teacherTable = state.getData('teacherTable') as TeacherTable
     try {
       return teacherTable[semester][courseNumber][courseSequenceNumber]
     } catch (error) {
