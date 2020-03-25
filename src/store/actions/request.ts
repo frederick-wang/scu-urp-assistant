@@ -44,7 +44,7 @@ async function requestCourseInfoListBySemester(
   const {
     xkxx: [rawCourseInfoList]
   } = (await $.post(
-    '/student/courseSelect/thisSemesterCurriculum/ajaxStudentSchedule/callback',
+    '/student/courseSelect/thisSemesterCurriculum/ajaxStudentSchedule/past/callback',
     { planCode: semesterCode }
   )) as AjaxStudentScheduleAPIData
   const courseInfoList = Object.values(rawCourseInfoList).map(
