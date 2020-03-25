@@ -5,18 +5,20 @@ import state from './state'
 
 let localStore: LocalStore
 
-async function load() {
-  localStore = await localforage.getItem('sua_store')
-  if (localStore) {
-    clearExpiredData()
-    logger.info('加载LocalStore成功:', localStore)
-  } else {
-    await saveData()
+function get(key: string): unknown {
+  clearExpiredData()
+  if (localStore.state.data[key]) {
+    return localStore.state.data[key].payload
   }
-  return localStore
+  return null
 }
 
-function clearExpiredData() {
+function remove(key: string): void {
+  delete localStore.state.data[key]
+  saveData()
+}
+
+function clearExpiredData(): void {
   const time = new Date().getTime()
   for (const [key, item] of Object.entries(localStore.state.data)) {
     if (item.expirationTime !== -1 && item.expirationTime < time) {
@@ -27,10 +29,10 @@ function clearExpiredData() {
 }
 
 async function saveData(
-  data?: { key: string; payload: any },
+  data?: { key: string; payload: unknown },
   // 默认永不过期
-  expirationTime: number = -1
-) {
+  expirationTime = -1
+): Promise<LocalStore> {
   const time = new Date().getTime()
   const { version } = state.core
   if (localStore) {
@@ -63,17 +65,15 @@ async function saveData(
   return localStore
 }
 
-function get(key: string) {
-  clearExpiredData()
-  if (localStore.state.data[key]) {
-    return localStore.state.data[key].payload
+async function load(): Promise<LocalStore> {
+  localStore = await localforage.getItem('sua_store')
+  if (localStore) {
+    clearExpiredData()
+    logger.info('加载LocalStore成功:', localStore)
+  } else {
+    await saveData()
   }
-  return null
-}
-
-function remove(key: string) {
-  delete localStore.state.data[key]
-  saveData()
+  return localStore
 }
 
 export default { load, saveData, get, remove }

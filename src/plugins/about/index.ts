@@ -1,11 +1,11 @@
-import Vue from 'vue'
+import Vue, { VNode } from 'vue'
 import App from './About.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 
-function render(root: HTMLElement) {
+function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-about"></div>`)
   new Vue({
-    render: h => h(App)
+    render: (h): VNode => h(App)
   }).$mount('.sua-container-about')
   emitDataAnalysisEvent('关于', '显示成功')
 }

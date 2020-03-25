@@ -5,7 +5,7 @@ import { logger } from '@/utils'
 interface TalkingDataEventParams {
   EventId: string
   Label?: string
-  MapKv?: Object
+  MapKv?: Record<string, string>
 }
 
 const queue: TalkingDataEventParams[] = []
@@ -13,8 +13,8 @@ const queue: TalkingDataEventParams[] = []
 function emitDataAnalysisEvent(
   EventId: string,
   Label?: string,
-  MapKv?: Object
-) {
+  MapKv?: Record<string, string>
+): void {
   queue.push({ EventId, Label, MapKv })
 }
 
@@ -41,7 +41,7 @@ export default {
       const src = `https://jic.talkingdata.com/app/h5/v1?appid=${APP_ID}&vn=${versionName}&vc=${version}`
       script.setAttribute('src', src)
       document.getElementsByTagName('head')[0].appendChild(script)
-      script.onload = () => {
+      script.onload = (): void => {
         logger.info(`Data Analysis Plugin Loaded Successfully: ${versionName}`)
       }
     }

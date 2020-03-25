@@ -13,6 +13,7 @@
     :semester='semester'
     :courses='courses'
     :selectedCourses='selectedCourses'
+    @selectCompulsoryCourses='selectCompulsoryCourses()'
   )
   Tips(v-if='type === `full`')
   Transcript(
@@ -68,6 +69,12 @@ export default class SemesterScores extends Vue {
 
   unselectAllCourses(): void {
     this.courses.forEach(v => (v.selected = false))
+  }
+
+  selectCompulsoryCourses(): void {
+    this.courses.forEach(v => (
+      v.selected = (v.coursePropertyName === '必修')
+    ))
   }
 }
 </script>

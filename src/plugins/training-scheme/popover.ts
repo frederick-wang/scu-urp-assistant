@@ -1,53 +1,12 @@
 import { actions, Request, state } from '@/store'
 import { CourseScheduleInfo } from '@/store/types'
 
-export function initCourseInfoPopover() {
-  const { currentSemesterNumber } = state.basic
-  // 教务系统课程信息频繁查询的阈值
-  const initDOM = function(
-    element: HTMLElement,
-    courseName: string,
-    courseNumber: string
-  ) {
-    if ($('.course-info-popover').length) {
-      $('.course-info-popover').remove()
-    }
-    const loadingTips = `( º﹃º ) 兆基祈祷中……`
-    $(element).append(`
-      <div class="course-info-popover">
-        <div class="ci-popover-title">${courseName}（${courseNumber}）</div>
-        <div class="ci-popover-content">${loadingTips}</div>
-        <div class="ci-popover-arrow"></div>
-      </div>
-    `)
-    const $pop = $('.course-info-popover')
-    const { left } = $pop.offset() || { left: 0 }
-    const popWidth = $pop.width() || 0
-    const bodyWidth = $('body').width() || 0
-    if (left + popWidth > bodyWidth) {
-      $pop.offset({ left: bodyWidth - popWidth - 80 })
-    } else if (left < 0) {
-      $pop.offset({ left: 50 })
-    }
-    $(element).mouseleave(function() {
-      $pop.remove()
-    })
-  }
-  $('.course-item-info').click(async function() {
-    const $courseItem = $(this).parent()
-    const courseName = $courseItem.data('course-name')
-    const courseNumber = $courseItem.data('course-number')
-    initDOM($courseItem[0], courseName, courseNumber)
-    showCourseSchedulePop(currentSemesterNumber, courseName, courseNumber)
-  })
-}
-
 async function showCourseSchedulePop(
   semester: string,
   courseName: string,
   courseNumber: string
-) {
-  const { response, sequence } = await actions[Request.COURSE_Schedule](
+): Promise<void> {
+  const { response, sequence } = await actions[Request.COURSE_SCHEDULE](
     semester,
     courseName,
     courseNumber
@@ -59,10 +18,8 @@ async function showCourseSchedulePop(
   const $popContent = $pop.children('.ci-popover-content')
   if (sequence) {
     if (sequence.length) {
-      titleText = `${courseName}（${courseNumber}）- 共${
-        sequence.length
-      }个课序号`
-      const genRowsHTML = (sequence: CourseScheduleInfo[]) =>
+      titleText = `${courseName}（${courseNumber}）- 共${sequence.length}个课序号`
+      const genRowsHTML = (sequence: CourseScheduleInfo[]): string =>
         sequence
           .map(
             ({
@@ -128,4 +85,45 @@ async function showCourseSchedulePop(
   if (templateHTML) {
     $popContent.html(templateHTML)
   }
+}
+
+export function initCourseInfoPopover(): void {
+  const { currentSemesterNumber } = state.basic
+  // 教务系统课程信息频繁查询的阈值
+  const initDOM = function(
+    element: HTMLElement,
+    courseName: string,
+    courseNumber: string
+  ): void {
+    if ($('.course-info-popover').length) {
+      $('.course-info-popover').remove()
+    }
+    const loadingTips = `( º﹃º ) 兆基祈祷中……`
+    $(element).append(`
+      <div class="course-info-popover">
+        <div class="ci-popover-title">${courseName}（${courseNumber}）</div>
+        <div class="ci-popover-content">${loadingTips}</div>
+        <div class="ci-popover-arrow"></div>
+      </div>
+    `)
+    const $pop = $('.course-info-popover')
+    const { left } = $pop.offset() || { left: 0 }
+    const popWidth = $pop.width() || 0
+    const bodyWidth = $('body').width() || 0
+    if (left + popWidth > bodyWidth) {
+      $pop.offset({ left: bodyWidth - popWidth - 80 })
+    } else if (left < 0) {
+      $pop.offset({ left: 50 })
+    }
+    $(element).mouseleave(function() {
+      $pop.remove()
+    })
+  }
+  $('.course-item-info').click(async function() {
+    const $courseItem = $(this).parent()
+    const courseName = $courseItem.data('course-name')
+    const courseNumber = $courseItem.data('course-number')
+    initDOM($courseItem[0], courseName, courseNumber)
+    showCourseSchedulePop(currentSemesterNumber, courseName, courseNumber)
+  })
 }

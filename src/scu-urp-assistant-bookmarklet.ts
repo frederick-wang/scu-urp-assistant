@@ -1,5 +1,5 @@
 import sua from './sua-core'
-;(function() {
+;((): void => {
   const href = window.location.href
   if (
     href.indexOf('202.115.47.141') !== -1 ||

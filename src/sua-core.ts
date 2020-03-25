@@ -13,23 +13,25 @@ import feedback from '@/plugins/feedback'
 import bachelorDegree from '@/plugins/bachelor-degree'
 import scuUietp from '@/plugins/scu-uietp'
 import { pathnameTrigger, routeTrigger } from '@/utils'
-import { init as initStore, state } from './store'
+import { init as initStore } from './store'
 import { logger } from '@/utils'
 
 const typoCSS = require('./typo.css').toString()
 
 declare global {
   interface Window {
-    $sua: {
-      [key: string]: any
-    }
+    $sua: typeof suaObject
     TDAPP: {
-      onEvent: (EventId: string, Label?: string, MapKv?: Object) => void
+      onEvent: (
+        EventId: string,
+        Label?: string,
+        MapKv?: Record<string, string>
+      ) => void
     }
     layer: {
-      open: (a: any) => number
-      close: (a: any) => number
-      msg: (a: any, b?: any, c?: any) => void
+      open: (a: unknown) => number
+      close: (a: unknown) => number
+      msg: (a: unknown, b?: unknown, c?: unknown) => void
     }
     urp: {
       alert: (msg: string, callback?: Function) => void
@@ -62,7 +64,7 @@ const plugins: SUAPlugin[] =
 const taskTimeInterval = 100
 
 // 挂载到 window 上的全局对象
-export default {
+const suaObject = {
   /**
    * 插件
    */
@@ -86,7 +88,7 @@ export default {
   /**
    * 初始化 SCU URP 助手
    */
-  async init() {
+  async init(): Promise<void> {
     logger.info('程序初始化')
     window.$sua = this
     if (window.location.pathname !== '/login') {
@@ -100,7 +102,7 @@ export default {
       await initStore()
     }
     // 加载插件
-    for (let plugin of this.plugins) {
+    for (const plugin of this.plugins) {
       if (pathnameTrigger(plugin.pathname)) {
         // 将样式推入队列中
         if (plugin.style) {
@@ -139,13 +141,8 @@ export default {
     }, taskTimeInterval)
     // 加载菜单
     for (const m of this.menuQueue) {
-      let {
-        rootMenuId,
-        rootMenuName,
-        id: menuId,
-        name: menuName,
-        item: items
-      } = m
+      const { rootMenuId, rootMenuName, id: menuId, name: menuName } = m
+      let { item: items } = m
       const $rootMenuList = $('#menus')
       // 检查根菜单是否存在，如不存在则新建
       if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
@@ -235,3 +232,4 @@ export default {
     }
   }
 }
+export default suaObject

@@ -1,21 +1,21 @@
 // 成绩相关功能插件
-import Vue from 'vue'
+import Vue, { VNode } from 'vue'
 import GPACalculatorApp from './GPACalculator.vue'
 import GPACalculatorWidgetApp from './GPACalculatorWidget.vue'
 import ExpectedGradesEstimationApp from './ExpectedGradesEstimation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 
-function renderExpectedGradesEstimation(root: HTMLElement) {
+function renderExpectedGradesEstimation(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-expected-grades-estimation"></div>`)
   new Vue({
-    render: h => h(ExpectedGradesEstimationApp)
+    render: (h): VNode => h(ExpectedGradesEstimationApp)
   }).$mount('.sua-container-expected-grades-estimation')
 }
 
-function renderGPACalculator(root: HTMLElement) {
+function renderGPACalculator(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-gpa-calculator"></div>`)
   new Vue({
-    render: h =>
+    render: (h): VNode =>
       h(GPACalculatorApp, {
         props: {
           type: 'basic'
@@ -24,7 +24,7 @@ function renderGPACalculator(root: HTMLElement) {
   }).$mount('.sua-container-gpa-calculator')
 }
 
-function renderScoresInformation(root: HTMLElement) {
+function renderScoresInformation(root: HTMLElement): void {
   window.urp.confirm(
     `<p style="font-weight: 700; color: red;">警告：</p>
     <p style="text-indent: 2em;">该页面展示的部分敏感数据（最高分、平均分、最低分、名次）调用了综合教务系统<span style="color: red;">【未公开】的接口</span>，如果综合教务系统关闭了该接口，那么这个功能就报废了，我们将无法再获取到这些教务系统屏蔽的数据！</p>
@@ -34,7 +34,7 @@ function renderScoresInformation(root: HTMLElement) {
       if (res) {
         $(root).append(`<div class="sua-container-gpa-calculator"></div>`)
         new Vue({
-          render: h =>
+          render: (h): VNode =>
             h(GPACalculatorApp, {
               props: {
                 type: 'full'
@@ -101,7 +101,7 @@ export default {
       `<div class="row"><div class="sua-widget-container-gpa-calculator"></div></div>`
     )
     new Vue({
-      render: h => h(GPACalculatorWidgetApp)
+      render: (h): VNode => h(GPACalculatorWidgetApp)
     }).$mount('.sua-widget-container-gpa-calculator')
   },
   menu

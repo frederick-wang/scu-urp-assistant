@@ -1,15 +1,9 @@
 import {
   requestCurrentSemesterStudentAcademicInfo,
   requestStudentInfo,
-  requestStudentSemesterNumberList,
-  requestCourseInfoListBySemester
+  requestStudentSemesterNumberList
 } from './actions/request'
-import {
-  convertSemesterNumberToName,
-  getUserId,
-  logger,
-  convertCourseInfoListsToTeacherTable
-} from '@/utils'
+import { convertSemesterNumberToName, getUserId } from '@/utils'
 import { version } from '@/../package.json'
 import { LocalStore, TeacherTable } from './types'
 import local from './local'
@@ -25,11 +19,20 @@ interface AcademicInfo {
 let academicInfo: AcademicInfo
 let studentInfos: Map<string, string>
 let userSemesterNumberList: string[]
-let data = {} as {
-  [key: string]: any
+const data = {} as {
+  [key: string]: unknown
 }
 
-async function init(localStore: LocalStore) {
+async function initTeacherTable(): Promise<void> {
+  let teacherTable: TeacherTable = state.getData('teacherTable') as TeacherTable
+  if (!teacherTable) {
+    teacherTable = {}
+  }
+  state.setData('teacherTable', teacherTable)
+  await local.saveData({ key: 'teacherTable', payload: teacherTable })
+}
+
+async function init(localStore: LocalStore): Promise<void> {
   if (localStore) {
     for (const key of Object.keys(localStore.state.data)) {
       data[key] = local.get(key)
@@ -46,18 +49,12 @@ async function init(localStore: LocalStore) {
   await initTeacherTable()
 }
 
-async function initTeacherTable() {
-  let teacherTable: TeacherTable = state.getData('teacherTable')
-  if (!teacherTable) {
-    teacherTable = {}
-  }
-  state.setData('teacherTable', teacherTable)
-  await local.saveData({ key: 'teacherTable', payload: teacherTable })
-}
-
 export default {
   init,
-  get core() {
+  get core(): {
+    version: string
+    route: string
+  } {
     let suaRoute = ''
     if (window.location.pathname !== '/login') {
       const regexp = window.location.hash.match(/sua_route=(.+)$/)
@@ -70,11 +67,20 @@ export default {
       route: suaRoute
     }
   },
-  get user() {
+  get user(): {
+    id: string
+    programPlanNumber: number
+    programPlanName: string
+    semesterNumberList: string[]
+    courseNumber: number
+    gpa: number
+    currentSemesterCourseNumber: number
+    failedCourseNumber: number
+  } {
     return {
       id: getUserId(studentInfos),
       programPlanNumber: Number(studentInfos.get('培养方案代码')),
-      programPlanName: studentInfos.get('培养方案名称'),
+      programPlanName: studentInfos.get('培养方案名称') || '',
       semesterNumberList: userSemesterNumberList,
       courseNumber: academicInfo.courseNumber,
       gpa: academicInfo.gpa,
@@ -82,7 +88,10 @@ export default {
       failedCourseNumber: academicInfo.failedCourseNumber
     }
   },
-  get basic() {
+  get basic(): {
+    currentSemesterNumber: string
+    currentSemesterName: string
+  } {
     return {
       currentSemesterNumber: academicInfo.currentSemester,
       currentSemesterName: convertSemesterNumberToName(
@@ -90,10 +99,10 @@ export default {
       )
     }
   },
-  getData(key: string) {
+  getData(key: string): unknown {
     return data[key]
   },
-  setData(key: string, payload: any) {
+  setData(key: string, payload: unknown): void {
     data[key] = payload
   }
 }

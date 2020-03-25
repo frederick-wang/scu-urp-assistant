@@ -45,12 +45,14 @@
     div(style='display: inline-block;')
       span.gpa-tt-tag.label.label-success(
         :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均分为 ${getCompulsoryCoursesScore(courses)}`'
+        @click='$emit(`selectCompulsoryCourses`)'
       )
         | 必修平均分：{{ getCompulsoryCoursesScore(courses) }}
       |
       |
       span.gpa-tt-tag.label.label-success(
         :title='`在 ${semestersQuantity} 个学期中，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均绩点为 ${getCompulsoryCoursesGPA(courses)}`'
+        @click='$emit(`selectCompulsoryCourses`)'
       )
         | 必修绩点：{{ getCompulsoryCoursesGPA(courses) }}
       |
@@ -91,7 +93,8 @@ import {
   getAllCoursesScore,
   getCompulsoryCourses,
   getSelectedCoursesScore,
-  getSelectedCoursesGPA
+  getSelectedCoursesGPA,
+  reserveNewerCoursesForRetakenCourses
 } from '@/plugins/score/utils'
 
 @Component
@@ -113,43 +116,51 @@ export default class TotalTranscript extends Vue {
   selectedCourses!: CourseScoreRecord[]
 
   get selectedCourseCredits(): number {
-    return this.selectedCourses.reduce((acc, cur) => acc + cur.credit, 0)
+    return reserveNewerCoursesForRetakenCourses(this.selectedCourses).reduce(
+      (acc, cur) => acc + cur.credit,
+      0
+    )
   }
 
   get totalCourseCredits(): number {
-    return this.courses.reduce((acc, cur) => acc + cur.credit, 0)
+    return reserveNewerCoursesForRetakenCourses(this.courses).reduce(
+      (acc, cur) => acc + cur.credit,
+      0
+    )
   }
 
   get compulsoryCourses(): CourseScoreRecord[] {
-    return getCompulsoryCourses(this.courses)
+    return getCompulsoryCourses(
+      reserveNewerCoursesForRetakenCourses(this.courses)
+    )
   }
 
   getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
-    return getCompulsoryCoursesGPA(arr)
+    return getCompulsoryCoursesGPA(reserveNewerCoursesForRetakenCourses(arr))
   }
 
   getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
-    return getCompulsoryCoursesScore(arr)
+    return getCompulsoryCoursesScore(reserveNewerCoursesForRetakenCourses(arr))
   }
 
   getSelectedCoursesGPA(arr: CourseScoreRecord[]): number {
-    return getSelectedCoursesGPA(arr)
+    return getSelectedCoursesGPA(reserveNewerCoursesForRetakenCourses(arr))
   }
 
   getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
-    return getSelectedCoursesScore(arr)
+    return getSelectedCoursesScore(reserveNewerCoursesForRetakenCourses(arr))
   }
 
   getAllCoursesGPA(arr: CourseScoreRecord[]): number {
-    return getAllCoursesGPA(arr)
+    return getAllCoursesGPA(reserveNewerCoursesForRetakenCourses(arr))
   }
 
   getAllCoursesScore(arr: CourseScoreRecord[]): number {
-    return getAllCoursesScore(arr)
+    return getAllCoursesScore(reserveNewerCoursesForRetakenCourses(arr))
   }
 
   getCompulsoryCourses(arr: CourseScoreRecord[]): CourseScoreRecord[] {
-    return getCompulsoryCourses(arr)
+    return getCompulsoryCourses(reserveNewerCoursesForRetakenCourses(arr))
   }
 }
 </script>

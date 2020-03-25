@@ -1,6 +1,5 @@
 // 提示信息插件
 import { version } from '@/../package.json'
-import { logger } from '@/utils'
 
 export default {
   name: 'tooltip',

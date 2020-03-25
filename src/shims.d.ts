@@ -20,8 +20,8 @@ interface SUAPlugin {
     | { [key: string]: string }
   style?: string
   menu?: SUAPluginMenu | SUAPluginMenu[]
-  init?: () => any
-  task?: () => any
+  init?: () => Promise<void> | void
+  task?: () => Promise<void> | void
 }
 
 interface SUAPluginMenu {

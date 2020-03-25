@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { API_PATH, logger } from '@/utils'
 
 import { CourseScorePublicInfo } from '@/store/types'
 
-async function submitCourseScorePublicInfo(item: CourseScorePublicInfo) {
+async function submitCourseScorePublicInfo(
+  item: CourseScorePublicInfo
+): Promise<void> {
   const url = `${API_PATH}/course/course_score_info`
   const {
     courseName,
@@ -49,10 +52,11 @@ async function submitCourseScorePublicInfo(item: CourseScorePublicInfo) {
   } catch (error) {
     logger.error(error)
   }
-  return res
 }
 
-async function submitCourseScorePublicInfos(items: CourseScorePublicInfo[]) {
+async function submitCourseScorePublicInfos(
+  items: CourseScorePublicInfo[]
+): Promise<void> {
   if (!items || !items.length) {
     return
   }
@@ -93,16 +97,16 @@ async function submitCourseScorePublicInfos(items: CourseScorePublicInfo[]) {
       )
     }
   }
-  let res
-  res = await $.post(url, req)
+  const res = await $.post(url, req)
   if (res.error) {
     throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`)
   }
   logger.info('Submit.COURSE_SCORE_PUBLIC_INFOS Successfully:', res.data)
-  return res
 }
 
-async function submitStudentCourseScorePublicInfos(items: any[]) {
+async function submitStudentCourseScorePublicInfos(
+  items: any[]
+): Promise<void> {
   const url = `${API_PATH}/student/course_score_infos`
   const req = {
     api: {
@@ -112,8 +116,7 @@ async function submitStudentCourseScorePublicInfos(items: any[]) {
       student_course_score_infos: items
     }
   }
-  let res
-  res = await $.post(url, req)
+  const res = await $.post(url, req)
   if (res.error) {
     throw new Error(
       `Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`
