@@ -15,6 +15,13 @@ module.exports = function(api) {
     '@babel/typescript'
   ]
   const plugins = [
+    [
+      'component',
+      {
+        libraryName: 'element-ui',
+        styleLibraryName: 'theme-chalk'
+      }
+    ],
     '@babel/plugin-transform-runtime',
     '@babel/proposal-object-rest-spread',
     '@babel/plugin-proposal-numeric-separator',

@@ -1,5 +1,7 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
+import Vue from 'vue'
+import { Loading, Message, MessageBox, Notification } from 'element-ui'
 import fastEvaluation from '@/plugins/fast-evaluation'
 import tooltip from '@/plugins/tooltip'
 import recoverRememberMe from '@/plugins/recover-remember-me'
@@ -92,6 +94,10 @@ const suaObject = {
     logger.info('程序初始化')
     window.$sua = this
     if (window.location.pathname !== '/login') {
+      // 导入 Element-UI 的样式
+      $('head').append(
+        '<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"></link>'
+      )
       // 加载Typo.css样式
       $('head').append(`
         <style type="text/css">
@@ -101,6 +107,15 @@ const suaObject = {
       // 初始化Store
       await initStore()
     }
+    // 导入 Element-UI 的 Loading, Message, Notification 和 MessageBox
+    Vue.use(Loading.directive)
+    Vue.prototype.$loading = Loading.service
+    Vue.prototype.$msgbox = MessageBox
+    Vue.prototype.$alert = MessageBox.alert
+    Vue.prototype.$confirm = MessageBox.confirm
+    Vue.prototype.$prompt = MessageBox.prompt
+    Vue.prototype.$notify = Notification
+    Vue.prototype.$message = Message
     // 加载插件
     for (const plugin of this.plugins) {
       if (pathnameTrigger(plugin.pathname)) {
