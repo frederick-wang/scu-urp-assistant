@@ -25,6 +25,8 @@ export default {
   displayName: '数据统计',
   icon: getPluginIcon('data-analysis'),
   isNecessary: false,
+  brief:
+    '为开发者提供诸如「助手版本」、「程序启动次数」、「功能使用频率」、「程序是否出错」等匿名统计数据，帮助开发者了解程序的运行情况。',
   pathname: true,
   task() {
     if (window.TDAPP && queue.length) {

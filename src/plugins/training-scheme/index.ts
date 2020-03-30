@@ -13,6 +13,8 @@ export default {
   displayName: '培养方案相关',
   icon: getPluginIcon('training-scheme'),
   isNecessary: false,
+  brief:
+    '查询所有专业的培养方案与指导性教学计划，还可选择任意两个培养方案进行比较，甚至能将查询结果保存为长图',
   route: [
     'advanced_query/query_training_scheme',
     'advanced_query/compare_training_scheme'

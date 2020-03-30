@@ -150,6 +150,8 @@ export default {
   icon: getPluginIcon('user-experience-improvement-program'),
   isNecessary: false,
   pathname: true,
+  brief:
+    '统计与课程相关的匿名信息，并将这些信息分析后提供给全体助手用户，以改善用户体验。',
   async init(): Promise<void> {
     sendCourseScorePublicList()
   }

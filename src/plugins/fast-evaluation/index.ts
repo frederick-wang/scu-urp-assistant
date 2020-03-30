@@ -340,6 +340,8 @@ export default {
   displayName: '快捷评教',
   icon: getPluginIcon('fast-evaluation'),
   isNecessary: false,
+  brief:
+    '嫌评教系统交互太不方便？该插件可以让您快捷地在系统中完成问卷，给老师填上正确的评价与合适的分数。',
   pathname: '/student/teachingEvaluation/evaluation/index',
   style: require('./index.scss').toString(),
   init() {

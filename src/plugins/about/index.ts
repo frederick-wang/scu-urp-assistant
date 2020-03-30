@@ -16,6 +16,7 @@ export default {
   displayName: '关于',
   icon: getPluginIcon('about'),
   isNecessary: true,
+  brief: '关于页面，是助手界面的一部分，不可关闭。',
   route: 'help/about',
   menu: {
     rootMenuId: 'sua-menu-list',
