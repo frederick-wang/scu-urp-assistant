@@ -4,6 +4,8 @@ const TerserPlugin = require('terser-webpack-plugin')
 const webpack = require('webpack')
 const { version, description, author, license } = require('./package.json')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin
 
 const banner = `// ==UserScript==
 // @name         四川大学综合教务系统助手
@@ -18,123 +20,134 @@ const banner = `// ==UserScript==
 // @run-at       document-start
 // ==/UserScript==`
 
-module.exports = {
-  mode: 'production',
-  entry: {
-    'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
-    'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
-  },
-  plugins: [
-    new CleanWebpackPlugin(),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery'
-    }),
-    new VueLoaderPlugin()
-  ],
-  optimization: {
-    minimize: true,
-    minimizer: [
-      new TerserPlugin({
-        extractComments: {
-          condition: 'some',
-          banner: banner
-        }
-      })
+console.log()
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+module.exports = env => {
+  return {
+    entry: {
+      'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
+      'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
+    },
+    plugins: [
+      new CleanWebpackPlugin(),
+      new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery'
+      }),
+      new VueLoaderPlugin(),
+      ...(env.analyze ? [new BundleAnalyzerPlugin()] : [])
     ],
-    concatenateModules: true
-  },
-  output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'dist')
-  },
-  module: {
-    rules: [
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader'
-      },
-      {
-        test: /\.(ts|js)x?$/,
-        exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'babel-loader'
-        }
-      },
-      {
-        test: /\.scss$/i,
-        oneOf: [
-          // 这条规则应用到 Vue 组件内的
-          {
-            resourceQuery: /^\?vue/,
-            use: [
-              'vue-style-loader',
-              { loader: 'css-loader', options: { importLoaders: 2 } },
-              'postcss-loader',
-              {
-                loader: 'sass-loader',
-                options: {
-                  sassOptions: { outputStyle: 'expanded' }
-                }
-              }
-            ]
-          },
-          {
-            use: [
-              'to-string-loader',
-              { loader: 'css-loader', options: { importLoaders: 2 } },
-              'postcss-loader',
-              {
-                loader: 'sass-loader',
-                options: {
-                  sassOptions: {
-                    outputStyle: 'expanded'
+    optimization: {
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          extractComments: {
+            condition: 'some',
+            banner: banner
+          }
+        })
+      ],
+      concatenateModules: true
+    },
+    output: {
+      filename: '[name].js',
+      path: path.resolve(__dirname, 'dist')
+    },
+    module: {
+      rules: [
+        {
+          test: /\.vue$/,
+          loader: 'vue-loader'
+        },
+        {
+          test: /\.(ts|js)x?$/,
+          exclude: /(node_modules|bower_components)/,
+          use: {
+            loader: 'babel-loader'
+          }
+        },
+        {
+          test: /\.scss$/i,
+          oneOf: [
+            // 这条规则应用到 Vue 组件内的
+            {
+              resourceQuery: /^\?vue/,
+              use: [
+                'vue-style-loader',
+                { loader: 'css-loader', options: { importLoaders: 2 } },
+                'postcss-loader',
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sassOptions: { outputStyle: 'expanded' }
                   }
                 }
-              }
-            ]
-          }
-        ]
+              ]
+            },
+            {
+              use: [
+                'to-string-loader',
+                { loader: 'css-loader', options: { importLoaders: 2 } },
+                'postcss-loader',
+                {
+                  loader: 'sass-loader',
+                  options: {
+                    sassOptions: {
+                      outputStyle: 'expanded'
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          test: /\.css$/i,
+          oneOf: [
+            // 这条规则应用到 Vue 组件内的
+            {
+              resourceQuery: /^\?vue/,
+              use: [
+                'vue-style-loader',
+                { loader: 'css-loader', options: { importLoaders: 1 } },
+                'postcss-loader'
+              ]
+            },
+            {
+              use: [
+                'to-string-loader',
+                { loader: 'css-loader', options: { importLoaders: 1 } },
+                'postcss-loader'
+              ]
+            }
+          ]
+        },
+        {
+          test: /\.pug$/i,
+          oneOf: [
+            // 这条规则应用到 Vue 组件内的 `<template lang="pug">`
+            {
+              resourceQuery: /^\?vue/,
+              use: ['pug-plain-loader']
+            },
+            // 这条规则应用到 JavaScript 内的 pug 导入
+            {
+              use: ['babel-loader', 'pug-loader']
+            }
+          ]
+        },
+        {
+          test: /\.(ttf|eot|woff|woff2)$/i,
+          use: 'null-loader'
+        }
+      ]
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve('src')
       },
-      {
-        test: /\.css$/i,
-        oneOf: [
-          // 这条规则应用到 Vue 组件内的
-          {
-            resourceQuery: /^\?vue/,
-            use: [
-              'vue-style-loader',
-              { loader: 'css-loader', options: { importLoaders: 1 } },
-              'postcss-loader'
-            ]
-          },
-          {
-            use: [
-              'to-string-loader',
-              { loader: 'css-loader', options: { importLoaders: 1 } },
-              'postcss-loader'
-            ]
-          }
-        ]
-      },
-      {
-        test: /\.pug$/i,
-        oneOf: [
-          // 这条规则应用到 Vue 组件内的 `<template lang="pug">`
-          {
-            resourceQuery: /^\?vue/,
-            use: ['pug-plain-loader']
-          },
-          // 这条规则应用到 JavaScript 内的 pug 导入
-          {
-            use: ['babel-loader', 'pug-loader']
-          }
-        ]
-      }
-    ]
-  },
-  resolve: {
-    alias: { '@': path.resolve('src') },
-    extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json', '.ts', '.tsx']
+      extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json', '.ts', '.tsx']
+    }
   }
 }

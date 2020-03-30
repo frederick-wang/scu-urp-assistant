@@ -66,9 +66,7 @@ export default class GPACalculator extends Vue {
   }
 
   selectCompulsoryCourses(): void {
-    this.allCourses.forEach(v => (
-        v.selected = (v.coursePropertyName === '必修')
-    ))
+    this.allCourses.forEach(v => (v.selected = v.coursePropertyName === '必修'))
   }
 
   async created(): Promise<void> {

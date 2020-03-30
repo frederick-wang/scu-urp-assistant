@@ -30,6 +30,34 @@
         div 男，九十年代生人，可能是一个程序员。
         div 更多信息可参见博客的
           a(href='https://zhaoji.wang/about/' target='blank') 「关于我」页面
+  h3 版权声明
+  p.indent
+    span 四川大学综合教务系统助手（SCU URP Assistant）以
+    |
+    |
+    a(target='_blank', href='https://github.com/frederick-wang/scu-urp-assistant/blob/master/LICENSE') Apache Licene 2.0
+    |
+    |
+    span 协议开源。原作者在保有代码著作权的前提下允许代码修改以及再发布（作为开源或商业用途）。如果你需要使用本开源程序的源代码，请遵守以下约定：
+  ol
+    li 使用者必须放置协议说明；
+    li 如果你修改了代码，需要在被修改的文件中说明；
+    li 在延伸的代码中（修改和有源代码衍生的代码中）需要带有原来代码中的协议，商标，专利声明和其他原来作者规定需要包含的说明；
+    li 如果再发布的产品中包含一个 Notice 文件，则在 Notice 文件中需要带有 Apache Licence。你可以在 Notice 中增加自己的许可，但不可以表现为对 Apache Licence 构成更改；
+    li 禁止使用者用作者的名号进行商业广告；
+    li 原作者不承担代码使用后风险。
+  p.indent
+    span 完整协议文本请点击
+    a(target='_blank', href='https://github.com/frederick-wang/scu-urp-assistant/blob/master/LICENSE') 此处
+    span 阅读。
+  p
+    a(target='_blank', href='https://icons8.cn/icons/set/settings') Settings
+    | ,
+    |
+    a(target='_blank', href='https://icons8.cn/icons/set/idea') idea
+    |  and other icons by
+    |
+    a(target='_blank', href='https://icons8.cn') Icons8
 </template>
 
 <script lang="ts">
