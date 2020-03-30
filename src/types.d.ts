@@ -1,6 +1,10 @@
-declare module '*.vue' {
-  import Vue from 'vue'
-  export default Vue
+interface SUAObject {
+  plugins: SUAPlugin[]
+  initQueue: Function[]
+  taskQueue: Function[]
+  styleQueue: string[]
+  menuQueue: SUAPluginMenu[]
+  init(): Promise<void>
 }
 
 // pathname和route至少要有一个

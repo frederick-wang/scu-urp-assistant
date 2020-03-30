@@ -19,29 +19,8 @@ import { init as initStore } from './store'
 import { logger } from '@/utils'
 
 const typoCSS = require('./typo.css').toString()
-
-declare global {
-  interface Window {
-    $sua: typeof suaObject
-    TDAPP: {
-      onEvent: (
-        EventId: string,
-        Label?: string,
-        MapKv?: Record<string, string>
-      ) => void
-    }
-    layer: {
-      open: (a: unknown) => number
-      close: (a: unknown) => number
-      msg: (a: unknown, b?: unknown, c?: unknown) => void
-    }
-    urp: {
-      alert: (msg: string, callback?: Function) => void
-      confirm: (msg: string, callback?: Function) => void
-    }
-    toSelect: (obj: HTMLElement) => void
-  }
-}
+const globalStyle = require('./global.scss').toString()
+console.log(globalStyle)
 
 const plugins: SUAPlugin[] =
   window.location.pathname === '/login'
@@ -66,7 +45,7 @@ const plugins: SUAPlugin[] =
 const taskTimeInterval = 100
 
 // 挂载到 window 上的全局对象
-const suaObject = {
+const suaObject: SUAObject = {
   /**
    * 插件
    */
