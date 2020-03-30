@@ -11,6 +11,7 @@ import feedback from '@/plugins/feedback'
 import bachelorDegree from '@/plugins/bachelor-degree'
 import scuUietp from '@/plugins/scu-uietp'
 import beautify from '@/plugins/beautify'
+import setting from '@/plugins/setting'
 
 function getSuitablePluginsByLoginStatus(): SUAPlugin[] {
   const necessaryPlugins = [dataAnalysis, tooltip]
@@ -24,6 +25,7 @@ function getSuitablePluginsByLoginStatus(): SUAPlugin[] {
     bachelorDegree,
     scuUietp,
     submitData,
+    setting,
     about,
     feedback
   ]
