@@ -2,44 +2,12 @@ import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import Vue from 'vue'
 import { Loading, Message, MessageBox, Notification } from 'element-ui'
-import fastEvaluation from '@/plugins/fast-evaluation'
-import tooltip from '@/plugins/tooltip'
-import recoverRememberMe from '@/plugins/recover-remember-me'
-import rearrange from '@/plugins/rearrange'
-import score from '@/plugins/score'
-import trainingScheme from '@/plugins/training-scheme'
-import submitData from '@/plugins/user-experience-improvement-program'
-import dataAnalysis from '@/plugins/data-analysis'
-import about from '@/plugins/about'
-import feedback from '@/plugins/feedback'
-import bachelorDegree from '@/plugins/bachelor-degree'
-import scuUietp from '@/plugins/scu-uietp'
-import beautify from '@/plugins/beautify'
 import { pathnameTrigger, routeTrigger } from '@/utils'
-import { init as initStore } from './store'
+import { init as initStore } from '@/store'
+import { init as initPlugins } from '@/plugins'
 import { logger } from '@/utils'
+
 const globalStyle = require('@/global.scss').toString()
-
-const necessaryPlugins = [dataAnalysis, tooltip, beautify]
-const optionalPluginsBeforeLogin = [recoverRememberMe]
-const optionalPluginsLogined = [
-  rearrange,
-  fastEvaluation,
-  score,
-  trainingScheme,
-  bachelorDegree,
-  scuUietp,
-  submitData,
-  about,
-  feedback
-]
-
-const plugins: SUAPlugin[] = [
-  ...necessaryPlugins,
-  ...(window.location.pathname === '/login'
-    ? optionalPluginsBeforeLogin
-    : optionalPluginsLogined)
-]
 
 /**
  * 定时任务的执行间隔
@@ -51,27 +19,27 @@ const suaObject: SUAObject = {
   /**
    * 插件
    */
-  plugins,
+  plugins: [],
   /**
    * 初始化任务的队列
    */
-  initQueue: [] as Array<Function>,
+  initQueue: [],
   /**
    * 定时执行的任务的队列
    */
-  taskQueue: [] as Array<Function>,
+  taskQueue: [],
   /**
    * 加载样式的队列
    */
-  styleQueue: [] as string[],
+  styleQueue: [],
   /**
    * 加载菜单的队列
    */
-  menuQueue: [] as SUAPluginMenu[],
+  menuQueue: [],
   /**
    * 初始化 SCU URP 助手
    */
-  async init(): Promise<void> {
+  async init() {
     logger.info('程序初始化')
     window.$sua = this
     if (window.location.pathname !== '/login') {
@@ -88,6 +56,7 @@ const suaObject: SUAObject = {
       // 初始化Store
       await initStore()
     }
+    this.plugins = await initPlugins()
     // 导入 Element-UI 的 Loading, Message, Notification 和 MessageBox
     Vue.use(Loading.directive)
     Vue.prototype.$loading = Loading.service
