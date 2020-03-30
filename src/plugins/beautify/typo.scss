@@ -4,8 +4,7 @@
 html {
   color: #333;
   background: #fff;
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   text-rendering: optimizelegibility;
 }
 
@@ -14,8 +13,6 @@ html {
 html.borderbox *,
 html.borderbox *:before,
 html.borderbox *:after {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 

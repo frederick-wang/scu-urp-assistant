@@ -1,6 +1,6 @@
 // 样式美化插件
 
-const typoCSS = require('@/typo.css').toString()
+const typoCSS = require('./typo.scss').toString()
 
 export default {
   name: 'beautify',
