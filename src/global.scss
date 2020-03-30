@@ -1,0 +1,4 @@
+div[class^='sua-container'] {
+  /* 因为.page-content已经给了12px的padding了，这里需要减去 */
+  padding: 4px 8px;
+}
