@@ -1,15 +1,19 @@
 import { logger } from '@/utils'
-import { getSuitablePluginsByLoginStatus } from './list'
+import { getAvailablePluginsByLoginStatus, getAllPlugins } from './list'
+import { SUAPlugin } from '@/types'
 
-const allPlugins = getSuitablePluginsByLoginStatus()
+const allList = getAllPlugins()
+const availableList = getAvailablePluginsByLoginStatus()
 const disabledPluginsName: string[] = []
 
-async function init(): Promise<SUAPlugin[]> {
-  const list = allPlugins.filter(
-    ({ name }) => !disabledPluginsName.includes(name)
+const enabledList: SUAPlugin[] = []
+
+async function init(): Promise<void> {
+  enabledList.length = 0
+  enabledList.push(
+    ...availableList.filter(({ name }) => !disabledPluginsName.includes(name))
   )
-  logger.info('Plugin.list初始化成功:', list)
-  return list
+  logger.info('Plugin.list初始化成功:', enabledList)
 }
 
-export { init }
+export { init, enabledList, availableList, allList }

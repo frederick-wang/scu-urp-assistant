@@ -1,11 +1,19 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import Vue from 'vue'
-import { Loading, Message, MessageBox, Notification } from 'element-ui'
+import {
+  Switch,
+  Tag,
+  Loading,
+  Message,
+  MessageBox,
+  Notification
+} from 'element-ui'
 import { pathnameTrigger, routeTrigger } from '@/utils'
 import { init as initStore } from '@/store'
-import { init as initPlugins } from '@/plugins'
+import { init as initPlugin, enabledList as pluginList } from '@/plugins'
 import { logger } from '@/utils'
+import { SUAPluginMenu, SUAObject } from './types'
 
 const globalStyle = require('@/global.scss').toString()
 
@@ -18,7 +26,9 @@ function loadElementUI(): void {
   $('head').append(
     '<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"></link>'
   )
-  // 导入 Element-UI 的 Loading, Message, Notification 和 MessageBox
+  // 导入 Element-UI 组件
+  Vue.use(Switch)
+  Vue.use(Tag)
   Vue.use(Loading.directive)
   Vue.prototype.$loading = Loading.service
   Vue.prototype.$msgbox = MessageBox
@@ -177,7 +187,8 @@ const suaObject: SUAObject = {
       await initStore()
     }
     // 初始化插件列表
-    this.plugins = await initPlugins()
+    await initPlugin()
+    this.plugins = pluginList
     // 加载插件
     for (const plugin of this.plugins) {
       if (pathnameTrigger(plugin.pathname)) {
