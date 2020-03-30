@@ -35,10 +35,10 @@ function loadElementUI(): void {
  */
 function loadGlobalStyle(): void {
   $('head').append(`
-  <style type="text/css">
-    ${globalStyle}
-  </style>
-`)
+    <style type="text/css">
+      ${globalStyle}
+    </style>
+  `)
 }
 
 /**
@@ -53,31 +53,31 @@ function loadMenu(menu: SUAPluginMenu): void {
   // 检查根菜单是否存在，如不存在则新建
   if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
     $rootMenuList.append(`
-            <li class="hsub sua-menu-list" id="${rootMenuId}" onclick="rootMenuClick(this);">
-              <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-gavel"></i>
-                <span class="menu-text">${rootMenuName}</span>
-                <b class="arrow fa fa-angle-down"></b>
-              </a>
-              <b class="arrow"></b>
-              <ul class="submenu nav-hide" onclick="stopHere();" style="display: none;">
-              </ul>
-            </li>
-          `)
+      <li class="hsub sua-menu-list" id="${rootMenuId}" onclick="rootMenuClick(this);">
+        <a href="#" class="dropdown-toggle">
+          <i class="menu-icon fa fa-gavel"></i>
+          <span class="menu-text">${rootMenuName}</span>
+          <b class="arrow fa fa-angle-down"></b>
+        </a>
+        <b class="arrow"></b>
+        <ul class="submenu nav-hide" onclick="stopHere();" style="display: none;">
+        </ul>
+      </li>
+    `)
   }
   const $rootMenu = $rootMenuList.find(`li#${rootMenuId}>ul.submenu`)
   // 检查菜单是否存在，如不存在则新建
   if (!$rootMenu.children(`li#${menuId}`).length) {
     $rootMenu.append(`
-            <li class="hsub sua-menu" id="${menuId}">
-              <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>${menuName}
-                <b class="arrow fa fa-angle-down"></b></a>
-              <b class="arrow"></b>
-              <ul class="submenu nav-show" style="display: none;">
-              </ul>
-            </li>
-          `)
+      <li class="hsub sua-menu" id="${menuId}">
+        <a href="#" class="dropdown-toggle">
+          <i class="menu-icon fa fa-caret-right"></i>${menuName}
+          <b class="arrow fa fa-angle-down"></b></a>
+        <b class="arrow"></b>
+        <ul class="submenu nav-show" style="display: none;">
+        </ul>
+      </li>
+    `)
   }
   const $menu = $rootMenu.find(`li#${menuId}>ul.submenu`)
   if (!Array.isArray(items)) {
@@ -86,11 +86,11 @@ function loadMenu(menu: SUAPluginMenu): void {
   items.forEach(({ name, style, route, breadcrumbs, render }) => {
     const id = `menu-item-${name}`
     $menu.append(`
-            <li class="sua-menu-item" id="${id}">
-              <a href="#">&nbsp;&nbsp; ${name}</a>
-              <b class="arrow"></b>
-            </li>
-          `)
+      <li class="sua-menu-item" id="${id}">
+        <a href="#">&nbsp;&nbsp; ${name}</a>
+        <b class="arrow"></b>
+      </li>
+    `)
     const $menuItem = $menu.children(`#${id}`)
     $menuItem.click(() => {
       $('.hsub').removeClass('open')
@@ -105,14 +105,14 @@ function loadMenu(menu: SUAPluginMenu): void {
       $menuItem.find('a').prepend("<i class='menu-icon fa fa-caret-right'></i>")
       const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
       $breadcrumbs.empty().append(`
-              <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
-                <i class="ace-icon fa fa-home home-icon"></i>
-                首页
-              </li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${breadcrumbs[0]}</li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${breadcrumbs[1]}</li>
-              <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${breadcrumbs[2]}</li>
-            `)
+        <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
+          <i class="ace-icon fa fa-home home-icon"></i>
+          首页
+        </li>
+        <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${breadcrumbs[0]}</li>
+        <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${breadcrumbs[1]}</li>
+        <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${breadcrumbs[2]}</li>
+      `)
       const $pageContent = $('.main-content>.page-content')
       $pageContent.empty()
       const hash = `#sua_route=${route}`
@@ -122,10 +122,10 @@ function loadMenu(menu: SUAPluginMenu): void {
       }, 0)
       if (style) {
         $('head').append(`
-                <style type="text/css">
-                  ${style}
-                </style>
-              `)
+          <style type="text/css">
+            ${style}
+          </style>
+        `)
       }
       render($('.main-content>.page-content')[0])
     })
