@@ -25,7 +25,6 @@ console.log()
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 module.exports = env => {
   return {
-    mode: 'production',
     entry: {
       'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
       'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
