@@ -93,7 +93,7 @@ const menu = [
 ]
 
 export default {
-  name: 'gpa',
+  name: 'score',
   pathname: ['/', '/index.jsp'],
   route: menu.map(v => v.item.route),
   init() {
