@@ -1,6 +1,7 @@
 import Vue, { VNode } from 'vue'
 import App from './About.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
+import { getPluginIcon } from '@/utils'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-about"></div>`)
@@ -12,6 +13,9 @@ function render(root: HTMLElement): void {
 
 export default {
   name: 'about',
+  displayName: '关于',
+  icon: getPluginIcon('about'),
+  isNecessary: true,
   route: 'help/about',
   menu: {
     rootMenuId: 'sua-menu-list',

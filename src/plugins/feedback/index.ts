@@ -1,6 +1,7 @@
 import Vue, { VNode } from 'vue'
 import App from './Feedback.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
+import { getPluginIcon } from '@/utils'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-feedback"></div>`)
@@ -12,6 +13,9 @@ function render(root: HTMLElement): void {
 
 export default {
   name: 'feedback',
+  displayName: '反馈',
+  icon: getPluginIcon('feedback'),
+  isNecessary: true,
   route: 'help/feedback',
   menu: {
     rootMenuId: 'sua-menu-list',

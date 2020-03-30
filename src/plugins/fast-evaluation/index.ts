@@ -3,6 +3,7 @@ import comments from './comments.json'
 import checkboxWrapperSelectorsData from './checkboxWrapperSelectors.json'
 import questionsNumberRangeData from './questionsNumberRange.json'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
+import { getPluginIcon } from '@/utils'
 
 const checkboxWrapperSelectors = new Map(
   Object.entries(checkboxWrapperSelectorsData)
@@ -336,6 +337,9 @@ function onClickBtn(e: MouseEvent): void {
 
 export default {
   name: 'fast-evaluation',
+  displayName: '快捷评教',
+  icon: getPluginIcon('fast-evaluation'),
+  isNecessary: false,
   pathname: '/student/teachingEvaluation/evaluation/index',
   style: require('./index.scss').toString(),
   init() {

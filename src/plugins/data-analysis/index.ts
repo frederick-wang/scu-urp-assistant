@@ -1,6 +1,6 @@
 // 数据统计插件
 import { version } from '@/../package.json'
-import { logger } from '@/utils'
+import { logger, getPluginIcon } from '@/utils'
 
 interface TalkingDataEventParams {
   EventId: string
@@ -22,6 +22,9 @@ export { emitDataAnalysisEvent }
 
 export default {
   name: 'data-analysis',
+  displayName: '数据统计',
+  icon: getPluginIcon('data-analysis'),
+  isNecessary: false,
   pathname: true,
   task() {
     if (window.TDAPP && queue.length) {

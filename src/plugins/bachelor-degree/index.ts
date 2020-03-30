@@ -1,5 +1,6 @@
 import Vue, { VNode } from 'vue'
 import App from './BachelorDegree.vue'
+import { getPluginIcon } from '@/utils'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-bachelor-degree"></div>`)
@@ -10,6 +11,9 @@ function render(root: HTMLElement): void {
 
 export default {
   name: 'bachelor-degree',
+  displayName: '专业授位查询',
+  icon: getPluginIcon('bachelor-degree'),
+  isNecessary: false,
   route: 'advanced_query/bachelor_degree',
   menu: {
     rootMenuId: 'sua-menu-list',

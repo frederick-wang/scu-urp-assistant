@@ -1,6 +1,7 @@
 import Vue, { VNode } from 'vue'
 import PluginManager from './PluginManager.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
+import { getPluginIcon } from '@/utils'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-setting-plugin-manager"></div>`)
@@ -12,6 +13,9 @@ function render(root: HTMLElement): void {
 
 export default {
   name: 'setting',
+  displayName: '设置',
+  icon: getPluginIcon('setting'),
+  isNecessary: true,
   route: ['setting/plugin_manager'],
   menu: [
     {

@@ -1,5 +1,6 @@
 import Vue, { VNode } from 'vue'
 import App from './ScuUietp.vue'
+import { getPluginIcon } from '@/utils'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-scu-uietp"></div>`)
@@ -10,6 +11,9 @@ function render(root: HTMLElement): void {
 
 export default {
   name: 'scu-uietp',
+  displayName: '历届大创查询',
+  icon: getPluginIcon('scu-uietp'),
+  isNecessary: false,
   route: 'advanced_query/scu_uietp',
   menu: {
     rootMenuId: 'sua-menu-list',

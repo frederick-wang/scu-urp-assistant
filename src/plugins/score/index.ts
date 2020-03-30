@@ -4,6 +4,7 @@ import GPACalculatorApp from './GPACalculator.vue'
 import GPACalculatorWidgetApp from './GPACalculatorWidget.vue'
 import ExpectedGradesEstimationApp from './ExpectedGradesEstimation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
+import { getPluginIcon } from '@/utils'
 
 function renderExpectedGradesEstimation(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-expected-grades-estimation"></div>`)
@@ -94,6 +95,9 @@ const menu = [
 
 export default {
   name: 'score',
+  displayName: '成绩相关工具',
+  icon: getPluginIcon('score'),
+  isNecessary: false,
   pathname: ['/', '/index.jsp'],
   route: menu.map(v => v.item.route),
   init() {

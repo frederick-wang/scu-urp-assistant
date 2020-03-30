@@ -4,11 +4,15 @@
 // TODO: 3. 将课程中时间和地点的对应关系体现的更清晰，分成两行
 import { render as queryRender } from './queryTrainingScheme'
 import { render as compareRender } from './compareTrainingScheme'
+import { getPluginIcon } from '@/utils'
 
 const style = require('./index.scss').toString()
 
 export default {
   name: 'training-scheme',
+  displayName: '培养方案相关',
+  icon: getPluginIcon('training-scheme'),
+  isNecessary: false,
   route: [
     'advanced_query/query_training_scheme',
     'advanced_query/compare_training_scheme'

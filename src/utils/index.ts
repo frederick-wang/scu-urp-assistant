@@ -350,6 +350,10 @@ async function getCourseTeacherList(
   return []
 }
 
+function getPluginIcon(name: string): string {
+  return `https://gitee.com/frederick-wang/scu-urp-assistant/raw/master/src/plugins/${name}/icon.png`
+}
+
 export {
   getChineseNumber,
   API_PATH,
@@ -363,5 +367,6 @@ export {
   convertCourseInfoListsToTeacherTable,
   getCourseTeacherList,
   convertCourseScoreInfoListToScoreRecords,
-  getTextSimilarity
+  getTextSimilarity,
+  getPluginIcon
 }

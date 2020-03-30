@@ -1,6 +1,11 @@
+import { getPluginIcon } from "@/utils"
+
 // 重新布局插件
 export default {
   name: 'rearrange',
+  displayName: '界面重排',
+  icon: getPluginIcon('rearrange'),
+  isNecessary: false,
   pathname: ['/', '/index.jsp'],
   init() {
     // 将上端三个挂件的容器设置为Flex布局

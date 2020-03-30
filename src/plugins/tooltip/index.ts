@@ -1,8 +1,12 @@
 // 提示信息插件
 import { version } from '@/../package.json'
+import { getPluginIcon } from '@/utils'
 
 export default {
   name: 'tooltip',
+  displayName: '提示信息',
+  icon: getPluginIcon('tooltip'),
+  isNecessary: false,
   pathname: true,
   init() {
     const versionName = `${version} (${
