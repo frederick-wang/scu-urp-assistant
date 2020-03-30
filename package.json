@@ -78,6 +78,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.9.2",
+    "@types/ramda": "^0.27.0",
     "browserslist": "^4.11.0",
     "caniuse-lite": "^1.0.30001038",
     "core-js": "^3.6.4",
@@ -87,6 +88,7 @@
     "localforage": "^1.7.3",
     "lodash-es": "^4.17.15",
     "minimatch": "^3.0.4",
+    "ramda": "^0.27.0",
     "regenerator-runtime": "^0.13.5",
     "vue": "^2.6.11",
     "vue-property-decorator": "^8.4.1"
