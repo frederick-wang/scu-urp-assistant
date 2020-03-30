@@ -14,30 +14,32 @@ import about from '@/plugins/about'
 import feedback from '@/plugins/feedback'
 import bachelorDegree from '@/plugins/bachelor-degree'
 import scuUietp from '@/plugins/scu-uietp'
+import beautify from '@/plugins/beautify'
 import { pathnameTrigger, routeTrigger } from '@/utils'
 import { init as initStore } from './store'
 import { logger } from '@/utils'
+const globalStyle = require('@/global.scss').toString()
 
-const typoCSS = require('./typo.css').toString()
-const globalStyle = require('./global.scss').toString()
-console.log(globalStyle)
+const necessaryPlugins = [dataAnalysis, tooltip, beautify]
+const optionalPluginsBeforeLogin = [recoverRememberMe]
+const optionalPluginsLogined = [
+  rearrange,
+  fastEvaluation,
+  score,
+  trainingScheme,
+  bachelorDegree,
+  scuUietp,
+  submitData,
+  about,
+  feedback
+]
 
-const plugins: SUAPlugin[] =
-  window.location.pathname === '/login'
-    ? [dataAnalysis, tooltip, recoverRememberMe]
-    : [
-        dataAnalysis,
-        tooltip,
-        rearrange,
-        fastEvaluation,
-        score,
-        trainingScheme,
-        bachelorDegree,
-        scuUietp,
-        submitData,
-        about,
-        feedback
-      ]
+const plugins: SUAPlugin[] = [
+  ...necessaryPlugins,
+  ...(window.location.pathname === '/login'
+    ? optionalPluginsBeforeLogin
+    : optionalPluginsLogined)
+]
 
 /**
  * 定时任务的执行间隔
@@ -77,10 +79,10 @@ const suaObject: SUAObject = {
       $('head').append(
         '<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"></link>'
       )
-      // 加载Typo.css样式
+      // 加载全局样式
       $('head').append(`
         <style type="text/css">
-          ${typoCSS}
+          ${globalStyle}
         </style>
       `)
       // 初始化Store
