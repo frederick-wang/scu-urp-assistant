@@ -30,7 +30,7 @@ interface LocalStore {
   }
 }
 
-interface AjaxStudentScheduleAPIData {
+interface AjaxStudentScheduleDTO {
   allUnits: number
   xkxx: [
     {
@@ -144,7 +144,7 @@ interface AjaxStudentScheduleAPIData {
   }>
 }
 
-interface CourseScheduleInfoAPIData {
+interface CourseScheduleInfoDTO {
   pfcx: number
   list?: {
     pageSize: number
@@ -281,7 +281,7 @@ interface TrainingSchemeBaseInfo {
   [key: string]: string | number | undefined
 }
 
-interface InstructionalTeachingPlanAPIData {
+interface InstructionalTeachingPlanDTO {
   title: string
   jhFajhb: TrainingSchemeBaseInfo
   treeList: Array<{
@@ -294,19 +294,19 @@ interface InstructionalTeachingPlanAPIData {
   }>
 }
 
-interface TrainingSchemeAPIData {
+interface TrainingSchemeDTO {
   title: string
   jhFajhb: TrainingSchemeBaseInfo
-  treeList: TrainingSchemeNodeAPIData[]
+  treeList: TrainingSchemeNodeDTO[]
 }
 
-interface TrainingSchemeNodeAPIData {
+interface TrainingSchemeNodeDTO {
   id: string
   pId: string
   name: string
   title?: unknown
   urlPath: string
-  parent?: TrainingSchemeNodeAPIData
+  parent?: TrainingSchemeNodeDTO
   isDir: boolean
   coursePropertyName: string
   courseName: string
@@ -444,13 +444,13 @@ export {
   TrainingSchemeYearInfo,
   TrainingSchemeSemesterInfo,
   TrainingSchemeCourseInfo,
-  InstructionalTeachingPlanAPIData,
-  TrainingSchemeAPIData,
-  TrainingSchemeNodeAPIData,
+  InstructionalTeachingPlanDTO,
+  TrainingSchemeDTO,
+  TrainingSchemeNodeDTO,
   TrainingSchemeBaseInfo,
-  CourseScheduleInfoAPIData,
+  CourseScheduleInfoDTO,
   CourseScheduleInfo,
-  AjaxStudentScheduleAPIData,
+  AjaxStudentScheduleDTO,
   LocalStore,
   SemesterTeacherTable,
   TeacherTable,

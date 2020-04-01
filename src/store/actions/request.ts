@@ -4,13 +4,13 @@ import {
   CourseScoreInfo,
   CurrentSemesterStudentAcademicInfo,
   TrainingSchemeYearInfo,
-  InstructionalTeachingPlanAPIData,
-  TrainingSchemeAPIData,
-  TrainingSchemeNodeAPIData,
+  InstructionalTeachingPlanDTO,
+  TrainingSchemeDTO,
+  TrainingSchemeNodeDTO,
   TrainingSchemeCourseInfo,
-  CourseScheduleInfoAPIData,
+  CourseScheduleInfoDTO,
   CourseScheduleInfo,
-  AjaxStudentScheduleAPIData,
+  AjaxStudentScheduleDTO,
   CourseInfoList,
   ScuUietpDTO,
   TrainingSchemeBaseInfo
@@ -47,7 +47,7 @@ async function requestCourseInfoListBySemester(
   } = (await $.post(
     '/student/courseSelect/thisSemesterCurriculum/ajaxStudentSchedule/past/callback',
     { planCode: semesterCode }
-  )) as AjaxStudentScheduleAPIData
+  )) as AjaxStudentScheduleDTO
   const courseInfoList = Object.values(rawCourseInfoList).map(
     ({
       courseCategoryCode,
@@ -200,7 +200,7 @@ async function requestCourseSchedule(
     currentcourseNumberScheduleQuery === courseNumber
   ) {
     lastTimeScheduleQuery = new Date().getTime()
-    const res: CourseScheduleInfoAPIData = await $.post(
+    const res: CourseScheduleInfoDTO = await $.post(
       // 对，你没看错，这里教务处系统打错字了，把Schedule打成了Schdule
       '/student/integratedQuery/course/courseSchdule/courseInfo',
       {
@@ -315,7 +315,7 @@ function requestTrainingScheme(
   const coursePropertyNameList = ['必修', '选修']
   const res = Promise.all([
     $.get(`/student/rollManagement/project/${num}/2/detail`).then(
-      ({ jhFajhb, treeList }: InstructionalTeachingPlanAPIData) => ({
+      ({ jhFajhb, treeList }: InstructionalTeachingPlanDTO) => ({
         info: jhFajhb,
         list: treeList
           .reduce((acc, cur) => {
@@ -356,7 +356,7 @@ function requestTrainingScheme(
       })
     ),
     $.get(`/student/rollManagement/project/${num}/1/detail`).then(
-      ({ treeList }: TrainingSchemeAPIData) =>
+      ({ treeList }: TrainingSchemeDTO) =>
         Object.values(
           treeList.reduce(
             (acc, cur) => {
@@ -388,7 +388,7 @@ function requestTrainingScheme(
               return acc
             },
             {} as {
-              [key: string]: TrainingSchemeNodeAPIData
+              [key: string]: TrainingSchemeNodeDTO
             }
           )
         ).reduce(
