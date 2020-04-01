@@ -653,7 +653,7 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
     pageSize: totalCount
   })) as AllTermScoresDTO
 
-  type recordsType = typeof records[0]
+  type recordType = typeof records[0]
   const formatRecord = ([
     executiveEducationPlanNumber,
     courseNumber,
@@ -676,7 +676,7 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
     levelName,
     // 缓考是 '申请缓考'
     unpassedReasonExplain
-  ]: recordsType): CourseScoreInfo => ({
+  ]: recordType): CourseScoreInfo => ({
     executiveEducationPlanNumber,
     executiveEducationPlanName: convertSemesterNumberToText(
       executiveEducationPlanNumber
