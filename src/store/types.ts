@@ -320,7 +320,7 @@ interface CourseScoreCoreInfo {
   executiveEducationPlanName: string
   credit: number
   examTime: string
-  examTypeName: string
+  examTypeName?: string
   studyHour: number
 }
 
@@ -332,30 +332,52 @@ interface CourseScorePublicInfo extends CourseScoreCoreInfo {
 
 interface CourseScoreInfo extends CourseScoreCoreInfo {
   courseSequenceNumber: string
-  courseScore: number
-  gradePoint: number
-  levelCode: string
-  levelName: string
+  courseScore?: number
+  gradePoint?: number
+  levelCode?: number
+  levelName?: string
   inputStatusCode: string
   inputMethodCode: string
   coursePropertyCode: string
   coursePropertyName: string
-  unpassedReasonExplain: string
   maxScore?: number
   avgScore?: number
   minScore?: number
   rank?: number
   unpassedReasonCode?: string
+  unpassedReasonExplain?: string
+  examTypeCode?: string
 }
 
-interface AllTermScoresAPIData {
+interface AllTermScoresDTO {
   list: {
     pageSize: number
     pageNum: number
     pageContext: {
       totalCount: number
     }
-    records: (null | string | number)[][]
+    records: [
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string | undefined,
+      string,
+      number | undefined,
+      number | undefined,
+      string | undefined,
+      string,
+      string,
+      number,
+      number,
+      string,
+      string | undefined,
+      string | undefined,
+      string | undefined,
+      number
+    ][]
   }
 }
 
@@ -417,7 +439,7 @@ interface ScuUietpItemDTO {
 export {
   CourseScorePublicInfo,
   CourseScoreInfo,
-  AllTermScoresAPIData,
+  AllTermScoresDTO,
   CurrentSemesterStudentAcademicInfo,
   TrainingSchemeYearInfo,
   TrainingSchemeSemesterInfo,

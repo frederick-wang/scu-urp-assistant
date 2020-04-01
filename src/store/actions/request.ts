@@ -1,6 +1,6 @@
 import { API_PATH, getChineseNumber, sleep } from '@/utils'
 import {
-  AllTermScoresAPIData,
+  AllTermScoresDTO,
   CourseScoreInfo,
   CurrentSemesterStudentAcademicInfo,
   TrainingSchemeYearInfo,
@@ -15,6 +15,7 @@ import {
   ScuUietpDTO,
   TrainingSchemeBaseInfo
 } from '../types'
+import { pipe, map } from 'ramda'
 
 async function requestStudentSemesterNumberList(): Promise<string[]> {
   $.ajaxSetup({
@@ -551,7 +552,13 @@ function convertSemesterNumberToText(number: string): string {
  * @param {string} semester 学期
  * @returns 绩点
  */
-function getPointByScore(score: number, semester: string): number {
+function getPointByScore(
+  score: number | undefined,
+  semester: string
+): number | undefined {
+  if (!score) {
+    return undefined
+  }
   // 2017年起，川大修改了绩点政策，因此要检测学期的年份
   const r = semester.match(/^\d+/)
   if (!r) {
@@ -634,7 +641,7 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
     kcm: '',
     pageNum: 1,
     pageSize: 1
-  })) as AllTermScoresAPIData
+  })) as AllTermScoresDTO
 
   const {
     list: { records }
@@ -644,32 +651,58 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
     kcm: '',
     pageNum: 1,
     pageSize: totalCount
-  })) as AllTermScoresAPIData
+  })) as AllTermScoresDTO
 
-  return filterCourseScoreInfoList(
-    records.map(v => ({
-      executiveEducationPlanNumber: (v[0] as string) || '',
-      executiveEducationPlanName:
-        convertSemesterNumberToText(v[0] as string) || '',
-      courseNumber: (v[1] as string) || '',
-      courseSequenceNumber: (v[2] as string) || '',
-      examTime: (v[3] as string) || '',
-      inputStatusCode: (v[4] as string) || '',
-      coursePropertyCode: (v[5] as string) || '',
-      inputMethodCode: (v[7] as string) || '',
-      courseScore: Number(v[8]) || 0,
-      levelCode: (v[9] as string) || '',
-      courseName: (v[11] as string) || '',
-      englishCourseName: (v[12] as string) || '',
-      credit: Number(v[13]) || 0,
-      studyHour: Number(v[14]) || 0,
-      coursePropertyName: (v[15] as string) || '',
-      examTypeName: (v[16] as string) || '',
-      levelName: (v[17] as string) || '',
-      unpassedReasonExplain: (v[18] as string) || '',
-      gradePoint: getPointByScore(v[8] as number, v[0] as string) || 0
-    }))
-  )
+  type recordsType = typeof records[0]
+  const formatRecord = ([
+    executiveEducationPlanNumber,
+    courseNumber,
+    courseSequenceNumber,
+    examTime,
+    inputStatusCode,
+    coursePropertyCode,
+    examTypeCode,
+    inputMethodCode,
+    courseScore,
+    levelCode,
+    // 缓考是 '00'
+    unpassedReasonCode,
+    courseName,
+    englishCourseName,
+    credit,
+    studyHour,
+    coursePropertyName,
+    examTypeName,
+    levelName,
+    // 缓考是 '申请缓考'
+    unpassedReasonExplain
+  ]: recordsType): CourseScoreInfo => ({
+    executiveEducationPlanNumber,
+    executiveEducationPlanName: convertSemesterNumberToText(
+      executiveEducationPlanNumber
+    ),
+    courseNumber,
+    courseSequenceNumber,
+    examTime,
+    inputStatusCode,
+    coursePropertyCode,
+    examTypeCode,
+    inputMethodCode,
+    courseScore,
+    levelCode,
+    unpassedReasonCode,
+    courseName,
+    englishCourseName,
+    credit,
+    studyHour,
+    coursePropertyName,
+    examTypeName,
+    levelName,
+    unpassedReasonExplain,
+    gradePoint: getPointByScore(courseScore, executiveEducationPlanNumber)
+  })
+
+  return pipe(map(formatRecord), filterCourseScoreInfoList)(records)
 }
 
 async function requestThisTermCourseScoreInfoList(): Promise<
