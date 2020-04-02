@@ -17,25 +17,24 @@ import {
 } from '../types'
 import { pipe, map } from 'ramda'
 
-async function requestStudentSemesterNumberList(): Promise<string[]> {
-  $.ajaxSetup({
+function getPageHTML(url: string): Promise<string> {
+  return ($.get({
+    url,
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
         toString() {
           return ''
         }
       } as string)
-  })
+  }) as unknown) as Promise<string>
+}
+
+async function requestStudentSemesterNumberList(): Promise<string[]> {
   const url = '/student/courseSelect/calendarSemesterCurriculum/index'
-  const rawHTML = await $.get(url)
+  const rawHTML = await getPageHTML(url)
   const codeList = Array.from($('#planCode', rawHTML).find('option')).map(
     v => $(v).val() as string
   )
-  // 还原Ajax配置
-  $.ajaxSetup({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    beforeSend: null as any
-  })
   return codeList
 }
 
@@ -114,16 +113,8 @@ async function requestCourseInfoListBySemester(
 }
 
 async function requestStudentInfo(): Promise<Map<string, string>> {
-  $.ajaxSetup({
-    beforeSend: xhr =>
-      xhr.setRequestHeader('X-Requested-With', {
-        toString() {
-          return ''
-        }
-      } as string)
-  })
   const url = '/student/rollManagement/rollInfo/index'
-  const rawHTML = await $.get(url)
+  const rawHTML = await getPageHTML(url)
   const programPlanNumber = $('#zx', rawHTML).val() as string
   const programPlanName = $('#zx', rawHTML)
     .parent()
@@ -167,11 +158,6 @@ async function requestStudentInfo(): Promise<Map<string, string>> {
       ['培养方案名称', programPlanName],
       ['培养方案代码', programPlanNumber]
     ])
-  // 还原Ajax配置
-  $.ajaxSetup({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    beforeSend: null as any
-  })
   return new Map(infos as [string, string][])
 }
 
@@ -304,14 +290,6 @@ function requestTrainingScheme(
   info: TrainingSchemeBaseInfo
   list: TrainingSchemeYearInfo[]
 }> {
-  $.ajaxSetup({
-    beforeSend: xhr =>
-      xhr.setRequestHeader('X-Requested-With', {
-        toString() {
-          return ''
-        }
-      } as string)
-  })
   const coursePropertyNameList = ['必修', '选修']
   const res = Promise.all([
     $.get(`/student/rollManagement/project/${num}/2/detail`).then(
@@ -470,11 +448,6 @@ function requestTrainingScheme(
       }))
     })) as TrainingSchemeYearInfo[]
   }))
-  // 还原Ajax配置
-  $.ajaxSetup({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    beforeSend: null as any
-  })
   return res
 }
 
