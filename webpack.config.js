@@ -1,3 +1,6 @@
+require('dotenv').config({
+  path: `.env.${process.env.NODE_ENV || 'development'}`
+})
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
@@ -30,6 +33,9 @@ module.exports = env => {
       'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
     },
     plugins: [
+      new webpack.DefinePlugin({
+        'process.env.API_PATH': `'${process.env.API_PATH}'`
+      }),
       new CleanWebpackPlugin(),
       new webpack.ProvidePlugin({
         $: 'jquery',

@@ -11,6 +11,8 @@ import {
 import local from '@/store/local'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 
+const API_PATH = process.env.API_PATH
+
 function getLevenshteinDistance(a: string, b: string): number {
   // Create empty edit distance matrix for all possible modifications of
   // substrings of a to substrings of b.
@@ -84,11 +86,6 @@ const chineseNumbers = [
   '九',
   '十'
 ]
-
-const API_PATH =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost/scu-urp-assistant-server/public'
-    : 'https://sua.zhaoji.wang/api/v1'
 
 function convertCourseScoreInfoListToScoreRecords(
   list: CourseScoreInfo[]
