@@ -13,7 +13,8 @@ import {
   AjaxStudentScheduleDTO,
   CourseInfoList,
   ScuUietpDTO,
-  TrainingSchemeBaseInfo
+  TrainingSchemeBaseInfo,
+  BachelorDegreeInfo
 } from '../types'
 import { pipe, map } from 'ramda'
 
@@ -471,6 +472,13 @@ async function requestBachelorDegreeList(): Promise<string[][]> {
   return bachelorDegreeList
 }
 
+async function requestBachelorDegree(
+  queryStr: string
+): Promise<BachelorDegreeInfo[]> {
+  // JQuery 自带的 jqXHR 对象缺 finally 方法，不能直接返回
+  return await $.get(`http://zhaoji.wang:7984/info/bachelor_degree/${queryStr}`)
+}
+
 async function requestScuUietpList(query: string): Promise<ScuUietpDTO> {
   const url = `${API_PATH}/program/scu_uietp`
   const req = {
@@ -733,5 +741,6 @@ export {
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
   requestStudentInfo,
-  requestScuUietpList
+  requestScuUietpList,
+  requestBachelorDegree
 }

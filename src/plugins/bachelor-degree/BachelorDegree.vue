@@ -14,17 +14,23 @@
           .profile-info-value
             .profile-info-value
               input#major(type='text', name='major' v-model.trim='inputMajor')
-  .row.result-wrapper(v-if='loadingIsDone && similarList.length')
+              button#queryButton.btn.btn-info.btn-xs.btn-round(title='查询' @click='query')
+                i.ace-con.fa.fa-search.white.bigger-120 查询
+  .row.result-wrapper(v-if='loadingIsDone && hasQueried')
     .col-sm-12
       h4.header.smaller.lighter.grey
         i.menu-icon.fa.fa-table
         |
         | 查询结果
-      p
+      p(v-if='similarList.length')
         | 以下是根据您输入的关键字在《四川大学学士学位授位专业及授位学科门类表》中查询得到的结果，
         strong 可能没有一些新专业，欢迎向开发者反馈
         | 。
-      table.table.table-hover.table-bordered.table-striped
+      p(v-else)
+        | 抱歉，根据您输入的关键字在《四川大学学士学位授位专业及授位学科门类表》中查询，没有得到结果，
+        strong 可能没有一些新专业，欢迎向开发者反馈
+        | 。
+      table.table.table-hover.table-bordered.table-striped(v-if='similarList.length')
         thead
           tr
             th.center 序号
@@ -34,13 +40,13 @@
             th.center 批准文号
             th.center 备注
         tbody
-          tr(v-for='(v, i) in similarList' :key='v[0]+v[3]')
+          tr(v-for='(v, i) in similarList' :key='v.majorCode')
             td.center {{ i + 1 }}
-            td.center {{ v[0] }}
-            td.center {{ v[1] }}
-            td.center {{ v[2] }}
-            td.center {{ v[3] }}
-            td.center {{ v[4] }}
+            td.center {{ v.majorCode }}
+            td.center {{ v.majorName }}
+            td.center {{ v.college }}
+            td.center {{ v.approvalNumber }}
+            td.center {{ v.remark }}
 </template>
 
 <script lang="ts">
@@ -48,34 +54,40 @@ import { Vue, Component } from 'vue-property-decorator'
 import { actions, Request } from '@/store'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
-import { getTextSimilarity } from '@/utils'
+
+interface BachelorDegreeInfo {
+  majorCode: string
+  majorName: string
+  category: string
+  approvalNumber: string
+  remark: string
+}
 
 @Component({
   components: { Loading }
 })
 export default class BachelorDegree extends Vue {
-  loadingIsDone = false
-  // [专业, 专业名称, 授位学科门类, 批准文号, 备注][]
-  bachelorDegreeList: string[][] = []
+  hasQueried = false
+  loadingIsDone = true
   inputMajor = ''
 
-  get similarList(): string[][] {
-    return !this.inputMajor
-      ? []
-      : this.bachelorDegreeList.filter(
-          ([majorNumber, majorName]) =>
-            this.inputMajor.split('').every(v => majorName.includes(v)) ||
-            this.inputMajor.split('').every(v => majorNumber.includes(v)) ||
-            getTextSimilarity(majorName, this.inputMajor) > 0.5 ||
-            getTextSimilarity(majorNumber, this.inputMajor) > 0.5
-        )
-  }
+  similarList: BachelorDegreeInfo[] = []
 
-  async created():Promise<void> {
+  async query(): Promise<void> {
+    const queryStr = this.inputMajor.replace(/%/g, '').trim()
+    if (!queryStr) {
+      return
+    }
+    this.loadingIsDone = false
+    if (!this.hasQueried) {
+      this.hasQueried = true
+    }
     try {
-      this.bachelorDegreeList = await actions[Request.BACHELOR_DEGREE_LIST]()
+      this.similarList = await actions[Request.BACHELOR_DEGREE](queryStr)
       this.loadingIsDone = true
-      emitDataAnalysisEvent('专业授位查询', '查询成功')
+      emitDataAnalysisEvent('专业授位查询', '查询成功', {
+        查询内容: queryStr
+      })
     } catch (error) {
       emitDataAnalysisEvent('专业授位查询', '查询失败')
     }
@@ -109,6 +121,10 @@ export default class BachelorDegree extends Vue {
     input#major {
       width: 40% !important;
       min-width: 200px;
+    }
+
+    #queryButton {
+      margin-left: 10px;
     }
   }
 }

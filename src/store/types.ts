@@ -436,6 +436,14 @@ interface ScuUietpItemDTO {
   project_category: string
 }
 
+interface BachelorDegreeInfo {
+  majorCode: string
+  majorName: string
+  category: string
+  approvalNumber: string
+  remark: string
+}
+
 export {
   CourseScorePublicInfo,
   CourseScoreInfo,
@@ -456,5 +464,6 @@ export {
   TeacherTable,
   CourseInfoList,
   ScuUietpDTO,
-  ScuUietpItemDTO
+  ScuUietpItemDTO,
+  BachelorDegreeInfo
 }
