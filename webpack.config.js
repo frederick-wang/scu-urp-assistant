@@ -23,11 +23,32 @@ const banner = `// ==UserScript==
 // @run-at       document-start
 // ==/UserScript==`
 
-console.log()
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-module.exports = env => {
+module.exports = (env) => {
+  const devConfig = {
+    devtool: 'inline-source-map',
+    devServer: {
+      overlay: true,
+      disableHostCheck: true
+    }
+  }
+  const prodConfig = {
+    optimization: {
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          extractComments: {
+            condition: 'some',
+            banner: banner
+          }
+        })
+      ],
+      concatenateModules: true
+    }
+  }
   return {
+    ...(env.development ? devConfig : {}),
+    ...(env.production ? prodConfig : {}),
     entry: {
       'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
       'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
@@ -44,18 +65,6 @@ module.exports = env => {
       new VueLoaderPlugin(),
       ...(env.analyze ? [new BundleAnalyzerPlugin()] : [])
     ],
-    optimization: {
-      minimize: true,
-      minimizer: [
-        new TerserPlugin({
-          extractComments: {
-            condition: 'some',
-            banner: banner
-          }
-        })
-      ],
-      concatenateModules: true
-    },
     output: {
       filename: '[name].js',
       path: path.resolve(__dirname, 'dist')
