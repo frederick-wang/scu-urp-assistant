@@ -13,8 +13,22 @@
 
 src 目录下是源代码，dist 目录下是打包好的 Userscript 与 Bookmarklet。
 
-编译前，别忘了先用 npm install 安装依赖
+编译前，别忘了先安装依赖：
 
-开发时运行 npm start 或者 npm run dev 均可，编译出的是带调试信息的 Userscript，而且可以自动监视文件变化并增量编译，不过应用新的 Userscript 仍然需要手动刷新浏览器页面。
+```
+npm install
+```
 
-编译命令为：npm run build
+开发时运行 <code>npm start</code> 或者 <code>npm run dev</code> 均可，编译出的是带调试信息的 Userscript，以 inline-source-map 模式输出源码，方便开发调试。此外，也可以自动监视文件变化、增量编译，并自动刷新页面。
+
+编译命令为：
+
+```
+npm run build
+```
+
+编译并分析 Package 所占大小命令为：
+
+```
+npm run analyze
+```
