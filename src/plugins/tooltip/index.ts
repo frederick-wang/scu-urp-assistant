@@ -1,6 +1,7 @@
 // 提示信息插件
 import { version } from '@/../package.json'
 import { getPluginIcon } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 export default {
   name: 'tooltip',
