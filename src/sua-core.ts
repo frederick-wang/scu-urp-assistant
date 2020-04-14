@@ -125,6 +125,7 @@ function loadMenu(menu: SUAPluginMenu): void {
       `)
       const $pageContent = $('.main-content>.page-content')
       $pageContent.empty()
+      // 因为需要兼容书签版，只有修改 hashtag 不会触发页面的刷新
       const hash = `#sua_route=${route}`
       // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
       setTimeout(() => {
