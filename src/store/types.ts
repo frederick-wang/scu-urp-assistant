@@ -424,16 +424,16 @@ interface ScuUietpDTO {
 }
 
 interface ScuUietpItemDTO {
-  project_year: number
-  college_name: string
-  project_name: string
-  project_leader_name: string
-  participant_number: number
-  other_member_information?: string
-  school_supervisor_name: string
-  project_level: string
-  application_category?: string
-  project_category: string
+  projectYear: number;
+  collegeName: string;
+  projectName: string;
+  projectLeaderName: string;
+  participantNumber: number;
+  otherMembersName: string[];
+  schoolSupervisorName: string;
+  projectLevel: string;
+  applicationCategory: string;
+  projectCategory: string;
 }
 
 interface BachelorDegreeInfo {

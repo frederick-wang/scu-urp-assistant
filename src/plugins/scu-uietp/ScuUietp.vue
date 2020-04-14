@@ -51,16 +51,16 @@
         tbody
           tr(v-for='(v, i) in scuUietpList' :key='v.projectYear+v.collegeName+v.projectName')
             td.center {{ i + 1 }}
-            td.center {{ v.project_year }}
-            td.center {{ v.college_name }}
-            td.center {{ v.project_name }}
-            td.center {{ v.project_leader_name }}
-            td.center {{ v.participant_number }}
-            td.center {{ v.other_member_information }}
-            td.center {{ v.school_supervisor_name }}
-            td.center {{ v.project_level }}
-            td.center {{ v.application_category }}
-            td.center {{ v.project_category }}
+            td.center {{ v.projectYear }}
+            td.center {{ v.collegeName }}
+            td.center {{ v.projectName }}
+            td.center {{ v.projectLeaderName }}
+            td.center {{ v.participantNumber }}
+            td.center {{ v.otherMembersName.join('、') }}
+            td.center {{ v.schoolSupervisorName }}
+            td.center {{ v.projectLevel }}
+            td.center {{ v.applicationCategory }}
+            td.center {{ v.projectCategory }}
 </template>
 
 <script lang="ts">
@@ -88,16 +88,7 @@ export default class ScuUietp extends Vue {
     this.loadingIsDone = false
     try {
       const { list } = await actions[Request.SCU_UIETP_LIST](this.queryStr)
-      this.scuUietpList = list.map(v => ({
-        ...v,
-        // eslint-disable-next-line
-        other_member_information: v.other_member_information
-          ? v.other_member_information
-              .split(',')
-              .map(s => s.split('/')[0])
-              .join('，')
-          : ''
-      }))
+      this.scuUietpList = list
       this.loadingIsDone = true
       if (this.hasNotQueried) {
         this.hasNotQueried = false

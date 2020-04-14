@@ -479,18 +479,10 @@ async function requestBachelorDegree(
   return await $.get(`${API_PATH_V2}/info/bachelor_degree/${queryStr}`)
 }
 
-async function requestScuUietpList(query: string): Promise<ScuUietpDTO> {
-  const url = `${API_PATH}/program/scu_uietp`
-  const req = {
-    api: {
-      client: 'web'
-    },
-    data: {
-      query
-    }
-  }
-  const res = await $.get(url, req)
-  return res.data as ScuUietpDTO
+async function requestScuUietpList(queryStr: string): Promise<ScuUietpDTO> {
+  const url = `${API_PATH_V2}/info/scu_uietp/${queryStr}`
+  const res = await $.get(url)
+  return res as ScuUietpDTO
 }
 
 async function requestCurrentSemesterStudentAcademicInfo(): Promise<
