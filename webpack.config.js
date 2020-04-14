@@ -55,7 +55,8 @@ module.exports = (env) => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        'process.env.API_PATH': `'${process.env.API_PATH}'`
+        'process.env.API_PATH': `'${process.env.API_PATH}'`,
+        'process.env.API_PATH_V2': `'${process.env.API_PATH_V2}'`
       }),
       new CleanWebpackPlugin(),
       new webpack.ProvidePlugin({

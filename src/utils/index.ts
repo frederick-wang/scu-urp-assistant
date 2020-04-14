@@ -12,6 +12,7 @@ import local from '@/store/local'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 
 const API_PATH = process.env.API_PATH
+const API_PATH_V2 = process.env.API_PATH_V2
 
 function getLevenshteinDistance(a: string, b: string): number {
   const distanceMatrix: number[][] = Array(b.length + 1)
@@ -346,6 +347,7 @@ function getPluginIcon(name: string): string {
 export {
   getChineseNumber,
   API_PATH,
+  API_PATH_V2,
   pathnameTrigger,
   routeTrigger,
   sleep,

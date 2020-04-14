@@ -1,4 +1,4 @@
-import { API_PATH, getChineseNumber, sleep } from '@/utils'
+import { API_PATH, API_PATH_V2, getChineseNumber, sleep } from '@/utils'
 import {
   AllTermScoresDTO,
   CourseScoreInfo,
@@ -476,7 +476,7 @@ async function requestBachelorDegree(
   queryStr: string
 ): Promise<BachelorDegreeInfo[]> {
   // JQuery 自带的 jqXHR 对象缺 finally 方法，不能直接返回
-  return await $.get(`http://zhaoji.wang:7984/info/bachelor_degree/${queryStr}`)
+  return await $.get(`${API_PATH_V2}/info/bachelor_degree/${queryStr}`)
 }
 
 async function requestScuUietpList(query: string): Promise<ScuUietpDTO> {
