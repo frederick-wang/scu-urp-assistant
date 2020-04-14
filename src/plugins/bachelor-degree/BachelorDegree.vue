@@ -13,9 +13,9 @@
             | 请输入专业名称关键字或专业代码
           .profile-info-value
             .profile-info-value
-              input#major(type='text', name='major' v-model.trim='inputMajor')
+              input#major(type='text', name='major' v-model.trim='inputMajor' @keyup.enter='query')
               button#queryButton.btn.btn-info.btn-xs.btn-round(title='查询' @click='query')
-                i.ace-con.fa.fa-search.white.bigger-120 查询
+                i.ace-con.fa.fa-search.white.bigger-120 &nbsp;查询
   .row.result-wrapper(v-if='loadingIsDone && hasQueried')
     .col-sm-12
       h4.header.smaller.lighter.grey
