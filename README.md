@@ -19,7 +19,7 @@ src 目录下是源代码，dist 目录下是打包好的 Userscript 与 Bookmar
 npm install
 ```
 
-开发时运行 <code>npm start</code> 或者 <code>npm run dev</code> 均可，编译出的是带调试信息的 Userscript，以 inline-source-map 模式输出源码，方便开发调试。此外，也可以自动监视文件变化、增量编译，并自动刷新页面。
+开发时运行 `npm start` 或者 `npm run dev` 均可，编译出的是带调试信息的 Userscript，以 `inline-source-map` 模式输出源码，方便开发调试。此外，也可以自动监视文件变化、增量编译，并自动刷新页面。
 
 编译命令为：
 
