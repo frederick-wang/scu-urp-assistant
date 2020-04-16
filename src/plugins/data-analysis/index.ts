@@ -1,6 +1,7 @@
 // 数据统计插件
 import { version } from '@/../package.json'
-import { logger, getPluginIcon } from '@/utils'
+import { logger, getPluginIcon, isDev } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 interface TalkingDataEventParams {
   EventId: string
@@ -40,7 +41,7 @@ export default {
     if (process.env.NODE_ENV !== 'development') {
       const APP_ID = '36482C98B3E94A4D93A0C66E43702C77'
       const versionName = `${version} (${
-        process.env.NODE_ENV === 'development' ? 'dev' : 'stable'
+        isDev() ? 'dev' : 'stable'
       })`
       const script = document.createElement('script')
       const src = `https://jic.talkingdata.com/app/h5/v1?appid=${APP_ID}&vn=${versionName}&vc=${version}`

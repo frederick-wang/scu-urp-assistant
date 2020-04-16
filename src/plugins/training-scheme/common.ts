@@ -1,5 +1,6 @@
 import { version } from '@/../package.json'
 import { description } from '@/../package.json'
+import { isDev } from '@/utils'
 
 function showLoadingAnimation(containerSelector: string): void {
   const template = `
@@ -18,9 +19,7 @@ function hideLoadingAnimation(): void {
 function genFooterHTML(): string {
   const SUA_QRCODE_URL =
     'https://zhaoji.wang/wp-content/uploads/2019/08/scu-urp-assistant-qrcode.png'
-  const versionName = `${version} (${
-    process.env.NODE_ENV === 'development' ? 'dev' : 'stable'
-  })`
+  const versionName = `${version} (${isDev() ? 'dev' : 'stable'})`
   const parseDescription = (): {
     intro: string
     featureList: string[][]
