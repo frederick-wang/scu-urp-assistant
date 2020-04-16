@@ -56,7 +56,7 @@
             td.center {{ v.projectName }}
             td.center {{ v.projectLeaderName }}
             td.center {{ v.participantNumber }}
-            td.center {{ v.otherMembersName.join('、') }}
+            td.center {{ v.otherMemberNames.join('、') }}
             td.center {{ v.schoolSupervisorName }}
             td.center {{ v.projectLevel }}
             td.center {{ v.applicationCategory }}
