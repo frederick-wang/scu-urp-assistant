@@ -14,7 +14,8 @@ import {
   CourseInfoList,
   ScuUietpDTO,
   TrainingSchemeBaseInfo,
-  BachelorDegreeInfo
+  BachelorDegreeInfo,
+  TrainingScheme
 } from '../types'
 import { pipe, map } from 'ramda'
 
@@ -452,11 +453,11 @@ function requestTrainingScheme(
   return res
 }
 
-let trainingSchemeList: string[][]
+let trainingSchemeList: TrainingScheme[]
 
-async function requestTrainingSchemeList(): Promise<string[][]> {
+async function requestTrainingSchemeList(): Promise<TrainingScheme[]> {
   if (!trainingSchemeList) {
-    trainingSchemeList = await $.get(`${API_PATH}/student/training_scheme`)
+    trainingSchemeList = await $.get(`${API_PATH_V2}/student/training_scheme`)
   }
   return trainingSchemeList
 }

@@ -6,14 +6,15 @@ import {
 import {
   TrainingSchemeBaseInfo,
   TrainingSchemeYearInfo as SingleTrainingSchemeYearInfo,
-  TrainingSchemeCourseInfo as SingleTrainingSchemeCourseInfoBase
+  TrainingSchemeCourseInfo as SingleTrainingSchemeCourseInfoBase,
+  TrainingScheme
 } from '@/store/types'
 import { getChineseNumber } from '@/utils'
 import { Request, actions, state } from '@/store'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import html2canvas from 'html2canvas'
 
-let trainingSchemeList: string[][]
+let trainingSchemeList: TrainingScheme[]
 
 interface TrainingSchemeYearInfo {
   name: string
@@ -51,12 +52,12 @@ function initDOM(root: HTMLElement): void {
 function genQueryHTML(): string {
   const { gradeList, departmentList } = trainingSchemeList.reduce(
     (acc, cur) => ({
-      gradeList: acc.gradeList.includes(cur[1] as string)
+      gradeList: acc.gradeList.includes(cur.grade)
         ? acc.gradeList
-        : acc.gradeList.concat(cur[1] as string),
-      departmentList: acc.departmentList.includes(cur[2] as string)
+        : acc.gradeList.concat(cur.grade),
+      departmentList: acc.departmentList.includes(cur.department)
         ? acc.departmentList
-        : acc.departmentList.concat(cur[2] as string)
+        : acc.departmentList.concat(cur.department)
     }),
     { gradeList: [] as string[], departmentList: [] as string[] }
   )
@@ -161,8 +162,8 @@ function updateMajorList(containerSelector: string): void {
   const grade = $(`${containerSelector} #grade`).val()
   const department = $(`${containerSelector} #department`).val()
   const res = trainingSchemeList
-    .filter(v => v[1] === grade && v[2] === department)
-    .map(v => `<option value="${v[0]}">${v[3]}</option>`)
+    .filter(v => v.grade === grade && v.department === department)
+    .map(v => `<option value="${v.majorId}">${v.majorName}</option>`)
     .join('')
   $(`${containerSelector} #major`)
     .empty()
@@ -407,8 +408,8 @@ function genSchemeHTML(
           }
           return false
         }
-        const sameCourses = [] as any[]
-        const coursesOnly1 = [] as any[]
+        const sameCourses = [] as unknown[]
+        const coursesOnly1 = [] as unknown[]
         while (semesterItem1.children.length) {
           const courseItem1 = semesterItem1.children.shift() as TrainingSchemeCourseInfo
           let hasSameCourse = false
@@ -432,7 +433,7 @@ function genSchemeHTML(
                 courseMajor1: courseItem1.courseMajor,
                 courseMajor2: courseItem2.courseMajor,
                 comparedResult: 0
-              })
+              } as TrainingSchemeCourseInfo)
               semesterItem2.children.splice(m, 1)
               hasSameCourse = true
               break
@@ -445,7 +446,10 @@ function genSchemeHTML(
         const coursesOnly2 = semesterItem2.children.map(v =>
           Object.assign(v, { comparedResult: 2 })
         )
-        semesterItem.children = sameCourses.concat(coursesOnly1, coursesOnly2)
+        semesterItem.children = sameCourses.concat(
+          coursesOnly1,
+          coursesOnly2
+        ) as TrainingSchemeCourseInfo[]
         yearItem.children.push(semesterItem)
       }
       result.push(yearItem)
@@ -681,11 +685,11 @@ async function query(): Promise<void> {
       $('.program-plan-wrapper').append(genFooterHTML())
       $('.footer-container').hide()
       const majorName1 = trainingSchemeList.filter(
-        ([v]) => v === majorNumber1
-      )[0][3]
+        ({ majorId }) => majorId === majorNumber1
+      )[0].majorName
       const majorName2 = trainingSchemeList.filter(
-        ([v]) => v === majorNumber2
-      )[0][3]
+        ({ majorId }) => majorId === majorNumber2
+      )[0].majorName
       const grade1 = $('#query-major-1 #grade').val()
       const grade2 = $('#query-major-2 #grade').val()
       emitDataAnalysisEvent('培养方案比较', '查询成功', {
@@ -708,11 +712,11 @@ function save(): void {
       })
       canvas.toBlob(blob => {
         const majorName1 = trainingSchemeList.filter(
-          ([v]) => v === $('#query-major-1 #major').val()
-        )[0][3]
+          ({ majorId }) => majorId === $('#query-major-1 #major').val()
+        )[0].majorName
         const majorName2 = trainingSchemeList.filter(
-          ([v]) => v === $('#query-major-2 #major').val()
-        )[0][3]
+          ({ majorId }) => majorId === $('#query-major-2 #major').val()
+        )[0].majorName
         const grade1 = $('#query-major-1 #grade').val()
         const grade2 = $('#query-major-2 #grade').val()
         const department1 = $('#query-major-1 #department').val()
@@ -770,16 +774,16 @@ function initEvents(): void {
 async function selectSelfMajorAndQuery(): Promise<void> {
   const selfMajorNumber = state.user.programPlanNumber
   const selfSchemeInfo = trainingSchemeList.filter(
-    v => Number(v[0]) === selfMajorNumber
+    v => Number(v.majorId) === selfMajorNumber
   )[0]
-  $('#query-major-1 #grade').val(selfSchemeInfo[1] as string)
-  $('#query-major-2 #grade').val(selfSchemeInfo[1] as string)
-  $('#query-major-1 #department').val(selfSchemeInfo[2] as string)
-  $('#query-major-2 #department').val(selfSchemeInfo[2] as string)
+  $('#query-major-1 #grade').val(selfSchemeInfo.grade)
+  $('#query-major-2 #grade').val(selfSchemeInfo.grade)
+  $('#query-major-1 #department').val(selfSchemeInfo.department)
+  $('#query-major-2 #department').val(selfSchemeInfo.department)
   updateMajorList('#query-major-1')
   updateMajorList('#query-major-2')
-  $('#query-major-1 #major').val(selfSchemeInfo[0] as string)
-  $('#query-major-2 #major').val(selfSchemeInfo[0] as string)
+  $('#query-major-1 #major').val(selfSchemeInfo.majorId)
+  $('#query-major-2 #major').val(selfSchemeInfo.majorId)
 }
 
 export async function render(root: HTMLElement): Promise<void> {

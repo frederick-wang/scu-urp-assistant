@@ -230,6 +230,13 @@ interface TrainingSchemeCourseInfo {
   [key: string]: unknown
 }
 
+export interface TrainingScheme {
+  majorId: number
+  majorName: string
+  grade: string
+  department: string
+}
+
 interface TrainingSchemeYearInfo {
   name: string
   children: TrainingSchemeSemesterInfo[]
@@ -424,16 +431,16 @@ interface ScuUietpDTO {
 }
 
 interface ScuUietpItemDTO {
-  projectYear: number;
-  collegeName: string;
-  projectName: string;
-  projectLeaderName: string;
-  participantNumber: number;
-  otherMembersName: string[];
-  schoolSupervisorName: string;
-  projectLevel: string;
-  applicationCategory: string;
-  projectCategory: string;
+  projectYear: number
+  collegeName: string
+  projectName: string
+  projectLeaderName: string
+  participantNumber: number
+  otherMembersName: string[]
+  schoolSupervisorName: string
+  projectLevel: string
+  applicationCategory: string
+  projectCategory: string
 }
 
 interface BachelorDegreeInfo {

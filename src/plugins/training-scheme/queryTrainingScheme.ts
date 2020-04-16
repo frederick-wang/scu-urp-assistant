@@ -5,6 +5,7 @@ import {
 } from './common'
 import { actions, Request, state } from '@/store'
 import {
+  TrainingScheme,
   TrainingSchemeBaseInfo,
   TrainingSchemeYearInfo,
   TrainingSchemeSemesterInfo,
@@ -15,7 +16,7 @@ import { getChineseNumber } from '@/utils'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import html2canvas from 'html2canvas'
 
-let trainingSchemeList: string[][]
+let trainingSchemeList: TrainingScheme[]
 
 function genInfoHTML(info: TrainingSchemeBaseInfo): string {
   for (const key of Object.keys(info)) {
@@ -260,8 +261,8 @@ async function query(): Promise<void> {
       $('.footer-container').hide()
       initCourseInfoPopover()
       const majorName = trainingSchemeList.filter(
-        ([v]) => v === majorNumber
-      )[0][3]
+        ({ majorId }) => majorId === majorNumber
+      )[0].majorName
       const grade = $('#grade').val()
       emitDataAnalysisEvent('培养方案查询', '查询成功', {
         专业代码: majorNumber,
@@ -277,8 +278,8 @@ function updateMajorList(): void {
   const grade = $('#grade').val()
   const department = $('#department').val()
   const res = trainingSchemeList
-    .filter(v => v[1] === grade && v[2] === department)
-    .map(v => `<option value="${v[0]}">${v[3]}</option>`)
+    .filter(v => v.grade === grade && v.department === department)
+    .map(v => `<option value="${v.majorId}">${v.majorName}</option>`)
     .join('')
   $('#major')
     .empty()
@@ -296,12 +297,12 @@ function initDOM(root: HTMLElement): void {
 function genQueryHTML(): string {
   const { gradeList, departmentList } = trainingSchemeList.reduce(
     (acc, cur) => ({
-      gradeList: acc.gradeList.includes(cur[1] as string)
+      gradeList: acc.gradeList.includes(cur.grade)
         ? acc.gradeList
-        : acc.gradeList.concat(cur[1] as string),
-      departmentList: acc.departmentList.includes(cur[2] as string)
+        : acc.gradeList.concat(cur.grade),
+      departmentList: acc.departmentList.includes(cur.department)
         ? acc.departmentList
-        : acc.departmentList.concat(cur[2] as string)
+        : acc.departmentList.concat(cur.department)
     }),
     { gradeList: [] as string[], departmentList: [] as string[] }
   )
@@ -373,8 +374,8 @@ function save(): void {
       })
       canvas.toBlob(blob => {
         const majorName = trainingSchemeList.filter(
-          ([v]) => v === $('#major').val()
-        )[0][3]
+          ({ majorId }) => majorId === $('#major').val()
+        )[0].majorName
         const grade = $('#grade').val()
         const department = $('#department').val()
         const e = document.createEvent('MouseEvents')
@@ -420,12 +421,12 @@ function initEvents(): void {
 async function selectSelfMajorAndQuery(): Promise<void> {
   const selfMajorNumber = state.user.programPlanNumber
   const selfSchemeInfo = trainingSchemeList.filter(
-    v => Number(v[0]) === selfMajorNumber
+    v => Number(v.majorId) === selfMajorNumber
   )[0]
-  $('#grade').val(selfSchemeInfo[1] as string)
-  $('#department').val(selfSchemeInfo[2] as string)
+  $('#grade').val(selfSchemeInfo.grade)
+  $('#department').val(selfSchemeInfo.department)
   updateMajorList()
-  $('#major').val(selfSchemeInfo[0] as string)
+  $('#major').val(selfSchemeInfo.majorId)
   query()
 }
 
