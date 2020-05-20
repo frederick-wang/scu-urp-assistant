@@ -4,6 +4,7 @@ import Vue from 'vue'
 import {
   Switch,
   Tag,
+  Alert,
   Loading,
   Message,
   MessageBox,
@@ -29,6 +30,7 @@ function loadElementUI(): void {
   // 导入 Element-UI 组件
   Vue.use(Switch)
   Vue.use(Tag)
+  Vue.use(Alert)
   Vue.use(Loading.directive)
   Vue.prototype.$loading = Loading.service
   Vue.prototype.$msgbox = MessageBox

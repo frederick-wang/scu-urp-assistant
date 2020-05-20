@@ -1,4 +1,5 @@
-import { API_PATH, API_PATH_V2, getChineseNumber, sleep } from '@/utils'
+import cheerio from 'cheerio'
+import { API_PATH, API_PATH_V2, getChineseNumber, sleep, logger } from '@/utils'
 import {
   AllTermScoresDTO,
   CourseScoreInfo,
@@ -29,6 +30,19 @@ function getPageHTML(url: string): Promise<string> {
         }
       } as string)
   }) as unknown) as Promise<string>
+}
+
+async function LoadHTMLToDealWithError(
+  url: string
+): Promise<{ title: string; message: string; html: string }> {
+  const html = await getPageHTML(url)
+  const $ = cheerio.load(html)
+  const title = $('title').text()
+  const message = $('.main-content .page-content')
+    .text()
+    .replace(/×/g, '')
+    .trim()
+  return { title, message, html }
 }
 
 async function requestStudentSemesterNumberList(): Promise<string[]> {
@@ -605,122 +619,139 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
   CourseScoreInfo[]
 > {
   const url = '/student/integratedQuery/scoreQuery/allTermScores/data'
-  const {
-    list: {
-      pageContext: { totalCount }
-    }
-  } = (await $.post(url, {
-    zxjxjhh: '',
-    kch: '',
-    kcm: '',
-    pageNum: 1,
-    pageSize: 1
-  })) as AllTermScoresDTO
+  try {
+    const {
+      list: {
+        pageContext: { totalCount }
+      }
+    } = (await $.post(url, {
+      zxjxjhh: '',
+      kch: '',
+      kcm: '',
+      pageNum: 1,
+      pageSize: 1
+    })) as AllTermScoresDTO
 
-  const {
-    list: { records }
-  } = (await $.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
-    zxjxjhh: '',
-    kch: '',
-    kcm: '',
-    pageNum: 1,
-    pageSize: totalCount
-  })) as AllTermScoresDTO
+    const {
+      list: { records }
+    } = (await $.post(
+      '/student/integratedQuery/scoreQuery/allTermScores/data',
+      {
+        zxjxjhh: '',
+        kch: '',
+        kcm: '',
+        pageNum: 1,
+        pageSize: totalCount
+      }
+    )) as AllTermScoresDTO
 
-  type recordType = typeof records[0]
-  const formatRecord = ([
-    executiveEducationPlanNumber,
-    courseNumber,
-    courseSequenceNumber,
-    examTime,
-    inputStatusCode,
-    coursePropertyCode,
-    examTypeCode,
-    inputMethodCode,
-    courseScore,
-    levelCode,
-    // 缓考是 '00'
-    unpassedReasonCode,
-    courseName,
-    englishCourseName,
-    credit,
-    studyHour,
-    coursePropertyName,
-    examTypeName,
-    levelName,
-    // 缓考是 '申请缓考'
-    unpassedReasonExplain
-  ]: recordType): CourseScoreInfo => ({
-    executiveEducationPlanNumber,
-    executiveEducationPlanName: convertSemesterNumberToText(
-      executiveEducationPlanNumber
-    ),
-    courseNumber,
-    courseSequenceNumber,
-    examTime,
-    inputStatusCode,
-    coursePropertyCode,
-    examTypeCode,
-    inputMethodCode,
-    courseScore,
-    levelCode,
-    unpassedReasonCode,
-    courseName,
-    englishCourseName,
-    credit,
-    studyHour,
-    coursePropertyName,
-    examTypeName,
-    levelName,
-    unpassedReasonExplain,
-    gradePoint: getPointByScore(courseScore, executiveEducationPlanNumber)
-  })
+    type recordType = typeof records[0]
+    const formatRecord = ([
+      executiveEducationPlanNumber,
+      courseNumber,
+      courseSequenceNumber,
+      examTime,
+      inputStatusCode,
+      coursePropertyCode,
+      examTypeCode,
+      inputMethodCode,
+      courseScore,
+      levelCode,
+      // 缓考是 '00'
+      unpassedReasonCode,
+      courseName,
+      englishCourseName,
+      credit,
+      studyHour,
+      coursePropertyName,
+      examTypeName,
+      levelName,
+      // 缓考是 '申请缓考'
+      unpassedReasonExplain
+    ]: recordType): CourseScoreInfo => ({
+      executiveEducationPlanNumber,
+      executiveEducationPlanName: convertSemesterNumberToText(
+        executiveEducationPlanNumber
+      ),
+      courseNumber,
+      courseSequenceNumber,
+      examTime,
+      inputStatusCode,
+      coursePropertyCode,
+      examTypeCode,
+      inputMethodCode,
+      courseScore,
+      levelCode,
+      unpassedReasonCode,
+      courseName,
+      englishCourseName,
+      credit,
+      studyHour,
+      coursePropertyName,
+      examTypeName,
+      levelName,
+      unpassedReasonExplain,
+      gradePoint: getPointByScore(courseScore, executiveEducationPlanNumber)
+    })
 
-  return pipe(map(formatRecord), filterCourseScoreInfoList)(records)
+    return pipe(map(formatRecord), filterCourseScoreInfoList)(records)
+  } catch (error) {
+    const { title, message, html } = await LoadHTMLToDealWithError(url)
+    logger.error({ title, message, html })
+    throw new Error(`${title}: ${message}`)
+  }
 }
 
 async function requestThisTermCourseScoreInfoList(): Promise<
   CourseScoreInfo[]
 > {
   const url = '/student/integratedQuery/scoreQuery/thisTermScores/data'
-  const [{ list }]: [{ list: any[] }] = await $.get(url)
-  // console.log(`state: ${state}`)
-  const res = filterCourseScoreInfoList(
-    list.map(
-      v =>
-        ({
-          courseName: v.courseName || '',
-          englishCourseName: v.englishCourseName || '',
-          courseNumber: v.id.courseNumber || '',
-          // 对，你没看错，这个地方教务处接口是错别字，把course打成了coure
-          courseSequenceNumber: v.coureSequenceNumber || '',
-          credit: Number(v.credit) || 0,
-          coursePropertyCode: v.coursePropertyCode || '',
-          coursePropertyName: v.coursePropertyName || '',
-          maxScore: Number(v.maxcj) || 0,
-          avgScore: Number(v.avgcj) || 0,
-          minScore: Number(v.mincj) || 0,
-          courseScore: Number(v.courseScore) || 0,
-          // 对，你没看错，这个地方教务处接口是错别字，把level打成了levle
-          levelCode: v.levlePoint || '',
-          levelName: v.levelName || '',
-          gradePoint: Number(v.gradePoint) || 0,
-          rank: Number(v.rank) || 0,
-          examTime: v.id.examtime || '',
-          unpassedReasonCode: v.unpassedReasonCode || '',
-          unpassedReasonExplain: v.unpassedReasonExplain || '',
-          executiveEducationPlanNumber: v.id.executiveEducationPlanNumber || '',
-          executiveEducationPlanName:
-            convertSemesterNumberToText(v.id.executiveEducationPlanNumber) ||
-            '',
-          inputStatusCode: v.inputStatusCode || '',
-          inputMethodCode: v.inputMethodCode || '',
-          studyHour: Number(v.studyHour) || 0,
-          examTypeName: v.examTypeName || ''
-        } as CourseScoreInfo)
+  try {
+    const data = await $.get(url)
+    const [{ list }]: [{ list: any[] }] = data
+    // console.log(`state: ${state}`)
+    const res = filterCourseScoreInfoList(
+      list.map(
+        v =>
+          ({
+            courseName: v.courseName || '',
+            englishCourseName: v.englishCourseName || '',
+            courseNumber: v.id.courseNumber || '',
+            // 对，你没看错，这个地方教务处接口是错别字，把course打成了coure
+            courseSequenceNumber: v.coureSequenceNumber || '',
+            credit: Number(v.credit) || 0,
+            coursePropertyCode: v.coursePropertyCode || '',
+            coursePropertyName: v.coursePropertyName || '',
+            maxScore: Number(v.maxcj) || 0,
+            avgScore: Number(v.avgcj) || 0,
+            minScore: Number(v.mincj) || 0,
+            courseScore: Number(v.courseScore) || 0,
+            // 对，你没看错，这个地方教务处接口是错别字，把level打成了levle
+            levelCode: v.levlePoint || '',
+            levelName: v.levelName || '',
+            gradePoint: Number(v.gradePoint) || 0,
+            rank: Number(v.rank) || 0,
+            examTime: v.id.examtime || '',
+            unpassedReasonCode: v.unpassedReasonCode || '',
+            unpassedReasonExplain: v.unpassedReasonExplain || '',
+            executiveEducationPlanNumber:
+              v.id.executiveEducationPlanNumber || '',
+            executiveEducationPlanName:
+              convertSemesterNumberToText(v.id.executiveEducationPlanNumber) ||
+              '',
+            inputStatusCode: v.inputStatusCode || '',
+            inputMethodCode: v.inputMethodCode || '',
+            studyHour: Number(v.studyHour) || 0,
+            examTypeName: v.examTypeName || ''
+          } as CourseScoreInfo)
+      )
     )
-  )
-  return res as CourseScoreInfo[]
+    return res
+  } catch (error) {
+    const { title, message, html } = await LoadHTMLToDealWithError(url)
+    logger.error({ title, message, html })
+    throw new Error(`${title}: ${message}`)
+  }
 }
 
 export {
