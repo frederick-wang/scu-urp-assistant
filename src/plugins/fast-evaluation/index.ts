@@ -4,6 +4,7 @@ import checkboxWrapperSelectorsData from './checkboxWrapperSelectors.json'
 import questionsNumberRangeData from './questionsNumberRange.json'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { getPluginIcon } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 const checkboxWrapperSelectors = new Map(
   Object.entries(checkboxWrapperSelectorsData)
