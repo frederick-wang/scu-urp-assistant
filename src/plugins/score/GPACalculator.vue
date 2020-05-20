@@ -11,7 +11,7 @@
     :close-text='v.closeText'
   )
   TotalTranscript(
-    v-if='loadingIsDone && records.length > 1'
+    v-if='loadingIsDone && hasNoError && records.length > 1'
     :semestersQuantity='records.length'
     :courses='allCourses'
     :selectedCourses='allSelectedCourses'
@@ -19,7 +19,7 @@
     @unselectAllCourses='unselectAllCourses()'
     @selectCompulsoryCourses='selectCompulsoryCourses()'
   )
-  .gpa-st-container.row(v-if='loadingIsDone')
+  .gpa-st-container.row(v-if='loadingIsDone && hasNoError')
     SemesterTranscript(
       v-for='(semesterItem, semesterIndex) in records'
       :key='semesterIndex'
@@ -60,6 +60,10 @@ export default class GPACalculator extends Vue {
     closable?: boolean
     closeText?: string
   }[] = []
+
+  get hasNoError(): boolean {
+    return this.alerts.every(v => v.type !== 'error')
+  }
 
   get allCourses(): CourseScoreRecord[] {
     return this.records.reduce(
