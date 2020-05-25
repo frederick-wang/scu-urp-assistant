@@ -1,16 +1,14 @@
-// 一键评教插件
+// 快捷评教插件
 import Vue from 'vue'
 import comments from './comments.json'
 import checkboxWrapperSelectorsData from './checkboxWrapperSelectors.json'
-import questionsNumberRangeData from './questionsNumberRange.json'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
-import { getPluginIcon } from '@/utils'
+import { getPluginIcon, logger } from '@/utils'
 import { SUAPlugin } from '@/types'
 
 const checkboxWrapperSelectors = new Map(
   Object.entries(checkboxWrapperSelectorsData)
 )
-const questionsNumberRange = new Map(Object.entries(questionsNumberRangeData))
 
 const evaluationInterval = 1000 * (10 + 1)
 
@@ -146,26 +144,29 @@ function evaluate(index: number): void {
         message: `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
       })
     },
-    success: data => {
-      tokenValue = data.match(
-        /<input.+tokenValue(?:(?:.|\r|\n)+?)value="(.*?)" \/>/i
-      )[1]
-      count = data.match(/<input.+count.+value="(.*?)">/i)[1]
+    success: rawHTML => {
+      tokenValue = $('input[name=tokenValue]', rawHTML).attr('value') || ''
+      count = $('input[name=count]', rawHTML).attr('value') || ''
 
       if (!tokenValue || !count) {
         emitDataAnalysisEvent('快捷评教', '教务系统不稳定')
         Vue.prototype.$confirm(
-          `因教务系统不稳定，当前暂时无法评教，请点击右上角头像注销，并在重新登录后再次尝试。如果还是无法评教，您可以更换浏览器或电脑后再尝试。`,
-          '[快捷评教] 教务系统不稳定'
+          '[快捷评教] 教务系统不稳定',
+          `因教务系统不稳定，当前暂时无法评教，请点击右上角头像注销，并在重新登录后再次尝试。如果还是无法评教，您可以更换浏览器或电脑后再尝试。`
         )
         return
       }
-
-      const range = questionsNumberRange.get(questionnaireName)
+      console.log({ data: rawHTML })
+      const range = [
+        ...new Set(
+          Array.from($('input.ace[type=radio]', rawHTML))
+            .map(v => $(v).attr('name') || '')
+            .filter(v => v)
+        )
+      ]
       if (range) {
         let bodyStr = `questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}&count=${count}`
-        for (const number of range) {
-          const numberString = ('0000000000' + number).substr(-10)
+        for (const numberString of range) {
           bodyStr += `&${numberString}=10_1`
         }
         bodyStr += `&zgpj=${getComment()}`
@@ -304,14 +305,20 @@ function showSelectionModal(): void {
               require('./checkbox.pug')({ name, index, curriculum })
             )
           } else {
-            const msg = `无效的问卷名称：${type}`
-            window.urp.alert(msg)
-            console.error(new Error(msg))
+            const message = `无效的问卷名称：${type}`
+            Vue.prototype.$notify.error({
+              title: '[快捷评教] 无效问卷名称',
+              message
+            })
+            emitDataAnalysisEvent('快捷评教', '无效问卷名称', {
+              type
+            })
           }
         }
       )
-      for (const key in checkboxWrapperSelectors) {
-        const selector = checkboxWrapperSelectors.get(key)
+      logger.log(list)
+      for (const [, selector] of checkboxWrapperSelectors) {
+        logger.log(selector)
         if (!selector) {
           continue
         }
