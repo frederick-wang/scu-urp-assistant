@@ -7,7 +7,7 @@ export default {
   name: 'tooltip',
   displayName: '提示信息',
   icon: getPluginIcon('tooltip'),
-  isNecessary: false,
+  isNecessary: true,
   brief: '在登录页面以及教务系统的顶部导航栏显示提示，告知用户当前的程序版本。',
   pathname: true,
   init() {
