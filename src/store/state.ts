@@ -46,12 +46,12 @@ async function initPluginEnabledStates(): Promise<void> {
 }
 
 async function init(localStore: LocalStore): Promise<void> {
-  await initPluginEnabledStates()
   if (localStore) {
     for (const key of Object.keys(localStore.state.data)) {
       data[key] = local.get(key)
     }
   }
+  await initPluginEnabledStates()
   const res = await Promise.all([
     actions[Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO](),
     requestStudentInfo(),
