@@ -1,21 +1,18 @@
 // 快捷评教插件
 import Vue from 'vue'
 import comments from './comments.json'
-import checkboxWrapperSelectorsData from './checkboxWrapperSelectors.json'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
-import { getPluginIcon, logger } from '@/utils'
+import { getPluginIcon } from '@/utils'
 import { SUAPlugin } from '@/types'
-
-const checkboxWrapperSelectors = new Map(
-  Object.entries(checkboxWrapperSelectorsData)
-)
 
 const evaluationInterval = 1000 * (10 + 1)
 
 const templates = {
-  btn: require('./btn.pug')(),
-  prompt: require('./prompt.pug')(),
-  selectionModal: require('./selectionModal.pug')()
+  btn: require('./btn.pug') as () => string,
+  prompt: require('./prompt.pug') as () => string,
+  selectionModal: require('./selectionModal.pug') as (payload: {
+    checkboxWrappers: [string, string][]
+  }) => string
 }
 
 let $btn: JQuery<HTMLElement>
@@ -156,7 +153,6 @@ function evaluate(index: number): void {
         )
         return
       }
-      console.log({ data: rawHTML })
       const range = [
         ...new Set(
           Array.from($('input.ace[type=radio]', rawHTML))
@@ -280,6 +276,12 @@ function evaluate2ndStage(
 }
 
 function showSelectionModal(): void {
+  const checkboxWrapperIds = new Map(
+    [...new Set(list.map(v => v.questionnaireName))].map(v => [
+      v,
+      `${v}-checkbox-wrapper`
+    ])
+  )
   window.layer.open({
     type: 1,
     area: '90%',
@@ -287,7 +289,9 @@ function showSelectionModal(): void {
     shadeClose: true,
     offset: '50px',
     btn: ['开始一键评教!'],
-    content: templates.selectionModal,
+    content: templates.selectionModal({
+      checkboxWrappers: Array.from(checkboxWrapperIds)
+    }),
     success: () => {
       list.forEach(
         (
@@ -302,36 +306,12 @@ function showSelectionModal(): void {
           },
           index
         ) => {
-          const selector = checkboxWrapperSelectors.get(type)
-          if (selector) {
-            $(selector).append(
-              require('./checkbox.pug')({ name, index, curriculum })
-            )
-          } else {
-            const message = `读取问题编号失败：${type}`
-            Vue.prototype.$notify.error({
-              title: '[快捷评教] 读取问题编号失败',
-              message
-            })
-            emitDataAnalysisEvent('快捷评教', '读取问题编号失败', {
-              type
-            })
-          }
+          const selector = `#${checkboxWrapperIds.get(type)}`
+          $(selector).append(
+            require('./checkbox.pug')({ name, index, curriculum })
+          )
         }
       )
-      logger.log(list)
-      for (const [, selector] of checkboxWrapperSelectors) {
-        logger.log(selector)
-        if (!selector) {
-          continue
-        }
-        if (!$(selector).children().length) {
-          $(selector)
-            .prev()
-            .remove()
-          $(selector).remove()
-        }
-      }
     },
     yes: (layerIndex: number) => {
       list = $('#selection-form')
@@ -373,8 +353,8 @@ export default {
   pathname: '/student/teachingEvaluation/evaluation/index',
   style: require('./index.scss').toString(),
   init() {
-    $btn = $(templates.btn)
-    $prompt = $(templates.prompt)
+    $btn = $(templates.btn())
+    $prompt = $(templates.prompt())
 
     $('#close > h4').append($btn, $prompt)
 
