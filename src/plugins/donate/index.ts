@@ -17,7 +17,7 @@ export default {
   displayName: '打赏',
   icon: getPluginIcon('donate'),
   isNecessary: true,
-  brief: '打赏页面，是助手界面的一部分，可以关闭。',
+  brief: '打赏页面，是助手界面的一部分，不可关闭。',
   route: 'help/donate',
   menu: {
     rootMenuId: 'sua-menu-list',
