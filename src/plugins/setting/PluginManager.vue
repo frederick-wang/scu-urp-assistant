@@ -1,6 +1,7 @@
 <template lang="pug">
 .sua-container-setting-plugin-manager
-  h2(style='padding-top: 8px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6;') SCU URP 助手 - 插件管理器
+  el-alert(type='warning' title='注意：切换插件状态后，需要刷新页面才会生效。')
+  h2(style='margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6;') SCU URP 助手 - 插件管理器
   .plugin-list
     .plugin(v-for='plugin in pluginList' :key='plugin.name')
       .plugin-icon
@@ -21,13 +22,20 @@
           inactive-color="#ff4949"
           active-text="激活"
           inactive-text="停用"
+          @change='onSwitchChange'
         )
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { allList as pluginList } from '@/plugins'
+import {
+  allList as pluginList,
+  canBeEnabledList as pluginEnabledList
+} from '@/plugins'
 import { SUAPluginMenu } from '@/types'
+import { fromPairs, tryCatch } from 'ramda'
+import { state } from '../../store'
+import local from '@/store/local'
 
 interface PluginInfo {
   name: string
@@ -100,7 +108,7 @@ export default class PluginManager extends Vue {
       brief,
       menu: convertMenuToTextList(menu),
       path: convertPathnameToText(pathname),
-      enabled: true
+      enabled: pluginEnabledList.some(v => v.name === name)
     }))
     .sort((a, b) =>
       a.displayName.localeCompare(b.displayName, 'zh-Hans', {
@@ -108,6 +116,26 @@ export default class PluginManager extends Vue {
       })
     )
     .sort((a, b) => Number(b.isNecessary) - Number(a.isNecessary))
+
+  async onSwitchChange(): Promise<void> {
+    const newPluginEnabledStates = fromPairs(
+      this.pluginList.map(({ name, enabled }) => [name, enabled])
+    )
+    const key = 'pluginEnabledStates'
+    state.setData(key, newPluginEnabledStates)
+    try {
+      await local.saveData({
+        key,
+        payload: newPluginEnabledStates
+      })
+      this.$message({
+        type: 'success',
+        message: '插件状态切换成功，刷新页面后即可生效。'
+      })
+    } catch (error) {
+      this.$message.error('插件状态切换失败，请刷新页面后再次尝试。')
+    }
+  }
 }
 </script>
 
