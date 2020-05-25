@@ -1,9 +1,9 @@
 // 快捷评教插件
 import Vue from 'vue'
-import comments from './comments.json'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { getPluginIcon } from '@/utils'
 import { SUAPlugin } from '@/types'
+import { getComment } from './comment'
 
 const evaluationInterval = 1000 * (10 + 1)
 
@@ -54,12 +54,6 @@ function parseName(
     evaluationContentContent
   }
   return result
-}
-
-function getComment(): string {
-  return encodeURIComponent(
-    comments[Math.floor(Math.random() * comments.length)]
-  )
 }
 
 function collectData(): boolean {
