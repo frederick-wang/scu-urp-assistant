@@ -3,7 +3,7 @@ import Vue from 'vue'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { getPluginIcon } from '@/utils'
 import { SUAPlugin } from '@/types'
-import { getComment } from './comment'
+import { getRandomComment } from './comment'
 
 const evaluationInterval = 1000 * (10 + 1)
 
@@ -26,6 +26,10 @@ let list: Array<{
   evaluationContentContent: string
 }>
 
+function changePrompt(str: string): void {
+  $prompt.text(str)
+}
+
 function parseName(
   raw: string
 ): {
@@ -45,7 +49,7 @@ function parseName(
     evaluationContentNumber,
     evaluationContentContent
   ] = data
-  const result = {
+  return {
     questionnaireCode,
     questionnaireName,
     evaluatedPeopleNumber,
@@ -53,7 +57,6 @@ function parseName(
     evaluationContentNumber,
     evaluationContentContent
   }
-  return result
 }
 
 function collectData(): boolean {
@@ -86,10 +89,6 @@ function collectData(): boolean {
     return true
   }
   return false
-}
-
-function changePrompt(str: string): void {
-  $prompt.text(str)
 }
 
 function evaluate(index: number): void {
@@ -161,7 +160,7 @@ function evaluate(index: number): void {
           ['evaluatedPeopleNumber', evaluatedPeopleNumber],
           ['count', count],
           ...range.map(numberString => [numberString, '10_1']),
-          ['zgpj', getComment()]
+          ['zgpj', getRandomComment()]
         ]
         evaluate2ndStage(
           index,
