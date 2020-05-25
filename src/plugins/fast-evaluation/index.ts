@@ -1,4 +1,5 @@
 // 一键评教插件
+import Vue from 'vue'
 import comments from './comments.json'
 import checkboxWrapperSelectorsData from './checkboxWrapperSelectors.json'
 import questionsNumberRangeData from './questionsNumberRange.json'
@@ -140,9 +141,10 @@ function evaluate(index: number): void {
     },
     error: xhr => {
       emitDataAnalysisEvent('快捷评教', '获取数据失败')
-      window.urp.alert(
-        `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
-      )
+      Vue.prototype.$notify.error({
+        title: '[快捷评教] 获取数据失败',
+        message: `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
+      })
     },
     success: data => {
       tokenValue = data.match(
@@ -152,9 +154,9 @@ function evaluate(index: number): void {
 
       if (!tokenValue || !count) {
         emitDataAnalysisEvent('快捷评教', '教务系统不稳定')
-        window.urp.confirm(
+        Vue.prototype.$confirm(
           `因教务系统不稳定，当前暂时无法评教，请点击右上角头像注销，并在重新登录后再次尝试。如果还是无法评教，您可以更换浏览器或电脑后再尝试。`,
-          () => null
+          '[快捷评教] 教务系统不稳定'
         )
         return
       }
@@ -175,9 +177,14 @@ function evaluate(index: number): void {
           tokenValue
         )
       } else {
-        const msg = `无效的问卷名称：${questionnaireName}`
-        window.urp.alert(msg)
-        console.error(new Error(msg))
+        const message = `无效的问卷名称：${questionnaireName}`
+        Vue.prototype.$notify.error({
+          title: '[快捷评教] 无效问卷名称',
+          message
+        })
+        emitDataAnalysisEvent('快捷评教', '无效问卷名称', {
+          questionnaireName
+        })
       }
     }
   })
@@ -198,9 +205,10 @@ function evaluate2ndStage(
     data: `tokenValue=${tokenValue}&${bodyStr}`,
     error: xhr => {
       emitDataAnalysisEvent('快捷评教', '获取数据失败')
-      window.urp.alert(
-        `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
-      )
+      Vue.prototype.$notify.error({
+        title: '[快捷评教] 获取数据失败',
+        message: `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
+      })
       changePrompt(
         `${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index +
           1}/${list.length}`
@@ -209,7 +217,10 @@ function evaluate2ndStage(
     success: data => {
       if (data['result'].indexOf('/') !== -1) {
         emitDataAnalysisEvent('快捷评教', '登陆过期')
-        window.urp.alert('登陆过期，将在3秒后自动刷新页面')
+        Vue.prototype.$notify.error({
+          title: '[快捷评教] 登陆过期',
+          message: '登陆过期，将在3秒后自动刷新页面'
+        })
         changePrompt(
           `${evaluatedPeople}（${evaluationContentContent}）登陆过期 QAQ，进度：${index +
             1}/${list.length}，将在3秒后自动刷新页面~`
@@ -219,6 +230,10 @@ function evaluate2ndStage(
         }, 3000)
       } else if (data['result'] === 'success') {
         emitDataAnalysisEvent('快捷评教', '单位老师评教成功')
+        Vue.prototype.$message({
+          message: `${evaluatedPeople}（${evaluationContentContent}）评价成功`,
+          type: 'success'
+        })
         changePrompt(
           `${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index +
             1}/${
@@ -242,7 +257,9 @@ function evaluate2ndStage(
           }, evaluationInterval)
         } else {
           emitDataAnalysisEvent('快捷评教', '未知错误')
-          window.urp.alert('保存失败')
+          Vue.prototype.$message.error(
+            `${evaluatedPeople}（${evaluationContentContent}）遭遇未知错误 QAQ`
+          )
           changePrompt(
             `${evaluatedPeople}（${evaluationContentContent}）遭遇未知错误 QAQ，进度：${index +
               1}/${
