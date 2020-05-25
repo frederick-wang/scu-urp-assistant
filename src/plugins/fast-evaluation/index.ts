@@ -3,93 +3,20 @@ import Vue from 'vue'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { getPluginIcon } from '@/utils'
 import { SUAPlugin } from '@/types'
-import { getRandomComment } from './comment'
+import {
+  getRandomComment,
+  collectData,
+  Questionnaire,
+  generateChangePrompt
+} from './util'
+import * as template from './template'
 
 const evaluationInterval = 1000 * (10 + 1)
 
-const templates = {
-  btn: require('./btn.pug') as () => string,
-  prompt: require('./prompt.pug') as () => string,
-  selectionModal: require('./selectionModal.pug') as (payload: {
-    checkboxWrappers: [string, string][]
-  }) => string
-}
-
 let $btn: JQuery<HTMLElement>
 let $prompt: JQuery<HTMLElement>
-let list: Array<{
-  questionnaireCode: string
-  questionnaireName: string
-  evaluatedPeopleNumber: string
-  evaluatedPeople: string
-  evaluationContentNumber: string
-  evaluationContentContent: string
-}>
-
-function changePrompt(str: string): void {
-  $prompt.text(str)
-}
-
-function parseName(
-  raw: string
-): {
-  questionnaireCode: string
-  questionnaireName: string
-  evaluatedPeopleNumber: string
-  evaluatedPeople: string
-  evaluationContentNumber: string
-  evaluationContentContent: string
-} {
-  const data = raw.split(`","`)
-  const [
-    questionnaireCode,
-    questionnaireName,
-    evaluatedPeopleNumber,
-    evaluatedPeople,
-    evaluationContentNumber,
-    evaluationContentContent
-  ] = data
-  return {
-    questionnaireCode,
-    questionnaireName,
-    evaluatedPeopleNumber,
-    evaluatedPeople,
-    evaluationContentNumber,
-    evaluationContentContent
-  }
-}
-
-function collectData(): boolean {
-  const collectingMsgIndex = window.layer.msg('正在收集本页问卷数据……')
-  const jxpgtbody = document.getElementById('jxpgtbody')
-  if (jxpgtbody !== null) {
-    const items = Array.from(jxpgtbody.getElementsByTagName('button'))
-      .filter(item => item.innerText === '评估')
-      // 2018-8-31 20:21:20
-      // 今天发现 urp 代码有修改，把 evaluationContentContent 从 onClick 函数调用里删除了。
-      // 临时这样补上，尽量不做大修改，防止出错。
-      .map(item => {
-        const attr = item.getAttribute('onClick') as string
-        const itemParentElement = item.parentElement as HTMLElement
-        const item2ndOrderParentElement = itemParentElement.parentElement as HTMLElement
-        const evaluationContentContentElement = item2ndOrderParentElement
-          .children[3] as HTMLElement
-        return (
-          attr.replace(
-            /evaluationResult\("|evaluation\("|"\);return false;/gi,
-            ''
-          ) + `","${evaluationContentContentElement.innerText}`
-        )
-      })
-    if (!items.length) {
-      return false
-    }
-    list = items.map(item => parseName(item))
-    window.layer.close(collectingMsgIndex)
-    return true
-  }
-  return false
-}
+let list: Questionnaire[]
+let changePrompt: (str: string) => JQuery<HTMLElement>
 
 function evaluate(index: number): void {
   const origin = window.location.origin
@@ -282,7 +209,7 @@ function showSelectionModal(): void {
     shadeClose: true,
     offset: '50px',
     btn: ['开始一键评教!'],
-    content: templates.selectionModal({
+    content: template.selectionModal({
       checkboxWrappers: Array.from(checkboxWrapperIds)
     }),
     success: () => {
@@ -300,9 +227,7 @@ function showSelectionModal(): void {
           index
         ) => {
           const selector = `#${checkboxWrapperIds.get(type)}`
-          $(selector).append(
-            require('./checkbox.pug')({ name, index, curriculum })
-          )
+          $(selector).append(template.checkbox({ name, index, curriculum }))
         }
       )
     },
@@ -325,8 +250,8 @@ function showSelectionModal(): void {
 
 function onClickBtn(e: MouseEvent): void {
   e.preventDefault()
-  const hasUnevaluatedQuestionnaire = collectData()
-  if (hasUnevaluatedQuestionnaire) {
+  list = collectData()
+  if (list.length) {
     showSelectionModal()
   } else {
     window.urp.confirm(
@@ -346,8 +271,9 @@ export default {
   pathname: '/student/teachingEvaluation/evaluation/index',
   style: require('./index.scss').toString(),
   init() {
-    $btn = $(templates.btn())
-    $prompt = $(templates.prompt())
+    $btn = $(template.btn())
+    $prompt = $(template.prompt())
+    changePrompt = generateChangePrompt($prompt)
 
     $('#close > h4').append($btn, $prompt)
 
