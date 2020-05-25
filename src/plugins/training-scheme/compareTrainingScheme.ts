@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import {
   showLoadingAnimation,
   hideLoadingAnimation,
@@ -796,6 +797,12 @@ export async function render(root: HTMLElement): Promise<void> {
     initEvents()
     selectSelfMajorAndQuery()
   } catch (error) {
+    const title = '培养方案列表数据获取失败'
+    const { message } = error
+    Vue.prototype.$notify.error({
+      title,
+      message
+    })
     emitDataAnalysisEvent('培养方案比较', '培养方案列表数据获取失败')
   }
 }
