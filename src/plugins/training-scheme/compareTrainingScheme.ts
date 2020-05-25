@@ -713,10 +713,10 @@ function save(): void {
       })
       canvas.toBlob(blob => {
         const majorName1 = trainingSchemeList.filter(
-          ({ majorId }) => majorId === $('#query-major-1 #major').val()
+          ({ majorId }) => majorId === Number($('#query-major-1 #major').val())
         )[0].majorName
         const majorName2 = trainingSchemeList.filter(
-          ({ majorId }) => majorId === $('#query-major-2 #major').val()
+          ({ majorId }) => majorId === Number($('#query-major-2 #major').val())
         )[0].majorName
         const grade1 = $('#query-major-1 #grade').val()
         const grade2 = $('#query-major-2 #grade').val()
