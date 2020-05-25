@@ -165,25 +165,28 @@ function evaluate(index: number): void {
         )
       ]
       if (range) {
-        let bodyStr = `questionnaireCode=${questionnaireCode}&evaluationContentNumber=${evaluationContentNumber}&evaluatedPeopleNumber=${evaluatedPeopleNumber}&count=${count}`
-        for (const numberString of range) {
-          bodyStr += `&${numberString}=10_1`
-        }
-        bodyStr += `&zgpj=${getComment()}`
+        const params = [
+          ['questionnaireCode', questionnaireCode],
+          ['evaluationContentNumber', evaluationContentNumber],
+          ['evaluatedPeopleNumber', evaluatedPeopleNumber],
+          ['count', count],
+          ...range.map(numberString => [numberString, '10_1']),
+          ['zgpj', getComment()]
+        ]
         evaluate2ndStage(
           index,
-          bodyStr,
+          params.map(v => `${v[0]}=${v[1]}`).join('&'),
           evaluatedPeople,
           evaluationContentContent,
           tokenValue
         )
       } else {
-        const message = `无效的问卷名称：${questionnaireName}`
+        const message = `读取问题编号失败：${questionnaireName}`
         Vue.prototype.$notify.error({
-          title: '[快捷评教] 无效问卷名称',
+          title: '[快捷评教] 读取问题编号失败',
           message
         })
-        emitDataAnalysisEvent('快捷评教', '无效问卷名称', {
+        emitDataAnalysisEvent('快捷评教', '读取问题编号失败', {
           questionnaireName
         })
       }
@@ -305,12 +308,12 @@ function showSelectionModal(): void {
               require('./checkbox.pug')({ name, index, curriculum })
             )
           } else {
-            const message = `无效的问卷名称：${type}`
+            const message = `读取问题编号失败：${type}`
             Vue.prototype.$notify.error({
-              title: '[快捷评教] 无效问卷名称',
+              title: '[快捷评教] 读取问题编号失败',
               message
             })
-            emitDataAnalysisEvent('快捷评教', '无效问卷名称', {
+            emitDataAnalysisEvent('快捷评教', '读取问题编号失败', {
               type
             })
           }
