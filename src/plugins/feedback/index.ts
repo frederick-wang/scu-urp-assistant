@@ -2,6 +2,7 @@ import Vue, { VNode } from 'vue'
 import App from './Feedback.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getPluginIcon } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-feedback"></div>`)

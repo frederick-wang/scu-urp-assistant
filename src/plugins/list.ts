@@ -8,6 +8,7 @@ import submitData from '@/plugins/user-experience-improvement-program'
 import dataAnalysis from '@/plugins/data-analysis'
 import about from '@/plugins/about'
 import feedback from '@/plugins/feedback'
+import donate from '@/plugins/donate'
 import bachelorDegree from '@/plugins/bachelor-degree'
 import scuUietp from '@/plugins/scu-uietp'
 import beautify from '@/plugins/beautify'
@@ -27,7 +28,8 @@ const optionalPluginsLogined = [
   submitData,
   setting,
   about,
-  feedback
+  feedback,
+  donate
 ]
 
 function getAllPlugins(): SUAPlugin[] {
