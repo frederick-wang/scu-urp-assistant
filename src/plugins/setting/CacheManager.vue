@@ -10,7 +10,6 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { logger } from '../../utils'
 import local from '../../store/local'
 
 @Component
