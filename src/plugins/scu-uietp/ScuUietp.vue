@@ -1,5 +1,14 @@
 <template lang="pug">
 .sua-container-scu-uietp
+  el-alert(
+    v-if='loadingIsDone'
+    v-for="(v, i) in alerts"
+    :key="i"
+    :title="v.title"
+    :type="v.type"
+    :closable="v.closable"
+    :close-text='v.closeText'
+  )
   .row.query-wrapper
     .col-sm-12
       h4.header.smaller.lighter.grey
@@ -17,7 +26,7 @@
                 i.ace-con.fa.fa-search.white.bigger-120 &nbsp;查询
   .row.result-wrapper
     Loading(v-if='!loadingIsDone')
-    .col-sm-12(v-if='!hasNotQueried && loadingIsDone')
+    .col-sm-12(v-if='!hasNotQueried && loadingIsDone && hasNoError')
       h4.header.smaller.lighter.grey
         i.menu-icon.fa.fa-table
         |
@@ -79,9 +88,19 @@ export default class ScuUietp extends Vue {
   // [立项年份，学院名称，项目名称，项目负责人姓名，参与学生人数，项目其他成员信息，学校导师姓名，立项级别，申请类别，立项类别][]
   scuUietpList: ScuUietpItemDTO[] = []
   queryStr = ''
+  alerts: {
+    title: string
+    type?: 'success' | 'info' | 'warning' | 'error'
+    closable?: boolean
+    closeText?: string
+  }[] = []
+
+  get hasNoError(): boolean {
+    return this.alerts.every(v => v.type !== 'error')
+  }
 
   async query(): Promise<void> {
-    this.queryStr = this.queryStr.replace(/%/g, '').trim()
+    this.queryStr = this.queryStr.trim()
     if (!this.queryStr) {
       return
     }
@@ -97,9 +116,23 @@ export default class ScuUietp extends Vue {
         查询参数: `${this.queryStr}`
       })
     } catch (error) {
+      const title = '历届大创查询'
+      const message: string = error.message
       emitDataAnalysisEvent('历届大创查询', '查询失败', {
         查询参数: `${this.queryStr}`
       })
+      this.$notify.error({
+        title,
+        message
+      })
+      this.alerts = [
+        {
+          title: message,
+          type: 'error',
+          closable: false
+        }
+      ]
+      this.loadingIsDone = true
     }
   }
 }
