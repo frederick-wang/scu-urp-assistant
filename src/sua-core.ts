@@ -187,10 +187,26 @@ const suaObject: SUAObject = {
       // 初始化全局样式
       loadGlobalStyle()
       // 初始化Store
-      await initStore()
+      try {
+        await initStore()
+      } catch (error) {
+        Vue.prototype.$notify.error({
+          title: '[初始化错误] Store初始化失败',
+          message:
+            '抱歉，Store初始化失败，助手将无法正常使用。您可以尝试刷新页面，也许能解决问题。'
+        })
+      }
     }
     // 初始化插件列表
-    await initPlugin()
+    try {
+      await initPlugin()
+    } catch (error) {
+      Vue.prototype.$notify.error({
+        title: '[初始化错误] 插件初始化失败',
+        message:
+          '抱歉，插件初始化失败，助手将无法正常使用。您可以尝试刷新页面，也许能解决问题。'
+      })
+    }
     this.plugins = pluginList
     // 加载插件
     for (const plugin of this.plugins) {
