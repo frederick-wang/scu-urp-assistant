@@ -68,4 +68,4 @@ npm run analyze
 
 非常感谢您的打赏，SCU URP 助手会因您的帮助而越变越好！作者也会在每个吃泡面的凌晨想起您的！
 
-![支付宝收款码](https://typora-images.cdn.zhaoji.wang/1590444582.jpg) ![微信支付收款码](https://typora-images.cdn.zhaoji.wang/mm_facetoface_collect_qrcode_1590444571616.png)
+<img src="https://typora-images.cdn.zhaoji.wang/1590444582.jpg" alt="支付宝收款码" height=360> <img src="https://typora-images.cdn.zhaoji.wang/mm_facetoface_collect_qrcode_1590444571616.png" alt="微信支付收款码" height=360>
