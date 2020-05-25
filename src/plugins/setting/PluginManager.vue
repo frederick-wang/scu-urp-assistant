@@ -33,7 +33,7 @@ import {
   canBeEnabledList as pluginEnabledList
 } from '@/plugins'
 import { SUAPluginMenu } from '@/types'
-import { fromPairs, tryCatch } from 'ramda'
+import { fromPairs } from 'ramda'
 import { state } from '../../store'
 import local from '@/store/local'
 
