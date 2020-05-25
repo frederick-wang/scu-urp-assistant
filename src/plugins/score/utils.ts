@@ -40,7 +40,7 @@ function mapGPA(
   value: number
   weight: number
 }[] {
-  return arr.map(v => ({ value: v.gradePoint, weight: v.credit }))
+  return arr.map(v => ({ value: v.gradePoint || 0, weight: v.credit }))
 }
 
 /**
@@ -55,7 +55,7 @@ function mapScore(
   value: number
   weight: number
 }[] {
-  return arr.map(v => ({ value: v.courseScore, weight: v.credit }))
+  return arr.map(v => ({ value: v.courseScore || 0, weight: v.credit }))
 }
 
 /**

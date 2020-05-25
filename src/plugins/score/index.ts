@@ -4,6 +4,8 @@ import GPACalculatorApp from './GPACalculator.vue'
 import GPACalculatorWidgetApp from './GPACalculatorWidget.vue'
 import ExpectedGradesEstimationApp from './ExpectedGradesEstimation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
+import { getPluginIcon } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 function renderExpectedGradesEstimation(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-expected-grades-estimation"></div>`)
@@ -93,7 +95,12 @@ const menu = [
 ]
 
 export default {
-  name: 'gpa',
+  name: 'score',
+  displayName: '成绩相关工具',
+  icon: getPluginIcon('score'),
+  isNecessary: false,
+  brief:
+    '让您直接看到全部均分、全部绩点与必修均分、必修绩点，还可自由地选择课程进行计算，并方便地估计预期成绩。还可以在每年的出分季帮助您查询到本学期课程成绩的最高分、最低分、平均分和名次。',
   pathname: ['/', '/index.jsp'],
   route: menu.map(v => v.item.route),
   init() {

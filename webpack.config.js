@@ -1,3 +1,6 @@
+require('dotenv').config({
+  path: `.env.${process.env.NODE_ENV || 'development'}`
+})
 const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
@@ -20,24 +23,16 @@ const banner = `// ==UserScript==
 // @run-at       document-start
 // ==/UserScript==`
 
-console.log()
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-module.exports = env => {
-  return {
-    entry: {
-      'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
-      'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
-    },
-    plugins: [
-      new CleanWebpackPlugin(),
-      new webpack.ProvidePlugin({
-        $: 'jquery',
-        jQuery: 'jquery'
-      }),
-      new VueLoaderPlugin(),
-      ...(env.analyze ? [new BundleAnalyzerPlugin()] : [])
-    ],
+module.exports = (env) => {
+  const devConfig = {
+    devtool: 'inline-source-map',
+    devServer: {
+      overlay: true,
+      disableHostCheck: true
+    }
+  }
+  const prodConfig = {
     optimization: {
       minimize: true,
       minimizer: [
@@ -49,7 +44,28 @@ module.exports = env => {
         })
       ],
       concatenateModules: true
+    }
+  }
+  return {
+    ...(env.development ? devConfig : {}),
+    ...(env.production ? prodConfig : {}),
+    entry: {
+      'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
+      'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
     },
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env.API_PATH': `'${process.env.API_PATH}'`,
+        'process.env.API_PATH_V2': `'${process.env.API_PATH_V2}'`
+      }),
+      new CleanWebpackPlugin(),
+      new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery'
+      }),
+      new VueLoaderPlugin(),
+      ...(env.analyze ? [new BundleAnalyzerPlugin()] : [])
+    ],
     output: {
       filename: '[name].js',
       path: path.resolve(__dirname, 'dist')

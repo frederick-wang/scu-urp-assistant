@@ -11,23 +11,18 @@ import {
 import local from '@/store/local'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 
+const API_PATH = process.env.API_PATH
+const API_PATH_V2 = process.env.API_PATH_V2
+
 function getLevenshteinDistance(a: string, b: string): number {
-  // Create empty edit distance matrix for all possible modifications of
-  // substrings of a to substrings of b.
   const distanceMatrix: number[][] = Array(b.length + 1)
     .fill(null)
     .map(() => Array(a.length + 1).fill(null))
 
-  // Fill the first row of the matrix.
-  // If this is first row then we're transforming empty string to a.
-  // In this case the number of transformations equals to size of a substring.
   for (let i = 0; i <= a.length; i += 1) {
     distanceMatrix[0][i] = i
   }
 
-  // Fill the first column of the matrix.
-  // If this is first column then we're transforming empty string to b.
-  // In this case the number of transformations equals to size of b substring.
   for (let j = 0; j <= b.length; j += 1) {
     distanceMatrix[j][0] = j
   }
@@ -84,11 +79,6 @@ const chineseNumbers = [
   '九',
   '十'
 ]
-
-const API_PATH =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost/scu-urp-assistant-server/public'
-    : 'https://sua.zhaoji.wang/api/v1'
 
 function convertCourseScoreInfoListToScoreRecords(
   list: CourseScoreInfo[]
@@ -350,9 +340,16 @@ async function getCourseTeacherList(
   return []
 }
 
+function getPluginIcon(name: string): string {
+  return `https://gitee.com/frederick-wang/scu-urp-assistant/raw/master/src/plugins/${name}/icon.png`
+}
+
+export const isDev = (): boolean => process.env.NODE_ENV === 'development'
+
 export {
   getChineseNumber,
   API_PATH,
+  API_PATH_V2,
   pathnameTrigger,
   routeTrigger,
   sleep,
@@ -363,5 +360,6 @@ export {
   convertCourseInfoListsToTeacherTable,
   getCourseTeacherList,
   convertCourseScoreInfoListToScoreRecords,
-  getTextSimilarity
+  getTextSimilarity,
+  getPluginIcon
 }

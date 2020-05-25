@@ -1,3 +1,5 @@
+import { SUAObject } from "./types";
+
 declare global {
   interface Window {
     $sua: SUAObject

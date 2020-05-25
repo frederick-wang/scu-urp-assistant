@@ -1,6 +1,8 @@
 import Vue, { VNode } from 'vue'
 import App from './About.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
+import { getPluginIcon } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-about"></div>`)
@@ -12,6 +14,10 @@ function render(root: HTMLElement): void {
 
 export default {
   name: 'about',
+  displayName: '关于',
+  icon: getPluginIcon('about'),
+  isNecessary: true,
+  brief: '关于页面，是助手界面的一部分，不可关闭。',
   route: 'help/about',
   menu: {
     rootMenuId: 'sua-menu-list',

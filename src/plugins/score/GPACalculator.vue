@@ -1,8 +1,17 @@
 <template lang="pug">
 .sua-container-gpa-calculator
   Loading(v-if='!loadingIsDone')
+  el-alert(
+    v-if='loadingIsDone'
+    v-for="(v, i) in alerts"
+    :key="i"
+    :title="v.title"
+    :type="v.type"
+    :closable="v.closable"
+    :close-text='v.closeText'
+  )
   TotalTranscript(
-    v-if='loadingIsDone && records.length > 1'
+    v-if='loadingIsDone && hasNoError && records.length > 1'
     :semestersQuantity='records.length'
     :courses='allCourses'
     :selectedCourses='allSelectedCourses'
@@ -10,7 +19,7 @@
     @unselectAllCourses='unselectAllCourses()'
     @selectCompulsoryCourses='selectCompulsoryCourses()'
   )
-  .gpa-st-container.row(v-if='loadingIsDone')
+  .gpa-st-container.row(v-if='loadingIsDone && hasNoError')
     SemesterTranscript(
       v-for='(semesterItem, semesterIndex) in records'
       :key='semesterIndex'
@@ -45,6 +54,16 @@ export default class GPACalculator extends Vue {
 
   loadingIsDone = false
   records: SemesterScoreRecord[] = []
+  alerts: {
+    title: string
+    type?: 'success' | 'info' | 'warning' | 'error'
+    closable?: boolean
+    closeText?: string
+  }[] = []
+
+  get hasNoError(): boolean {
+    return this.alerts.every(v => v.type !== 'error')
+  }
 
   get allCourses(): CourseScoreRecord[] {
     return this.records.reduce(
@@ -105,17 +124,32 @@ export default class GPACalculator extends Vue {
           break
       }
     } catch (error) {
+      let title = '[成绩相关工具] '
+      const message: string = error.message
       switch (this.type) {
         case 'compact':
+          title += '均分绩点计算器挂件'
           emitDataAnalysisEvent('均分绩点计算器挂件', '查询失败')
           break
         case 'basic':
+          title += '均分绩点计算器'
           emitDataAnalysisEvent('均分绩点计算器', '查询失败')
           break
         case 'full':
+          title += '成绩信息查询'
           emitDataAnalysisEvent('成绩信息查询', '查询失败')
           break
       }
+      this.$notify.error({
+        title,
+        message
+      })
+      this.alerts.push({
+        title: message,
+        type: 'error',
+        closable: false
+      })
+      this.loadingIsDone = true
     }
   }
 }

@@ -1,4 +1,4 @@
-interface SUAObject {
+export interface SUAObject {
   plugins: SUAPlugin[]
   initQueue: Function[]
   taskQueue: Function[]
@@ -8,8 +8,12 @@ interface SUAObject {
 }
 
 // pathname和route至少要有一个
-interface SUAPlugin {
+export interface SUAPlugin {
   name: string
+  displayName: string
+  icon: string
+  isNecessary: boolean
+  brief: string
   pathname?:
     | string
     | string[]
@@ -28,7 +32,7 @@ interface SUAPlugin {
   task?: () => Promise<void> | void
 }
 
-interface SUAPluginMenu {
+export interface SUAPluginMenu {
   rootMenuId: string
   rootMenuName: string
   id: string
@@ -36,7 +40,7 @@ interface SUAPluginMenu {
   item: SUAPluginMenuItem | SUAPluginMenuItem[]
 }
 
-interface SUAPluginMenuItem {
+export interface SUAPluginMenuItem {
   name: string
   style?: string
   route: string

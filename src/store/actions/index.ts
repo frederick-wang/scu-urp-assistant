@@ -4,11 +4,12 @@ import {
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
-  requestBachelorDegreeList,
+  requestBachelorDegree,
   requestCourseSchedule,
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
-  requestScuUietpList
+  requestScuUietpList,
+  requestAccessToken
 } from './request'
 
 import {
@@ -23,11 +24,12 @@ enum Request {
   CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO = 'current_semester_student_academic_info',
   TRAINING_SCHEME_LIST = 'training_scheme_list',
   TRAINING_SCHEME = 'training_scheme',
-  BACHELOR_DEGREE_LIST = 'bachelor_degree_list',
+  BACHELOR_DEGREE = 'bachelor_degree',
   COURSE_SCHEDULE = 'course_schedule',
   COURSE_INFO_LIST_BY_SEMESTER = 'course_info_list_by_semester',
   STUDENT_SEMESTER_CODE_LIST = 'student_semester_code_list',
-  SCU_UIETP_LIST = 'scu_uietp_list'
+  SCU_UIETP_LIST = 'scu_uietp_list',
+  ACCESS_TOKEN = 'login'
 }
 
 enum Submit {
@@ -42,11 +44,12 @@ const actions = {
   [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]: requestCurrentSemesterStudentAcademicInfo,
   [Request.TRAINING_SCHEME_LIST]: requestTrainingSchemeList,
   [Request.TRAINING_SCHEME]: requestTrainingScheme,
-  [Request.BACHELOR_DEGREE_LIST]: requestBachelorDegreeList,
+  [Request.BACHELOR_DEGREE]: requestBachelorDegree,
   [Request.COURSE_SCHEDULE]: requestCourseSchedule,
   [Request.COURSE_INFO_LIST_BY_SEMESTER]: requestCourseInfoListBySemester,
   [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList,
   [Request.SCU_UIETP_LIST]: requestScuUietpList,
+  [Request.ACCESS_TOKEN]: requestAccessToken,
   [Submit.COURSE_SCORE_PUBLIC_INFO]: submitCourseScorePublicInfo,
   [Submit.COURSE_SCORE_PUBLIC_INFOS]: submitCourseScorePublicInfos,
   [Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS]: submitStudentCourseScorePublicInfos

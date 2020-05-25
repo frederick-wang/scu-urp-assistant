@@ -1,40 +1,58 @@
-import { API_PATH, getChineseNumber, sleep } from '@/utils'
+import cheerio from 'cheerio'
+import { API_PATH_V2, getChineseNumber, sleep, logger } from '@/utils'
 import {
-  AllTermScoresAPIData,
+  AllTermScoresDTO,
   CourseScoreInfo,
   CurrentSemesterStudentAcademicInfo,
   TrainingSchemeYearInfo,
-  InstructionalTeachingPlanAPIData,
-  TrainingSchemeAPIData,
-  TrainingSchemeNodeAPIData,
+  InstructionalTeachingPlanDTO,
+  TrainingSchemeDTO,
+  TrainingSchemeNodeDTO,
   TrainingSchemeCourseInfo,
-  CourseScheduleInfoAPIData,
+  CourseScheduleInfoDTO,
   CourseScheduleInfo,
-  AjaxStudentScheduleAPIData,
+  AjaxStudentScheduleDTO,
   CourseInfoList,
   ScuUietpDTO,
-  TrainingSchemeBaseInfo
+  TrainingSchemeBaseInfo,
+  BachelorDegreeInfo,
+  TrainingScheme
 } from '../types'
+import { pipe, map } from 'ramda'
+import state from '../state'
+import { Result } from './result.interface'
 
-async function requestStudentSemesterNumberList(): Promise<string[]> {
-  $.ajaxSetup({
+function getPageHTML(url: string): Promise<string> {
+  return ($.get({
+    url,
     beforeSend: xhr =>
       xhr.setRequestHeader('X-Requested-With', {
         toString() {
           return ''
         }
       } as string)
-  })
+  }) as unknown) as Promise<string>
+}
+
+async function LoadHTMLToDealWithError(
+  url: string
+): Promise<{ title: string; message: string; html: string }> {
+  const html = await getPageHTML(url)
+  const $ = cheerio.load(html)
+  const title = $('title').text()
+  const message = $('.main-content .page-content')
+    .text()
+    .replace(/×/g, '')
+    .trim()
+  return { title, message, html }
+}
+
+async function requestStudentSemesterNumberList(): Promise<string[]> {
   const url = '/student/courseSelect/calendarSemesterCurriculum/index'
-  const rawHTML = await $.get(url)
+  const rawHTML = await getPageHTML(url)
   const codeList = Array.from($('#planCode', rawHTML).find('option')).map(
     v => $(v).val() as string
   )
-  // 还原Ajax配置
-  $.ajaxSetup({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    beforeSend: null as any
-  })
   return codeList
 }
 
@@ -46,7 +64,7 @@ async function requestCourseInfoListBySemester(
   } = (await $.post(
     '/student/courseSelect/thisSemesterCurriculum/ajaxStudentSchedule/past/callback',
     { planCode: semesterCode }
-  )) as AjaxStudentScheduleAPIData
+  )) as AjaxStudentScheduleDTO
   const courseInfoList = Object.values(rawCourseInfoList).map(
     ({
       courseCategoryCode,
@@ -113,16 +131,8 @@ async function requestCourseInfoListBySemester(
 }
 
 async function requestStudentInfo(): Promise<Map<string, string>> {
-  $.ajaxSetup({
-    beforeSend: xhr =>
-      xhr.setRequestHeader('X-Requested-With', {
-        toString() {
-          return ''
-        }
-      } as string)
-  })
   const url = '/student/rollManagement/rollInfo/index'
-  const rawHTML = await $.get(url)
+  const rawHTML = await getPageHTML(url)
   const programPlanNumber = $('#zx', rawHTML).val() as string
   const programPlanName = $('#zx', rawHTML)
     .parent()
@@ -166,11 +176,6 @@ async function requestStudentInfo(): Promise<Map<string, string>> {
       ['培养方案名称', programPlanName],
       ['培养方案代码', programPlanNumber]
     ])
-  // 还原Ajax配置
-  $.ajaxSetup({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    beforeSend: null as any
-  })
   return new Map(infos as [string, string][])
 }
 
@@ -199,7 +204,7 @@ async function requestCourseSchedule(
     currentcourseNumberScheduleQuery === courseNumber
   ) {
     lastTimeScheduleQuery = new Date().getTime()
-    const res: CourseScheduleInfoAPIData = await $.post(
+    const res: CourseScheduleInfoDTO = await $.post(
       // 对，你没看错，这里教务处系统打错字了，把Schedule打成了Schdule
       '/student/integratedQuery/course/courseSchdule/courseInfo',
       {
@@ -303,18 +308,10 @@ function requestTrainingScheme(
   info: TrainingSchemeBaseInfo
   list: TrainingSchemeYearInfo[]
 }> {
-  $.ajaxSetup({
-    beforeSend: xhr =>
-      xhr.setRequestHeader('X-Requested-With', {
-        toString() {
-          return ''
-        }
-      } as string)
-  })
   const coursePropertyNameList = ['必修', '选修']
   const res = Promise.all([
     $.get(`/student/rollManagement/project/${num}/2/detail`).then(
-      ({ jhFajhb, treeList }: InstructionalTeachingPlanAPIData) => ({
+      ({ jhFajhb, treeList }: InstructionalTeachingPlanDTO) => ({
         info: jhFajhb,
         list: treeList
           .reduce((acc, cur) => {
@@ -355,7 +352,7 @@ function requestTrainingScheme(
       })
     ),
     $.get(`/student/rollManagement/project/${num}/1/detail`).then(
-      ({ treeList }: TrainingSchemeAPIData) =>
+      ({ treeList }: TrainingSchemeDTO) =>
         Object.values(
           treeList.reduce(
             (acc, cur) => {
@@ -387,7 +384,7 @@ function requestTrainingScheme(
               return acc
             },
             {} as {
-              [key: string]: TrainingSchemeNodeAPIData
+              [key: string]: TrainingSchemeNodeDTO
             }
           )
         ).reduce(
@@ -469,46 +466,77 @@ function requestTrainingScheme(
       }))
     })) as TrainingSchemeYearInfo[]
   }))
-  // 还原Ajax配置
-  $.ajaxSetup({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    beforeSend: null as any
-  })
   return res
 }
 
-let trainingSchemeList: string[][]
+let trainingSchemeList: TrainingScheme[]
 
-async function requestTrainingSchemeList(): Promise<string[][]> {
-  if (!trainingSchemeList) {
-    trainingSchemeList = await $.get(`${API_PATH}/student/training_scheme`)
-  }
-  return trainingSchemeList
-}
-
-let bachelorDegreeList: string[][]
-
-async function requestBachelorDegreeList(): Promise<string[][]> {
-  if (!bachelorDegreeList) {
-    bachelorDegreeList = await $.get(
-      `${API_PATH}/student/bachelor_degree_types`
-    )
-  }
-  return bachelorDegreeList
-}
-
-async function requestScuUietpList(query: string): Promise<ScuUietpDTO> {
-  const url = `${API_PATH}/program/scu_uietp`
-  const req = {
-    api: {
-      client: 'web'
-    },
-    data: {
-      query
+async function requestTrainingSchemeList(): Promise<TrainingScheme[]> {
+  const url = `${API_PATH_V2}/student/training_scheme`
+  try {
+    if (!trainingSchemeList) {
+      trainingSchemeList = await $.ajax({
+        method: 'GET',
+        url,
+        headers: {
+          Authorization: `Bearer ${state.user.accessToken}`
+        }
+      })
     }
+    return trainingSchemeList
+  } catch (error) {
+    const {
+      status,
+      statusText,
+      responseJSON: { message }
+    } = error
+    throw new Error(`[${status}] ${statusText}: ${message}`)
   }
-  const res = await $.get(url, req)
-  return res.data as ScuUietpDTO
+}
+
+async function requestBachelorDegree(
+  queryStr: string
+): Promise<BachelorDegreeInfo[]> {
+  const url = `${API_PATH_V2}/info/bachelor_degree/${encodeURIComponent(
+    queryStr
+  )}`
+  try {
+    return await $.ajax({
+      method: 'GET',
+      url,
+      headers: {
+        Authorization: `Bearer ${state.user.accessToken}`
+      }
+    })
+  } catch (error) {
+    const {
+      status,
+      statusText,
+      responseJSON: { message }
+    } = error
+    throw new Error(`[${status}] ${statusText}: ${message}`)
+  }
+}
+
+async function requestScuUietpList(queryStr: string): Promise<ScuUietpDTO> {
+  const url = `${API_PATH_V2}/info/scu_uietp/${encodeURIComponent(queryStr)}`
+  try {
+    const res = await $.ajax({
+      method: 'GET',
+      url,
+      headers: {
+        Authorization: `Bearer ${state.user.accessToken}`
+      }
+    })
+    return res as ScuUietpDTO
+  } catch (error) {
+    const {
+      status,
+      statusText,
+      responseJSON: { message }
+    } = error
+    throw new Error(`[${status}] ${statusText}: ${message}`)
+  }
 }
 
 async function requestCurrentSemesterStudentAcademicInfo(): Promise<
@@ -551,7 +579,13 @@ function convertSemesterNumberToText(number: string): string {
  * @param {string} semester 学期
  * @returns 绩点
  */
-function getPointByScore(score: number, semester: string): number {
+function getPointByScore(
+  score: number | undefined,
+  semester: string
+): number | undefined {
+  if (!score) {
+    return undefined
+  }
   // 2017年起，川大修改了绩点政策，因此要检测学期的年份
   const r = semester.match(/^\d+/)
   if (!r) {
@@ -624,96 +658,172 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
   CourseScoreInfo[]
 > {
   const url = '/student/integratedQuery/scoreQuery/allTermScores/data'
-  const {
-    list: {
-      pageContext: { totalCount }
-    }
-  } = (await $.post(url, {
-    zxjxjhh: '',
-    kch: '',
-    kcm: '',
-    pageNum: 1,
-    pageSize: 1
-  })) as AllTermScoresAPIData
+  try {
+    const {
+      list: {
+        pageContext: { totalCount }
+      }
+    } = (await $.post(url, {
+      zxjxjhh: '',
+      kch: '',
+      kcm: '',
+      pageNum: 1,
+      pageSize: 1
+    })) as AllTermScoresDTO
 
-  const {
-    list: { records }
-  } = (await $.post('/student/integratedQuery/scoreQuery/allTermScores/data', {
-    zxjxjhh: '',
-    kch: '',
-    kcm: '',
-    pageNum: 1,
-    pageSize: totalCount
-  })) as AllTermScoresAPIData
+    const {
+      list: { records }
+    } = (await $.post(
+      '/student/integratedQuery/scoreQuery/allTermScores/data',
+      {
+        zxjxjhh: '',
+        kch: '',
+        kcm: '',
+        pageNum: 1,
+        pageSize: totalCount
+      }
+    )) as AllTermScoresDTO
 
-  return filterCourseScoreInfoList(
-    records.map(v => ({
-      executiveEducationPlanNumber: (v[0] as string) || '',
-      executiveEducationPlanName:
-        convertSemesterNumberToText(v[0] as string) || '',
-      courseNumber: (v[1] as string) || '',
-      courseSequenceNumber: (v[2] as string) || '',
-      examTime: (v[3] as string) || '',
-      inputStatusCode: (v[4] as string) || '',
-      coursePropertyCode: (v[5] as string) || '',
-      inputMethodCode: (v[7] as string) || '',
-      courseScore: Number(v[8]) || 0,
-      levelCode: (v[9] as string) || '',
-      courseName: (v[11] as string) || '',
-      englishCourseName: (v[12] as string) || '',
-      credit: Number(v[13]) || 0,
-      studyHour: Number(v[14]) || 0,
-      coursePropertyName: (v[15] as string) || '',
-      examTypeName: (v[16] as string) || '',
-      levelName: (v[17] as string) || '',
-      unpassedReasonExplain: (v[18] as string) || '',
-      gradePoint: getPointByScore(v[8] as number, v[0] as string) || 0
-    }))
-  )
+    type recordType = typeof records[0]
+    const formatRecord = ([
+      executiveEducationPlanNumber,
+      courseNumber,
+      courseSequenceNumber,
+      examTime,
+      inputStatusCode,
+      coursePropertyCode,
+      examTypeCode,
+      inputMethodCode,
+      courseScore,
+      levelCode,
+      // 缓考是 '00'
+      unpassedReasonCode,
+      courseName,
+      englishCourseName,
+      credit,
+      studyHour,
+      coursePropertyName,
+      examTypeName,
+      levelName,
+      // 缓考是 '申请缓考'
+      unpassedReasonExplain
+    ]: recordType): CourseScoreInfo => ({
+      executiveEducationPlanNumber,
+      executiveEducationPlanName: convertSemesterNumberToText(
+        executiveEducationPlanNumber
+      ),
+      courseNumber,
+      courseSequenceNumber,
+      examTime,
+      inputStatusCode,
+      coursePropertyCode,
+      examTypeCode,
+      inputMethodCode,
+      courseScore,
+      levelCode,
+      unpassedReasonCode,
+      courseName,
+      englishCourseName,
+      credit,
+      studyHour,
+      coursePropertyName,
+      examTypeName,
+      levelName,
+      unpassedReasonExplain,
+      gradePoint: getPointByScore(courseScore, executiveEducationPlanNumber)
+    })
+
+    return pipe(map(formatRecord), filterCourseScoreInfoList)(records)
+  } catch (error) {
+    const { title, message, html } = await LoadHTMLToDealWithError(url)
+    logger.error({ title, message, html })
+    throw new Error(`${title}: ${message}`)
+  }
 }
 
 async function requestThisTermCourseScoreInfoList(): Promise<
   CourseScoreInfo[]
 > {
   const url = '/student/integratedQuery/scoreQuery/thisTermScores/data'
-  const [{ list }]: [{ list: any[] }] = await $.get(url)
-  // console.log(`state: ${state}`)
-  const res = filterCourseScoreInfoList(
-    list.map(
-      v =>
-        ({
-          courseName: v.courseName || '',
-          englishCourseName: v.englishCourseName || '',
-          courseNumber: v.id.courseNumber || '',
-          // 对，你没看错，这个地方教务处接口是错别字，把course打成了coure
-          courseSequenceNumber: v.coureSequenceNumber || '',
-          credit: Number(v.credit) || 0,
-          coursePropertyCode: v.coursePropertyCode || '',
-          coursePropertyName: v.coursePropertyName || '',
-          maxScore: Number(v.maxcj) || 0,
-          avgScore: Number(v.avgcj) || 0,
-          minScore: Number(v.mincj) || 0,
-          courseScore: Number(v.courseScore) || 0,
-          // 对，你没看错，这个地方教务处接口是错别字，把level打成了levle
-          levelCode: v.levlePoint || '',
-          levelName: v.levelName || '',
-          gradePoint: Number(v.gradePoint) || 0,
-          rank: Number(v.rank) || 0,
-          examTime: v.id.examtime || '',
-          unpassedReasonCode: v.unpassedReasonCode || '',
-          unpassedReasonExplain: v.unpassedReasonExplain || '',
-          executiveEducationPlanNumber: v.id.executiveEducationPlanNumber || '',
-          executiveEducationPlanName:
-            convertSemesterNumberToText(v.id.executiveEducationPlanNumber) ||
-            '',
-          inputStatusCode: v.inputStatusCode || '',
-          inputMethodCode: v.inputMethodCode || '',
-          studyHour: Number(v.studyHour) || 0,
-          examTypeName: v.examTypeName || ''
-        } as CourseScoreInfo)
+  try {
+    const data = await $.get(url)
+    const [{ list }]: [{ list: any[] }] = data
+    // console.log(`state: ${state}`)
+    const res = filterCourseScoreInfoList(
+      list.map(
+        v =>
+          ({
+            courseName: v.courseName || '',
+            englishCourseName: v.englishCourseName || '',
+            courseNumber: v.id.courseNumber || '',
+            // 对，你没看错，这个地方教务处接口是错别字，把course打成了coure
+            courseSequenceNumber: v.coureSequenceNumber || '',
+            credit: Number(v.credit) || 0,
+            coursePropertyCode: v.coursePropertyCode || '',
+            coursePropertyName: v.coursePropertyName || '',
+            maxScore: Number(v.maxcj) || 0,
+            avgScore: Number(v.avgcj) || 0,
+            minScore: Number(v.mincj) || 0,
+            courseScore: Number(v.courseScore) || 0,
+            // 对，你没看错，这个地方教务处接口是错别字，把level打成了levle
+            levelCode: v.levlePoint || '',
+            levelName: v.levelName || '',
+            gradePoint: Number(v.gradePoint) || 0,
+            rank: Number(v.rank) || 0,
+            examTime: v.id.examtime || '',
+            unpassedReasonCode: v.unpassedReasonCode || '',
+            unpassedReasonExplain: v.unpassedReasonExplain || '',
+            executiveEducationPlanNumber:
+              v.id.executiveEducationPlanNumber || '',
+            executiveEducationPlanName:
+              convertSemesterNumberToText(v.id.executiveEducationPlanNumber) ||
+              '',
+            inputStatusCode: v.inputStatusCode || '',
+            inputMethodCode: v.inputMethodCode || '',
+            studyHour: Number(v.studyHour) || 0,
+            examTypeName: v.examTypeName || ''
+          } as CourseScoreInfo)
+      )
     )
-  )
-  return res as CourseScoreInfo[]
+    return res
+  } catch (error) {
+    const { title, message, html } = await LoadHTMLToDealWithError(url)
+    logger.error({ title, message, html })
+    throw new Error(`${title}: ${message}`)
+  }
+}
+
+type LoginResultData = {
+  accessToken: string
+}
+
+export async function requestAccessToken(): Promise<LoginResultData> {
+  const { version, clientType: type } = state.core
+  const { id } = state.user
+  const url = `${API_PATH_V2}/user/login`
+  try {
+    const res: Result = await $.post(url, {
+      id,
+      client: { version, type }
+    })
+    if (res.error) {
+      const { code, title, message } = res.error
+      throw new Error(`[${code}] ${title}: ${message}`)
+    }
+    const { accessToken } = res.data as LoginResultData
+    return { accessToken }
+  } catch (error) {
+    try {
+      const {
+        status,
+        statusText,
+        responseJSON: { message }
+      } = error
+      throw new Error(`[${status}] ${statusText}: ${message}`)
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
 }
 
 export {
@@ -722,10 +832,10 @@ export {
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
-  requestBachelorDegreeList,
   requestCourseSchedule,
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
   requestStudentInfo,
-  requestScuUietpList
+  requestScuUietpList,
+  requestBachelorDegree
 }

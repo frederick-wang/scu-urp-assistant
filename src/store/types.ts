@@ -30,7 +30,7 @@ interface LocalStore {
   }
 }
 
-interface AjaxStudentScheduleAPIData {
+interface AjaxStudentScheduleDTO {
   allUnits: number
   xkxx: [
     {
@@ -144,7 +144,7 @@ interface AjaxStudentScheduleAPIData {
   }>
 }
 
-interface CourseScheduleInfoAPIData {
+interface CourseScheduleInfoDTO {
   pfcx: number
   list?: {
     pageSize: number
@@ -230,6 +230,13 @@ interface TrainingSchemeCourseInfo {
   [key: string]: unknown
 }
 
+export interface TrainingScheme {
+  majorId: number
+  majorName: string
+  grade: string
+  department: string
+}
+
 interface TrainingSchemeYearInfo {
   name: string
   children: TrainingSchemeSemesterInfo[]
@@ -281,7 +288,7 @@ interface TrainingSchemeBaseInfo {
   [key: string]: string | number | undefined
 }
 
-interface InstructionalTeachingPlanAPIData {
+interface InstructionalTeachingPlanDTO {
   title: string
   jhFajhb: TrainingSchemeBaseInfo
   treeList: Array<{
@@ -294,19 +301,19 @@ interface InstructionalTeachingPlanAPIData {
   }>
 }
 
-interface TrainingSchemeAPIData {
+interface TrainingSchemeDTO {
   title: string
   jhFajhb: TrainingSchemeBaseInfo
-  treeList: TrainingSchemeNodeAPIData[]
+  treeList: TrainingSchemeNodeDTO[]
 }
 
-interface TrainingSchemeNodeAPIData {
+interface TrainingSchemeNodeDTO {
   id: string
   pId: string
   name: string
   title?: unknown
   urlPath: string
-  parent?: TrainingSchemeNodeAPIData
+  parent?: TrainingSchemeNodeDTO
   isDir: boolean
   coursePropertyName: string
   courseName: string
@@ -320,7 +327,7 @@ interface CourseScoreCoreInfo {
   executiveEducationPlanName: string
   credit: number
   examTime: string
-  examTypeName: string
+  examTypeName?: string
   studyHour: number
 }
 
@@ -332,30 +339,52 @@ interface CourseScorePublicInfo extends CourseScoreCoreInfo {
 
 interface CourseScoreInfo extends CourseScoreCoreInfo {
   courseSequenceNumber: string
-  courseScore: number
-  gradePoint: number
-  levelCode: string
-  levelName: string
+  courseScore?: number
+  gradePoint?: number
+  levelCode?: number
+  levelName?: string
   inputStatusCode: string
   inputMethodCode: string
   coursePropertyCode: string
   coursePropertyName: string
-  unpassedReasonExplain: string
   maxScore?: number
   avgScore?: number
   minScore?: number
   rank?: number
   unpassedReasonCode?: string
+  unpassedReasonExplain?: string
+  examTypeCode?: string
 }
 
-interface AllTermScoresAPIData {
+interface AllTermScoresDTO {
   list: {
     pageSize: number
     pageNum: number
     pageContext: {
       totalCount: number
     }
-    records: (null | string | number)[][]
+    records: [
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string | undefined,
+      string,
+      number | undefined,
+      number | undefined,
+      string | undefined,
+      string,
+      string,
+      number,
+      number,
+      string,
+      string | undefined,
+      string | undefined,
+      string | undefined,
+      number
+    ][]
   }
 }
 
@@ -402,37 +431,46 @@ interface ScuUietpDTO {
 }
 
 interface ScuUietpItemDTO {
-  project_year: number
-  college_name: string
-  project_name: string
-  project_leader_name: string
-  participant_number: number
-  other_member_information?: string
-  school_supervisor_name: string
-  project_level: string
-  application_category?: string
-  project_category: string
+  projectYear: number
+  collegeName: string
+  projectName: string
+  projectLeaderName: string
+  participantNumber: number
+  otherMembersName: string[]
+  schoolSupervisorName: string
+  projectLevel: string
+  applicationCategory: string
+  projectCategory: string
+}
+
+interface BachelorDegreeInfo {
+  majorCode: string
+  majorName: string
+  category: string
+  approvalNumber: string
+  remark: string
 }
 
 export {
   CourseScorePublicInfo,
   CourseScoreInfo,
-  AllTermScoresAPIData,
+  AllTermScoresDTO,
   CurrentSemesterStudentAcademicInfo,
   TrainingSchemeYearInfo,
   TrainingSchemeSemesterInfo,
   TrainingSchemeCourseInfo,
-  InstructionalTeachingPlanAPIData,
-  TrainingSchemeAPIData,
-  TrainingSchemeNodeAPIData,
+  InstructionalTeachingPlanDTO,
+  TrainingSchemeDTO,
+  TrainingSchemeNodeDTO,
   TrainingSchemeBaseInfo,
-  CourseScheduleInfoAPIData,
+  CourseScheduleInfoDTO,
   CourseScheduleInfo,
-  AjaxStudentScheduleAPIData,
+  AjaxStudentScheduleDTO,
   LocalStore,
   SemesterTeacherTable,
   TeacherTable,
   CourseInfoList,
   ScuUietpDTO,
-  ScuUietpItemDTO
+  ScuUietpItemDTO,
+  BachelorDegreeInfo
 }

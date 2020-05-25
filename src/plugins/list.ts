@@ -8,28 +8,39 @@ import submitData from '@/plugins/user-experience-improvement-program'
 import dataAnalysis from '@/plugins/data-analysis'
 import about from '@/plugins/about'
 import feedback from '@/plugins/feedback'
+import donate from '@/plugins/donate'
 import bachelorDegree from '@/plugins/bachelor-degree'
 import scuUietp from '@/plugins/scu-uietp'
 import beautify from '@/plugins/beautify'
 import setting from '@/plugins/setting'
+import { SUAPlugin } from '@/types'
 
-function getSuitablePluginsByLoginStatus(): SUAPlugin[] {
-  const necessaryPlugins = [dataAnalysis, tooltip]
-  const optionalPluginsBeforeLogin = [recoverRememberMe]
-  const optionalPluginsLogined = [
-    beautify,
-    rearrange,
-    fastEvaluation,
-    score,
-    trainingScheme,
-    bachelorDegree,
-    scuUietp,
-    submitData,
-    setting,
-    about,
-    feedback
+const necessaryPlugins = [dataAnalysis, tooltip]
+const optionalPluginsBeforeLogin = [recoverRememberMe]
+const optionalPluginsLogined = [
+  beautify,
+  rearrange,
+  fastEvaluation,
+  score,
+  trainingScheme,
+  bachelorDegree,
+  scuUietp,
+  submitData,
+  setting,
+  about,
+  feedback,
+  donate
+]
+
+function getAllPlugins(): SUAPlugin[] {
+  return [
+    ...necessaryPlugins,
+    ...optionalPluginsBeforeLogin,
+    ...optionalPluginsLogined
   ]
+}
 
+function getAvailablePluginsByLoginStatus(): SUAPlugin[] {
   return [
     ...necessaryPlugins,
     ...(window.location.pathname === '/login'
@@ -38,4 +49,4 @@ function getSuitablePluginsByLoginStatus(): SUAPlugin[] {
   ]
 }
 
-export { getSuitablePluginsByLoginStatus }
+export { getAvailablePluginsByLoginStatus, getAllPlugins }

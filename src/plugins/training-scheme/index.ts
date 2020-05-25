@@ -4,11 +4,18 @@
 // TODO: 3. 将课程中时间和地点的对应关系体现的更清晰，分成两行
 import { render as queryRender } from './queryTrainingScheme'
 import { render as compareRender } from './compareTrainingScheme'
+import { getPluginIcon } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 const style = require('./index.scss').toString()
 
 export default {
   name: 'training-scheme',
+  displayName: '培养方案相关',
+  icon: getPluginIcon('training-scheme'),
+  isNecessary: false,
+  brief:
+    '查询所有专业的培养方案与指导性教学计划，还可选择任意两个培养方案进行比较，甚至能将查询结果保存为长图。',
   route: [
     'advanced_query/query_training_scheme',
     'advanced_query/compare_training_scheme'

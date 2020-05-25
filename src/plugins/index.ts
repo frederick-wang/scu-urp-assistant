@@ -1,15 +1,45 @@
 import { logger } from '@/utils'
-import { getSuitablePluginsByLoginStatus } from './list'
+import { getAvailablePluginsByLoginStatus, getAllPlugins } from './list'
+import { SUAPlugin } from '@/types'
+import { state } from '@/store'
 
-const allPlugins = getSuitablePluginsByLoginStatus()
-const disabledPluginsName: string[] = []
+/**
+ * 所有已安装的插件
+ */
+const allList = getAllPlugins()
 
-async function init(): Promise<SUAPlugin[]> {
-  const list = allPlugins.filter(
-    ({ name }) => !disabledPluginsName.includes(name)
-  )
-  logger.info('Plugin.list初始化成功:', list)
-  return list
+/**
+ * 当前网址下可用的插件
+ */
+const availableList = getAvailablePluginsByLoginStatus()
+
+/**
+ * 当前处于启用状态的插件（如果一个插件在当前网址下不可用，那它同样不会被启用）
+ */
+const enabledList: SUAPlugin[] = []
+
+/**
+ * 可以被启用的插件，即用户在插件管理中选择启用的插件
+ */
+const canBeEnabledList: SUAPlugin[] = []
+
+async function init(): Promise<void> {
+  const pluginEnabledStates = state.getData('pluginEnabledStates') as
+    | Record<string, boolean>
+    | undefined
+  enabledList.length = 0
+  canBeEnabledList.length = 0
+  if (pluginEnabledStates) {
+    enabledList.push(
+      ...availableList.filter(({ name }) => pluginEnabledStates[name])
+    )
+    canBeEnabledList.push(
+      ...allList.filter(({ name }) => pluginEnabledStates[name])
+    )
+  } else {
+    enabledList.push(...availableList)
+  }
+  logger.info('Plugin.list初始化成功:', enabledList)
 }
 
-export { init }
+export { init, enabledList, canBeEnabledList, availableList, allList }

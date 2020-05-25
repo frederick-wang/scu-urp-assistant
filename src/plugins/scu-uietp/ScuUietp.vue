@@ -1,5 +1,14 @@
 <template lang="pug">
 .sua-container-scu-uietp
+  el-alert(
+    v-if='loadingIsDone'
+    v-for="(v, i) in alerts"
+    :key="i"
+    :title="v.title"
+    :type="v.type"
+    :closable="v.closable"
+    :close-text='v.closeText'
+  )
   .row.query-wrapper
     .col-sm-12
       h4.header.smaller.lighter.grey
@@ -12,10 +21,12 @@
             | 请输入项目名称关键字、项目参与学生名字或项目指导老师名字查询
           .profile-info-value
             .profile-info-value
-              input#major(type='text', name='major' v-model.trim='queryStr')
+              input#major(type='text', name='major' v-model.trim='queryStr' @keyup.enter='query')
+              button#queryButton.btn.btn-info.btn-xs.btn-round(title='查询' @click='query')
+                i.ace-con.fa.fa-search.white.bigger-120 &nbsp;查询
   .row.result-wrapper
     Loading(v-if='!loadingIsDone')
-    .col-sm-12(v-if='!hasNotQueried && loadingIsDone')
+    .col-sm-12(v-if='!hasNotQueried && loadingIsDone && hasNoError')
       h4.header.smaller.lighter.grey
         i.menu-icon.fa.fa-table
         |
@@ -49,24 +60,23 @@
         tbody
           tr(v-for='(v, i) in scuUietpList' :key='v.projectYear+v.collegeName+v.projectName')
             td.center {{ i + 1 }}
-            td.center {{ v.project_year }}
-            td.center {{ v.college_name }}
-            td.center {{ v.project_name }}
-            td.center {{ v.project_leader_name }}
-            td.center {{ v.participant_number }}
-            td.center {{ v.other_member_information }}
-            td.center {{ v.school_supervisor_name }}
-            td.center {{ v.project_level }}
-            td.center {{ v.application_category }}
-            td.center {{ v.project_category }}
+            td.center {{ v.projectYear }}
+            td.center {{ v.collegeName }}
+            td.center {{ v.projectName }}
+            td.center {{ v.projectLeaderName }}
+            td.center {{ v.participantNumber }}
+            td.center {{ v.otherMemberNames.join('、') }}
+            td.center {{ v.schoolSupervisorName }}
+            td.center {{ v.projectLevel }}
+            td.center {{ v.applicationCategory }}
+            td.center {{ v.projectCategory }}
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component } from 'vue-property-decorator'
 import { actions, Request } from '@/store'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
-import { debounce } from 'lodash-es'
 import { ScuUietpItemDTO } from '../../store/types'
 
 @Component({
@@ -78,20 +88,26 @@ export default class ScuUietp extends Vue {
   // [立项年份，学院名称，项目名称，项目负责人姓名，参与学生人数，项目其他成员信息，学校导师姓名，立项级别，申请类别，立项类别][]
   scuUietpList: ScuUietpItemDTO[] = []
   queryStr = ''
-  query = debounce(async function(this: ScuUietp, val: string): Promise<void> {
+  alerts: {
+    title: string
+    type?: 'success' | 'info' | 'warning' | 'error'
+    closable?: boolean
+    closeText?: string
+  }[] = []
+
+  get hasNoError(): boolean {
+    return this.alerts.every(v => v.type !== 'error')
+  }
+
+  async query(): Promise<void> {
+    this.queryStr = this.queryStr.trim()
+    if (!this.queryStr) {
+      return
+    }
     this.loadingIsDone = false
     try {
-      const { list } = await actions[Request.SCU_UIETP_LIST](val)
-      this.scuUietpList = list.map(v => ({
-        ...v,
-        // eslint-disable-next-line
-        other_member_information: v.other_member_information
-          ? v.other_member_information
-              .split(',')
-              .map(s => s.split('/')[0])
-              .join('，')
-          : ''
-      }))
+      const { list } = await actions[Request.SCU_UIETP_LIST](this.queryStr)
+      this.scuUietpList = list
       this.loadingIsDone = true
       if (this.hasNotQueried) {
         this.hasNotQueried = false
@@ -100,15 +116,24 @@ export default class ScuUietp extends Vue {
         查询参数: `${this.queryStr}`
       })
     } catch (error) {
+      const title = '历届大创查询'
+      const message: string = error.message
       emitDataAnalysisEvent('历届大创查询', '查询失败', {
         查询参数: `${this.queryStr}`
       })
+      this.$notify.error({
+        title,
+        message
+      })
+      this.alerts = [
+        {
+          title: message,
+          type: 'error',
+          closable: false
+        }
+      ]
+      this.loadingIsDone = true
     }
-  }, 500)
-
-  @Watch('queryStr')
-  onQueryChanged(val: string): void {
-    this.query(val)
   }
 }
 </script>
@@ -142,6 +167,10 @@ export default class ScuUietp extends Vue {
     input#major {
       width: 40% !important;
       min-width: 200px;
+    }
+
+    #queryButton {
+      margin-left: 10px;
     }
   }
 }

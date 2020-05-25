@@ -13,8 +13,30 @@ function get(key: string): unknown {
   return null
 }
 
+function getAll(): Record<string, unknown> {
+  clearExpiredData()
+  const result: Record<string, unknown> = {}
+  for (const key in localStore.state.data) {
+    if (localStore.state.data.hasOwnProperty(key)) {
+      if (localStore.state.data[key]) {
+        result[key] = localStore.state.data[key].payload
+      }
+    }
+  }
+  return result
+}
+
 function remove(key: string): void {
   delete localStore.state.data[key]
+  saveData()
+}
+
+function removeAll(): void {
+  for (const key in localStore.state.data) {
+    if (localStore.state.data.hasOwnProperty(key)) {
+      delete localStore.state.data[key]
+    }
+  }
   saveData()
 }
 
@@ -76,4 +98,4 @@ async function load(): Promise<LocalStore> {
   return localStore
 }
 
-export default { load, saveData, get, remove }
+export default { load, saveData, get, getAll, remove, removeAll }

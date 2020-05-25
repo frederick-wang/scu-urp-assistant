@@ -1,6 +1,7 @@
 // 数据统计插件
 import { version } from '@/../package.json'
-import { logger } from '@/utils'
+import { logger, getPluginIcon, isDev } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 interface TalkingDataEventParams {
   EventId: string
@@ -22,6 +23,11 @@ export { emitDataAnalysisEvent }
 
 export default {
   name: 'data-analysis',
+  displayName: '数据统计',
+  icon: getPluginIcon('data-analysis'),
+  isNecessary: false,
+  brief:
+    '为开发者提供诸如「助手版本」、「程序启动次数」、「功能使用频率」、「程序是否出错」等匿名统计数据，帮助开发者了解程序的运行情况。',
   pathname: true,
   task() {
     if (window.TDAPP && queue.length) {
@@ -35,7 +41,7 @@ export default {
     if (process.env.NODE_ENV !== 'development') {
       const APP_ID = '36482C98B3E94A4D93A0C66E43702C77'
       const versionName = `${version} (${
-        process.env.NODE_ENV === 'development' ? 'dev' : 'stable'
+        isDev() ? 'dev' : 'stable'
       })`
       const script = document.createElement('script')
       const src = `https://jic.talkingdata.com/app/h5/v1?appid=${APP_ID}&vn=${versionName}&vc=${version}`

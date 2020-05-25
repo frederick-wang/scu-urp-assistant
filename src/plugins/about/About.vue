@@ -64,12 +64,13 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { version } from '@/../package.json'
 import { description } from '@/../package.json'
+import { isDev } from '@/utils'
 
 @Component
 export default class About extends Vue {
   get version(): string {
     return `${version} (${
-      process.env.NODE_ENV === 'development' ? 'dev' : 'stable'
+      isDev() ? 'dev' : 'stable'
     })`
   }
 

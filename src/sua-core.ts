@@ -1,16 +1,27 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import Vue from 'vue'
-import { Loading, Message, MessageBox, Notification } from 'element-ui'
+import {
+  Button,
+  Switch,
+  Tag,
+  Alert,
+  Loading,
+  Message,
+  MessageBox,
+  Notification
+} from 'element-ui'
+import JsonViewer from 'vue-json-viewer'
 import { pathnameTrigger, routeTrigger } from '@/utils'
 import { init as initStore } from '@/store'
-import { init as initPlugins } from '@/plugins'
+import { init as initPlugin, enabledList as pluginList } from '@/plugins'
 import { logger } from '@/utils'
+import { SUAPluginMenu, SUAObject } from './types'
 
 const globalStyle = require('@/global.scss').toString()
 
 /**
- * 加载 Element-UI 组件库
+ * 加载 Vue 组件
  *
  */
 function loadElementUI(): void {
@@ -18,7 +29,11 @@ function loadElementUI(): void {
   $('head').append(
     '<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"></link>'
   )
-  // 导入 Element-UI 的 Loading, Message, Notification 和 MessageBox
+  // 导入 Element-UI 组件
+  Vue.use(Button)
+  Vue.use(Switch)
+  Vue.use(Tag)
+  Vue.use(Alert)
   Vue.use(Loading.directive)
   Vue.prototype.$loading = Loading.service
   Vue.prototype.$msgbox = MessageBox
@@ -27,6 +42,8 @@ function loadElementUI(): void {
   Vue.prototype.$prompt = MessageBox.prompt
   Vue.prototype.$notify = Notification
   Vue.prototype.$message = Message
+  // 导入其他组件
+  Vue.use(JsonViewer)
 }
 
 /**
@@ -115,6 +132,7 @@ function loadMenu(menu: SUAPluginMenu): void {
       `)
       const $pageContent = $('.main-content>.page-content')
       $pageContent.empty()
+      // 因为需要兼容书签版，只有修改 hashtag 不会触发页面的刷新
       const hash = `#sua_route=${route}`
       // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
       setTimeout(() => {
@@ -174,10 +192,29 @@ const suaObject: SUAObject = {
       // 初始化全局样式
       loadGlobalStyle()
       // 初始化Store
-      await initStore()
+      try {
+        await initStore()
+      } catch (error) {
+        logger.error(error)
+        Vue.prototype.$notify.error({
+          title: '[初始化错误] Store初始化失败',
+          message:
+            '抱歉，Store初始化失败，助手将无法正常使用。您可以尝试刷新页面，也许能解决问题。'
+        })
+      }
     }
     // 初始化插件列表
-    this.plugins = await initPlugins()
+    try {
+      await initPlugin()
+    } catch (error) {
+      logger.error(error)
+      Vue.prototype.$notify.error({
+        title: '[初始化错误] 插件初始化失败',
+        message:
+          '抱歉，插件初始化失败，助手将无法正常使用。您可以尝试刷新页面，也许能解决问题。'
+      })
+    }
+    this.plugins = pluginList
     // 加载插件
     for (const plugin of this.plugins) {
       if (pathnameTrigger(plugin.pathname)) {

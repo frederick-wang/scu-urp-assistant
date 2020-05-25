@@ -1,7 +1,16 @@
 <template lang="pug">
 .sua-container-expected-grades-estimation
   Loading(v-if='!loadingIsDone')
-  .row(v-if='loadingIsDone')
+  el-alert(
+    v-if='loadingIsDone'
+    v-for="(v, i) in alerts"
+    :key="i"
+    :title="v.title"
+    :type="v.type"
+    :closable="v.closable"
+    :close-text='v.closeText'
+  )
+  .row(v-if='loadingIsDone && hasNoError')
     .col-sm-12
       h4.header.smaller.lighter.grey
         i.menu-icon.fa.fa-calendar
@@ -114,12 +123,22 @@ import {
 export default class ExpectedGradeEstimation extends Vue {
   loadingIsDone = false
   records: SemesterScoreRecord[] = []
+  alerts: {
+    title: string
+    type?: 'success' | 'info' | 'warning' | 'error'
+    closable?: boolean
+    closeText?: string
+  }[] = []
   newCompulsoryCourseCredit = 0
   newCompulsoryCourseScore = 0
   newCompulsoryCourseGPA = 0
   newOptionalCourseCredit = 0
   newOptionalCourseScore = 0
   newOptionalCourseGPA = 0
+
+  get hasNoError(): boolean {
+    return this.alerts.every(v => v.type !== 'error')
+  }
 
   get allCourses(): CourseScoreRecord[] {
     return this.records.reduce(
@@ -150,7 +169,7 @@ export default class ExpectedGradeEstimation extends Vue {
       courseSequenceNumber: '',
       courseScore: this.newCompulsoryCourseScore,
       gradePoint: this.newCompulsoryCourseGPA,
-      levelCode: '',
+      levelCode: undefined,
       levelName: '',
       inputStatusCode: '',
       inputMethodCode: '',
@@ -176,7 +195,7 @@ export default class ExpectedGradeEstimation extends Vue {
       courseSequenceNumber: '',
       courseScore: this.newOptionalCourseScore,
       gradePoint: this.newOptionalCourseGPA,
-      levelCode: '',
+      levelCode: undefined,
       levelName: '',
       inputStatusCode: '',
       inputMethodCode: '',
@@ -240,7 +259,19 @@ export default class ExpectedGradeEstimation extends Vue {
       this.loadingIsDone = true
       emitDataAnalysisEvent('预期成绩估计', '查询成功')
     } catch (error) {
+      const title = '[成绩相关工具] 预期成绩估计'
+      const message: string = error.message
       emitDataAnalysisEvent('预期成绩估计', '查询失败')
+      this.$notify.error({
+        title,
+        message
+      })
+      this.alerts.push({
+        title: message,
+        type: 'error',
+        closable: false
+      })
+      this.loadingIsDone = true
     }
   }
 }
