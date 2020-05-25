@@ -190,6 +190,7 @@ const suaObject: SUAObject = {
       try {
         await initStore()
       } catch (error) {
+        logger.error(error)
         Vue.prototype.$notify.error({
           title: '[初始化错误] Store初始化失败',
           message:
@@ -201,6 +202,7 @@ const suaObject: SUAObject = {
     try {
       await initPlugin()
     } catch (error) {
+      logger.error(error)
       Vue.prototype.$notify.error({
         title: '[初始化错误] 插件初始化失败',
         message:
