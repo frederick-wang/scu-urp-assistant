@@ -2,6 +2,7 @@ import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 import Vue from 'vue'
 import {
+  Button,
   Switch,
   Tag,
   Alert,
@@ -10,6 +11,7 @@ import {
   MessageBox,
   Notification
 } from 'element-ui'
+import JsonViewer from 'vue-json-viewer'
 import { pathnameTrigger, routeTrigger } from '@/utils'
 import { init as initStore } from '@/store'
 import { init as initPlugin, enabledList as pluginList } from '@/plugins'
@@ -19,7 +21,7 @@ import { SUAPluginMenu, SUAObject } from './types'
 const globalStyle = require('@/global.scss').toString()
 
 /**
- * 加载 Element-UI 组件库
+ * 加载 Vue 组件
  *
  */
 function loadElementUI(): void {
@@ -28,6 +30,7 @@ function loadElementUI(): void {
     '<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"></link>'
   )
   // 导入 Element-UI 组件
+  Vue.use(Button)
   Vue.use(Switch)
   Vue.use(Tag)
   Vue.use(Alert)
@@ -39,6 +42,8 @@ function loadElementUI(): void {
   Vue.prototype.$prompt = MessageBox.prompt
   Vue.prototype.$notify = Notification
   Vue.prototype.$message = Message
+  // 导入其他组件
+  Vue.use(JsonViewer)
 }
 
 /**
