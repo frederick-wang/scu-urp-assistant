@@ -1,5 +1,5 @@
 import cheerio from 'cheerio'
-import { API_PATH, API_PATH_V2, getChineseNumber, sleep, logger } from '@/utils'
+import { API_PATH_V2, getChineseNumber, sleep, logger } from '@/utils'
 import {
   AllTermScoresDTO,
   CourseScoreInfo,
@@ -19,6 +19,8 @@ import {
   TrainingScheme
 } from '../types'
 import { pipe, map } from 'ramda'
+import state from '../state'
+import { Result } from './result.interface'
 
 function getPageHTML(url: string): Promise<string> {
   return ($.get({
@@ -470,34 +472,71 @@ function requestTrainingScheme(
 let trainingSchemeList: TrainingScheme[]
 
 async function requestTrainingSchemeList(): Promise<TrainingScheme[]> {
-  if (!trainingSchemeList) {
-    trainingSchemeList = await $.get(`${API_PATH_V2}/student/training_scheme`)
+  const url = `${API_PATH_V2}/student/training_scheme`
+  try {
+    if (!trainingSchemeList) {
+      trainingSchemeList = await $.ajax({
+        method: 'GET',
+        url,
+        headers: {
+          Authorization: `Bearer ${state.user.accessToken}`
+        }
+      })
+    }
+    return trainingSchemeList
+  } catch (error) {
+    const {
+      status,
+      statusText,
+      responseJSON: { message }
+    } = error
+    throw new Error(`[${status}] ${statusText}: ${message}`)
   }
-  return trainingSchemeList
-}
-
-let bachelorDegreeList: string[][]
-
-async function requestBachelorDegreeList(): Promise<string[][]> {
-  if (!bachelorDegreeList) {
-    bachelorDegreeList = await $.get(
-      `${API_PATH}/student/bachelor_degree_types`
-    )
-  }
-  return bachelorDegreeList
 }
 
 async function requestBachelorDegree(
   queryStr: string
 ): Promise<BachelorDegreeInfo[]> {
-  // JQuery 自带的 jqXHR 对象缺 finally 方法，不能直接返回
-  return await $.get(`${API_PATH_V2}/info/bachelor_degree/${queryStr}`)
+  const url = `${API_PATH_V2}/info/bachelor_degree/${encodeURIComponent(
+    queryStr
+  )}`
+  try {
+    return await $.ajax({
+      method: 'GET',
+      url,
+      headers: {
+        Authorization: `Bearer ${state.user.accessToken}`
+      }
+    })
+  } catch (error) {
+    const {
+      status,
+      statusText,
+      responseJSON: { message }
+    } = error
+    throw new Error(`[${status}] ${statusText}: ${message}`)
+  }
 }
 
 async function requestScuUietpList(queryStr: string): Promise<ScuUietpDTO> {
-  const url = `${API_PATH_V2}/info/scu_uietp/${queryStr}`
-  const res = await $.get(url)
-  return res as ScuUietpDTO
+  const url = `${API_PATH_V2}/info/scu_uietp/${encodeURIComponent(queryStr)}`
+  try {
+    const res = await $.ajax({
+      method: 'GET',
+      url,
+      headers: {
+        Authorization: `Bearer ${state.user.accessToken}`
+      }
+    })
+    return res as ScuUietpDTO
+  } catch (error) {
+    const {
+      status,
+      statusText,
+      responseJSON: { message }
+    } = error
+    throw new Error(`[${status}] ${statusText}: ${message}`)
+  }
 }
 
 async function requestCurrentSemesterStudentAcademicInfo(): Promise<
@@ -754,13 +793,41 @@ async function requestThisTermCourseScoreInfoList(): Promise<
   }
 }
 
+type LoginResultData = {
+  accessToken: string
+}
+
+export async function login(): Promise<LoginResultData> {
+  try {
+    const { version, clientType: type } = state.core
+    const { id } = state.user
+    const url = `${API_PATH_V2}/user/login`
+    const res: Result = await $.post(url, {
+      id,
+      client: { version, type }
+    })
+    if (res.error) {
+      const { code, title, message } = res.error
+      throw new Error(`[${code}] ${title}: ${message}`)
+    }
+    const { accessToken } = res.data as LoginResultData
+    return { accessToken }
+  } catch (error) {
+    const {
+      status,
+      statusText,
+      responseJSON: { message }
+    } = error
+    throw new Error(`[${status}] ${statusText}: ${message}`)
+  }
+}
+
 export {
   requestThisTermCourseScoreInfoList,
   requestAllTermsCourseScoreInfoList,
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
-  requestBachelorDegreeList,
   requestCourseSchedule,
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
