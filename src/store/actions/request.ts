@@ -797,11 +797,11 @@ type LoginResultData = {
   accessToken: string
 }
 
-export async function login(): Promise<LoginResultData> {
+export async function requestAccessToken(): Promise<LoginResultData> {
+  const { version, clientType: type } = state.core
+  const { id } = state.user
+  const url = `${API_PATH_V2}/user/login`
   try {
-    const { version, clientType: type } = state.core
-    const { id } = state.user
-    const url = `${API_PATH_V2}/user/login`
     const res: Result = await $.post(url, {
       id,
       client: { version, type }
@@ -813,12 +813,16 @@ export async function login(): Promise<LoginResultData> {
     const { accessToken } = res.data as LoginResultData
     return { accessToken }
   } catch (error) {
-    const {
-      status,
-      statusText,
-      responseJSON: { message }
-    } = error
-    throw new Error(`[${status}] ${statusText}: ${message}`)
+    try {
+      const {
+        status,
+        statusText,
+        responseJSON: { message }
+      } = error
+      throw new Error(`[${status}] ${statusText}: ${message}`)
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 }
 

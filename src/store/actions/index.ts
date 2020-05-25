@@ -9,7 +9,7 @@ import {
   requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
   requestScuUietpList,
-  login
+  requestAccessToken
 } from './request'
 
 import {
@@ -29,7 +29,7 @@ enum Request {
   COURSE_INFO_LIST_BY_SEMESTER = 'course_info_list_by_semester',
   STUDENT_SEMESTER_CODE_LIST = 'student_semester_code_list',
   SCU_UIETP_LIST = 'scu_uietp_list',
-  LOGIN = 'login'
+  ACCESS_TOKEN = 'login'
 }
 
 enum Submit {
@@ -49,7 +49,7 @@ const actions = {
   [Request.COURSE_INFO_LIST_BY_SEMESTER]: requestCourseInfoListBySemester,
   [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList,
   [Request.SCU_UIETP_LIST]: requestScuUietpList,
-  [Request.LOGIN]: login,
+  [Request.ACCESS_TOKEN]: requestAccessToken,
   [Submit.COURSE_SCORE_PUBLIC_INFO]: submitCourseScorePublicInfo,
   [Submit.COURSE_SCORE_PUBLIC_INFOS]: submitCourseScorePublicInfos,
   [Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS]: submitStudentCourseScorePublicInfos
