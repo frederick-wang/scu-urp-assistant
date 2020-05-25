@@ -19,7 +19,7 @@ let list: Questionnaire[]
 let changePrompt: (str: string) => JQuery<HTMLElement>
 
 function evaluate(index: number): void {
-  const origin = window.location.origin
+  const { origin } = window.location
   if (index >= list.length) {
     emitDataAnalysisEvent('快捷评教', '全部老师评教成功')
     changePrompt(`本页上的老师已经全部评价完毕！正在刷新……`)
