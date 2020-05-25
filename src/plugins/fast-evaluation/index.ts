@@ -10,15 +10,7 @@ import {
   generateChangePrompt
 } from './util'
 import * as template from './template'
-
-const EVALUATION_INTERVAL = 1000 * (10 + 1)
-
-const HTTP_HEADERS = {
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-  'Cache-Control': 'max-age=0',
-  'Upgrade-Insecure-Requests': '1'
-}
+import { HTTP_HEADERS, EVALUATION_INTERVAL } from './config'
 
 let $btn: JQuery<HTMLElement>
 let $prompt: JQuery<HTMLElement>
