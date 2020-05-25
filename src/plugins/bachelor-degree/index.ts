@@ -1,6 +1,7 @@
 import Vue, { VNode } from 'vue'
 import App from './BachelorDegree.vue'
 import { getPluginIcon } from '@/utils'
+import { SUAPlugin } from '@/types'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-bachelor-degree"></div>`)

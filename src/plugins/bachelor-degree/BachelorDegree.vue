@@ -1,6 +1,15 @@
 <template lang="pug">
 .sua-container-bachelor-degree
   Loading(v-if='!loadingIsDone')
+  el-alert(
+    v-if='loadingIsDone'
+    v-for="(v, i) in alerts"
+    :key="i"
+    :title="v.title"
+    :type="v.type"
+    :closable="v.closable"
+    :close-text='v.closeText'
+  )
   .row.query-wrapper(v-if='loadingIsDone')
     .col-sm-12
       h4.header.smaller.lighter.grey
@@ -16,7 +25,7 @@
               input#major(type='text', name='major' v-model.trim='inputMajor' @keyup.enter='query')
               button#queryButton.btn.btn-info.btn-xs.btn-round(title='查询' @click='query')
                 i.ace-con.fa.fa-search.white.bigger-120 &nbsp;查询
-  .row.result-wrapper(v-if='loadingIsDone && hasQueried')
+  .row.result-wrapper(v-if='loadingIsDone && hasNoError && hasQueried')
     .col-sm-12
       h4.header.smaller.lighter.grey
         i.menu-icon.fa.fa-table
@@ -72,24 +81,48 @@ export default class BachelorDegree extends Vue {
   inputMajor = ''
 
   similarList: BachelorDegreeInfo[] = []
+  alerts: {
+    title: string
+    type?: 'success' | 'info' | 'warning' | 'error'
+    closable?: boolean
+    closeText?: string
+  }[] = []
+
+  get hasNoError(): boolean {
+    return this.alerts.every(v => v.type !== 'error')
+  }
 
   async query(): Promise<void> {
-    const queryStr = this.inputMajor.replace(/%/g, '').trim()
+    const queryStr = this.inputMajor.trim()
     if (!queryStr) {
       return
     }
     this.loadingIsDone = false
-    if (!this.hasQueried) {
-      this.hasQueried = true
-    }
     try {
       this.similarList = await actions[Request.BACHELOR_DEGREE](queryStr)
+      if (!this.hasQueried) {
+        this.hasQueried = true
+      }
       this.loadingIsDone = true
       emitDataAnalysisEvent('专业授位查询', '查询成功', {
         查询内容: queryStr
       })
     } catch (error) {
+      const title = '专业授位查询'
+      const message: string = error.message
       emitDataAnalysisEvent('专业授位查询', '查询失败')
+      this.$notify.error({
+        title,
+        message
+      })
+      this.alerts = [
+        {
+          title: message,
+          type: 'error',
+          closable: false
+        }
+      ]
+      this.loadingIsDone = true
     }
   }
 }
