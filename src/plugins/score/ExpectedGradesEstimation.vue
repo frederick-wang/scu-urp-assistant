@@ -49,38 +49,41 @@
         :compulsoryCoursesQuantity='compulsoryCourses.length'
         :allCoursesQuantity='allCourses.length'
       )
-      p(style="margin-top: 15px;")
-        | 如果您再修读
-        |
-        input(type='number' v-model.number='newCompulsoryCourseCredit' min='0')
-        |
-        | 学分的
-        strong(style='color: #82af6f;')
-          | 【均分为
-          |
-          input(type='number' v-model.number='newCompulsoryCourseScore' min='0')
-          |
-          | 、平均绩点为
-          |
-          input(type='number' v-model.number='newCompulsoryCourseGPA' min='0')
-          |
-          | 的必修课】
-        | ，
-        |
-        input(type='number' v-model.number='newOptionalCourseCredit' min='0')
-        |
-        | 学分的
-        strong(style='color: #d6487e;')
-          | 【均分为
-          |
-          input(type='number' v-model.number='newOptionalCourseScore' min='0')
-          |
-          | 、平均绩点为
-          |
-          input(type='number' v-model.number='newOptionalCourseGPA' min='0')
-          |
-          | 的选修课】
-        | 。
+      p(style="margin-top: 15px;") 如果您再修读：
+      .input-line-wrapper
+        .input-line-list
+          p
+            input(type='number' v-model.number='newCompulsoryCourseCredit' min='0')
+            |
+            | 学分的
+            strong(style='color: #82af6f;')
+              | 【均分为
+              |
+              input(type='number' v-model.number='newCompulsoryCourseScore' min='0')
+              |
+              | 、平均绩点为
+              |
+              input(type='number' v-model.number='newCompulsoryCourseGPA' min='0')
+              |
+              | 的必修课】
+            | ，
+            |
+            input(type='number' v-model.number='newOptionalCourseCredit' min='0')
+            |
+            | 学分的
+            strong(style='color: #d6487e;')
+              | 【均分为
+              |
+              input(type='number' v-model.number='newOptionalCourseScore' min='0')
+              |
+              | 、平均绩点为
+              |
+              input(type='number' v-model.number='newOptionalCourseGPA' min='0')
+              |
+              | 的选修课】
+            | 。
+        .add-new-btn-wrapper
+          el-button(size='mini', type='primary') 点此新增一行
       p
         | 您将一共修读共
         |
@@ -286,5 +289,16 @@ input {
   width: 4em;
   height: 2em;
   line-height: 2em;
+}
+
+.input-line-wrapper {
+  padding: 15px 20px;
+  border: 1px dotted #409eff;
+  margin-top: 15px;
+  margin-bottom: 15px;
+
+  .add-new-btn-wrapper {
+    margin-top: 20px;
+  }
 }
 </style>
