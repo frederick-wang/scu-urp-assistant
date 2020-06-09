@@ -291,6 +291,10 @@ async function getCourseTeacherList(
     teacherName: string
   }[]
 > {
+  let result: {
+    teacherNumber: string
+    teacherName: string
+  }[] = []
   const rName = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
   if (rName) {
     semester = convertSemesterNameToNumber(semester)
@@ -299,15 +303,42 @@ async function getCourseTeacherList(
   if (rNumber) {
     // 确实是标准学期号格式
     const teacherTable = state.getData('teacherTable') as TeacherTable
+    /**
+     * TODO: 2020-6-10 00:32:58
+     * 因为现在教务系统牵扯到一个“缓考科目出分后会记到下学期”的问题，导致下面的代码打上补丁后看起来非常恶心
+     * 之后有时间的话需要重新写一下逻辑。
+     */
     try {
-      return teacherTable[semester][courseNumber][courseSequenceNumber]
-    } catch (error) {
-      logger.info(
-        `读取courseTeacherList失败: [${convertSemesterNumberToName(
+      if (teacherTable[semester][courseNumber]) {
+        result = teacherTable[semester][courseNumber][courseSequenceNumber]
+      } else {
+        // 如果是缓考科目，那么上一个学期的成绩会出分到这个学期，需要去上个学期查教师名单表
+        const currentSemesterIndex = state.user.semesterNumberList.indexOf(
           semester
-        )}] ${courseNumber}-${courseSequenceNumber}\n Error:`,
-        error
-      )
+        )
+        if (currentSemesterIndex !== 0) {
+          const lastSemester =
+            state.user.semesterNumberList[currentSemesterIndex + 1]
+          if (teacherTable[lastSemester][courseNumber]) {
+            result =
+              teacherTable[lastSemester][courseNumber][courseSequenceNumber]
+          } else {
+            throw new Error(
+              `Error: 从该学期及上一学期读取courseTeacherList均失败: [${convertSemesterNumberToName(
+                lastSemester
+              )}] ${courseNumber}-${courseSequenceNumber}\n Error:`
+            )
+          }
+        } else {
+          throw new Error(
+            `Error: 读取courseTeacherList失败: [${convertSemesterNumberToName(
+              semester
+            )}] ${courseNumber}-${courseSequenceNumber}\n Error:`
+          )
+        }
+      }
+    } catch (error) {
+      logger.error(error)
       // 说明当前的teacherTable缓存中没有这个课程的课序号的任课老师列表信息
       // 应该重新获取一下这个学期的老师情况，缓存进teacherTable中
       const courseInfoList = await actions[
@@ -328,16 +359,69 @@ async function getCourseTeacherList(
       }
       state.setData('teacherTable', teacherTable)
       await local.saveData({ key: 'teacherTable', payload: teacherTable })
-      logger.info(
-        `二次读取courseTeacherList成功: [${convertSemesterNumberToName(
+      if (teacherTable[semester][courseNumber]) {
+        result = teacherTable[semester][courseNumber][courseSequenceNumber]
+        logger.info(
+          `二次读取courseTeacherList成功: [${convertSemesterNumberToName(
+            semester
+          )}] ${courseNumber}-${courseSequenceNumber}\n Value:`,
+          result
+        )
+      } else {
+        // 如果是缓考科目，那么上一个学期的成绩会出分到这个学期，需要去上个学期查教师名单表
+        const currentSemesterIndex = state.user.semesterNumberList.indexOf(
           semester
-        )}] ${courseNumber}-${courseSequenceNumber}\n Value:`,
-        teacherTable[semester][courseNumber][courseSequenceNumber]
-      )
-      return teacherTable[semester][courseNumber][courseSequenceNumber]
+        )
+        if (currentSemesterIndex !== 0) {
+          const lastSemester =
+            state.user.semesterNumberList[currentSemesterIndex + 1]
+          // 说明当前的teacherTable缓存中没有这个课程的课序号的任课老师列表信息
+          // 应该重新获取一下上个学期的老师情况，缓存进teacherTable中
+          const courseInfoList = await actions[
+            Request.COURSE_INFO_LIST_BY_SEMESTER
+          ](lastSemester)
+          const newSemesterTeacherTable = convertCourseInfoListToSemesterTeacherTable(
+            courseInfoList
+          )
+          if (!teacherTable[lastSemester]) {
+            // 缓存里根本没有上个学期的老师对应表
+            teacherTable[lastSemester] = newSemesterTeacherTable
+          } else {
+            // 缓存里有上个学期的老师对应表，只是缺这个课程的老师
+            teacherTable[lastSemester] = {
+              ...teacherTable[lastSemester],
+              ...newSemesterTeacherTable
+            }
+          }
+          state.setData('teacherTable', teacherTable)
+          await local.saveData({ key: 'teacherTable', payload: teacherTable })
+          try {
+            result =
+              teacherTable[lastSemester][courseNumber][courseSequenceNumber]
+          } catch (error) {
+            throw new Error(
+              `Error: 无法获取courseTeacherList: [${convertSemesterNumberToName(
+                semester
+              )}] ${courseNumber}-${courseSequenceNumber}\n Error:`
+            )
+          }
+          logger.info(
+            `二次读取上一学期courseTeacherList成功: [${convertSemesterNumberToName(
+              lastSemester
+            )}] ${courseNumber}-${courseSequenceNumber}\n Value:`,
+            result
+          )
+        } else {
+          throw new Error(
+            `Error: 无法获取courseTeacherList: [${convertSemesterNumberToName(
+              semester
+            )}] ${courseNumber}-${courseSequenceNumber}\n Error:`
+          )
+        }
+      }
     }
   }
-  return []
+  return result
 }
 
 function getPluginIcon(name: string): string {
