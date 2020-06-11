@@ -377,7 +377,8 @@ function requestTrainingScheme(
               } else {
                 cur.coursePropertyName = ''
               }
-              const r = cur.name.match(/<\/i>(.+)$/)
+              // 有时候 cur.name 里会混入 CRLF
+              const r = cur.name.replace(/\r|\n/g, '').match(/<\/i>(.+)$/)
               cur.courseName = r
                 ? r[1].replace(' 必修', '').replace(' 选修', '')
                 : ''
