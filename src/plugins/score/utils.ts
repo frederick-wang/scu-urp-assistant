@@ -178,6 +178,75 @@ function reserveOlderCoursesForRetakenCourses(
   )
 }
 
+/**
+ * 根据分数返回对应的绩点
+ *
+ * @param {number} score 分数
+ * @param {string} semester 学期
+ * @returns 绩点
+ */
+function getPointByScore(
+  score: number | undefined,
+  semester: string
+): number | undefined {
+  if (!score) {
+    return undefined
+  }
+  // 2017年起，川大修改了绩点政策，因此要检测学期的年份
+  const r = semester.match(/^\d+/)
+  if (!r) {
+    return 0
+  }
+  const enrollmentYear = Number(r[0])
+  if (enrollmentYear >= 2017) {
+    // 2017-2018秋季学期起使用如下标准（Fall Term 2017-2018~Present）
+    if (score >= 90) {
+      return 4
+    } else if (score >= 85) {
+      return 3.7
+    } else if (score >= 80) {
+      return 3.3
+    } else if (score >= 76) {
+      return 3
+    } else if (score >= 73) {
+      return 2.7
+    } else if (score >= 70) {
+      return 2.3
+    } else if (score >= 66) {
+      return 2
+    } else if (score >= 63) {
+      return 1.7
+    } else if (score >= 61) {
+      return 1.3
+    } else if (score >= 60) {
+      return 1
+    } else {
+      return 0
+    }
+  } else {
+    // 2017-2018秋季学期以前使用如下标准（Before Fall Term 2017-2018）
+    if (score >= 95) {
+      return 4
+    } else if (score >= 90) {
+      return 3.8
+    } else if (score >= 85) {
+      return 3.6
+    } else if (score >= 80) {
+      return 3.2
+    } else if (score >= 75) {
+      return 2.7
+    } else if (score >= 70) {
+      return 2.2
+    } else if (score >= 65) {
+      return 1.7
+    } else if (score >= 60) {
+      return 1
+    } else {
+      return 0
+    }
+  }
+}
+
 export {
   getCompulsoryCoursesGPA,
   getCompulsoryCoursesScore,
@@ -187,6 +256,7 @@ export {
   getSelectedCourses,
   getSelectedCoursesScore,
   getSelectedCoursesGPA,
+  getPointByScore,
   reserveNewerCoursesForRetakenCourses,
   reserveOlderCoursesForRetakenCourses
 }
