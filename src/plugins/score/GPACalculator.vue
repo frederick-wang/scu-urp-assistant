@@ -9,6 +9,7 @@
     :type="v.type"
     :closable="v.closable"
     :close-text='v.closeText'
+    style="margin-bottom: 10px;"
   )
   TotalTranscript(
     v-if='loadingIsDone && hasNoError && records.length > 1'
@@ -150,6 +151,14 @@ export default class GPACalculator extends Vue {
         closable: false
       })
       this.loadingIsDone = true
+    }
+    if (this.type === 'full') {
+      this.alerts.push({
+        title:
+          '注意：「成绩信息查询」功能只能查询本学期出分的课程成绩信息哦。而且该功能依赖的教务系统API接口每年只在「开始登分后到下学期初」这一段时间开放，之后就会被关闭。',
+        type: 'warning',
+        closable: true
+      })
     }
   }
 }
