@@ -127,6 +127,20 @@ function convertCourseScoreInfoListToScoreRecords(
       }, [] as SemesterScoreRecord[])
       // 不显示还没有课程成绩的学期
       .filter(v => v.courses && v.courses.length)
+      // 如果一门课程在同一学期内出现了两次成绩记录，取最新的一次
+      .map(({ semester, courses }) => ({
+        semester,
+        courses: courses.filter(
+          ({ courseName, courseNumber, courseSequenceNumber, examTime }) =>
+            !courses.some(
+              v =>
+                v.courseName === courseName &&
+                v.courseNumber === courseNumber &&
+                v.courseSequenceNumber === courseSequenceNumber &&
+                Number(v.examTime) > Number(examTime)
+            )
+        )
+      }))
       .sort((a, b) => {
         const getWeightSum = ({ semester }: SemesterScoreRecord): number => {
           const r = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
