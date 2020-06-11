@@ -32,7 +32,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       td.center(v-if='type === `full`') {{ courseItem.avgScore }}
       td.center(v-if='type === `full`') {{ courseItem.minScore }}
       td.center(
-        :class='[type === `full` ? (courseItem.courseScore > courseItem.avgScore ? `greater-than-avg` : `less-than-avg`) : ``]'
+        :class='[type === `full` ? (courseItem.courseScore >= courseItem.avgScore ? `greater-than-avg` : `less-than-avg`) : ``]'
       ) {{ courseItem.courseScore }}
       td.center {{ courseItem.levelName }}
       td.center {{ courseItem.gradePoint }}

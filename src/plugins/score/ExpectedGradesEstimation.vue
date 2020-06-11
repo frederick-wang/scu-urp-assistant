@@ -49,38 +49,44 @@
         :compulsoryCoursesQuantity='compulsoryCourses.length'
         :allCoursesQuantity='allCourses.length'
       )
-      p(style="margin-top: 15px;")
-        | 如果您再修读
-        |
-        input(type='number' v-model.number='newCompulsoryCourseCredit' min='0')
-        |
-        | 学分的
-        strong(style='color: #82af6f;')
-          | 【均分为
-          |
-          input(type='number' v-model.number='newCompulsoryCourseScore' min='0')
-          |
-          | 、平均绩点为
-          |
-          input(type='number' v-model.number='newCompulsoryCourseGPA' min='0')
-          |
-          | 的必修课】
-        | ，
-        |
-        input(type='number' v-model.number='newOptionalCourseCredit' min='0')
-        |
-        | 学分的
-        strong(style='color: #d6487e;')
-          | 【均分为
-          |
-          input(type='number' v-model.number='newOptionalCourseScore' min='0')
-          |
-          | 、平均绩点为
-          |
-          input(type='number' v-model.number='newOptionalCourseGPA' min='0')
-          |
-          | 的选修课】
-        | 。
+      p(style="margin-top: 15px;") 如果您再修读：
+      .input-line-wrapper
+        .input-line-list(v-for="(v, i) in newCourses" :key="i")
+          p
+            input(type='number' v-model.number='v.compulsoryCredit' min='0')
+            |
+            | 学分的
+            strong(style='color: #82af6f;')
+              | 【均分为
+              |
+              input(type='number' v-model.number='v.compulsoryScore' min='0' max='100' @input='onCompulsoryScoreChange(i)')
+              |
+              | 、平均绩点为
+              |
+              input(type='number' v-model.number='v.compulsoryGPA' min='0' max='4')
+              |
+              | 的必修课】
+            | ，
+            |
+            input(type='number' v-model.number='v.optionalCredit' min='0')
+            |
+            | 学分的
+            strong(style='color: #d6487e;')
+              | 【均分为
+              |
+              input(type='number' v-model.number='v.optionalScore' min='0' max='100' @input='onOptionalScoreChange(i)')
+              |
+              | 、平均绩点为
+              |
+              input(type='number' v-model.number='v.optionalGPA' min='0' max='4')
+              |
+              | 的选修课】
+            | 。
+            |
+            |
+            el-button(size='mini', type='danger', @click='removeNewCourseItem(i)') 删除
+        .add-new-btn-wrapper
+          el-button(size='mini', type='primary', @click='addNewCourseItem') 点此新增一行
       p
         | 您将一共修读共
         |
@@ -105,7 +111,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { actions, Request } from '@/store'
+import { actions, Request, state } from '@/store'
 import { SemesterScoreRecord, CourseScoreRecord } from '@/plugins/score/types'
 import Loading from '@/plugins/common/components/Loading.vue'
 import FourTypeGradeLabels from './components/ExpectedGradesEstimation/FourTypeGradeLabels.vue'
@@ -116,8 +122,19 @@ import {
   getCompulsoryCoursesScore,
   getAllCoursesGPA,
   getAllCoursesScore,
-  getCompulsoryCourses
+  getCompulsoryCourses,
+  getPointByScore
 } from '@/plugins/score/utils'
+import { pluck, sum } from 'ramda'
+
+class NewCourse {
+  public compulsoryCredit = 0
+  public compulsoryScore = 0
+  public compulsoryGPA = 0
+  public optionalCredit = 0
+  public optionalScore = 0
+  public optionalGPA = 0
+}
 
 @Component({ components: { Loading, FourTypeGradeLabels } })
 export default class ExpectedGradeEstimation extends Vue {
@@ -129,12 +146,31 @@ export default class ExpectedGradeEstimation extends Vue {
     closable?: boolean
     closeText?: string
   }[] = []
-  newCompulsoryCourseCredit = 0
-  newCompulsoryCourseScore = 0
-  newCompulsoryCourseGPA = 0
-  newOptionalCourseCredit = 0
-  newOptionalCourseScore = 0
-  newOptionalCourseGPA = 0
+  newCourses: NewCourse[] = []
+
+  get newCompulsoryCourseCredit(): number {
+    return sum(pluck('compulsoryCredit')(this.newCourses))
+  }
+
+  get newCompulsoryCourseScore(): number {
+    return sum(pluck('compulsoryScore')(this.newCourses))
+  }
+
+  get newCompulsoryCourseGPA(): number {
+    return sum(pluck('compulsoryGPA')(this.newCourses))
+  }
+
+  get newOptionalCourseCredit(): number {
+    return sum(pluck('optionalCredit')(this.newCourses))
+  }
+
+  get newOptionalCourseScore(): number {
+    return sum(pluck('optionalScore')(this.newCourses))
+  }
+
+  get newOptionalCourseGPA(): number {
+    return sum(pluck('optionalGPA')(this.newCourses))
+  }
 
   get hasNoError(): boolean {
     return this.alerts.every(v => v.type !== 'error')
@@ -257,6 +293,7 @@ export default class ExpectedGradeEstimation extends Vue {
       )
       this.records = records
       this.loadingIsDone = true
+      this.addNewCourseItem()
       emitDataAnalysisEvent('预期成绩估计', '查询成功')
     } catch (error) {
       const title = '[成绩相关工具] 预期成绩估计'
@@ -274,6 +311,30 @@ export default class ExpectedGradeEstimation extends Vue {
       this.loadingIsDone = true
     }
   }
+
+  addNewCourseItem(): void {
+    this.newCourses.push(new NewCourse())
+  }
+
+  removeNewCourseItem(index: number): void {
+    this.newCourses.splice(index, 1)
+  }
+
+  onCompulsoryScoreChange(index: number): void {
+    this.newCourses[index].compulsoryGPA =
+      getPointByScore(
+        this.newCourses[index].compulsoryScore,
+        state.user.semesterNumberList[0]
+      ) || 0
+  }
+
+  onOptionalScoreChange(index: number): void {
+    this.newCourses[index].optionalGPA =
+      getPointByScore(
+        this.newCourses[index].optionalScore,
+        state.user.semesterNumberList[0]
+      ) || 0
+  }
 }
 </script>
 
@@ -286,5 +347,16 @@ input {
   width: 4em;
   height: 2em;
   line-height: 2em;
+}
+
+.input-line-wrapper {
+  padding: 15px 20px;
+  border: 1px dotted #409eff;
+  margin-top: 15px;
+  margin-bottom: 15px;
+
+  .add-new-btn-wrapper {
+    margin-top: 20px;
+  }
 }
 </style>
