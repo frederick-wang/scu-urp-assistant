@@ -14,7 +14,7 @@ import bachelorDegree from '@/plugins/bachelor-degree'
 import scuUietp from '@/plugins/scu-uietp'
 import beautify from '@/plugins/beautify'
 import setting from '@/plugins/setting'
-import courseEvaluation from '@/plugins/course-evaluation'
+import courseEvaluation from '@/plugins/course-info-exchange'
 import { SUAPlugin } from '@/core/types'
 
 const necessaryPlugins = [dataAnalysis, tooltip]
