@@ -4,7 +4,6 @@ import {
   convertSemesterNumberToName,
   getUserId,
   logger,
-  isSCU,
   isLoginPage
 } from '@/utils'
 import { version } from '@/../package.json'
@@ -103,7 +102,6 @@ type Core = {
   version: string
   route: string
   clientType: 'urp'
-  isSCU: boolean
 }
 
 type Basic = {
@@ -124,8 +122,7 @@ export default {
     return {
       version,
       route: suaRoute,
-      clientType: 'urp',
-      isSCU: isSCU()
+      clientType: 'urp'
     }
   },
   get user(): User {
