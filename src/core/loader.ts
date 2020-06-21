@@ -44,7 +44,7 @@ export const loadElementUI = (): void => {
  *
  */
 export const loadGlobalStyle = (): void => {
-  const globalStyle = require('@/global.scss').toString()
+  const globalStyle = require('@/core/global.scss').toString()
   $('head').append(`
     <style type="text/css">
       ${globalStyle}

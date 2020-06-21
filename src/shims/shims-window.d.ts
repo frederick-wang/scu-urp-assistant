@@ -1,4 +1,4 @@
-import { SUAObject } from "./core/types";
+import { SUAObject } from '@/core/types'
 
 declare global {
   interface Window {
@@ -16,8 +16,8 @@ declare global {
       msg: (a: unknown, b?: unknown, c?: unknown) => void
     }
     urp: {
-      alert: (msg: string, callback?: Function) => void
-      confirm: (msg: string, callback?: Function) => void
+      alert: (msg: string, callback?: () => void) => void
+      confirm: (msg: string, callback?: () => void) => void
     }
     toSelect: (obj: HTMLElement) => void
   }
