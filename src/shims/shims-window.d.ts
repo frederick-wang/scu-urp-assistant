@@ -17,7 +17,7 @@ declare global {
     }
     urp: {
       alert: (msg: string, callback?: () => void) => void
-      confirm: (msg: string, callback?: () => void) => void
+      confirm: (msg: string, callback?: (res: boolean) => void) => void
     }
     toSelect: (obj: HTMLElement) => void
   }

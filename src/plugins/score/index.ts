@@ -6,27 +6,26 @@ import ExpectedGradesEstimationApp from './ExpectedGradesEstimation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
+import { createComponentRender } from '@/plugins/common/utils'
 
-function renderExpectedGradesEstimation(root: HTMLElement): void {
-  $(root).append(`<div class="sua-container-expected-grades-estimation"></div>`)
-  new Vue({
-    render: (h): VNode => h(ExpectedGradesEstimationApp)
-  }).$mount('.sua-container-expected-grades-estimation')
-}
+const renderExpectedGradesEstimation = createComponentRender(
+  '预期成绩估计',
+  'sua-container-expected-grades-estimation',
+  ExpectedGradesEstimationApp
+)
 
-function renderGPACalculator(root: HTMLElement): void {
-  $(root).append(`<div class="sua-container-gpa-calculator"></div>`)
-  new Vue({
-    render: (h): VNode =>
-      h(GPACalculatorApp, {
-        props: {
-          type: 'basic'
-        }
-      })
-  }).$mount('.sua-container-gpa-calculator')
-}
+const renderGPACalculator = createComponentRender(
+  '预期成绩估计',
+  'sua-container-gpa-calculator',
+  GPACalculatorApp,
+  {
+    props: {
+      type: 'basic'
+    }
+  }
+)
 
-function renderScoresInformation(root: HTMLElement): void {
+const renderScoresInformation = (root: HTMLElement): void =>
   window.urp.confirm(
     `<p style="font-weight: 700; color: red;">警告：</p>
     <p style="text-indent: 2em;">该页面展示的部分敏感数据（最高分、平均分、最低分、名次）调用了综合教务系统<span style="color: red;">【未公开】的接口</span>，如果综合教务系统关闭了该接口，那么这个功能就报废了，我们将无法再获取到这些教务系统屏蔽的数据！</p>
@@ -34,16 +33,16 @@ function renderScoresInformation(root: HTMLElement): void {
     <p style="text-indent: 2em;">否则，老师一旦和教务处反映，这个数据获取接口就有<span style="color: red;">被关闭</span>的风险！</p>`,
     async (res: boolean) => {
       if (res) {
-        $(root).append(`<div class="sua-container-gpa-calculator"></div>`)
-        new Vue({
-          render: (h): VNode =>
-            h(GPACalculatorApp, {
-              props: {
-                type: 'full'
-              }
-            })
-        }).$mount('.sua-container-gpa-calculator')
-        emitDataAnalysisEvent('成绩信息查询', '成功')
+        createComponentRender(
+          '成绩信息查询',
+          'sua-container-gpa-calculator',
+          GPACalculatorApp,
+          {
+            props: {
+              type: 'full'
+            }
+          }
+        )(root)
       } else {
         $(root).append(`
         <div class="sua-container-gpa-calculator">
@@ -53,7 +52,6 @@ function renderScoresInformation(root: HTMLElement): void {
       }
     }
   )
-}
 
 const menu = [
   {
