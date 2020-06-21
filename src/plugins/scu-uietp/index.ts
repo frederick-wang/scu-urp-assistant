@@ -1,14 +1,13 @@
-import Vue, { VNode } from 'vue'
 import App from './ScuUietp.vue'
 import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
+import { createComponentRender } from '@/plugins/common/utils'
 
-function render(root: HTMLElement): void {
-  $(root).append(`<div class="sua-container-scu-uietp"></div>`)
-  new Vue({
-    render: (h): VNode => h(App)
-  }).$mount('.sua-container-scu-uietp')
-}
+const render = createComponentRender(
+  '历届大创查询',
+  'sua-container-scu-uietp',
+  App
+)
 
 export default {
   name: 'scu-uietp',
