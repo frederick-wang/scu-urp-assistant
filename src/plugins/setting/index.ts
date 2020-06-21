@@ -3,7 +3,7 @@ import PluginManager from './PluginManager.vue'
 import CacheManager from './CacheManager.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 function renderPluginManager(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-setting-plugin-manager"></div>`)

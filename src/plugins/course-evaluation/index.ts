@@ -3,7 +3,7 @@ import EvaluateSelectedCourses from './EvaluateSelectedCourses.vue'
 import QueryCourseEvaluation from './QueryCourseEvaluation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 function renderComponent(
   root: HTMLElement,

@@ -1,6 +1,6 @@
 import { Logger } from '@/helper/logger'
 import { getAvailablePluginsByLoginStatus, getAllPlugins } from './list'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 import { state } from '@/store'
 
 /**

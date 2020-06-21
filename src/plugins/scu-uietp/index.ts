@@ -1,7 +1,7 @@
 import Vue, { VNode } from 'vue'
 import App from './ScuUietp.vue'
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-scu-uietp"></div>`)

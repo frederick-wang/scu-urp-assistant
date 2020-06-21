@@ -1,6 +1,6 @@
 // 数据统计插件
 import { version } from '@/../package.json'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 import { isDev } from '@/helper/judger'
 import { Logger } from '@/helper/logger'
 import { getPluginIcon } from '@/helper/getter'

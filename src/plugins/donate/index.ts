@@ -2,7 +2,7 @@ import Vue, { VNode } from 'vue'
 import App from './Donate.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 function render(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-donate"></div>`)

@@ -15,7 +15,7 @@ import scuUietp from '@/plugins/scu-uietp'
 import beautify from '@/plugins/beautify'
 import setting from '@/plugins/setting'
 import courseEvaluation from '@/plugins/course-evaluation'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 const necessaryPlugins = [dataAnalysis, tooltip]
 const optionalPluginsBeforeLogin = [recoverRememberMe]

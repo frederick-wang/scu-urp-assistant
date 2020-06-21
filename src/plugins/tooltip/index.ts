@@ -1,7 +1,7 @@
 // 提示信息插件
 import { version } from '@/../package.json'
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 import { isDev, isLoginPage } from '@/helper/judger'
 
 export default {

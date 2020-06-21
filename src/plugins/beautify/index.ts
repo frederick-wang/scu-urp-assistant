@@ -1,7 +1,7 @@
 // 样式美化插件
 
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 const typoCSS = require('./typo.scss').toString()
 

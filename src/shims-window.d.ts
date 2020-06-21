@@ -1,4 +1,4 @@
-import { SUAObject } from "./types";
+import { SUAObject } from "./core/types";
 
 declare global {
   interface Window {

@@ -1,5 +1,5 @@
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 // 重新布局插件
 export default {

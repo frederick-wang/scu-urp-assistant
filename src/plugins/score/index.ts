@@ -5,7 +5,7 @@ import GPACalculatorWidgetApp from './GPACalculatorWidget.vue'
 import ExpectedGradesEstimationApp from './ExpectedGradesEstimation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 function renderExpectedGradesEstimation(root: HTMLElement): void {
   $(root).append(`<div class="sua-container-expected-grades-estimation"></div>`)

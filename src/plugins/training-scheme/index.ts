@@ -5,7 +5,7 @@
 import { render as queryRender } from './queryTrainingScheme'
 import { render as compareRender } from './compareTrainingScheme'
 import { getPluginIcon } from '@/helper/getter'
-import { SUAPlugin } from '@/types'
+import { SUAPlugin } from '@/core/types'
 
 const style = require('./index.scss').toString()
 
