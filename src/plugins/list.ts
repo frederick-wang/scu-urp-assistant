@@ -30,12 +30,14 @@ const optionalPluginsLogined = [
   rearrange,
   fastEvaluation,
   score,
+  // 之所以放到中间，是因为菜单的渲染顺序是和数组中的顺序一致的
+  // 需要将「设置」菜单和「帮助」菜单放到最后
+  ...(isSCU() ? optionalPluginsLoginedOnlySCU : []),
   submitData,
   setting,
   about,
   feedback,
-  donate,
-  ...(isSCU() ? optionalPluginsLoginedOnlySCU : [])
+  donate
 ]
 
 function getAllPlugins(): SUAPlugin[] {
