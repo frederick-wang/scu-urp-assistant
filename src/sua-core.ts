@@ -12,7 +12,7 @@ import {
   Notification
 } from 'element-ui'
 import JsonViewer from 'vue-json-viewer'
-import { pathnameTrigger, routeTrigger } from '@/utils'
+import { pathnameTrigger, routeTrigger, isLoginPage } from '@/utils'
 import { init as initStore } from '@/store'
 import { init as initPlugin, enabledList as pluginList } from '@/plugins'
 import { logger } from '@/utils'
@@ -188,7 +188,7 @@ const suaObject: SUAObject = {
     window.$sua = this
     // 初始化 Element-UI
     loadElementUI()
-    if (window.location.pathname !== '/login') {
+    if (!isLoginPage()) {
       // 初始化全局样式
       loadGlobalStyle()
       // 初始化Store

@@ -15,6 +15,7 @@ import beautify from '@/plugins/beautify'
 import setting from '@/plugins/setting'
 import courseEvaluation from '@/plugins/course-evaluation'
 import { SUAPlugin } from '@/types'
+import { isLoginPage } from '@/utils'
 
 const necessaryPlugins = [dataAnalysis, tooltip]
 const optionalPluginsBeforeLogin = [recoverRememberMe]
@@ -45,9 +46,7 @@ function getAllPlugins(): SUAPlugin[] {
 function getAvailablePluginsByLoginStatus(): SUAPlugin[] {
   return [
     ...necessaryPlugins,
-    ...(window.location.pathname === '/login'
-      ? optionalPluginsBeforeLogin
-      : optionalPluginsLogined)
+    ...(isLoginPage() ? optionalPluginsBeforeLogin : optionalPluginsLogined)
   ]
 }
 

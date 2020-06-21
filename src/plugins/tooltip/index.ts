@@ -1,6 +1,6 @@
 // 提示信息插件
 import { version } from '@/../package.json'
-import { getPluginIcon, isDev } from '@/utils'
+import { getPluginIcon, isDev, isLoginPage } from '@/utils'
 import { SUAPlugin } from '@/types'
 
 export default {
@@ -12,7 +12,7 @@ export default {
   pathname: true,
   init() {
     const versionName = `${version} (${isDev() ? 'dev' : 'stable'})`
-    if (window.location.pathname === '/login') {
+    if (isLoginPage()) {
       const $loginTooltip = $(
         require('./loginTooltip.pug')({ version: versionName })
       )

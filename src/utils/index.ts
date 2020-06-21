@@ -14,6 +14,12 @@ import { SemesterScoreRecord } from '@/plugins/score/types'
 const API_PATH = process.env.API_PATH
 const API_PATH_V2 = process.env.API_PATH_V2
 
+export const isSCU = (): boolean =>
+  window.location.href.indexOf('202.115.47.141') !== -1 ||
+  window.location.href.indexOf('zhjw.scu.edu.cn') !== -1
+
+export const isLoginPage = (): boolean => window.location.pathname === '/login'
+
 function getLevenshteinDistance(a: string, b: string): number {
   const distanceMatrix: number[][] = Array(b.length + 1)
     .fill(null)
@@ -249,9 +255,7 @@ function routeTrigger(
       }
     | undefined
 ): boolean {
-  const result =
-    window.location.pathname !== '/login' &&
-    matchTrigger(state.core.route, route)
+  const result = !isLoginPage() && matchTrigger(state.core.route, route)
   return result
 }
 
@@ -443,10 +447,6 @@ function getPluginIcon(name: string): string {
 }
 
 export const isDev = (): boolean => process.env.NODE_ENV === 'development'
-
-export const isSCU = (): boolean =>
-  window.location.href.indexOf('202.115.47.141') !== -1 ||
-  window.location.href.indexOf('zhjw.scu.edu.cn') !== -1
 
 export {
   getChineseNumber,

@@ -1,6 +1,12 @@
 import Vue from 'vue'
 import { requestStudentInfo } from './actions/request'
-import { convertSemesterNumberToName, getUserId, logger, isSCU } from '@/utils'
+import {
+  convertSemesterNumberToName,
+  getUserId,
+  logger,
+  isSCU,
+  isLoginPage
+} from '@/utils'
 import { version } from '@/../package.json'
 import { LocalStore, TeacherTable } from './types'
 import local from './local'
@@ -109,7 +115,7 @@ export default {
   init,
   get core(): Core {
     let suaRoute = ''
-    if (window.location.pathname !== '/login') {
+    if (!isLoginPage()) {
       const regexp = window.location.hash.match(/sua_route=(.+)$/)
       if (regexp) {
         suaRoute = regexp[1]
