@@ -1,6 +1,6 @@
 import Vue, { VNode } from 'vue'
 import App from './ScuUietp.vue'
-import { getPluginIcon } from '@/utils'
+import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/types'
 
 function render(root: HTMLElement): void {

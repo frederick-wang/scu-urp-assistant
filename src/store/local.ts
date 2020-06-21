@@ -1,4 +1,4 @@
-import { logger } from '@/utils'
+import { Logger } from '@/helper/logger'
 import { LocalStore } from './types'
 import localforage from 'localforage'
 import state from './state'
@@ -44,7 +44,7 @@ function clearExpiredData(): void {
   const time = new Date().getTime()
   for (const [key, item] of Object.entries(localStore.state.data)) {
     if (item.expirationTime !== -1 && item.expirationTime < time) {
-      logger.log(`LocalStore.clearExpiredData: [key=${key}]`)
+      Logger.log(`LocalStore.clearExpiredData: [key=${key}]`)
       remove(key)
     }
   }
@@ -80,7 +80,7 @@ async function saveData(
     }
   }
   localStore = await localforage.setItem('sua_store', res)
-  logger.info(
+  Logger.info(
     `LocalStore${data ? `[key=${data.key}]` : ''}保存成功:`,
     localStore
   )
@@ -91,7 +91,7 @@ async function load(): Promise<LocalStore> {
   localStore = await localforage.getItem('sua_store')
   if (localStore) {
     clearExpiredData()
-    logger.info('加载LocalStore成功:', localStore)
+    Logger.info('加载LocalStore成功:', localStore)
   } else {
     await saveData()
   }

@@ -1,5 +1,4 @@
 import cheerio from 'cheerio'
-import { API_PATH_V2, getChineseNumber, sleep, logger } from '@/utils'
 import {
   AllTermScoresDTO,
   CourseScoreInfo,
@@ -22,6 +21,10 @@ import { pipe, map } from 'ramda'
 import state from '../state'
 import { Result } from './result.interface'
 import { getPointByScore } from '@/plugins/score/utils'
+import { sleep } from '@/helper/util'
+import { getChineseNumber } from '@/helper/getter'
+import { API_PATH_V2 } from '@/helper/info'
+import { Logger } from '@/helper/logger'
 
 function getPageHTML(url: string): Promise<string> {
   return ($.get({
@@ -669,7 +672,7 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
     return pipe(map(formatRecord), filterCourseScoreInfoList)(records)
   } catch (error) {
     const { title, message, html } = await LoadHTMLToDealWithError(url)
-    logger.error({ title, message, html })
+    Logger.error({ title, message, html })
     throw new Error(`${title}: ${message}`)
   }
 }
@@ -721,7 +724,7 @@ async function requestThisTermCourseScoreInfoList(): Promise<
     return res
   } catch (error) {
     const { title, message, html } = await LoadHTMLToDealWithError(url)
-    logger.error({ title, message, html })
+    Logger.error({ title, message, html })
     throw new Error(`${title}: ${message}`)
   }
 }

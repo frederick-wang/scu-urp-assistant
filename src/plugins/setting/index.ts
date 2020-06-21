@@ -2,7 +2,7 @@ import Vue, { VNode } from 'vue'
 import PluginManager from './PluginManager.vue'
 import CacheManager from './CacheManager.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
-import { getPluginIcon } from '@/utils'
+import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/types'
 
 function renderPluginManager(root: HTMLElement): void {

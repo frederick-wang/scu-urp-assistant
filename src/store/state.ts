@@ -1,18 +1,14 @@
 import Vue from 'vue'
 import { requestStudentInfo } from './actions/request'
-import {
-  convertSemesterNumberToName,
-  getUserId,
-  logger,
-  isLoginPage,
-  isSCU
-} from '@/utils'
 import { version } from '@/../package.json'
 import { LocalStore, TeacherTable } from './types'
 import local from './local'
 import { state } from '.'
 import { actions, Request } from './actions'
 import { allList as pluginList } from '@/plugins'
+import { convertSemesterNumberToName } from '@/helper/converter'
+import { getUserId } from '@/helper/getter'
+import { isSCU, isLoginPage } from '@/helper/judger'
 
 interface AcademicInfo {
   courseNumber: number

@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/camelcase */
 // 用户体验改善计划插件
 import { actions, Request, Submit, state } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
 import local from '@/store/local'
-import { logger, getCourseTeacherList, getPluginIcon } from '@/utils'
+import { getCourseTeacherList, getPluginIcon } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { SemesterScoreRecord } from '@/plugins/score/types'
+import { Logger } from '@/helper/logger'
 
 async function sendStudentCourseScorePublicList(
   records: SemesterScoreRecord[]
@@ -71,7 +71,7 @@ async function sendStudentCourseScorePublicList(
       for (const v of res) {
         await actions[Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS](v)
       }
-      logger.log('isSubmittedSuccessfully!')
+      Logger.log('isSubmittedSuccessfully!')
       state.setData('ueipStudentCourseScorePublicList', true)
       local.saveData(
         {
@@ -83,7 +83,7 @@ async function sendStudentCourseScorePublicList(
       )
       emitDataAnalysisEvent('UEIP-匿名用户课程成绩信息', '上传成功')
     } catch (error) {
-      logger.error('Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed!', error)
+      Logger.error('Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed!', error)
       emitDataAnalysisEvent('UEIP-匿名用户课程成绩信息', '上传失败')
     }
   }
@@ -138,7 +138,7 @@ async function sendCourseScorePublicList(): Promise<void> {
       )
       emitDataAnalysisEvent('UEIP-课程成绩信息', '上传成功')
     } catch (error) {
-      logger.error('Submit.COURSE_SCORE_PUBLIC_INFOS Failed!', error)
+      Logger.error('Submit.COURSE_SCORE_PUBLIC_INFOS Failed!', error)
       emitDataAnalysisEvent('UEIP-课程成绩信息', '上传失败')
     }
   }

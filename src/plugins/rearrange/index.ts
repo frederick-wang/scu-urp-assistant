@@ -1,4 +1,4 @@
-import { getPluginIcon } from '@/utils'
+import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/types'
 
 // 重新布局插件

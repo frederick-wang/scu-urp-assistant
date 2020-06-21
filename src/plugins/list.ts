@@ -1,3 +1,4 @@
+import { isLoginPage, isSCU } from '@/helper/judger'
 import fastEvaluation from '@/plugins/fast-evaluation'
 import tooltip from '@/plugins/tooltip'
 import recoverRememberMe from '@/plugins/recover-remember-me'
@@ -15,7 +16,6 @@ import beautify from '@/plugins/beautify'
 import setting from '@/plugins/setting'
 import courseEvaluation from '@/plugins/course-evaluation'
 import { SUAPlugin } from '@/types'
-import { isLoginPage, isSCU } from '@/utils'
 
 const necessaryPlugins = [dataAnalysis, tooltip]
 const optionalPluginsBeforeLogin = [recoverRememberMe]

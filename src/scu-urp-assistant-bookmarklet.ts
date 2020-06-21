@@ -1,5 +1,5 @@
 import sua from './sua-core'
-import { isSCU } from './utils'
+import { isSCU } from './helper/judger'
 ;((): void => {
   if (isSCU()) {
     sua.init()

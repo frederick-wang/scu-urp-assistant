@@ -1,4 +1,4 @@
-import { logger } from '@/utils'
+import { Logger } from '@/helper/logger'
 import { getAvailablePluginsByLoginStatus, getAllPlugins } from './list'
 import { SUAPlugin } from '@/types'
 import { state } from '@/store'
@@ -39,7 +39,7 @@ async function init(): Promise<void> {
   } else {
     enabledList.push(...availableList)
   }
-  logger.info('Plugin.list初始化成功:', enabledList)
+  Logger.info('Plugin.list初始化成功:', enabledList)
 }
 
 export { init, enabledList, canBeEnabledList, availableList, allList }

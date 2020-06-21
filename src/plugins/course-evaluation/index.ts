@@ -2,7 +2,7 @@ import Vue, { VNode, VueConstructor } from 'vue'
 import EvaluateSelectedCourses from './EvaluateSelectedCourses.vue'
 import QueryCourseEvaluation from './QueryCourseEvaluation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
-import { getPluginIcon } from '@/utils'
+import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/types'
 
 function renderComponent(

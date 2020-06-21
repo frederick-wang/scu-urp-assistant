@@ -1,6 +1,6 @@
 import { version } from '@/../package.json'
 import { description } from '@/../package.json'
-import { isDev } from '@/utils'
+import { isDev } from '@/helper/judger'
 
 function showLoadingAnimation(containerSelector: string): void {
   const template = `

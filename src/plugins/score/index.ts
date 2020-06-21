@@ -4,7 +4,7 @@ import GPACalculatorApp from './GPACalculator.vue'
 import GPACalculatorWidgetApp from './GPACalculatorWidget.vue'
 import ExpectedGradesEstimationApp from './ExpectedGradesEstimation.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
-import { getPluginIcon } from '@/utils'
+import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/types'
 
 function renderExpectedGradesEstimation(root: HTMLElement): void {

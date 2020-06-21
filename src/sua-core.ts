@@ -12,11 +12,12 @@ import {
   Notification
 } from 'element-ui'
 import JsonViewer from 'vue-json-viewer'
-import { pathnameTrigger, routeTrigger, isLoginPage } from '@/utils'
+import { pathnameTrigger, routeTrigger } from '@/helper/util'
 import { init as initStore } from '@/store'
 import { init as initPlugin, enabledList as pluginList } from '@/plugins'
-import { logger } from '@/utils'
+import { Logger } from '@/helper/logger'
 import { SUAPluginMenu, SUAObject } from './types'
+import { isLoginPage } from './helper/judger'
 
 const globalStyle = require('@/global.scss').toString()
 
@@ -184,7 +185,7 @@ const suaObject: SUAObject = {
    * 初始化 SCU URP 助手
    */
   async init() {
-    logger.info('程序初始化')
+    Logger.info('程序初始化')
     window.$sua = this
     // 初始化 Element-UI
     loadElementUI()
@@ -195,7 +196,7 @@ const suaObject: SUAObject = {
       try {
         await initStore()
       } catch (error) {
-        logger.error(error)
+        Logger.error(error)
         Vue.prototype.$notify.error({
           title: '[初始化错误] Store初始化失败',
           message:
@@ -207,7 +208,7 @@ const suaObject: SUAObject = {
     try {
       await initPlugin()
     } catch (error) {
-      logger.error(error)
+      Logger.error(error)
       Vue.prototype.$notify.error({
         title: '[初始化错误] 插件初始化失败',
         message:

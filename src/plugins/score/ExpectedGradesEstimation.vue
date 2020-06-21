@@ -116,7 +116,7 @@ import { SemesterScoreRecord, CourseScoreRecord } from '@/plugins/score/types'
 import Loading from '@/plugins/common/components/Loading.vue'
 import FourTypeGradeLabels from './components/ExpectedGradesEstimation/FourTypeGradeLabels.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
-import { convertCourseScoreInfoListToScoreRecords } from '@/utils'
+import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import {
   getCompulsoryCoursesGPA,
   getCompulsoryCoursesScore,

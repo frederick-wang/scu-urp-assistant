@@ -37,10 +37,10 @@ import { SemesterScoreRecord, CourseScoreRecord } from '@/plugins/score/types'
 import Loading from '@/plugins/common/components/Loading.vue'
 import TotalTranscript from './components/TotalTranscript.vue'
 import SemesterTranscript from './components/SemesterTranscript/SemesterTranscript.vue'
-import { getCourseTeacherList } from '@/utils'
+import { getCourseTeacherList } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getSelectedCourses } from '@/plugins/score/utils'
-import { convertCourseScoreInfoListToScoreRecords } from '@/utils'
+import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
 
 @Component({

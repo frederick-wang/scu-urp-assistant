@@ -1,7 +1,9 @@
 // 数据统计插件
 import { version } from '@/../package.json'
-import { logger, getPluginIcon, isDev } from '@/utils'
 import { SUAPlugin } from '@/types'
+import { isDev } from '@/helper/judger'
+import { Logger } from '@/helper/logger'
+import { getPluginIcon } from '@/helper/getter'
 
 interface TalkingDataEventParams {
   EventId: string
@@ -48,7 +50,7 @@ export default {
       script.setAttribute('src', src)
       document.getElementsByTagName('head')[0].appendChild(script)
       script.onload = (): void => {
-        logger.info(`Data Analysis Plugin Loaded Successfully: ${versionName}`)
+        Logger.info(`Data Analysis Plugin Loaded Successfully: ${versionName}`)
       }
     }
   }

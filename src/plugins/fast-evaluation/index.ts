@@ -1,7 +1,7 @@
 // 快捷评教插件
 import Vue from 'vue'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
-import { getPluginIcon } from '@/utils'
+import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/types'
 import {
   getRandomComment,

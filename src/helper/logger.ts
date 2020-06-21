@@ -1,4 +1,4 @@
-import { isDev } from "."
+import { isDev } from './judger'
 
 const prefix = (): string =>
   `%c[SCU URP Assistent](${new Date().toLocaleString()})\n`
@@ -31,4 +31,4 @@ function error(...rest: unknown[]): void {
   }
 }
 
-export { log, info, warn, error }
+export const Logger = { log, info, warn, error }
