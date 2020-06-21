@@ -15,24 +15,27 @@ import beautify from '@/plugins/beautify'
 import setting from '@/plugins/setting'
 import courseEvaluation from '@/plugins/course-evaluation'
 import { SUAPlugin } from '@/types'
-import { isLoginPage } from '@/utils'
+import { isLoginPage, isSCU } from '@/utils'
 
 const necessaryPlugins = [dataAnalysis, tooltip]
 const optionalPluginsBeforeLogin = [recoverRememberMe]
+const optionalPluginsLoginedOnlySCU = [
+  trainingScheme,
+  bachelorDegree,
+  scuUietp,
+  courseEvaluation
+]
 const optionalPluginsLogined = [
   beautify,
   rearrange,
   fastEvaluation,
   score,
-  trainingScheme,
-  bachelorDegree,
-  scuUietp,
   submitData,
   setting,
   about,
   feedback,
   donate,
-  courseEvaluation
+  ...(isSCU() ? optionalPluginsLoginedOnlySCU : [])
 ]
 
 function getAllPlugins(): SUAPlugin[] {

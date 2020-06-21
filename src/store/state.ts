@@ -4,7 +4,8 @@ import {
   convertSemesterNumberToName,
   getUserId,
   logger,
-  isLoginPage
+  isLoginPage,
+  isSCU
 } from '@/utils'
 import { version } from '@/../package.json'
 import { LocalStore, TeacherTable } from './types'
@@ -74,14 +75,16 @@ async function init(localStore: LocalStore): Promise<void> {
   academicInfo = res[0]
   studentInfos = res[1]
   userSemesterNumberList = res[2]
-  try {
-    accessToken = (await actions[Request.ACCESS_TOKEN]()).accessToken
-  } catch (error) {
-    Vue.prototype.$notify.error({
-      title: '[初始化错误] 获取accessToken失败',
-      message:
-        '获取accessToken失败，以下插件将无法使用：专业授位查询、培养方案相关、历届大创查询。您可以尝试刷新页面，也许能解决问题。'
-    })
+  if (isSCU()) {
+    try {
+      accessToken = (await actions[Request.ACCESS_TOKEN]()).accessToken
+    } catch (error) {
+      Vue.prototype.$notify.error({
+        title: '[初始化错误] 获取accessToken失败',
+        message:
+          '获取accessToken失败，以下插件将无法使用：专业授位查询、培养方案相关、历届大创查询、课程评价。您可以尝试刷新页面，也许能解决问题。'
+      })
+    }
   }
   await initTeacherTable()
 }
