@@ -1,6 +1,8 @@
 import minimatch from 'minimatch'
 import { state } from '@/store'
 import { isLoginPage } from './judger'
+import { API_PATH_V2 } from './info'
+import axios, { AxiosInstance } from 'axios'
 
 export const sleep = (time: number): Promise<number> =>
   new Promise(resolve => setTimeout(() => resolve(), time))
@@ -81,3 +83,17 @@ export const routeTrigger = (
   const result = !isLoginPage() && matchTrigger(state.core.route, route)
   return result
 }
+
+// 确保 http 调用时 state 已经被初始化
+export const http = (): AxiosInstance =>
+  axios.create({
+    baseURL: API_PATH_V2,
+    timeout: 10000,
+    headers: {
+      ...(state.user.accessToken
+        ? {
+            Authorization: `Bearer ${state.user.accessToken}`
+          }
+        : {})
+    }
+  })
