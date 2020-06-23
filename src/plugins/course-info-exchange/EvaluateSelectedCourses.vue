@@ -12,14 +12,18 @@
     style="margin-bottom: 10px;"
   )
   el-alert(type='warning' title='注意：本页面非教务系统的官方评教哦，您在本页面做出的评价，将作为公开信息供每一位 SCU URP 助手的用户自由查询。')
-  h2(style='margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6;') SCU URP 助手 - 评价已选课程
+  h2(style='margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6;')
+    i.el-icon-edit
+    |
+    |
+    span 课程信息交流 - 评价已选课程
   .semester-list(v-if='loadingIsDone && hasNoError && records.length > 1')
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { actions, Request } from '@/store'
-import { Logger } from '../../helper/logger'
+import { Logger } from '@/helper/logger'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
