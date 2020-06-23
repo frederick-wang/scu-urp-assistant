@@ -144,11 +144,11 @@ export default class TotalTranscript extends Vue {
   }
 
   getSelectedCoursesGPA(arr: CourseScoreRecord[]): number {
-    return getSelectedCoursesGPA(reserveNewerCoursesForRetakenCourses(arr))
+    return getSelectedCoursesGPA(arr)
   }
 
   getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
-    return getSelectedCoursesScore(reserveNewerCoursesForRetakenCourses(arr))
+    return getSelectedCoursesScore(arr)
   }
 
   getAllCoursesGPA(arr: CourseScoreRecord[]): number {
