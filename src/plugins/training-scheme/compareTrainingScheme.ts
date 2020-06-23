@@ -10,7 +10,7 @@ import {
   TrainingSchemeCourseInfo as SingleTrainingSchemeCourseInfoBase,
   TrainingScheme
 } from '@/store/types'
-import { getChineseNumber } from '@/utils'
+import { getChineseNumber } from '@/helper/getter'
 import { Request, actions, state } from '@/store'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import html2canvas from 'html2canvas'

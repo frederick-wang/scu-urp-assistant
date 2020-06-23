@@ -1,14 +1,13 @@
-import Vue, { VNode } from 'vue'
 import App from './BachelorDegree.vue'
-import { getPluginIcon } from '@/utils'
-import { SUAPlugin } from '@/types'
+import { getPluginIcon } from '@/helper/getter'
+import { SUAPlugin } from '@/core/types'
+import { createComponentRender } from '@/plugins/common/utils'
 
-function render(root: HTMLElement): void {
-  $(root).append(`<div class="sua-container-bachelor-degree"></div>`)
-  new Vue({
-    render: (h): VNode => h(App)
-  }).$mount('.sua-container-bachelor-degree')
-}
+const render = createComponentRender(
+  '专业授位查询',
+  'sua-container-bachelor-degree',
+  App
+)
 
 export default {
   name: 'bachelor-degree',

@@ -1,5 +1,5 @@
 <template lang="pug">
-  .sua-container-course-evaluation-query-course-evaluation
+  .sua-container-course-info-exchange-query-course-info-exchange
 </template>
 
 <script lang="ts">

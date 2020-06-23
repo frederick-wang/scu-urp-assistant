@@ -4,8 +4,8 @@
 // TODO: 3. 将课程中时间和地点的对应关系体现的更清晰，分成两行
 import { render as queryRender } from './queryTrainingScheme'
 import { render as compareRender } from './compareTrainingScheme'
-import { getPluginIcon } from '@/utils'
-import { SUAPlugin } from '@/types'
+import { getPluginIcon } from '@/helper/getter'
+import { SUAPlugin } from '@/core/types'
 
 const style = require('./index.scss').toString()
 

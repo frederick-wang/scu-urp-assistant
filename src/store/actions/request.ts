@@ -1,5 +1,4 @@
 import cheerio from 'cheerio'
-import { API_PATH_V2, getChineseNumber, sleep, logger } from '@/utils'
 import {
   AllTermScoresDTO,
   CourseScoreInfo,
@@ -22,6 +21,9 @@ import { pipe, map } from 'ramda'
 import state from '../state'
 import { Result } from './result.interface'
 import { getPointByScore } from '@/plugins/score/utils'
+import { sleep, http } from '@/helper/util'
+import { getChineseNumber } from '@/helper/getter'
+import { Logger } from '@/helper/logger'
 
 function getPageHTML(url: string): Promise<string> {
   return ($.get({
@@ -474,16 +476,10 @@ function requestTrainingScheme(
 let trainingSchemeList: TrainingScheme[]
 
 async function requestTrainingSchemeList(): Promise<TrainingScheme[]> {
-  const url = `${API_PATH_V2}/student/training_scheme`
+  const url = `student/training_scheme`
   try {
     if (!trainingSchemeList) {
-      trainingSchemeList = await $.ajax({
-        method: 'GET',
-        url,
-        headers: {
-          Authorization: `Bearer ${state.user.accessToken}`
-        }
-      })
+      trainingSchemeList = (await http().get(url)).data
     }
     return trainingSchemeList
   } catch (error) {
@@ -499,17 +495,9 @@ async function requestTrainingSchemeList(): Promise<TrainingScheme[]> {
 async function requestBachelorDegree(
   queryStr: string
 ): Promise<BachelorDegreeInfo[]> {
-  const url = `${API_PATH_V2}/info/bachelor_degree/${encodeURIComponent(
-    queryStr
-  )}`
+  const url = `info/bachelor_degree/${encodeURIComponent(queryStr)}`
   try {
-    return await $.ajax({
-      method: 'GET',
-      url,
-      headers: {
-        Authorization: `Bearer ${state.user.accessToken}`
-      }
-    })
+    return (await http().get(url)).data
   } catch (error) {
     const {
       status,
@@ -521,15 +509,9 @@ async function requestBachelorDegree(
 }
 
 async function requestScuUietpList(queryStr: string): Promise<ScuUietpDTO> {
-  const url = `${API_PATH_V2}/info/scu_uietp/${encodeURIComponent(queryStr)}`
+  const url = `info/scu_uietp/${encodeURIComponent(queryStr)}`
   try {
-    const res = await $.ajax({
-      method: 'GET',
-      url,
-      headers: {
-        Authorization: `Bearer ${state.user.accessToken}`
-      }
-    })
+    const res = (await http().get(url)).data
     return res as ScuUietpDTO
   } catch (error) {
     const {
@@ -669,7 +651,7 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
     return pipe(map(formatRecord), filterCourseScoreInfoList)(records)
   } catch (error) {
     const { title, message, html } = await LoadHTMLToDealWithError(url)
-    logger.error({ title, message, html })
+    Logger.error({ title, message, html })
     throw new Error(`${title}: ${message}`)
   }
 }
@@ -721,7 +703,7 @@ async function requestThisTermCourseScoreInfoList(): Promise<
     return res
   } catch (error) {
     const { title, message, html } = await LoadHTMLToDealWithError(url)
-    logger.error({ title, message, html })
+    Logger.error({ title, message, html })
     throw new Error(`${title}: ${message}`)
   }
 }
@@ -733,12 +715,14 @@ type LoginResultData = {
 export async function requestAccessToken(): Promise<LoginResultData> {
   const { version, clientType: type } = state.core
   const { id } = state.user
-  const url = `${API_PATH_V2}/user/login`
+  const url = `user/login`
   try {
-    const res: Result = await $.post(url, {
-      id,
-      client: { version, type }
-    })
+    const res: Result = (
+      await http().post(url, {
+        id,
+        client: { version, type }
+      })
+    ).data
     if (res.error) {
       const { code, title, message } = res.error
       throw new Error(`[${code}] ${title}: ${message}`)

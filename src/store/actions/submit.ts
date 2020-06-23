@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import { API_PATH, logger } from '@/utils'
-
 import { CourseScorePublicInfo } from '@/store/types'
+import { API_PATH } from '@/helper/info'
+import { Logger } from '@/helper/logger'
 
 async function submitCourseScorePublicInfo(
   item: CourseScorePublicInfo
@@ -48,9 +47,9 @@ async function submitCourseScorePublicInfo(
     if (res.error) {
       throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFO Failed: ${res.msg}`)
     }
-    logger.info('Submit.COURSE_SCORE_PUBLIC_INFO Successfully:', res.data)
+    Logger.info('Submit.COURSE_SCORE_PUBLIC_INFO Successfully:', res.data)
   } catch (error) {
-    logger.error(error)
+    Logger.error(error)
   }
 }
 
@@ -101,7 +100,7 @@ async function submitCourseScorePublicInfos(
   if (res.error) {
     throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`)
   }
-  logger.info('Submit.COURSE_SCORE_PUBLIC_INFOS Successfully:', res.data)
+  Logger.info('Submit.COURSE_SCORE_PUBLIC_INFOS Successfully:', res.data)
 }
 
 async function submitStudentCourseScorePublicInfos(
@@ -122,7 +121,7 @@ async function submitStudentCourseScorePublicInfos(
       `Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`
     )
   }
-  logger.info(
+  Logger.info(
     'Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS Successfully:',
     res.data
   )

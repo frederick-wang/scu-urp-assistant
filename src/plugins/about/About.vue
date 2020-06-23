@@ -64,7 +64,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { version } from '@/../package.json'
 import { description } from '@/../package.json'
-import { isDev } from '@/utils'
+import { isDev } from '@/helper/judger'
 
 @Component
 export default class About extends Vue {

@@ -1,25 +1,20 @@
-import Vue, { VNode } from 'vue'
 import PluginManager from './PluginManager.vue'
 import CacheManager from './CacheManager.vue'
-import { emitDataAnalysisEvent } from '../data-analysis'
-import { getPluginIcon } from '@/utils'
-import { SUAPlugin } from '@/types'
+import { getPluginIcon } from '@/helper/getter'
+import { SUAPlugin } from '@/core/types'
+import { createComponentRender } from '@/plugins/common/utils'
 
-function renderPluginManager(root: HTMLElement): void {
-  $(root).append(`<div class="sua-container-setting-plugin-manager"></div>`)
-  new Vue({
-    render: (h): VNode => h(PluginManager)
-  }).$mount('.sua-container-setting-plugin-manager')
-  emitDataAnalysisEvent('插件管理器', '显示成功')
-}
+const renderPluginManager = createComponentRender(
+  '插件管理器',
+  'sua-container-setting-plugin-manager',
+  PluginManager
+)
 
-function renderCacheManager(root: HTMLElement): void {
-  $(root).append(`<div class="sua-container-setting-cache-manager"></div>`)
-  new Vue({
-    render: (h): VNode => h(CacheManager)
-  }).$mount('.sua-container-setting-cache-manager')
-  emitDataAnalysisEvent('缓存管理器', '显示成功')
-}
+const renderCacheManager = createComponentRender(
+  '缓存管理器',
+  'sua-container-setting-cache-manager',
+  CacheManager
+)
 
 export default {
   name: 'setting',

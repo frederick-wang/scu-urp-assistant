@@ -1,7 +1,8 @@
 // 提示信息插件
 import { version } from '@/../package.json'
-import { getPluginIcon, isDev } from '@/utils'
-import { SUAPlugin } from '@/types'
+import { getPluginIcon } from '@/helper/getter'
+import { SUAPlugin } from '@/core/types'
+import { isDev, isLoginPage } from '@/helper/judger'
 
 export default {
   name: 'tooltip',
@@ -12,7 +13,7 @@ export default {
   pathname: true,
   init() {
     const versionName = `${version} (${isDev() ? 'dev' : 'stable'})`
-    if (window.location.pathname === '/login') {
+    if (isLoginPage()) {
       const $loginTooltip = $(
         require('./loginTooltip.pug')({ version: versionName })
       )

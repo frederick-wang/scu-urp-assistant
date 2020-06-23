@@ -1,16 +1,13 @@
-import Vue, { VNode } from 'vue'
 import App from './Feedback.vue'
-import { emitDataAnalysisEvent } from '../data-analysis'
-import { getPluginIcon } from '@/utils'
-import { SUAPlugin } from '@/types'
+import { getPluginIcon } from '@/helper/getter'
+import { SUAPlugin } from '@/core/types'
+import { createComponentRender } from '@/plugins/common/utils'
 
-function render(root: HTMLElement): void {
-  $(root).append(`<div class="sua-container-feedback"></div>`)
-  new Vue({
-    render: (h): VNode => h(App)
-  }).$mount('.sua-container-feedback')
-  emitDataAnalysisEvent('咨询与反馈', '显示成功')
-}
+const render = createComponentRender(
+  '咨询与反馈',
+  'sua-container-feedback',
+  App
+)
 
 export default {
   name: 'feedback',

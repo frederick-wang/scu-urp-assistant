@@ -13,7 +13,7 @@ import {
   TrainingSchemeCourseInfo
 } from '@/store/types'
 import { initCourseInfoPopover } from './popover'
-import { getChineseNumber } from '@/utils'
+import { getChineseNumber } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import html2canvas from 'html2canvas'
 

@@ -1,7 +1,7 @@
 export interface SUAObject {
   plugins: SUAPlugin[]
-  initQueue: Function[]
-  taskQueue: Function[]
+  initQueue: (() => void | Promise<void>)[]
+  taskQueue: (() => void | Promise<void>)[]
   styleQueue: string[]
   menuQueue: SUAPluginMenu[]
   init(): Promise<void>

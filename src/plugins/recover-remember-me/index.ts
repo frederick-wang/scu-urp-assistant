@@ -1,5 +1,5 @@
-import { getPluginIcon } from '@/utils'
-import { SUAPlugin } from '@/types'
+import { getPluginIcon } from '@/helper/getter'
+import { SUAPlugin } from '@/core/types'
 
 // 恢复登录页面的「两周之内不必登录」选项插件
 export default {

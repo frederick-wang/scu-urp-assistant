@@ -1,16 +1,9 @@
-import Vue, { VNode } from 'vue'
 import App from './About.vue'
-import { emitDataAnalysisEvent } from '../data-analysis'
-import { getPluginIcon } from '@/utils'
-import { SUAPlugin } from '@/types'
+import { getPluginIcon } from '@/helper/getter'
+import { SUAPlugin } from '@/core/types'
+import { createComponentRender } from '@/plugins/common/utils'
 
-function render(root: HTMLElement): void {
-  $(root).append(`<div class="sua-container-about"></div>`)
-  new Vue({
-    render: (h): VNode => h(App)
-  }).$mount('.sua-container-about')
-  emitDataAnalysisEvent('关于', '显示成功')
-}
+const render = createComponentRender('关于', 'sua-container-about', App)
 
 export default {
   name: 'about',
