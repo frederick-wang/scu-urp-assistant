@@ -21,6 +21,8 @@ const banner = `// ==UserScript==
 // @include      http://zhjw.scu.edu.cn/*
 // @grant        none
 // @run-at       document-start
+// @icon         https://gitee.com/frederick-wang/scu-urp-assistant/raw/master/icon.png
+// @icon64       https://gitee.com/frederick-wang/scu-urp-assistant/raw/master/icon64.png
 // ==/UserScript==`
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
