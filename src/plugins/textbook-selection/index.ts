@@ -33,6 +33,19 @@ export default {
         setTimeout(() => {
           window.location.reload()
         }, 3000)
+      } else if (result === '/logout') {
+        Vue.prototype.$message({
+          message: '登录状态过期，请重新登录……',
+          type: 'error'
+        })
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 3000)
+      } else {
+        Vue.prototype.$message({
+          message: '未知错误',
+          type: 'error'
+        })
       }
     })
     $unselectAllBtn.click(async () => {
@@ -50,6 +63,19 @@ export default {
         setTimeout(() => {
           window.location.reload()
         }, 3000)
+      } else if (result === '/logout') {
+        Vue.prototype.$message({
+          message: '登录状态过期，请重新登录……',
+          type: 'error'
+        })
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 3000)
+      } else {
+        Vue.prototype.$message({
+          message: '未知错误',
+          type: 'error'
+        })
       }
     })
   }
