@@ -15,6 +15,7 @@ import scuUietp from '@/plugins/scu-uietp'
 import beautify from '@/plugins/beautify'
 import setting from '@/plugins/setting'
 import courseEvaluation from '@/plugins/course-info-exchange'
+import textbookSelection from '@/plugins/textbook-selection'
 import { SUAPlugin } from '@/core/types'
 
 const necessaryPlugins = [dataAnalysis, tooltip]
@@ -29,6 +30,7 @@ const optionalPluginsLogined = [
   beautify,
   rearrange,
   fastEvaluation,
+  textbookSelection,
   score,
   // 之所以放到中间，是因为菜单的渲染顺序是和数组中的顺序一致的
   // 需要将「设置」菜单和「帮助」菜单放到最后
