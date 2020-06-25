@@ -7,7 +7,9 @@ import {
   Loading,
   Message,
   MessageBox,
-  Notification
+  Notification,
+  Rate,
+  Divider
 } from 'element-ui'
 import JsonViewer from 'vue-json-viewer'
 import { routeTrigger } from '@/helper/util'
@@ -28,6 +30,8 @@ export const loadElementUI = (): void => {
   Vue.use(Tag)
   Vue.use(Alert)
   Vue.use(Loading.directive)
+  Vue.use(Rate)
+  Vue.use(Divider)
   Vue.prototype.$loading = Loading.service
   Vue.prototype.$msgbox = MessageBox
   Vue.prototype.$alert = MessageBox.alert

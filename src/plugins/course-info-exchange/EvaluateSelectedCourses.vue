@@ -11,13 +11,10 @@
     :close-text='v.closeText'
     style="margin-bottom: 10px;"
   )
-  el-alert(type='warning' title='注意：本页面非教务系统的官方评教哦，您在本页面做出的评价，将作为公开信息供每一位 SCU URP 助手的用户自由查询。')
-  h2(style='margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6;')
-    i.el-icon-edit
-    |
-    |
-    span 课程信息交流 - 评价已选课程
-  .semester-list(v-if='loadingIsDone && hasNoError && records.length > 1')
+  .wrapper(v-if='loadingIsDone && hasNoError')
+    el-alert(type='warning' title='注意：本页面非教务系统的官方评教哦，您在本页面做出的评价，将作为公开信息供每一位 SCU URP 助手的用户自由查询。')
+    .semester-list(v-if='records.length > 1')
+      SemesterCard(v-for='(v, i) in records' :key='i' :semester='v.semester' :courses='v.courses')
 </template>
 
 <script lang="ts">
@@ -25,17 +22,20 @@ import { Vue, Component } from 'vue-property-decorator'
 import { actions, Request } from '@/store'
 import { Logger } from '@/helper/logger'
 import Loading from '@/plugins/common/components/Loading.vue'
+import SemesterCard from './components/SemesterCard.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import { getCourseTeacherList } from '@/helper/getter'
-import { SemesterScoreRecord } from '../score/types'
 import * as ueip from '@/plugins/user-experience-improvement-program'
+import { SemesterScoreRecordWithInfoExchange } from './types'
+import { SemesterScoreRecord } from '../score/types'
+import { lorem } from 'faker/locale/zh_CN'
 
 @Component({
-  components: { Loading }
+  components: { Loading, SemesterCard }
 })
 export default class EvaluateSelectedCourses extends Vue {
-  records: SemesterScoreRecord[] = []
+  records: SemesterScoreRecordWithInfoExchange[] = []
   loadingIsDone = false
   alerts: {
     title: string
@@ -62,7 +62,22 @@ export default class EvaluateSelectedCourses extends Vue {
           )
         }
       }
-      this.records = records
+      const convertRecordsToRecordsWithInfoExchange = (
+        records: SemesterScoreRecord[]
+      ): SemesterScoreRecordWithInfoExchange[] =>
+        records.map(({ semester, courses }) => ({
+          semester,
+          courses: courses.map(c => ({
+            ...c,
+            courseValue: Math.floor(Math.random() * 4) + 1,
+            teachingAttitude: Math.floor(Math.random() * 4) + 1,
+            teachingOrganization: Math.floor(Math.random() * 4) + 1,
+            teacherStudentRelationship: Math.floor(Math.random() * 4) + 1,
+            homeworkDifficulty: Math.floor(Math.random() * 4) + 1,
+            comment: lorem.text()
+          }))
+        }))
+      this.records = convertRecordsToRecordsWithInfoExchange(records)
       this.loadingIsDone = true
       ueip.sendStudentCourseScorePublicList(records)
     } catch (error) {
@@ -85,4 +100,7 @@ export default class EvaluateSelectedCourses extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.semester-list {
+  margin-top: 20px;
+}
 </style>
