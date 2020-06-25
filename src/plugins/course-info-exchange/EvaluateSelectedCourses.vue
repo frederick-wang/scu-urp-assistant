@@ -69,11 +69,11 @@ export default class EvaluateSelectedCourses extends Vue {
           semester,
           courses: courses.map(c => ({
             ...c,
-            courseValue: Math.floor(Math.random() * 4) + 1,
-            teachingAttitude: Math.floor(Math.random() * 4) + 1,
-            teachingOrganization: Math.floor(Math.random() * 4) + 1,
-            teacherStudentRelationship: Math.floor(Math.random() * 4) + 1,
-            homeworkDifficulty: Math.floor(Math.random() * 4) + 1,
+            courseValue: Math.floor(Math.random() * 5) + 1,
+            teachingAttitude: Math.floor(Math.random() * 5) + 1,
+            teachingOrganization: Math.floor(Math.random() * 5) + 1,
+            teacherStudentRelationship: Math.floor(Math.random() * 5) + 1,
+            homeworkDifficulty: Math.floor(Math.random() * 5) + 1,
             comment: lorem.text()
           }))
         }))

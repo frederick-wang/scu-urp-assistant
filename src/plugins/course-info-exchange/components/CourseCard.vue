@@ -1,5 +1,6 @@
 <template lang="pug">
 .course-card-wrapper
+  Stamp(:rating='overallRating')
   .course-card
     .card-header
       .course-name {{courseName}}
@@ -45,10 +46,11 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
+import Stamp from './Stamp.vue'
 import { CourseScoreRecordWithInfoExchange } from '../types'
 
 @Component({
-  components: {}
+  components: { Stamp }
 })
 export default class CourseCard extends Vue {
   @Prop({
@@ -103,6 +105,17 @@ export default class CourseCard extends Vue {
     return this.course.comment.length <= maxLength
       ? this.course.comment
       : this.course.comment.slice(0, maxLength - unblind.length) + unblind
+  }
+
+  get overallRating(): number {
+    return (
+      (this.course.courseValue +
+        this.course.teachingAttitude +
+        this.course.teachingOrganization +
+        this.course.teacherStudentRelationship +
+        this.course.homeworkDifficulty) /
+      5
+    )
   }
 }
 </script>
@@ -170,6 +183,7 @@ $screen-xl-min: 1600px;
     width: percentage(1/4);
   }
 
+  position: relative;
   padding: 20px;
 
   .course-card {
