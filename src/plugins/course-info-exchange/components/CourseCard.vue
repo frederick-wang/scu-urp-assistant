@@ -112,9 +112,8 @@ export default class CourseCard extends Vue {
       (this.course.courseValue +
         this.course.teachingAttitude +
         this.course.teachingOrganization +
-        this.course.teacherStudentRelationship +
-        this.course.homeworkDifficulty) /
-      5
+        this.course.teacherStudentRelationship) /
+      4
     )
   }
 }
