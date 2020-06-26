@@ -12,10 +12,7 @@
       .evaluation(v-if='course.hasEvaluated')
         el-divider 标签
         .tag-list
-          el-tag.list-tag(size='mini') 从不点名
-          el-tag.list-tag(size='mini') 没有作业
-          el-tag.list-tag(size='mini') 善解人意
-          el-tag.list-tag(size='mini') 开卷考试
+          el-tag.list-tag(v-for='(v, i) in course.evaluation.tagList' :key='i' size='mini') {{ v.number > 1 ? `${v.tag} (${v.number})` : v.tag}}
         el-divider 五维度评分
         ul.rate-list
           li.rate-item

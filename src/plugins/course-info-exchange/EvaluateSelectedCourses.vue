@@ -89,6 +89,12 @@ export default class EvaluateSelectedCourses extends Vue {
                 : {
                     hasEvaluated: true,
                     evaluation: {
+                      tagList: [
+                        { tag: '从不点名', number: 1 },
+                        { tag: '没有作业', number: 1 },
+                        { tag: '善解人意', number: 1 },
+                        { tag: '开卷考试', number: 1 }
+                      ],
                       courseValue: Math.floor(Math.random() * 5) + 1,
                       teachingAttitude: Math.floor(Math.random() * 5) + 1,
                       teachingOrganization: Math.floor(Math.random() * 5) + 1,

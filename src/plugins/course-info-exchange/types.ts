@@ -18,6 +18,10 @@ export type CourseInfoExchange = {
   {
     hasEvaluated: true
     evaluation: {
+      tagList: {
+        tag: string
+        number: number
+      }[]
       courseValue: number
       teachingAttitude: number
       teachingOrganization: number
