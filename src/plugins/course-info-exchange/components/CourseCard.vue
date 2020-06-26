@@ -1,6 +1,6 @@
 <template lang="pug">
 .course-card-wrapper
-  Stamp(:rating='overallRating')
+  Stamp(v-if='course.hasEvaluated' :rating='overallRating')
   .course-card
     .card-header
       .course-name {{courseName}}
@@ -9,45 +9,53 @@
         el-tag.list-tag(size='mini' :type='coursePropertyName === "必修" ? "success" : "danger"') {{ coursePropertyName }}
         el-tag.list-tag(size='mini' type='warning' :title='courseTeacherFullText') {{ courseTeacherTruncatedText }}
     .card-body
-      el-divider 标签
-      .tag-list
-        el-tag.list-tag(size='mini') 从不点名
-        el-tag.list-tag(size='mini') 没有作业
-        el-tag.list-tag(size='mini') 善解人意
-        el-tag.list-tag(size='mini') 开卷考试
-      el-divider 五维度评分
-      ul.rate-list
-        li.rate-item
-          .item-title 课程价值
-          .item-value
-            el-rate(v-model='course.courseValue' disabled show-score)
-        li.rate-item
-          .item-title 教学态度
-          .item-value
-            el-rate(v-model='course.teachingAttitude' disabled show-score)
-        li.rate-item
-          .item-title 教学组织
-          .item-value
-            el-rate(v-model='course.teachingOrganization' disabled show-score)
-        li.rate-item
-          .item-title 师生和谐度
-          .item-value
-            el-rate(v-model='course.teacherStudentRelationship' disabled show-score)
-        li.rate-item
-          .item-title 功课难度
-          .item-value
-            el-rate(v-model='course.homeworkDifficulty' disabled show-score)
-      el-divider 主观评价
-      .comment
-        .comment-text {{ comment }}
+      .evaluation(v-if='course.hasEvaluated')
+        el-divider 标签
+        .tag-list
+          el-tag.list-tag(size='mini') 从不点名
+          el-tag.list-tag(size='mini') 没有作业
+          el-tag.list-tag(size='mini') 善解人意
+          el-tag.list-tag(size='mini') 开卷考试
+        el-divider 五维度评分
+        ul.rate-list
+          li.rate-item
+            .item-title 课程价值
+            .item-value
+              el-rate(v-model='course.evaluation.courseValue' disabled show-score)
+          li.rate-item
+            .item-title 教学态度
+            .item-value
+              el-rate(v-model='course.evaluation.teachingAttitude' disabled show-score)
+          li.rate-item
+            .item-title 教学组织
+            .item-value
+              el-rate(v-model='course.evaluation.teachingOrganization' disabled show-score)
+          li.rate-item
+            .item-title 师生和谐度
+            .item-value
+              el-rate(v-model='course.evaluation.teacherStudentRelationship' disabled show-score)
+          li.rate-item
+            .item-title 功课难度
+            .item-value
+              el-rate(v-model='course.evaluation.homeworkDifficulty' disabled show-score)
+        el-divider 主观评价
+        .comment
+          .comment-text {{ comment }}
+      .no-evaluation(v-else)
+        el-divider
+        .no-evaluation-tip
+          p 您尚未对「{{ courseName }}」进行评价。
+          p 您可以点击卡片下方按钮开始评价，评价的内容将作为公开信息提供给每一位 SCU URP 助手的用户自由查询，帮助他们更好地了解课程与老师的相关信息。
+          p 帮助同学，只需 30 秒~
     .card-footer
-      el-button.revaluate-btn(type='primary' icon='el-icon-edit' size='medium') 重新评价
+      el-button.revaluate-btn(v-if='course.hasEvaluated' type='primary' icon='el-icon-edit' size='medium') 重新评价
+      el-button.revaluate-btn(v-else type='success' icon='el-icon-edit' size='medium') 开始评价
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import Stamp from './Stamp.vue'
-import { CourseScoreRecordWithInfoExchange } from '../types'
+import { CourseInfoExchange } from '../types'
 
 @Component({
   components: { Stamp }
@@ -57,29 +65,29 @@ export default class CourseCard extends Vue {
     type: Object,
     required: true
   })
-  course!: CourseScoreRecordWithInfoExchange
+  course!: CourseInfoExchange
 
   get courseName(): string {
-    return this.course.courseName
+    return this.course.basic.courseName
   }
 
   get courseNumber(): string {
-    return this.course.courseNumber
+    return this.course.basic.courseNumber
   }
 
   get courseSequenceNumber(): string {
-    return this.course.courseSequenceNumber
+    return this.course.basic.courseSequenceNumber
   }
 
   get coursePropertyName(): string {
-    return this.course.coursePropertyName
+    return this.course.basic.coursePropertyName
   }
 
   get courseTeacherList(): {
     teacherNumber: string
     teacherName: string
   }[] {
-    return this.course.courseTeacherList.filter(
+    return this.course.basic.courseTeacherList.filter(
       ({ teacherNumber }) => !teacherNumber.includes('zj')
     )
   }
@@ -100,19 +108,26 @@ export default class CourseCard extends Vue {
   }
 
   get comment(): string {
+    if (!this.course.hasEvaluated) {
+      return ''
+    }
     const maxLength = 100
     const unblind = '……'
-    return this.course.comment.length <= maxLength
-      ? this.course.comment
-      : this.course.comment.slice(0, maxLength - unblind.length) + unblind
+    return this.course.evaluation.comment.length <= maxLength
+      ? this.course.evaluation.comment
+      : this.course.evaluation.comment.slice(0, maxLength - unblind.length) +
+          unblind
   }
 
   get overallRating(): number {
+    if (!this.course.hasEvaluated) {
+      return 0
+    }
     return (
-      (this.course.courseValue +
-        this.course.teachingAttitude +
-        this.course.teachingOrganization +
-        this.course.teacherStudentRelationship) /
+      (this.course.evaluation.courseValue +
+        this.course.evaluation.teachingAttitude +
+        this.course.evaluation.teachingOrganization +
+        this.course.evaluation.teacherStudentRelationship) /
       4
     )
   }
