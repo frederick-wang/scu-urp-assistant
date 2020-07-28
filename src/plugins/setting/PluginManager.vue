@@ -1,27 +1,40 @@
 <template lang="pug">
 .sua-container-setting-plugin-manager
-  el-alert(type='warning' title='注意：切换插件状态后，需要刷新页面才会生效。')
-  h2(style='margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6;') SCU URP 助手 - 插件管理器
+  el-alert(type='warning', title='注意：切换插件状态后，需要刷新页面才会生效。')
+  h2(
+    style='margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6;'
+  ) SCU URP 助手 - 插件管理器
   .plugin-list
-    .plugin(v-for='plugin in pluginList' :key='plugin.name')
+    .plugin(v-for='plugin in pluginList', :key='plugin.name')
       .plugin-icon
         img(:src='plugin.icon')
       .plugin-info
-        .plugin-name {{plugin.displayName}}
+        .plugin-name {{ plugin.displayName }}
         .plugin-addition-info
-          el-tag.tag-is-necessary(v-if='plugin.isNecessary' type='info' size="mini") 核心插件，无法停用
-          el-tag.tag-is-necessary(v-else size="mini") 普通插件，可以停用
-          el-tag.tag-menu-text(type='success' size='mini') {{plugin.path}}
-          el-tag.tag-menu-text(v-for='menuText in plugin.menu' :key='menuText' type='warning' size='mini') {{menuText}}
-        .plugin-brief {{plugin.brief}}
+          el-tag.tag-is-necessary(
+            v-if='plugin.isNecessary',
+            type='info',
+            size='mini'
+          ) 核心插件，无法停用
+          el-tag.tag-is-necessary(v-else, size='mini') 普通插件，可以停用
+          el-tag.tag-menu-text(type='success', size='mini') {{ plugin.path }}
+          el-tag.tag-menu-text.tag-menu-page-link(
+            v-for='v in plugin.menu',
+            :key='v.title',
+            :title='v.title',
+            type='warning',
+            size='mini',
+            @click='jumpToPluginPage(v.name)'
+          ) {{ v.title }}
+        .plugin-brief {{ plugin.brief }}
       .plugin-action
         el-switch(
-          v-model='plugin.enabled'
-          :disabled='plugin.isNecessary'
-          active-color="#13ce66"
-          inactive-color="#ff4949"
-          active-text="激活"
-          inactive-text="停用"
+          v-model='plugin.enabled',
+          :disabled='plugin.isNecessary',
+          active-color='#13ce66',
+          inactive-color='#ff4949',
+          active-text='激活',
+          inactive-text='停用',
           @change='onSwitchChange'
         )
 </template>
@@ -32,7 +45,7 @@ import {
   allList as pluginList,
   canBeEnabledList as pluginEnabledList
 } from '@/plugins'
-import { SUAPluginMenu } from '@/types'
+import { SUAPluginMenu } from '@/core/types'
 import { fromPairs } from 'ramda'
 import { state } from '../../store'
 import local from '@/store/local'
@@ -43,7 +56,7 @@ interface PluginInfo {
   icon: string
   isNecessary: boolean
   brief: string
-  menu: string[]
+  menu: { title: string; name: string }[]
   enabled: boolean
 }
 
@@ -73,24 +86,41 @@ const convertPathnameToText = (
 
 const convertMenuToTextList = (
   menu?: SUAPluginMenu | SUAPluginMenu[]
-): string[] => {
+): { title: string; name: string }[] => {
   if (menu) {
     if (Array.isArray(menu)) {
       return menu.reduce((acc, { item }) => {
         if (Array.isArray(item)) {
           return [
             ...acc,
-            ...item.map(({ breadcrumbs }) => breadcrumbs.join(' > '))
+            ...item.map(({ breadcrumbs, name }) => ({
+              title: breadcrumbs.join(' > '),
+              name
+            }))
           ]
         } else {
-          return [...acc, item.breadcrumbs.join(' > ')]
+          return [
+            ...acc,
+            {
+              title: item.breadcrumbs.join(' > '),
+              name: item.name
+            }
+          ]
         }
-      }, [] as string[])
+      }, [] as { title: string; name: string }[])
     } else {
       if (Array.isArray(menu.item)) {
-        return menu.item.map(({ breadcrumbs }) => breadcrumbs.join(' > '))
+        return menu.item.map(({ breadcrumbs, name }) => ({
+          title: breadcrumbs.join(' > '),
+          name
+        }))
       } else {
-        return [menu.item.breadcrumbs.join(' > ')]
+        return [
+          {
+            title: menu.item.breadcrumbs.join(' > '),
+            name: menu.item.name
+          }
+        ]
       }
     }
   }
@@ -108,7 +138,7 @@ export default class PluginManager extends Vue {
       brief,
       menu: convertMenuToTextList(menu),
       path: convertPathnameToText(pathname),
-      enabled: pluginEnabledList.some(v => v.name === name)
+      enabled: pluginEnabledList.some((v) => v.name === name)
     }))
     .sort((a, b) =>
       a.displayName.localeCompare(b.displayName, 'zh-Hans', {
@@ -135,6 +165,12 @@ export default class PluginManager extends Vue {
     } catch (error) {
       this.$message.error('插件状态切换失败，请刷新页面后再次尝试。')
     }
+  }
+
+  jumpToPluginPage(name: string): void {
+    const id = `menu-item-${name}`
+    const $menuItem = $(`#menus #${id}`)
+    $menuItem.click()
   }
 }
 </script>
@@ -172,6 +208,9 @@ export default class PluginManager extends Vue {
 
         .tag-menu-text {
           margin-left: 5px;
+          &.tag-menu-page-link {
+            cursor: pointer;
+          }
         }
       }
 
