@@ -53,7 +53,7 @@
             td.center {{ i + 1 }}
             td.center {{ v.majorCode }}
             td.center {{ v.majorName }}
-            td.center {{ v.college }}
+            td.center {{ v.category }}
             td.center {{ v.approvalNumber }}
             td.center {{ v.remark }}
 </template>
