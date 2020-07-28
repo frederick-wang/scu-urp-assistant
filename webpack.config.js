@@ -93,7 +93,12 @@ module.exports = (env) => {
               resourceQuery: /^\?vue/,
               use: [
                 'vue-style-loader',
-                { loader: 'css-loader', options: { importLoaders: 2 } },
+                {
+                  loader: 'css-loader', options: {
+                    importLoaders: 2,
+                    esModule: false
+                  }
+                },
                 'postcss-loader',
                 {
                   loader: 'sass-loader',
@@ -106,7 +111,12 @@ module.exports = (env) => {
             {
               use: [
                 'to-string-loader',
-                { loader: 'css-loader', options: { importLoaders: 2 } },
+                {
+                  loader: 'css-loader', options: {
+                    importLoaders: 2,
+                    esModule: false
+                  }
+                },
                 'postcss-loader',
                 {
                   loader: 'sass-loader',
@@ -128,14 +138,24 @@ module.exports = (env) => {
               resourceQuery: /^\?vue/,
               use: [
                 'vue-style-loader',
-                { loader: 'css-loader', options: { importLoaders: 1 } },
+                {
+                  loader: 'css-loader', options: {
+                    importLoaders: 1,
+                    esModule: false
+                  }
+                },
                 'postcss-loader'
               ]
             },
             {
               use: [
                 'to-string-loader',
-                { loader: 'css-loader', options: { importLoaders: 1 } },
+                {
+                  loader: 'css-loader', options: {
+                    importLoaders: 1,
+                    esModule: false
+                  }
+                },
                 'postcss-loader'
               ]
             }
