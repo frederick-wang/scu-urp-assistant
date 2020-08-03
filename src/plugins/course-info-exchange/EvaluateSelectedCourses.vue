@@ -29,7 +29,7 @@ import { getCourseTeacherList } from '@/helper/getter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
 import { SemesterInfoExchange } from './types'
 import { SemesterScoreRecord } from '../score/types'
-import { lorem } from 'faker/locale/zh_CN'
+// import { lorem } from 'faker/locale/zh_CN'
 
 @Component({
   components: { Loading, SemesterCard }
@@ -101,7 +101,8 @@ export default class EvaluateSelectedCourses extends Vue {
                       teacherStudentRelationship:
                         Math.floor(Math.random() * 5) + 1,
                       homeworkDifficulty: Math.floor(Math.random() * 5) + 1,
-                      comment: lorem.text()
+                      // comment: lorem.text()
+                      comment: '暂无',
                     }
                   })
             })
