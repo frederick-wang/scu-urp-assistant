@@ -83,7 +83,7 @@
     "@babel/runtime": "^7.10.5",
     "@types/faker": "^4.1.12",
     "@types/ramda": "^0.27.11",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "browserslist": "^4.13.0",
     "cheerio": "^1.0.0-rc.3",
     "core-js": "^3.6.5",
