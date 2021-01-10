@@ -26,12 +26,13 @@ const banner = `// ==UserScript==
 // ==/UserScript==`
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-module.exports = (env) => {
+module.exports = env => {
   const devConfig = {
     devtool: 'inline-source-map',
     devServer: {
       overlay: true,
-      disableHostCheck: true
+      disableHostCheck: true,
+      publicPath: '/'
     }
   }
   const prodConfig = {
@@ -51,6 +52,7 @@ module.exports = (env) => {
   return {
     ...(env.development ? devConfig : {}),
     ...(env.production ? prodConfig : {}),
+    target: 'web',
     entry: {
       'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
       'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
@@ -185,7 +187,14 @@ module.exports = (env) => {
       alias: {
         '@': path.resolve('src')
       },
-      extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json', '.ts', '.tsx']
+      extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json', '.ts', '.tsx'],
+      fallback: {
+        path: require.resolve('path-browserify'),
+        crypto: require.resolve('crypto-browserify'),
+        buffer: require.resolve('buffer/'),
+        stream: require.resolve('stream-browserify'),
+        util: require.resolve('util/')
+      }
     }
   }
 }

@@ -88,8 +88,9 @@ async function saveData(
 }
 
 async function load(): Promise<LocalStore> {
-  localStore = await localforage.getItem('sua_store')
-  if (localStore) {
+  const tmp: LocalStore | null = await localforage.getItem('sua_store')
+  if (tmp) {
+    localStore = tmp
     clearExpiredData()
     Logger.info('加载LocalStore成功:', localStore)
   } else {

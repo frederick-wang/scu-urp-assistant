@@ -1,6 +1,7 @@
-import { version } from '@/../package.json'
-import { description } from '@/../package.json'
+import pack from '@/../package.json'
 import { isDev } from '@/helper/judger'
+
+const { version, description } = pack
 
 function showLoadingAnimation(containerSelector: string): void {
   const template = `

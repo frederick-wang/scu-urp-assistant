@@ -1,9 +1,11 @@
 // 数据统计插件
-import { version } from '@/../package.json'
+import pack from '@/../package.json'
 import { SUAPlugin } from '@/core/types'
 import { isDev } from '@/helper/judger'
 import { Logger } from '@/helper/logger'
 import { getPluginIcon } from '@/helper/getter'
+
+const { version } = pack
 
 interface TalkingDataEventParams {
   EventId: string

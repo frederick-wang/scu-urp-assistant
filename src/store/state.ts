@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { requestStudentInfo } from './actions/request'
-import { version } from '@/../package.json'
+import pack from '@/../package.json'
 import { LocalStore, TeacherTable } from './types'
 import local from './local'
 import { state } from '.'
@@ -9,6 +9,8 @@ import { allList as pluginList } from '@/plugins'
 import { convertSemesterNumberToName } from '@/helper/converter'
 import { getUserId } from '@/helper/getter'
 import { isSCU, isLoginPage } from '@/helper/judger'
+
+const { version } = pack
 
 interface AcademicInfo {
   courseNumber: number
