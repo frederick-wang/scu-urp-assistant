@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { requestStudentInfo } from './actions/request'
 import pack from '@/../package.json'
-import { LocalStore, TeacherTable } from './types'
+import { LocalStore } from './types'
 import local from './local'
 import { state } from '.'
 import { actions, Request } from './actions'
@@ -25,16 +25,6 @@ let userSemesterNumberList: string[]
 let accessToken: string
 const data = {} as {
   [key: string]: unknown
-}
-
-async function initTeacherTable(): Promise<void> {
-  const key = 'teacherTable'
-  let teacherTable: TeacherTable = state.getData(key) as TeacherTable
-  if (!teacherTable) {
-    teacherTable = {}
-  }
-  state.setData(key, teacherTable)
-  await local.saveData({ key, payload: teacherTable })
 }
 
 async function initPluginEnabledStates(): Promise<void> {
@@ -84,7 +74,6 @@ async function init(localStore: LocalStore): Promise<void> {
       })
     }
   }
-  await initTeacherTable()
 }
 
 type User = {
