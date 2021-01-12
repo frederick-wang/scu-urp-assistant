@@ -1,4 +1,11 @@
 /*!
+    localForage -- Offline Storage, Improved
+    Version 1.9.0
+    https://localforage.github.io/localForage
+    (c) 2013-2017 Mozilla, Apache License 2.0
+*/
+
+/*!
  * Sizzle CSS Selector Engine v2.3.5
  * https://sizzlejs.com/
  *
@@ -10,15 +17,8 @@
  */
 
 /*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <http://feross.org>
- * @license  MIT
- */
-
-/*!
- * Vue.js v2.6.11
- * (c) 2014-2019 Evan You
+ * Vue.js v2.6.12
+ * (c) 2014-2020 Evan You
  * Released under the MIT License.
  */
 
@@ -65,7 +65,7 @@
     ***************************************************************************** */
 
 /**
-  * vue-class-component v7.2.3
+  * vue-class-component v7.2.6
   * (c) 2015-present Evan You
   * @license MIT
   */
