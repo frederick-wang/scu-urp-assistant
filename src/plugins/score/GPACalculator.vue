@@ -2,30 +2,30 @@
 .sua-container-gpa-calculator
   Loading(v-if='!loadingIsDone')
   el-alert(
-    v-if='loadingIsDone'
-    v-for="(v, i) in alerts"
-    :key="i"
-    :title="v.title"
-    :type="v.type"
-    :closable="v.closable"
-    :close-text='v.closeText'
-    style="margin-bottom: 10px;"
+    v-if='loadingIsDone',
+    v-for='(v, i) in alerts',
+    :key='i',
+    :title='v.title',
+    :type='v.type',
+    :closable='v.closable',
+    :close-text='v.closeText',
+    style='margin-bottom: 10px'
   )
   TotalTranscript(
-    v-if='loadingIsDone && hasNoError && records.length > 1'
-    :semestersQuantity='records.length'
-    :courses='allCourses'
-    :selectedCourses='allSelectedCourses'
-    @selectAllCourses='selectAllCourses()'
-    @unselectAllCourses='unselectAllCourses()'
+    v-if='loadingIsDone && hasNoError && records.length > 1',
+    :semestersQuantity='records.length',
+    :courses='allCourses',
+    :selectedCourses='allSelectedCourses',
+    @selectAllCourses='selectAllCourses()',
+    @unselectAllCourses='unselectAllCourses()',
     @selectCompulsoryCourses='selectCompulsoryCourses()'
   )
   .gpa-st-container.row(v-if='loadingIsDone && hasNoError')
     SemesterTranscript(
-      v-for='(semesterItem, semesterIndex) in records'
-      :key='semesterIndex'
-      :type='type'
-      :semester='semesterItem.semester'
+      v-for='(semesterItem, semesterIndex) in records',
+      :key='semesterIndex',
+      :type='type',
+      :semester='semesterItem.semester',
       :courses='semesterItem.courses'
     )
 </template>
@@ -37,7 +37,6 @@ import { SemesterScoreRecord, CourseScoreRecord } from '@/plugins/score/types'
 import Loading from '@/plugins/common/components/Loading.vue'
 import TotalTranscript from './components/TotalTranscript.vue'
 import SemesterTranscript from './components/SemesterTranscript/SemesterTranscript.vue'
-import { getCourseTeacherList } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getSelectedCourses } from '@/plugins/score/utils'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
@@ -99,17 +98,6 @@ export default class GPACalculator extends Vue {
           : await convertCourseScoreInfoListToScoreRecords(
               await actions[Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]()
             )
-      if (this.type !== 'compact') {
-        for (const s of records) {
-          for (const c of s.courses) {
-            c.courseTeacherList = await getCourseTeacherList(
-              s.semester,
-              c.courseNumber,
-              c.courseSequenceNumber
-            )
-          }
-        }
-      }
       this.records = records
       this.loadingIsDone = true
       ueip.sendStudentCourseScorePublicList(records)

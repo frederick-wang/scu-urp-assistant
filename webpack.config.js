@@ -26,12 +26,13 @@ const banner = `// ==UserScript==
 // ==/UserScript==`
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-module.exports = (env) => {
+module.exports = env => {
   const devConfig = {
     devtool: 'inline-source-map',
     devServer: {
       overlay: true,
-      disableHostCheck: true
+      disableHostCheck: true,
+      publicPath: '/'
     }
   }
   const prodConfig = {
@@ -51,6 +52,7 @@ module.exports = (env) => {
   return {
     ...(env.development ? devConfig : {}),
     ...(env.production ? prodConfig : {}),
+    target: 'web',
     entry: {
       'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
       'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
@@ -93,7 +95,12 @@ module.exports = (env) => {
               resourceQuery: /^\?vue/,
               use: [
                 'vue-style-loader',
-                { loader: 'css-loader', options: { importLoaders: 2 } },
+                {
+                  loader: 'css-loader', options: {
+                    importLoaders: 2,
+                    esModule: false
+                  }
+                },
                 'postcss-loader',
                 {
                   loader: 'sass-loader',
@@ -106,7 +113,12 @@ module.exports = (env) => {
             {
               use: [
                 'to-string-loader',
-                { loader: 'css-loader', options: { importLoaders: 2 } },
+                {
+                  loader: 'css-loader', options: {
+                    importLoaders: 2,
+                    esModule: false
+                  }
+                },
                 'postcss-loader',
                 {
                   loader: 'sass-loader',
@@ -128,14 +140,24 @@ module.exports = (env) => {
               resourceQuery: /^\?vue/,
               use: [
                 'vue-style-loader',
-                { loader: 'css-loader', options: { importLoaders: 1 } },
+                {
+                  loader: 'css-loader', options: {
+                    importLoaders: 1,
+                    esModule: false
+                  }
+                },
                 'postcss-loader'
               ]
             },
             {
               use: [
                 'to-string-loader',
-                { loader: 'css-loader', options: { importLoaders: 1 } },
+                {
+                  loader: 'css-loader', options: {
+                    importLoaders: 1,
+                    esModule: false
+                  }
+                },
                 'postcss-loader'
               ]
             }
@@ -165,7 +187,10 @@ module.exports = (env) => {
       alias: {
         '@': path.resolve('src')
       },
-      extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json', '.ts', '.tsx']
+      extensions: ['.wasm', '.mjs', '.js', '.jsx', '.json', '.ts', '.tsx'],
+      fallback: {
+        path: false
+      }
     }
   }
 }

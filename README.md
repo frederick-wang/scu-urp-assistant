@@ -46,6 +46,26 @@ document.head.appendChild(remoteScript);
 
 启动该脚本后，就会自动加载 `dev模式脚本` 了。之后如果本地文件有修改，也会自动监测到文件变化并重新编译，然后自动刷新页面。
 
+此外，还需要用 `env` 文件配置环境变量。在调试时，程序会加载 `.env.development` 文件，在打包发布的版本中，程序会加载 `.env.production` 文件。这两个文件均会被 `git` 忽略。目前程序会调用的变量共有 2 个，分别为：
+
+- API_PATH
+- API_PATH_V2
+
+您可以将 API Server 部署在您自己的服务器上，也可以直接将这两个变量设置到我的服务器上：
+
+```
+API_PATH=https://sua.zhaoji.wang/api/v1
+API_PATH_V2=https://api.scu.plus/sua/v2
+```
+
+功能依赖 `API Server` 的插件包括：
+
+- 专业授位查询
+- 培养方案相关
+- 历届大创查询
+- 课程信息交流
+- 用户体验改善计划
+
 ## 打包编译
 
 编译命令为：
