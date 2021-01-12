@@ -1,4 +1,3 @@
-import cheerio from 'cheerio'
 import {
   AllTermScoresDTO,
   CourseScoreInfo,
@@ -41,9 +40,8 @@ async function LoadHTMLToDealWithError(
   url: string
 ): Promise<{ title: string; message: string; html: string }> {
   const html = await getPageHTML(url)
-  const $ = cheerio.load(html)
-  const title = $('title').text()
-  const message = $('.main-content .page-content')
+  const title = $('title', html).text()
+  const message = $('.main-content .page-content', html)
     .text()
     .replace(/×/g, '')
     .trim()

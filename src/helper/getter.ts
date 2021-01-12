@@ -6,7 +6,8 @@ import {
 import { state, actions, Request } from '@/store'
 import { TeacherTable } from '@/store/types'
 import local from '@/store/local'
-import crypto from 'crypto'
+import hmacSHA256 from 'crypto-js/hmac-sha256'
+import encHex from 'crypto-js/enc-hex'
 import { Logger } from './logger'
 
 export const getChineseNumber = (num: number): string =>
@@ -58,10 +59,8 @@ export const getUserId = (studentInfos: Map<string, string>): string => {
     enrollDate,
     birthday
   ].join('')
-  return crypto
-    .createHmac('sha256', secret)
-    .update('scu-urp-assistant')
-    .digest('hex')
+  const hmac = hmacSHA256('scu-urp-assistant', secret).toString(encHex)
+  return hmac
 }
 
 export const getCourseTeacherList = async (
