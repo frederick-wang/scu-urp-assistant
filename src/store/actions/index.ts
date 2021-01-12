@@ -6,7 +6,6 @@ import {
   requestTrainingScheme,
   requestBachelorDegree,
   requestCourseSchedule,
-  requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
   requestScuUietpList,
   requestAccessToken
@@ -46,7 +45,6 @@ const actions = {
   [Request.TRAINING_SCHEME]: requestTrainingScheme,
   [Request.BACHELOR_DEGREE]: requestBachelorDegree,
   [Request.COURSE_SCHEDULE]: requestCourseSchedule,
-  [Request.COURSE_INFO_LIST_BY_SEMESTER]: requestCourseInfoListBySemester,
   [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList,
   [Request.SCU_UIETP_LIST]: requestScuUietpList,
   [Request.ACCESS_TOKEN]: requestAccessToken,

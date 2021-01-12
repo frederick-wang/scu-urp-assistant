@@ -14,7 +14,7 @@ import bachelorDegree from '@/plugins/bachelor-degree'
 import scuUietp from '@/plugins/scu-uietp'
 import beautify from '@/plugins/beautify'
 import setting from '@/plugins/setting'
-import courseEvaluation from '@/plugins/course-info-exchange'
+// import courseEvaluation from '@/plugins/course-info-exchange'
 import textbookSelection from '@/plugins/textbook-selection'
 import { SUAPlugin } from '@/core/types'
 
@@ -23,8 +23,7 @@ const optionalPluginsBeforeLogin = [recoverRememberMe]
 const optionalPluginsLoginedOnlySCU = [
   trainingScheme,
   bachelorDegree,
-  scuUietp,
-  courseEvaluation
+  scuUietp
 ]
 const optionalPluginsLogined = [
   beautify,

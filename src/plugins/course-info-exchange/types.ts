@@ -6,10 +6,10 @@ export type CourseInfoExchange = {
     courseNumber: string
     courseSequenceNumber: string
     coursePropertyName: string
-    courseTeacherList: {
-      teacherNumber: string
-      teacherName: string
-    }[]
+    // courseTeacherList: {
+    //   teacherNumber: string
+    //   teacherName: string
+    // }[]
   }
 } & XOR<
   {

@@ -1,9 +1,4 @@
-import {
-  CourseInfoList,
-  SemesterTeacherTable,
-  TeacherTable,
-  CourseScoreInfo
-} from '@/store/types'
+import { CourseScoreInfo } from '@/store/types'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 
 export const convertSemesterNumberToName = (semesterNumber: string): string => {
@@ -21,44 +16,6 @@ export const convertSemesterNameToNumber = (semesterName: string): string => {
   }
   return `${r[1]}-${r[2]}-${r[3] === '秋' ? 1 : 2}-1`
 }
-
-export const convertCourseInfoListToSemesterTeacherTable = (
-  courseInfoList: CourseInfoList[]
-): SemesterTeacherTable =>
-  courseInfoList.reduce(
-    (acc, cur) => {
-      if (!acc[cur.courseNumber]) {
-        acc[cur.courseNumber] = {
-          [cur.courseSequenceNumber]: cur.courseTeacherList
-        }
-      } else {
-        acc[cur.courseNumber][cur.courseSequenceNumber] = cur.courseTeacherList
-      }
-      return acc
-    },
-    {} as {
-      // 课程号
-      [key: string]: {
-        // 课序号
-        [key: string]: Array<{
-          teacherNumber: string
-          teacherName: string
-        }>
-      }
-    }
-  )
-
-export const convertCourseInfoListsToTeacherTable = (
-  courseInfoLists: CourseInfoList[][]
-): TeacherTable =>
-  courseInfoLists
-    .map(courseInfoList =>
-      convertCourseInfoListToSemesterTeacherTable(courseInfoList)
-    )
-    .reduce((acc, cur, i) => {
-      acc[courseInfoLists[i][0].executiveEducationPlanNumber] = cur
-      return acc
-    }, {} as TeacherTable)
 
 export const convertCourseScoreInfoListToScoreRecords = (
   list: CourseScoreInfo[]
@@ -91,7 +48,6 @@ export const convertCourseScoreInfoListToScoreRecords = (
       )
       const record = {
         ...cur,
-        courseTeacherList: [],
         selected: false
       }
       if (currentSemesterRecords.length) {

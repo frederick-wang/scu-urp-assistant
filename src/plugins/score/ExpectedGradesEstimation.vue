@@ -255,7 +255,6 @@ export default class ExpectedGradeEstimation extends Vue {
       coursePropertyCode: '001',
       coursePropertyName: '必修',
       unpassedReasonExplain: '',
-      courseTeacherList: [],
       selected: false
     }
   }
@@ -281,7 +280,6 @@ export default class ExpectedGradeEstimation extends Vue {
       coursePropertyCode: '002',
       coursePropertyName: '选修',
       unpassedReasonExplain: '',
-      courseTeacherList: [],
       selected: false
     }
   }

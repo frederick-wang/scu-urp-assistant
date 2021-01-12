@@ -20,12 +20,10 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import { actions, Request } from '@/store'
-import { Logger } from '@/helper/logger'
 import Loading from '@/plugins/common/components/Loading.vue'
 import SemesterCard from './components/SemesterCard.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
-import { getCourseTeacherList } from '@/helper/getter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
 import { SemesterInfoExchange } from './types'
 import { SemesterScoreRecord } from '../score/types'
@@ -53,15 +51,6 @@ export default class EvaluateSelectedCourses extends Vue {
       const records = await convertCourseScoreInfoListToScoreRecords(
         await actions[Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]()
       )
-      for (const s of records) {
-        for (const c of s.courses) {
-          c.courseTeacherList = await getCourseTeacherList(
-            s.semester,
-            c.courseNumber,
-            c.courseSequenceNumber
-          )
-        }
-      }
       const convertRecordsToRecordsWithInfoExchange = (
         records: SemesterScoreRecord[]
       ): SemesterInfoExchange[] =>
@@ -72,15 +61,13 @@ export default class EvaluateSelectedCourses extends Vue {
               courseName,
               courseNumber,
               courseSequenceNumber,
-              coursePropertyName,
-              courseTeacherList
+              coursePropertyName
             }) => ({
               basic: {
                 courseName,
                 courseNumber,
                 courseSequenceNumber,
-                coursePropertyName,
-                courseTeacherList
+                coursePropertyName
               },
               ...(Math.random() < 0.5
                 ? {

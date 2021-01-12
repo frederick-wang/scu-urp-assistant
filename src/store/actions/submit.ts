@@ -43,6 +43,8 @@ async function submitCourseScorePublicInfo(
   }
   let res
   try {
+    // V1接口已经废弃，屏蔽功能，等待升级
+    return
     res = await $.post(url, req)
     if (res.error) {
       throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFO Failed: ${res.msg}`)
@@ -96,6 +98,8 @@ async function submitCourseScorePublicInfos(
       )
     }
   }
+  // V1接口已经废弃，屏蔽功能，等待升级
+  return
   const res = await $.post(url, req)
   if (res.error) {
     throw new Error(`Submit.COURSE_SCORE_PUBLIC_INFOS Failed: ${res.msg}`)
@@ -115,6 +119,8 @@ async function submitStudentCourseScorePublicInfos(
       student_course_score_infos: items
     }
   }
+  // V1接口已经废弃，屏蔽功能，等待升级
+  return
   const res = await $.post(url, req)
   if (res.error) {
     throw new Error(

@@ -9,8 +9,6 @@ import {
   TrainingSchemeCourseInfo,
   CourseScheduleInfoDTO,
   CourseScheduleInfo,
-  AjaxStudentScheduleDTO,
-  CourseInfoList,
   ScuUietpDTO,
   TrainingSchemeBaseInfo,
   BachelorDegreeInfo,
@@ -55,80 +53,6 @@ async function requestStudentSemesterNumberList(): Promise<string[]> {
     v => $(v).val() as string
   )
   return codeList
-}
-
-async function requestCourseInfoListBySemester(
-  semesterCode: string
-): Promise<CourseInfoList[]> {
-  const {
-    xkxx: [rawCourseInfoList]
-  } = (await $.post(
-    '/student/courseSelect/thisSemesterCurriculum/ajaxStudentSchedule/past/callback',
-    { planCode: semesterCode }
-  )) as AjaxStudentScheduleDTO
-  const courseInfoList = Object.values(rawCourseInfoList).map(
-    ({
-      courseCategoryCode,
-      courseCategoryName,
-      courseName,
-      coursePropertiesCode,
-      coursePropertiesName,
-      dgFlag,
-      examTypeCode,
-      examTypeName,
-      id: {
-        coureNumber: courseNumber,
-        coureSequenceNumber: courseSequenceNumber,
-        executiveEducationPlanNumber
-      },
-      restrictedCondition,
-      timeAndPlaceList
-    }) =>
-      ({
-        courseCategoryCode,
-        courseCategoryName,
-        courseName,
-        coursePropertiesCode,
-        coursePropertiesName,
-        courseTeacherList: dgFlag
-          .split('|')
-          .map(s => s.split(','))
-          .map(v => ({
-            teacherNumber: v[0],
-            teacherName: v[1].replace(/[（\(].+[）\)]/, '')
-          })),
-        examTypeCode,
-        examTypeName,
-        courseNumber,
-        courseSequenceNumber,
-        executiveEducationPlanNumber,
-        restrictedCondition,
-        timeAndPlaceList: timeAndPlaceList
-          ? timeAndPlaceList.map(
-              ({
-                campusName,
-                classDay,
-                classSessions,
-                classWeek,
-                classroomName,
-                continuingSession,
-                teachingBuildingName,
-                weekDescription
-              }) => ({
-                campusName,
-                classDay,
-                classSessions,
-                classWeek,
-                classroomName,
-                continuingSession,
-                teachingBuildingName,
-                weekDescription
-              })
-            )
-          : []
-      } as CourseInfoList)
-  )
-  return courseInfoList
 }
 
 async function requestStudentInfo(): Promise<Map<string, string>> {
@@ -748,7 +672,6 @@ export {
   requestTrainingSchemeList,
   requestTrainingScheme,
   requestCourseSchedule,
-  requestCourseInfoListBySemester,
   requestStudentSemesterNumberList,
   requestStudentInfo,
   requestScuUietpList,

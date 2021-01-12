@@ -2,7 +2,7 @@
 import { actions, Request, Submit, state } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
 import local from '@/store/local'
-import { getCourseTeacherList, getPluginIcon } from '@/helper/getter'
+import { getPluginIcon } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 import { Logger } from '@/helper/logger'
@@ -11,15 +11,6 @@ async function sendStudentCourseScorePublicList(
   records: SemesterScoreRecord[]
 ): Promise<void> {
   if (!state.getData('ueipStudentCourseScorePublicList')) {
-    for (const s of records) {
-      for (const c of s.courses) {
-        c.courseTeacherList = await getCourseTeacherList(
-          s.semester,
-          c.courseNumber,
-          c.courseSequenceNumber
-        )
-      }
-    }
     const res = Object.values(records).map(v =>
       v.courses.map(
         ({
@@ -27,7 +18,7 @@ async function sendStudentCourseScorePublicList(
           courseNumber: course_number,
           courseScore: course_score,
           courseSequenceNumber: course_sequence_number,
-          courseTeacherList: course_teacher_list,
+          // courseTeacherList: course_teacher_list,
           credit: credit,
           englishCourseName: english_course_name,
           examTime: exam_time,
@@ -44,14 +35,14 @@ async function sendStudentCourseScorePublicList(
           course_number,
           course_score,
           course_sequence_number,
-          course_teacher_list: course_teacher_list
-            .filter(v => !v.teacherNumber.includes('zj'))
-            .map(v => Object.values(v).join('#'))
-            .join('|'),
-          course_ta_list: course_teacher_list
-            .filter(v => v.teacherNumber.includes('zj'))
-            .map(v => Object.values(v).join('#'))
-            .join('|'),
+          // course_teacher_list: course_teacher_list
+          //   .filter(v => !v.teacherNumber.includes('zj'))
+          //   .map(v => Object.values(v).join('#'))
+          //   .join('|'),
+          // course_ta_list: course_teacher_list
+          //   .filter(v => v.teacherNumber.includes('zj'))
+          //   .map(v => Object.values(v).join('#'))
+          //   .join('|'),
           credit,
           english_course_name,
           exam_time,

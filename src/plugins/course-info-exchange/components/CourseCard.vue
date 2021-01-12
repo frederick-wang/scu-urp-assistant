@@ -80,29 +80,29 @@ export default class CourseCard extends Vue {
     return this.course.basic.coursePropertyName
   }
 
-  get courseTeacherList(): {
-    teacherNumber: string
-    teacherName: string
-  }[] {
-    return this.course.basic.courseTeacherList.filter(
-      ({ teacherNumber }) => !teacherNumber.includes('zj')
-    )
-  }
+  // get courseTeacherList(): {
+  //   teacherNumber: string
+  //   teacherName: string
+  // }[] {
+  //   return this.course.basic.courseTeacherList.filter(
+  //     ({ teacherNumber }) => !teacherNumber.includes('zj')
+  //   )
+  // }
 
-  get courseTeacherTruncatedText(): string {
-    const maxLength = 3
-    const unblind = ' 等'
-    return this.courseTeacherList.length <= maxLength
-      ? this.courseTeacherList.map(v => v.teacherName).join('、')
-      : this.courseTeacherList
-          .slice(0, maxLength)
-          .map(v => v.teacherName)
-          .join('、') + unblind
-  }
+  // get courseTeacherTruncatedText(): string {
+  //   const maxLength = 3
+  //   const unblind = ' 等'
+  //   return this.courseTeacherList.length <= maxLength
+  //     ? this.courseTeacherList.map(v => v.teacherName).join('、')
+  //     : this.courseTeacherList
+  //         .slice(0, maxLength)
+  //         .map(v => v.teacherName)
+  //         .join('、') + unblind
+  // }
 
-  get courseTeacherFullText(): string {
-    return this.courseTeacherList.map(v => v.teacherName).join('、')
-  }
+  // get courseTeacherFullText(): string {
+  //   return this.courseTeacherList.map(v => v.teacherName).join('、')
+  // }
 
   get comment(): string {
     if (!this.course.hasEvaluated) {

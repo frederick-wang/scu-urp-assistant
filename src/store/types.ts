@@ -1,19 +1,3 @@
-interface SemesterTeacherTable {
-  // 课程号
-  [key: string]: {
-    // 课序号
-    [key: string]: Array<{
-      teacherNumber: string
-      teacherName: string
-    }>
-  }
-}
-
-interface TeacherTable {
-  // 学期
-  [key: string]: SemesterTeacherTable
-}
-
 interface LocalStore {
   time: number
   state: {
@@ -402,10 +386,10 @@ interface CourseInfoList {
   courseName: string
   coursePropertiesCode: string
   coursePropertiesName: string
-  courseTeacherList: Array<{
-    teacherNumber: string
-    teacherName: string
-  }>
+  // courseTeacherList: Array<{
+  //   teacherNumber: string
+  //   teacherName: string
+  // }>
   examTypeCode: string
   examTypeName: string
   courseNumber: string
@@ -467,8 +451,6 @@ export {
   CourseScheduleInfo,
   AjaxStudentScheduleDTO,
   LocalStore,
-  SemesterTeacherTable,
-  TeacherTable,
   CourseInfoList,
   ScuUietpDTO,
   ScuUietpItemDTO,
