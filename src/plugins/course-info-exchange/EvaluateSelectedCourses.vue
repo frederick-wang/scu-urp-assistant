@@ -2,19 +2,27 @@
 .sua-container-course-info-exchange-evaluate-selected-courses
   Loading(v-if='!loadingIsDone')
   el-alert(
-    v-if='loadingIsDone'
-    v-for="(v, i) in alerts"
-    :key="i"
-    :title="v.title"
-    :type="v.type"
-    :closable="v.closable"
-    :close-text='v.closeText'
-    style="margin-bottom: 10px;"
+    v-if='loadingIsDone',
+    v-for='(v, i) in alerts',
+    :key='i',
+    :title='v.title',
+    :type='v.type',
+    :closable='v.closable',
+    :close-text='v.closeText',
+    style='margin-bottom: 10px'
   )
   .wrapper(v-if='loadingIsDone && hasNoError')
-    el-alert(type='warning' title='注意：本页面非教务系统的官方评教哦，您在本页面做出的评价，将作为公开信息供每一位 SCU URP 助手的用户自由查询。')
+    el-alert(
+      type='warning',
+      title='注意：本页面非教务系统的官方评教哦，您在本页面做出的评价，将作为公开信息供每一位 SCU URP 助手的用户自由查询。'
+    )
     .semester-list(v-if='records.length > 1')
-      SemesterCard(v-for='(v, i) in records' :key='i' :semester='v.semester' :courses='v.courses')
+      SemesterCard(
+        v-for='(v, i) in records',
+        :key='i',
+        :semester='v.semester',
+        :courses='v.courses'
+      )
 </template>
 
 <script lang="ts">
@@ -27,7 +35,6 @@ import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
 import { SemesterInfoExchange } from './types'
 import { SemesterScoreRecord } from '../score/types'
-import { lorem } from 'faker/locale/zh_CN'
 
 @Component({
   components: { Loading, SemesterCard }
@@ -88,7 +95,7 @@ export default class EvaluateSelectedCourses extends Vue {
                       teacherStudentRelationship:
                         Math.floor(Math.random() * 5) + 1,
                       homeworkDifficulty: Math.floor(Math.random() * 5) + 1,
-                      comment: lorem.text()
+                      comment: ''
                     }
                   })
             })
