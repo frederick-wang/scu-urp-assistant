@@ -4,7 +4,7 @@ import { isLoginPage } from './judger'
 import { API_PATH_V2 } from './info'
 import axios, { AxiosInstance } from 'axios'
 
-export const sleep = (time: number): Promise<number> =>
+export const sleep = (time: number): Promise<void> =>
   new Promise(resolve => setTimeout(() => resolve(), time))
 
 export const matchTrigger = (
