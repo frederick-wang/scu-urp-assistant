@@ -72,7 +72,16 @@ module.exports = env => {
     ],
     output: {
       filename: '[name].js',
-      path: path.resolve(__dirname, 'dist')
+      path: path.resolve(__dirname, 'dist'),
+      environment: {
+        arrowFunction: false,
+        bigIntLiteral: false,
+        const: false,
+        destructuring: false,
+        dynamicImport: false,
+        forOf: false,
+        module: false
+      }
     },
     module: {
       rules: [

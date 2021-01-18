@@ -38,18 +38,11 @@ export const getTextSimilarity = (str1: string, str2: string): number =>
   1 - getLevenshteinDistance(str1, str2) / Math.max(str1.length, str2.length)
 
 export const getUserId = (studentInfos: Map<string, string>): string => {
-  const name = studentInfos.get('姓名')
+  // 保证用户的匿名 ID 不会被他人猜出来
   const studentNumber = studentInfos.get('学号')
-  const identificationNumber = studentInfos.get('证件号码')
-  const enrollDate = studentInfos.get('入学日期')
-  const birthday = studentInfos.get('出生日期')
-  const secret = [
-    name,
-    studentNumber,
-    identificationNumber,
-    enrollDate,
-    birthday
-  ].join('')
+  const idNumber = studentInfos.get('证件号码')
+  const gaokaoScore = studentInfos.get('高考总分')
+  const secret = [studentNumber, idNumber, gaokaoScore].join('')
   const hmac = hmacSHA256('scu-urp-assistant', secret).toString(encHex)
   return hmac
 }
