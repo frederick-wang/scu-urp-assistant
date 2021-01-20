@@ -21,6 +21,7 @@ export default {
   displayName: '课程信息交流',
   icon: getPluginIcon('course-info-exchange'),
   isNecessary: false,
+  defaultEnabledState: true,
   brief:
     '公开的课程信息交流功能，您可以评价选过的课程与老师，也可以查询他人写下的评价。',
   route: [

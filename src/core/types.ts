@@ -13,6 +13,7 @@ export interface SUAPlugin {
   displayName: string
   icon: string
   isNecessary: boolean
+  defaultEnabledState: boolean
   brief: string
   pathname?:
     | string

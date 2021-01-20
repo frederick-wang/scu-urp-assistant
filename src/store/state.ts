@@ -33,14 +33,17 @@ async function initPluginEnabledStates(): Promise<void> {
   if (!pluginEnabledStates) {
     // 如果缓存中没有相关数据，开启全部插件并写入
     pluginEnabledStates = Object.fromEntries(
-      pluginList.map(v => [v.name, true])
+      pluginList.map(({ name, isNecessary, defaultEnabledState }) => [
+        name,
+        isNecessary || defaultEnabledState
+      ])
     )
   } else {
     // 考虑到更新后加入新插件的情况，对缓存中没有但 pluginList 中有的插件默认开启
-    pluginList.forEach(({ name }) => {
+    pluginList.forEach(({ name, isNecessary, defaultEnabledState }) => {
       // 这里一定要全等于 undefined，不能为假就赋值为 true
       if (pluginEnabledStates[name] === undefined) {
-        pluginEnabledStates[name] = true
+        pluginEnabledStates[name] = isNecessary || defaultEnabledState
       }
     })
   }

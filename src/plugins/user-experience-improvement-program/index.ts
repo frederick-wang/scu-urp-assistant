@@ -140,6 +140,7 @@ export default {
   displayName: '用户体验改善计划',
   icon: getPluginIcon('user-experience-improvement-program'),
   isNecessary: false,
+  defaultEnabledState: true,
   pathname: true,
   brief:
     '统计与课程相关的匿名信息（只包括课程信息，不会泄露个人信息），并将这些信息分析后提供给全体助手用户，以改善全体用户的使用体验。人人为我，我为人人。',

@@ -14,6 +14,7 @@ export default {
   displayName: '反馈',
   icon: getPluginIcon('feedback'),
   isNecessary: true,
+  defaultEnabledState: true,
   brief: '反馈页面，是助手界面的一部分，不可关闭。',
   route: 'help/feedback',
   menu: {

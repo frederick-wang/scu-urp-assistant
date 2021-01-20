@@ -7,6 +7,7 @@ export default {
   displayName: '界面重排',
   icon: getPluginIcon('rearrange'),
   isNecessary: false,
+  defaultEnabledState: true,
   brief: '重组教务系统中部分页面中功能的位置。',
   pathname: ['/', '/index.jsp'],
   init() {

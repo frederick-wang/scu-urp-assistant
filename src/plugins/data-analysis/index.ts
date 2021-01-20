@@ -30,6 +30,7 @@ export default {
   displayName: '数据统计',
   icon: getPluginIcon('data-analysis'),
   isNecessary: false,
+  defaultEnabledState: true,
   brief:
     '为开发者提供诸如「助手版本」、「程序启动次数」、「功能使用频率」、「程序是否出错」等匿名统计数据，帮助开发者了解程序的运行情况。',
   pathname: true,
@@ -44,9 +45,7 @@ export default {
   init() {
     if (process.env.NODE_ENV !== 'development') {
       const APP_ID = '36482C98B3E94A4D93A0C66E43702C77'
-      const versionName = `${version} (${
-        isDev() ? 'dev' : 'stable'
-      })`
+      const versionName = `${version} (${isDev() ? 'dev' : 'stable'})`
       const script = document.createElement('script')
       const src = `https://jic.talkingdata.com/app/h5/v1?appid=${APP_ID}&vn=${versionName}&vc=${version}`
       script.setAttribute('src', src)

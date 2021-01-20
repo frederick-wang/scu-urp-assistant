@@ -21,6 +21,7 @@ export default {
   displayName: '设置',
   icon: getPluginIcon('setting'),
   isNecessary: true,
+  defaultEnabledState: true,
   brief: '设置中心，是助手界面的一部分，不可关闭。',
   route: ['setting/plugin_manager', 'setting/cache_manager'],
   menu: [

@@ -10,6 +10,7 @@ export default {
   displayName: '教材选择',
   icon: getPluginIcon('textbook-selection'),
   isNecessary: false,
+  defaultEnabledState: true,
   brief:
     '选定教材时一个一个选择不太方便？该插件可以帮助您快捷地一键全选所有教材或者全不选所有教材。',
   pathname: '/student/courseSelect/books/dealBooks/index',

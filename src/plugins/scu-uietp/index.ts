@@ -14,6 +14,7 @@ export default {
   displayName: '历届大创查询',
   icon: getPluginIcon('scu-uietp'),
   isNecessary: false,
+  defaultEnabledState: true,
   brief: '查询历年大创的立项信息。',
   route: 'advanced_query/scu_uietp',
   menu: {

@@ -10,6 +10,7 @@ export default {
   displayName: '界面美化',
   icon: getPluginIcon('beautify'),
   isNecessary: false,
+  defaultEnabledState: false,
   brief: '替换教务系统原有的字体与一些样式。',
   pathname: true,
   init() {
