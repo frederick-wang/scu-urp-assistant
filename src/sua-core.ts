@@ -1,5 +1,5 @@
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
+import 'core-js'
+require('regenerator-runtime/runtime')
 import Vue from 'vue'
 
 import { pathnameTrigger } from '@/helper/util'
