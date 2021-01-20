@@ -99,7 +99,8 @@ async function load(): Promise<LocalStore> {
   return localStore
 }
 
-const getVersionFromLocalStore = (): string => localStore.state.core.version
+export const getVersionFromLocalStore = (): string =>
+  localStore.state.core.version
 
 export default {
   load,
@@ -107,6 +108,5 @@ export default {
   get,
   getAll,
   remove,
-  removeAll,
-  getVersionFromLocalStore
+  removeAll
 }

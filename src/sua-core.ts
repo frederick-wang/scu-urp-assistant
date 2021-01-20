@@ -3,13 +3,17 @@ require('regenerator-runtime/runtime')
 import Vue from 'vue'
 
 import { pathnameTrigger } from '@/helper/util'
-import { init as initStore } from '@/store'
+import { init as initStore, initState as initStoreState } from '@/store'
+import { init as initUpdater } from '@/core/updater'
 import { init as initPlugin, enabledList as pluginList } from '@/plugins'
 import { Logger } from '@/helper/logger'
 import { SUAObject } from './core/types'
 import { isLoginPage } from './helper/judger'
 import { loadElementUI, loadGlobalStyle, loadMenu } from './core/loader'
-import { poststart as poststartHook, prestart as prestartHook } from './core/hook'
+import {
+  poststart as poststartHook,
+  prestart as prestartHook
+} from './core/hook'
 
 /**
  * 定时任务的执行间隔
@@ -43,20 +47,22 @@ const suaObject: SUAObject = {
    */
   async start() {
     Logger.evaMessage('正在准备启动……')
-    await prestartHook()
+    await initStore()
+    await initUpdater()
     Logger.evaMessage('神经同调装置在基准范围内')
-    window.$sua = this
+    await prestartHook()
     Logger.evaMessage('第一次接触……')
+    window.$sua = this
+    Logger.evaMessage('插入栓注水……')
     // 初始化 Element-UI
     loadElementUI()
-    Logger.evaMessage('插入栓注水……')
     Logger.evaMessage('主电源连接完毕……')
     if (!isLoginPage()) {
       // 初始化全局样式
       loadGlobalStyle()
       // 初始化Store
       try {
-        await initStore()
+        await initStoreState()
       } catch (error) {
         Logger.error(error)
         Vue.prototype.$notify.error({
