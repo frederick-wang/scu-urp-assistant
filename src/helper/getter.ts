@@ -39,9 +39,9 @@ export const getTextSimilarity = (str1: string, str2: string): number =>
 
 export const getUserId = (studentInfos: Map<string, string>): string => {
   // 保证用户的匿名 ID 不会被他人猜出来
-  const studentNumber = studentInfos.get('学号')
-  const idNumber = studentInfos.get('证件号码')
-  const gaokaoScore = studentInfos.get('高考总分')
+  const studentNumber = studentInfos.get('学号') ?? ''
+  const idNumber = studentInfos.get('证件号码') ?? ''
+  const gaokaoScore = studentInfos.get('高考总分') ?? ''
   const secret = [studentNumber, idNumber, gaokaoScore].join('')
   const hmac = hmacSHA256('scu-urp-assistant', secret).toString(encHex)
   return hmac
