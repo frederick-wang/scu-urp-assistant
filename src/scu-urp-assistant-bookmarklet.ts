@@ -2,7 +2,7 @@ import sua from './sua-core'
 import { isSCU } from './helper/judger'
 ;(() => {
   if (isSCU()) {
-    sua.init()
+    sua.start()
     window.alert('恭喜！启动成功！如果刷新页面，需要再启动一下哦~')
   } else {
     window.alert(

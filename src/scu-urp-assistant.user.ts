@@ -8,6 +8,6 @@ import { isSCU } from './helper/judger'
         '您好！当前激活脚本的网站并不是四川大学综合教务系统，部分功能将被禁用哦。'
       )
     }
-    sua.init()
+    sua.start()
   })
 })()
