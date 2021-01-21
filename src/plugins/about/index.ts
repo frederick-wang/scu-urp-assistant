@@ -3,6 +3,8 @@ import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
 import { createComponentRender } from '@/plugins/common/utils'
 
+const render = createComponentRender('关于', 'sua-container-about', App)
+
 export const About: SUAPlugin = {
   name: 'about',
   displayName: '关于',
@@ -20,7 +22,7 @@ export const About: SUAPlugin = {
       name: '关于',
       route: 'help/about',
       breadcrumbs: ['SCU URP 助手', '帮助', '关于'],
-      render: createComponentRender('关于', 'sua-container-about', App)
+      render
     }
   }
 }
