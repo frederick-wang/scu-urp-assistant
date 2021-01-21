@@ -24,6 +24,7 @@ export const Feedback: SUAPlugin = {
     name: '帮助',
     item: {
       name: '咨询与反馈',
+      display: true,
       route: 'help/feedback',
       breadcrumbs: ['SCU URP 助手', '帮助', '咨询与反馈'],
       render

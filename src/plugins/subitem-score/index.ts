@@ -25,6 +25,7 @@ export const SubitemScore: SUAPlugin = {
     name: '高级查询',
     item: {
       name: '分项成绩查询',
+      display: false,
       route: 'advanced_query/subitem_score',
       breadcrumbs: ['SCU URP 助手', '高级查询', '分项成绩查询'],
       render

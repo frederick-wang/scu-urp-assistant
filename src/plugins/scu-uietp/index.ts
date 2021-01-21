@@ -24,6 +24,7 @@ export const ScuUietp: SUAPlugin = {
     name: '高级查询',
     item: {
       name: '历届大创查询',
+      display: true,
       route: 'advanced_query/scu_uietp',
       breadcrumbs: ['SCU URP 助手', '高级查询', '历届大创查询'],
       render

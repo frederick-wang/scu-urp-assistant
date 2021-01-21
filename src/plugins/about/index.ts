@@ -20,6 +20,7 @@ export const About: SUAPlugin = {
     name: '帮助',
     item: {
       name: '关于',
+      display: true,
       route: 'help/about',
       breadcrumbs: ['SCU URP 助手', '帮助', '关于'],
       render

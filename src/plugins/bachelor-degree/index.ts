@@ -25,6 +25,7 @@ export const BachelorDegree: SUAPlugin = {
     name: '高级查询',
     item: {
       name: '专业授位查询',
+      display: true,
       route: 'advanced_query/bachelor_degree',
       breadcrumbs: ['SCU URP 助手', '高级查询', '专业授位查询'],
       render

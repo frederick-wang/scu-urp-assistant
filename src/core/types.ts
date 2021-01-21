@@ -43,6 +43,7 @@ export interface SUAPluginMenu {
 
 export interface SUAPluginMenuItem {
   name: string
+  display: boolean
   style?: string
   route: string
   breadcrumbs: string[]

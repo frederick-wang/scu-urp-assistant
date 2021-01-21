@@ -32,6 +32,7 @@ export const Setting: SUAPlugin = {
       name: '设置',
       item: {
         name: '插件管理',
+        display: true,
         route: 'setting/plugin_manager',
         breadcrumbs: ['SCU URP 助手', '设置', '插件管理'],
         render: renderPluginManager
@@ -44,6 +45,7 @@ export const Setting: SUAPlugin = {
       name: '设置',
       item: {
         name: '缓存管理',
+        display: true,
         route: 'setting/cache_manager',
         breadcrumbs: ['SCU URP 助手', '设置', '缓存管理'],
         render: renderCacheManager

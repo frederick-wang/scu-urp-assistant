@@ -20,6 +20,7 @@ export const Donate: SUAPlugin = {
     name: '帮助',
     item: {
       name: '打赏作者',
+      display: true,
       route: 'help/donate',
       breadcrumbs: ['SCU URP 助手', '帮助', '打赏作者'],
       render

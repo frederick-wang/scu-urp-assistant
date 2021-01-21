@@ -61,6 +61,7 @@ const menu = [
     name: '实用工具',
     item: {
       name: '均分绩点计算器',
+      display: true,
       route: 'utility_tools/gpa_calculator',
       breadcrumbs: ['SCU URP 助手', '实用工具', '均分绩点计算器'],
       render: renderGPACalculator
@@ -71,8 +72,10 @@ const menu = [
     rootMenuName: 'SCU URP 助手',
     id: 'menu-utility-tools',
     name: '实用工具',
+    display: true,
     item: {
       name: '预期成绩估计',
+      display: true,
       route: 'utility_tools/expected_grades_estimation',
       breadcrumbs: ['SCU URP 助手', '实用工具', '预期成绩估计'],
       render: renderExpectedGradesEstimation
@@ -83,8 +86,10 @@ const menu = [
     rootMenuName: 'SCU URP 助手',
     id: 'menu-advanced-query',
     name: '高级查询',
+    display: true,
     item: {
       name: '成绩信息查询',
+      display: true,
       route: 'advanced_query/scores_information',
       breadcrumbs: ['SCU URP 助手', '高级查询', '成绩信息查询'],
       render: renderScoresInformation
