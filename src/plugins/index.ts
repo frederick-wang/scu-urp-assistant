@@ -42,4 +42,14 @@ async function init(): Promise<void> {
   Logger.info('Plugin.list初始化成功:', enabledList)
 }
 
-export { init, enabledList, canBeEnabledList, availableList, allList }
+const isPluginEnabled = (name: string): boolean =>
+  enabledList.map(({ name }) => name).includes(name)
+
+export {
+  init,
+  enabledList,
+  canBeEnabledList,
+  availableList,
+  allList,
+  isPluginEnabled
+}
