@@ -1,6 +1,4 @@
 import {
-  requestAllTermsCourseScoreInfoList,
-  requestThisTermCourseScoreInfoList,
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,
@@ -38,8 +36,6 @@ enum Submit {
 }
 
 const actions = {
-  [Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]: requestAllTermsCourseScoreInfoList,
-  [Request.THIS_TERM_COURSE_SCORE_INFO_LIST]: requestThisTermCourseScoreInfoList,
   [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]: requestCurrentSemesterStudentAcademicInfo,
   [Request.TRAINING_SCHEME_LIST]: requestTrainingSchemeList,
   [Request.TRAINING_SCHEME]: requestTrainingScheme,

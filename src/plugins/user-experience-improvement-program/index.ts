@@ -1,11 +1,12 @@
 // 用户体验改善计划插件
-import { actions, Request, Submit, state } from '@/store'
+import { actions, Submit, state } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
 import local from '@/store/local'
 import { getPluginIcon } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 import { Logger } from '@/helper/logger'
+import { requestThisTermCourseScoreInfoList } from '@/store/actions/request'
 
 async function sendStudentCourseScorePublicList(
   records: SemesterScoreRecord[]
@@ -82,9 +83,7 @@ async function sendStudentCourseScorePublicList(
 
 async function sendCourseScorePublicList(): Promise<void> {
   if (!state.getData('ueipCourseScorePublicList')) {
-    const thisTermCourseScoreInfoList = await actions[
-      Request.THIS_TERM_COURSE_SCORE_INFO_LIST
-    ]()
+    const thisTermCourseScoreInfoList = await requestThisTermCourseScoreInfoList()
     const courseScorePublicList: CourseScorePublicInfo[] = thisTermCourseScoreInfoList.map(
       ({
         courseName,

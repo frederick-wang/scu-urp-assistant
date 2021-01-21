@@ -32,7 +32,6 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
-import { actions, Request } from '@/store'
 import { SemesterScoreRecord, CourseScoreRecord } from '@/plugins/score/types'
 import Loading from '@/plugins/common/components/Loading.vue'
 import TotalTranscript from './components/TotalTranscript.vue'
@@ -41,6 +40,7 @@ import { emitDataAnalysisEvent } from '../data-analysis'
 import { getSelectedCourses } from '@/plugins/score/utils'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
+import { requestAllTermsCourseScoreInfoList, requestThisTermCourseScoreInfoList } from '@/store/actions/request'
 
 @Component({
   components: { Loading, SemesterTranscript, TotalTranscript }
@@ -93,10 +93,10 @@ export default class GPACalculator extends Vue {
       const records =
         this.type === 'full'
           ? convertCourseScoreInfoListToScoreRecords(
-              await actions[Request.THIS_TERM_COURSE_SCORE_INFO_LIST]()
+              await requestThisTermCourseScoreInfoList()
             )
           : await convertCourseScoreInfoListToScoreRecords(
-              await actions[Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]()
+              await requestAllTermsCourseScoreInfoList()
             )
       this.records = records
       this.loadingIsDone = true

@@ -134,7 +134,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { actions, Request, state } from '@/store'
+import { state } from '@/store'
 import { SemesterScoreRecord, CourseScoreRecord } from '@/plugins/score/types'
 import Loading from '@/plugins/common/components/Loading.vue'
 import FourTypeGradeLabels from './components/ExpectedGradesEstimation/FourTypeGradeLabels.vue'
@@ -149,6 +149,7 @@ import {
   getPointByScore
 } from '@/plugins/score/utils'
 import { pluck, sum } from 'ramda'
+import { requestAllTermsCourseScoreInfoList } from '@/store/actions/request'
 
 class NewCourse {
   public compulsoryCredit = 0
@@ -330,7 +331,7 @@ export default class ExpectedGradeEstimation extends Vue {
   async created(): Promise<void> {
     try {
       const records = await convertCourseScoreInfoListToScoreRecords(
-        await actions[Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]()
+        await requestAllTermsCourseScoreInfoList()
       )
       this.records = records
       this.loadingIsDone = true

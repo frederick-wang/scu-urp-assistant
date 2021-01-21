@@ -325,7 +325,7 @@ interface CourseScoreInfo extends CourseScoreCoreInfo {
   courseSequenceNumber: string
   courseScore?: number
   gradePoint?: number
-  levelCode?: number
+  levelCode?: string
   levelName?: string
   inputStatusCode: string
   inputMethodCode: string

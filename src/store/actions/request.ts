@@ -16,7 +16,7 @@ import {
 } from '../types'
 import { pipe, map } from 'ramda'
 import state from '../state'
-import { Result } from './result.interface'
+import { Result, TermScoresData } from './result.interface'
 import { getPointByScore } from '@/plugins/score/utils'
 import { sleep, http } from '@/helper/util'
 import { getChineseNumber } from '@/helper/getter'
@@ -520,7 +520,6 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
         pageSize: totalCount
       }
     )) as AllTermScoresDTO
-
     type recordType = typeof records[0]
     const formatRecord = ([
       executiveEducationPlanNumber,
@@ -557,7 +556,8 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
       examTypeCode,
       inputMethodCode,
       courseScore,
-      levelCode,
+      // levelCode 在本学期成绩信息接口里是 string，在全部成绩信息接口里却是 number
+      levelCode: levelCode?.toString(),
       unpassedReasonCode,
       courseName,
       englishCourseName,
@@ -584,7 +584,7 @@ async function requestThisTermCourseScoreInfoList(): Promise<
   const url = '/student/integratedQuery/scoreQuery/thisTermScores/data'
   try {
     const data = await $.get(url)
-    const [{ list }]: [{ list: any[] }] = data
+    const [{ list }]: TermScoresData[] = data
     // console.log(`state: ${state}`)
     const res = filterCourseScoreInfoList(
       list.map(
