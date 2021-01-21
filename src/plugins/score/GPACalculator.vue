@@ -40,7 +40,10 @@ import { emitDataAnalysisEvent } from '../data-analysis'
 import { getSelectedCourses } from '@/plugins/score/utils'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
-import { requestAllTermsCourseScoreInfoList, requestThisTermCourseScoreInfoList } from '@/store/actions/request'
+import {
+  requestAllTermsCourseScoreInfoList,
+  requestThisTermCourseScoreInfoList
+} from '@/store/actions/request'
 
 @Component({
   components: { Loading, SemesterTranscript, TotalTranscript }
@@ -50,7 +53,7 @@ export default class GPACalculator extends Vue {
     type: String,
     required: true
   })
-  type!: string
+  type!: 'full' | 'basic' | 'compact'
 
   loadingIsDone = false
   records: SemesterScoreRecord[] = []
