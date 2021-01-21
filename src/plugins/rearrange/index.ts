@@ -2,7 +2,7 @@ import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
 
 // 重新布局插件
-export default {
+export const Rearrange: SUAPlugin = {
   name: 'rearrange',
   displayName: '界面重排',
   icon: getPluginIcon('rearrange'),
@@ -55,4 +55,4 @@ export default {
       .children('.widget-box')
       .css('height', '100%')
   }
-} as SUAPlugin
+}

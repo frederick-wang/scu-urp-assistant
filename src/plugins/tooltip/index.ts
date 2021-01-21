@@ -6,7 +6,7 @@ import { isDev, isLoginPage } from '@/helper/judger'
 
 const { version } = pack
 
-export default {
+export const Tooltip: SUAPlugin = {
   name: 'tooltip',
   displayName: '提示信息',
   icon: getPluginIcon('tooltip'),
@@ -31,4 +31,4 @@ export default {
         .before($navTooltip)
     }
   }
-} as SUAPlugin
+}

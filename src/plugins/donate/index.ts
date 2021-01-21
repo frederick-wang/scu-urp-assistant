@@ -3,13 +3,9 @@ import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
 import { createComponentRender } from '@/plugins/common/utils'
 
-const render = createComponentRender(
-  '打赏作者',
-  'sua-container-donate',
-  App
-)
+const render = createComponentRender('打赏作者', 'sua-container-donate', App)
 
-export default {
+export const Donate: SUAPlugin = {
   name: 'donate',
   displayName: '打赏',
   icon: getPluginIcon('donate'),
@@ -29,4 +25,4 @@ export default {
       render
     }
   }
-} as SUAPlugin
+}

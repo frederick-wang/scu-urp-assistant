@@ -1,44 +1,40 @@
 import { isLoginPage, isSCU } from '@/helper/judger'
-import fastEvaluation from '@/plugins/fast-evaluation'
-import tooltip from '@/plugins/tooltip'
-import recoverRememberMe from '@/plugins/recover-remember-me'
-import rearrange from '@/plugins/rearrange'
-import score from '@/plugins/score'
-import trainingScheme from '@/plugins/training-scheme'
-import submitData from '@/plugins/user-experience-improvement-program'
-import dataAnalysis from '@/plugins/data-analysis'
-import about from '@/plugins/about'
-import feedback from '@/plugins/feedback'
-import donate from '@/plugins/donate'
-import bachelorDegree from '@/plugins/bachelor-degree'
-import scuUietp from '@/plugins/scu-uietp'
-import beautify from '@/plugins/beautify'
-import setting from '@/plugins/setting'
+import { FastEvaluation } from '@/plugins/fast-evaluation'
+import { Tooltip } from '@/plugins/tooltip'
+import { RecoverRememberMe } from '@/plugins/recover-remember-me'
+import { Rearrange } from '@/plugins/rearrange'
+import { Score } from '@/plugins/score'
+import { TrainingScheme } from '@/plugins/training-scheme'
+import { UserExperienceImprovementProgram } from '@/plugins/user-experience-improvement-program'
+import { DataAnalysis } from '@/plugins/data-analysis'
+import { About } from '@/plugins/about'
+import { Feedback } from '@/plugins/feedback'
+import { Donate } from '@/plugins/donate'
+import { BachelorDegree } from '@/plugins/bachelor-degree'
+import { ScuUietp } from '@/plugins/scu-uietp'
+import { Beautify } from '@/plugins/beautify'
+import { Setting } from '@/plugins/setting'
 // import courseEvaluation from '@/plugins/course-info-exchange'
 import textbookSelection from '@/plugins/textbook-selection'
 import { SUAPlugin } from '@/core/types'
 
-const necessaryPlugins = [dataAnalysis, tooltip]
-const optionalPluginsBeforeLogin = [recoverRememberMe]
-const optionalPluginsLoginedOnlySCU = [
-  trainingScheme,
-  bachelorDegree,
-  scuUietp
-]
+const necessaryPlugins = [DataAnalysis, Tooltip]
+const optionalPluginsBeforeLogin = [RecoverRememberMe]
+const optionalPluginsLoginedOnlySCU = [TrainingScheme, BachelorDegree, ScuUietp]
 const optionalPluginsLogined = [
-  beautify,
-  rearrange,
-  fastEvaluation,
+  Beautify,
+  Rearrange,
+  FastEvaluation,
   textbookSelection,
-  score,
+  Score,
   // 之所以放到中间，是因为菜单的渲染顺序是和数组中的顺序一致的
   // 需要将「设置」菜单和「帮助」菜单放到最后
   ...(isSCU() ? optionalPluginsLoginedOnlySCU : []),
-  submitData,
-  setting,
-  about,
-  feedback,
-  donate
+  UserExperienceImprovementProgram,
+  Setting,
+  About,
+  Feedback,
+  Donate
 ]
 
 function getAllPlugins(): SUAPlugin[] {

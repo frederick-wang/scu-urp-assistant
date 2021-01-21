@@ -7,6 +7,7 @@ import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 import { Logger } from '@/helper/logger'
 import { requestThisTermCourseScoreInfoList } from '@/store/actions/request'
+import { SUAPlugin } from '@/core/types'
 
 async function sendStudentCourseScorePublicList(
   records: SemesterScoreRecord[]
@@ -134,7 +135,7 @@ async function sendCourseScorePublicList(): Promise<void> {
   }
 }
 
-export default {
+export const UserExperienceImprovementProgram: SUAPlugin = {
   name: 'user-experience-improvement-program',
   displayName: '用户体验改善计划',
   icon: getPluginIcon('user-experience-improvement-program'),

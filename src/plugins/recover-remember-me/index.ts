@@ -2,7 +2,7 @@ import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
 
 // 恢复登录页面的「两周之内不必登录」选项插件
-export default {
+export const RecoverRememberMe: SUAPlugin = {
   name: 'recover-remember-me',
   displayName: '自动登录',
   icon: getPluginIcon('recover-remember-me'),
@@ -15,4 +15,4 @@ export default {
     const $rememberMe = $(require('./rememberMe.pug')())
     $('#loginButton').before($rememberMe)
   }
-} as SUAPlugin
+}

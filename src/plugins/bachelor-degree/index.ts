@@ -9,7 +9,7 @@ const render = createComponentRender(
   App
 )
 
-export default {
+export const BachelorDegree: SUAPlugin = {
   name: 'bachelor-degree',
   displayName: '专业授位查询',
   icon: getPluginIcon('bachelor-degree'),
@@ -30,4 +30,4 @@ export default {
       render
     }
   }
-} as SUAPlugin
+}

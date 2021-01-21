@@ -9,7 +9,7 @@ const render = createComponentRender(
   App
 )
 
-export default {
+export const ScuUietp: SUAPlugin = {
   name: 'scu-uietp',
   displayName: '历届大创查询',
   icon: getPluginIcon('scu-uietp'),
@@ -29,4 +29,4 @@ export default {
       render
     }
   }
-} as SUAPlugin
+}

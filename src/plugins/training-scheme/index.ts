@@ -9,7 +9,7 @@ import { SUAPlugin } from '@/core/types'
 
 const style = require('./index.scss').toString()
 
-export default {
+export const TrainingScheme: SUAPlugin = {
   name: 'training-scheme',
   displayName: '培养方案相关',
   icon: getPluginIcon('training-scheme'),
@@ -43,4 +43,4 @@ export default {
       }
     ]
   }
-} as SUAPlugin
+}

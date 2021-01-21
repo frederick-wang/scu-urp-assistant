@@ -280,7 +280,7 @@ function onClickBtn(e: MouseEvent): void {
   }
 }
 
-export default {
+export const FastEvaluation: SUAPlugin = {
   name: 'fast-evaluation',
   displayName: '快捷评教',
   icon: getPluginIcon('fast-evaluation'),
@@ -299,4 +299,4 @@ export default {
 
     $btn.click(onClickBtn.bind(this) as () => void)
   }
-} as SUAPlugin
+}

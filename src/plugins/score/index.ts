@@ -92,7 +92,7 @@ const menu = [
   }
 ]
 
-export default {
+export const Score: SUAPlugin = {
   name: 'score',
   displayName: '成绩相关工具',
   icon: getPluginIcon('score'),
@@ -111,4 +111,4 @@ export default {
     }).$mount('.sua-widget-container-gpa-calculator')
   },
   menu
-} as SUAPlugin
+}

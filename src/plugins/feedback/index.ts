@@ -9,7 +9,7 @@ const render = createComponentRender(
   App
 )
 
-export default {
+export const Feedback: SUAPlugin = {
   name: 'feedback',
   displayName: '反馈',
   icon: getPluginIcon('feedback'),
@@ -29,4 +29,4 @@ export default {
       render
     }
   }
-} as SUAPlugin
+}

@@ -5,7 +5,7 @@ import { SUAPlugin } from '@/core/types'
 
 const typoCSS = require('./typo.scss').toString()
 
-export default {
+export const Beautify: SUAPlugin = {
   name: 'beautify',
   displayName: '界面美化',
   icon: getPluginIcon('beautify'),
@@ -21,4 +21,4 @@ export default {
       </style>
     `)
   }
-} as SUAPlugin
+}

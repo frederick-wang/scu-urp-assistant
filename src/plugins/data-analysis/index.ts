@@ -25,7 +25,7 @@ function emitDataAnalysisEvent(
 
 export { emitDataAnalysisEvent }
 
-export default {
+export const DataAnalysis: SUAPlugin = {
   name: 'data-analysis',
   displayName: '数据统计',
   icon: getPluginIcon('data-analysis'),
@@ -55,4 +55,4 @@ export default {
       }
     }
   }
-} as SUAPlugin
+}
