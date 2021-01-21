@@ -1,11 +1,13 @@
 // 用户体验改善计划插件
-import { actions, Request, Submit, state } from '@/store'
+import { actions, Submit, state } from '@/store'
 import { CourseScorePublicInfo } from '@/store/types'
 import local from '@/store/local'
 import { getPluginIcon } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { SemesterScoreRecord } from '@/plugins/score/types'
 import { Logger } from '@/helper/logger'
+import { requestThisTermCourseScoreInfoList } from '@/store/actions/request'
+import { SUAPlugin } from '@/core/types'
 
 async function sendStudentCourseScorePublicList(
   records: SemesterScoreRecord[]
@@ -82,9 +84,7 @@ async function sendStudentCourseScorePublicList(
 
 async function sendCourseScorePublicList(): Promise<void> {
   if (!state.getData('ueipCourseScorePublicList')) {
-    const thisTermCourseScoreInfoList = await actions[
-      Request.THIS_TERM_COURSE_SCORE_INFO_LIST
-    ]()
+    const thisTermCourseScoreInfoList = await requestThisTermCourseScoreInfoList()
     const courseScorePublicList: CourseScorePublicInfo[] = thisTermCourseScoreInfoList.map(
       ({
         courseName,
@@ -135,11 +135,12 @@ async function sendCourseScorePublicList(): Promise<void> {
   }
 }
 
-export default {
+export const UserExperienceImprovementProgram: SUAPlugin = {
   name: 'user-experience-improvement-program',
   displayName: '用户体验改善计划',
   icon: getPluginIcon('user-experience-improvement-program'),
   isNecessary: false,
+  defaultEnabledState: true,
   pathname: true,
   brief:
     '统计与课程相关的匿名信息（只包括课程信息，不会泄露个人信息），并将这些信息分析后提供给全体助手用户，以改善全体用户的使用体验。人人为我，我为人人。',

@@ -5,11 +5,12 @@ import { createComponentRender } from '@/plugins/common/utils'
 
 const render = createComponentRender('关于', 'sua-container-about', App)
 
-export default {
+export const About: SUAPlugin = {
   name: 'about',
   displayName: '关于',
   icon: getPluginIcon('about'),
   isNecessary: true,
+  defaultEnabledState: true,
   brief: '关于页面，是助手界面的一部分，不可关闭。',
   route: 'help/about',
   menu: {
@@ -24,4 +25,4 @@ export default {
       render
     }
   }
-} as SUAPlugin
+}

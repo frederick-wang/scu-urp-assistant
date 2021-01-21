@@ -31,4 +31,9 @@ function error(...rest: unknown[]): void {
   }
 }
 
-export const Logger = { log, info, warn, error }
+function evaMessage(msg: string): void {
+  const style = 'color: #227D51;'
+  console.info(`%c${msg}`, style)
+}
+
+export const Logger = { log, info, warn, error, evaMessage }

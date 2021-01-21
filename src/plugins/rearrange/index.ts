@@ -2,11 +2,12 @@ import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
 
 // 重新布局插件
-export default {
+export const Rearrange: SUAPlugin = {
   name: 'rearrange',
   displayName: '界面重排',
   icon: getPluginIcon('rearrange'),
   isNecessary: false,
+  defaultEnabledState: true,
   brief: '重组教务系统中部分页面中功能的位置。',
   pathname: ['/', '/index.jsp'],
   init() {
@@ -54,4 +55,4 @@ export default {
       .children('.widget-box')
       .css('height', '100%')
   }
-} as SUAPlugin
+}

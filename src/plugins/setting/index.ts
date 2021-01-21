@@ -16,11 +16,12 @@ const renderCacheManager = createComponentRender(
   CacheManager
 )
 
-export default {
+export const Setting: SUAPlugin = {
   name: 'setting',
   displayName: '设置',
   icon: getPluginIcon('setting'),
   isNecessary: true,
+  defaultEnabledState: true,
   brief: '设置中心，是助手界面的一部分，不可关闭。',
   route: ['setting/plugin_manager', 'setting/cache_manager'],
   menu: [
@@ -49,4 +50,4 @@ export default {
       }
     }
   ]
-} as SUAPlugin
+}

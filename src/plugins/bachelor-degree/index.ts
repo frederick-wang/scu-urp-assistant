@@ -9,11 +9,12 @@ const render = createComponentRender(
   App
 )
 
-export default {
+export const BachelorDegree: SUAPlugin = {
   name: 'bachelor-degree',
   displayName: '专业授位查询',
   icon: getPluginIcon('bachelor-degree'),
   isNecessary: false,
+  defaultEnabledState: true,
   brief:
     '不知道自己修读的专业会授什么学科门类的学士学位？该插件可以帮助您快捷地查询到自己专业的授位情况。',
   route: 'advanced_query/bachelor_degree',
@@ -29,4 +30,4 @@ export default {
       render
     }
   }
-} as SUAPlugin
+}

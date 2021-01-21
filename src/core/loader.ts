@@ -67,7 +67,7 @@ export const loadMenu = (menu: SUAPluginMenu): void => {
   const $rootMenuList = $('#menus')
   // 检查根菜单是否存在，如不存在则新建
   if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
-    $rootMenuList.append(`
+    $rootMenuList.prepend(`
       <li class="hsub sua-menu-list" id="${rootMenuId}" onclick="rootMenuClick(this);">
         <a href="#" class="dropdown-toggle">
           <i class="menu-icon fa fa-gavel"></i>

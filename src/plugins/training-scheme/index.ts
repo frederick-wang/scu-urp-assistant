@@ -9,11 +9,12 @@ import { SUAPlugin } from '@/core/types'
 
 const style = require('./index.scss').toString()
 
-export default {
+export const TrainingScheme: SUAPlugin = {
   name: 'training-scheme',
   displayName: '培养方案相关',
   icon: getPluginIcon('training-scheme'),
   isNecessary: false,
+  defaultEnabledState: true,
   brief:
     '查询所有专业的培养方案与指导性教学计划，还可选择任意两个培养方案进行比较，甚至能将查询结果保存为长图。',
   route: [
@@ -42,4 +43,4 @@ export default {
       }
     ]
   }
-} as SUAPlugin
+}

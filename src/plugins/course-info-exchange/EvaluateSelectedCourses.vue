@@ -27,7 +27,6 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { actions, Request } from '@/store'
 import Loading from '@/plugins/common/components/Loading.vue'
 import SemesterCard from './components/SemesterCard.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
@@ -35,6 +34,7 @@ import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
 import { SemesterInfoExchange } from './types'
 import { SemesterScoreRecord } from '../score/types'
+import { requestAllTermsCourseScoreInfoList } from '@/store/actions/request'
 
 @Component({
   components: { Loading, SemesterCard }
@@ -56,7 +56,7 @@ export default class EvaluateSelectedCourses extends Vue {
   async created(): Promise<void> {
     try {
       const records = await convertCourseScoreInfoListToScoreRecords(
-        await actions[Request.ALL_TERMS_COURSE_SCORE_INFO_LIST]()
+        await requestAllTermsCourseScoreInfoList()
       )
       const convertRecordsToRecordsWithInfoExchange = (
         records: SemesterScoreRecord[]

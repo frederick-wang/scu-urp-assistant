@@ -1,10 +1,10 @@
 export interface SUAObject {
   plugins: SUAPlugin[]
-  initQueue: (() => void | Promise<void>)[]
-  taskQueue: (() => void | Promise<void>)[]
-  styleQueue: string[]
-  menuQueue: SUAPluginMenu[]
-  init(): Promise<void>
+  pluginsInitQueue: (() => void | Promise<void>)[]
+  pluginsTaskQueue: (() => void | Promise<void>)[]
+  pluginsStyleQueue: string[]
+  pluginsMenuQueue: SUAPluginMenu[]
+  start(): Promise<void>
 }
 
 // pathname和route至少要有一个
@@ -13,6 +13,7 @@ export interface SUAPlugin {
   displayName: string
   icon: string
   isNecessary: boolean
+  defaultEnabledState: boolean
   brief: string
   pathname?:
     | string
