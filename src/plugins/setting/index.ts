@@ -2,19 +2,6 @@ import PluginManager from './PluginManager.vue'
 import CacheManager from './CacheManager.vue'
 import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
-import { createComponentRender } from '@/plugins/common/utils'
-
-const renderPluginManager = createComponentRender(
-  '插件管理器',
-  'sua-container-setting-plugin-manager',
-  PluginManager
-)
-
-const renderCacheManager = createComponentRender(
-  '缓存管理器',
-  'sua-container-setting-cache-manager',
-  CacheManager
-)
 
 export const Setting: SUAPlugin = {
   name: 'setting',
@@ -23,7 +10,10 @@ export const Setting: SUAPlugin = {
   isNecessary: true,
   defaultEnabledState: true,
   brief: '设置中心，是助手界面的一部分，不可关闭。',
-  route: ['setting/plugin_manager', 'setting/cache_manager'],
+  route: [
+    { path: 'setting/plugin_manager', component: PluginManager },
+    { path: 'setting/cache_manager', component: CacheManager }
+  ],
   menu: [
     {
       rootMenuId: 'sua-menu-list',
@@ -32,10 +22,8 @@ export const Setting: SUAPlugin = {
       name: '设置',
       item: {
         name: '插件管理',
-        display: true,
         route: 'setting/plugin_manager',
-        breadcrumbs: ['SCU URP 助手', '设置', '插件管理'],
-        render: renderPluginManager
+        breadcrumbs: ['SCU URP 助手', '设置', '插件管理']
       }
     },
     {
@@ -45,10 +33,8 @@ export const Setting: SUAPlugin = {
       name: '设置',
       item: {
         name: '缓存管理',
-        display: true,
         route: 'setting/cache_manager',
-        breadcrumbs: ['SCU URP 助手', '设置', '缓存管理'],
-        render: renderCacheManager
+        breadcrumbs: ['SCU URP 助手', '设置', '缓存管理']
       }
     }
   ]

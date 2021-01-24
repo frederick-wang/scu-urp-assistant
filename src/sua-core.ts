@@ -9,11 +9,17 @@ import { init as initPlugin, enabledList as pluginList } from '@/plugins'
 import { Logger } from '@/helper/logger'
 import { SUAObject } from './core/types'
 import { isLoginPage } from './helper/judger'
-import { loadElementUI, loadGlobalStyle, loadMenu } from './core/loader'
+import {
+  loadElementUI,
+  loadGlobalStyle,
+  loadMenu,
+  loadRouteConfig
+} from './core/loader'
 import {
   poststart as poststartHook,
   prestart as prestartHook
 } from './core/hook'
+import { Router, router } from './core/router'
 
 /**
  * 定时任务的执行间隔
@@ -39,9 +45,19 @@ const suaObject: SUAObject = {
    */
   pluginsStyleQueue: [],
   /**
+   * 加载插件路由配置的队列
+   */
+  pluginsRouteConfigQueue: [],
+  /**
    * 加载插件菜单的队列
    */
   pluginsMenuQueue: [],
+  /**
+   * 路由信息
+   */
+  get router(): Router {
+    return router
+  },
   /**
    * 启动 SCU URP 助手
    */
@@ -102,6 +118,14 @@ const suaObject: SUAObject = {
           this.pluginsTaskQueue.push(plugin.task.bind(plugin))
         }
       }
+      // 将路由配置推入队列中
+      if (plugin.route) {
+        if (Array.isArray(plugin.route)) {
+          plugin.route.forEach(r => this.pluginsRouteConfigQueue.push(r))
+        } else {
+          this.pluginsRouteConfigQueue.push(plugin.route)
+        }
+      }
       // 将菜单推入队列中
       if (plugin.menu) {
         this.pluginsMenuQueue = this.pluginsMenuQueue.concat(plugin.menu)
@@ -125,6 +149,10 @@ const suaObject: SUAObject = {
         t()
       }
     }, TASK_TIME_INTERVAL)
+    // 加载路由配置
+    for (const r of this.pluginsRouteConfigQueue) {
+      loadRouteConfig(r)
+    }
     // 加载菜单
     for (const m of this.pluginsMenuQueue) {
       loadMenu(m)

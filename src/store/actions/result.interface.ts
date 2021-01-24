@@ -1,8 +1,4 @@
-type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
-
-type XOR<T, U> = T | U extends Record<string, unknown>
-  ? (Without<T, U> & U) | (Without<U, T> & T)
-  : T | U
+import { XOR } from '@/helper/util'
 
 interface BaseResult {
   extra?: Record<string, string | number | boolean | null>

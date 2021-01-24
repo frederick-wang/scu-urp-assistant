@@ -3,11 +3,12 @@ import { state } from '@/store'
 import { isLoginPage } from './judger'
 import { API_PATH_V2 } from './info'
 import axios, { AxiosInstance } from 'axios'
+import { getCurrentRoutePath } from '@/core/router'
 
 export const sleep = (time: number): Promise<void> =>
   new Promise(resolve => setTimeout(() => resolve(), time))
 
-export const matchTrigger = (
+export const matchPathname = (
   subject: string,
   object:
     | string
@@ -65,7 +66,8 @@ export const pathnameTrigger = (
   const result =
     pathname === true
       ? true
-      : !state.core.route && matchTrigger(window.location.pathname, pathname)
+      : !getCurrentRoutePath() &&
+        matchPathname(window.location.pathname, pathname)
   return result
 }
 
@@ -80,7 +82,7 @@ export const routeTrigger = (
       }
     | undefined
 ): boolean => {
-  const result = !isLoginPage() && matchTrigger(state.core.route, route)
+  const result = !isLoginPage() && matchPathname(getCurrentRoutePath(), route)
   return result
 }
 
@@ -105,3 +107,12 @@ export type Without<T, U> = {
 export type XOR<T, U> = T | U extends Record<string, unknown>
   ? (Without<T, U> & U) | (Without<U, T> & T)
   : T | U
+
+export type RequireOnlyOne<T, Keys extends keyof T = keyof T> = Pick<
+  T,
+  Exclude<keyof T, Keys>
+> &
+  {
+    [K in Keys]-?: Required<Pick<T, K>> &
+      Partial<Record<Exclude<Keys, K>, undefined>>
+  }[Keys]
