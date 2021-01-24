@@ -121,7 +121,7 @@ export const removeRoute = ({
   }
 }
 
-export const getAllRoutes = (): RouteConfig[] => routes
+export const getAllRoutesConfig = (): RouteConfig[] => routes
 
 export const getHistory = (): Route[] => history
 
@@ -432,8 +432,8 @@ function changeRouter(r: Partial<Route>) {
 }
 
 export const router = {
-  get allRoutes(): RouteConfig[] {
-    return getAllRoutes()
+  get allRoutesConfig(): RouteConfig[] {
+    return getAllRoutesConfig()
   },
   get currentRoute(): Route | undefined {
     return getCurrentRoute()
