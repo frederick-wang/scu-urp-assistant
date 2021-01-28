@@ -1,3 +1,7 @@
+import {
+  parse as parseQueryString,
+  stringify as stringifyQueryString
+} from 'query-string'
 import { isLoginPage } from '@/helper/judger'
 import { RequireOnlyOne } from '@/helper/util'
 import Vue, { VNode, VNodeData, VueConstructor } from 'vue'
@@ -126,14 +130,11 @@ export const getAllRoutesConfig = (): RouteConfig[] => routes
 export const getHistory = (): Route[] => history
 
 export const getCurrentRoutePath = (): string => {
-  let suaRoute = ''
   if (!isLoginPage()) {
-    const regexp = window.location.hash.match(/sua_route=(.+)$/)
-    if (regexp) {
-      suaRoute = regexp[1]
-    }
+    const { sua_route: suaRoute } = parseQueryString(window.location.hash)
+    return (suaRoute ?? '').toString()
   }
-  return suaRoute
+  return ''
 }
 
 export const getCurrentRouteConfigByRoutePath = (): RouteConfig =>
@@ -393,10 +394,13 @@ function changeRouter(r: Partial<Route>) {
       const $pageContent = $('.main-content>.page-content')
       $pageContent.empty()
       // 因为需要兼容书签版，只有修改 hashtag 不会触发页面的刷新
-      const hash = `#sua_route=${r.path}`
+      const hashObject = parseQueryString(window.location.hash)
+      if (r.path) {
+        hashObject.sua_route = r.path
+      }
       // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
       setTimeout(() => {
-        window.location.hash = hash
+        window.location.hash = `#${stringifyQueryString(hashObject)}`
       }, 0)
       render($('.main-content>.page-content')[0])
     } else if (typeof param === 'string') {
