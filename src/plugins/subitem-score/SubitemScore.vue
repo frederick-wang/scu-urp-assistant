@@ -1,6 +1,7 @@
 <template lang="pug">
 .sua-container-subitem-score.row.self-margin
-  .col-sm-12
+  Loading(v-if='!loadingIsDone')
+  .col-sm-12(v-if='loadingIsDone')
     h4.header.smaller.lighter.grey
       i.fa.fa-list(aria-hidden='true')
       |
@@ -10,7 +11,7 @@
           i.ace-icon.fa.fa-reply
           |
           | 返回
-  .col-sm-12
+  .col-sm-12(v-if='loadingIsDone')
     table.query-info
       tr
         td
@@ -38,7 +39,7 @@
         td 课程绩点：
         td {{ gpa }}
     p 以下为 {{ course }} 的分项成绩查询结果：
-  .col-sm-12
+  .col-sm-12(v-if='loadingIsDone')
     table.subitem-info.table.table-striped.table-bordered.table-hover
       thead
         tr
@@ -60,11 +61,15 @@ import { convertSemesterNumberToName } from '@/helper/converter'
 import { requestSubitemScoreFxcj } from '@/store/actions/request'
 import { SubitemScoreRecord } from '@/store/actions/result.interface'
 import { Vue, Component } from 'vue-property-decorator'
+import Loading from '@/plugins/common/components/Loading.vue'
 import { getPointByScore } from '../score/utils'
 
-@Component
+@Component({
+  components: { Loading }
+})
 export default class SubitemScore extends Vue {
   records: SubitemScoreRecord[] = []
+  loadingIsDone = false
 
   get semester(): string {
     if (this.records.length) {
@@ -136,6 +141,7 @@ export default class SubitemScore extends Vue {
       } = params
       const fxcjId = `${executiveEducationPlanNumber}_${courseNumber}_${courseSequenceNumber}_${examTime}_${coursePropertyCode}`
       this.records = await requestSubitemScoreFxcj(fxcjId)
+      this.loadingIsDone = true
     }
   }
 }
