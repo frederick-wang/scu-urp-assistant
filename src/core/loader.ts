@@ -15,6 +15,7 @@ import JsonViewer from 'vue-json-viewer'
 import { routeTrigger } from '@/helper/util'
 import { SUAPluginMenu } from './types'
 import { addRoute, RouteConfig, router } from './router'
+import { Logger } from '@/helper/logger'
 
 /**
  * 加载 Vue 组件
@@ -59,6 +60,9 @@ export const loadGlobalStyle = (): void => {
 
 export const loadRouteConfig = (routeConfig: RouteConfig): void => {
   addRoute(routeConfig)
+  if (routeTrigger(routeConfig.path)) {
+    router.push(routeConfig.path)
+  }
 }
 
 const changeMenu = (
@@ -150,14 +154,14 @@ export const loadMenu = (menu: SUAPluginMenu): void => {
     `)
     const $menuItem = $menu.children(`#${id}`)
     const breadcrumbs: Breadcrumbs = [rootMenuName, menuName, name]
-    const menuItemClickHandler = () => {
+    $menuItem.click(() => {
       changeMenu($rootMenu, $menu, $menuItem)
       showBreadcrumbs(rootMenuId, breadcrumbs, menuId, id)
       router.push(route)
-    }
-    $menuItem.click(menuItemClickHandler)
+    })
     if (routeTrigger(route)) {
-      menuItemClickHandler()
+      changeMenu($rootMenu, $menu, $menuItem)
+      showBreadcrumbs(rootMenuId, breadcrumbs, menuId, id)
     }
   })
 }
