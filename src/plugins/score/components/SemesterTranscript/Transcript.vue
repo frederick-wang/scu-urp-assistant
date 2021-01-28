@@ -17,10 +17,12 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       th.center(v-if='type !== `compact`') 考试时间
       //- th.center(v-if='type !== `compact`') 任课教师
       th.center(v-if='type !== `compact`') 未通过原因
+      th.center(v-if='type !== `compact`') 分项成绩
   tbody#scoretbody
     tr.gpa-st-item(
-      v-for='(courseItem, courseIndex) in courses' :key='courseIndex'
-      :class='{ selected: courseItem.selected }'
+      v-for='(courseItem, courseIndex) in courses',
+      :key='courseIndex',
+      :class='{ selected: courseItem.selected }',
       @click='$emit(`toggleCourseStatus`, courseItem)'
     )
       td(:class='{ bold: type !== `compact` }') {{ courseItem.courseName }}
@@ -36,15 +38,24 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       ) {{ courseItem.courseScore }}
       td.center {{ courseItem.levelName }}
       td.center {{ courseItem.gradePoint }}
-      td.center(v-if='type === `full`') {{ courseItem.rank}}
+      td.center(v-if='type === `full`') {{ courseItem.rank }}
       td.center(v-if='type !== `compact`') {{ courseItem.examTime }}
       //- td.center(v-if='type !== `compact`') {{ courseItem.courseTeacherList[0].teacherName}}{{ courseItem.courseTeacherList.filter(({ teacherNumber }) => Number(teacherNumber).toString() === teacherNumber).length > 1 ? ' 等' : ''}}
       td.center(v-if='type !== `compact`') {{ courseItem.unpassedReasonExplain }}
+      td.center(v-if='type !== `compact`')
+        button.btn.btn-info.btn-xs.btn-round(
+          @click.stop='querySubitemScore(courseItem)'
+        )
+          i.ace-con.fa.fa-search.white
+          |
+          | 尝试查询
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { CourseScoreRecord } from '@/plugins/score/types'
+import { router } from '@/core/router'
+import { requestSubitemScoreLook } from '@/store/actions/request'
 
 @Component
 export default class Transcript extends Vue {
@@ -58,6 +69,36 @@ export default class Transcript extends Vue {
     required: true
   })
   courses!: CourseScoreRecord[]
+
+  /**
+   * 当「尝试查询分项成绩」按钮被点击时，做出相应的反应
+   */
+  async querySubitemScore({
+    executiveEducationPlanNumber,
+    courseNumber,
+    courseSequenceNumber,
+    examTime,
+    coursePropertyCode
+  }: CourseScoreRecord): Promise<void> {
+    const { scoreDetailList } = await requestSubitemScoreLook(
+      executiveEducationPlanNumber,
+      courseNumber,
+      courseSequenceNumber,
+      examTime
+    )
+
+    if (scoreDetailList.length > 0) {
+      router.push('advanced_query/subitem_score', {
+        params: {
+          executiveEducationPlanNumber,
+          courseNumber,
+          courseSequenceNumber,
+          examTime,
+          coursePropertyCode
+        }
+      })
+    }
+  }
 }
 </script>
 
@@ -68,6 +109,7 @@ table.gpa-st-table {
 
     > td {
       transition: 0.1s;
+      vertical-align: middle;
 
       &.bold {
         font-weight: bold;
