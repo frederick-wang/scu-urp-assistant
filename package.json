@@ -86,6 +86,7 @@
     "@types/ramda": "^0.27.35",
     "axios": "^0.21.1",
     "browserslist": "^4.16.1",
+    "compare-versions": "^3.6.0",
     "core-js": "^3.8.3",
     "crypto-js": "^3.1.8",
     "element-ui": "^2.15.0",

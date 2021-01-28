@@ -1,3 +1,5 @@
+import compareVersions from 'compare-versions'
+
 import local, { getVersionFromLocalStore } from '@/store/local'
 
 import pack from '@/../package.json'
@@ -14,8 +16,8 @@ const updateScript: Record<string, () => Promise<void>> = {
 
 const runUpdateScript = async (): Promise<void> => {
   const convertVerStrToNum = (str: string) => Number(str.replace(/\./g, ''))
-  const updateScriptList = Object.entries(updateScript).sort(
-    ([a], [b]) => convertVerStrToNum(a) - convertVerStrToNum(b)
+  const updateScriptList = Object.entries(updateScript).sort(([a], [b]) =>
+    compareVersions(a, b)
   )
   const latestVersion = updateScriptList[updateScriptList.length - 1][0]
   const currentVersion = getVersionFromLocalStore()
