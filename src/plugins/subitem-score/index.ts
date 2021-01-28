@@ -13,15 +13,5 @@ export const SubitemScore: SUAPlugin = {
   route: {
     path: 'advanced_query/subitem_score',
     component: App
-  },
-  menu: {
-    rootMenuId: 'sua-menu-list',
-    rootMenuName: 'SCU URP 助手',
-    id: 'menu-advanced-query',
-    name: '高级查询',
-    item: {
-      name: '分项成绩查询',
-      route: 'advanced_query/subitem_score'
-    }
   }
 }
