@@ -16,7 +16,7 @@
         td
           i.fa.fa-calendar(aria-hidden='true')
         td 查询学期：
-        td {{ semester }}
+        td {{ semesterName }}
       tr
         td
           i.fa.fa-graduation-cap(aria-hidden='true')
@@ -32,6 +32,11 @@
           i.fa.fa-star(aria-hidden='true')
         td 课程成绩：
         td {{ score }} 分
+      tr
+        td
+          i.fa.fa-star-o(aria-hidden='true')
+        td 课程绩点：
+        td {{ gpa }}
     p 以下为 {{ course }} 的分项成绩查询结果：
   .col-sm-12
     table.subitem-info.table.table-striped.table-bordered.table-hover
@@ -55,6 +60,7 @@ import { convertSemesterNumberToName } from '@/helper/converter'
 import { requestSubitemScoreFxcj } from '@/store/actions/request'
 import { SubitemScoreRecord } from '@/store/actions/result.interface'
 import { Vue, Component } from 'vue-property-decorator'
+import { getPointByScore } from '../score/utils'
 
 @Component
 export default class SubitemScore extends Vue {
@@ -62,7 +68,14 @@ export default class SubitemScore extends Vue {
 
   get semester(): string {
     if (this.records.length) {
-      return convertSemesterNumberToName(this.records[0].ZXJXJHH)
+      return this.records[0].ZXJXJHH
+    }
+    return ''
+  }
+
+  get semesterName(): string {
+    if (this.semester) {
+      return convertSemesterNumberToName(this.semester)
     }
     return ''
   }
@@ -93,6 +106,15 @@ export default class SubitemScore extends Vue {
             CJFXZB: Number(CJFXZB)
           }))
           .reduce((acc, { FXCJ, CJFXZB }) => acc + FXCJ * CJFXZB, 0)
+      ).toString()
+    }
+    return ''
+  }
+
+  get gpa(): string {
+    if (this.score) {
+      return (
+        getPointByScore(Number(this.score), this.semester) ?? ''
       ).toString()
     }
     return ''
