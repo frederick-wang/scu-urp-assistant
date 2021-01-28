@@ -136,9 +136,14 @@ export const getCurrentRoutePath = (): string => {
   return ''
 }
 
+export const getCurrentRoute = (): Route | undefined => currentRoute
+
 export const getCurrentRouteParams = ():
   | Record<string, unknown>
   | undefined => {
+  if (getCurrentRoute()?.params) {
+    return getCurrentRoute()?.params
+  }
   const { sua_route_params: params } = parseQS(window.location.hash)
   if (typeof params === 'string') {
     return undefined
@@ -150,8 +155,6 @@ export const getCurrentRouteParams = ():
 
 export const getCurrentRouteConfigByRoutePath = (): RouteConfig =>
   routes.filter(({ path }) => getCurrentRoutePath() === path)[0]
-
-export const getCurrentRoute = (): Route | undefined => currentRoute
 
 export const getRouteConfigByName = (name: string): RouteConfig | null => {
   const result = routes.filter(v => name === v.name)
@@ -201,7 +204,7 @@ const convertRoutePathToName = (path: string): string =>
 function replace(
   path: string,
   routeOptions?: {
-    params: Record<string, unknown>
+    params?: Record<string, unknown>
   }
 ): Route | undefined
 function replace(routeOptions: {
@@ -236,7 +239,7 @@ function replace(
 
   if (typeof p === 'string') {
     r.path = p
-    r.params = ps
+    r.params = ps?.params
   } else {
     // param 的 path 和 name 是二选一的关系，一个存在另一个就一定不存在
     if (p.path) {
@@ -267,7 +270,7 @@ function replace(
 function push(
   path: string,
   routeOptions?: {
-    params: Record<string, unknown>
+    params?: Record<string, unknown>
   }
 ): Route | undefined
 function push(routeOptions: {
@@ -302,7 +305,7 @@ function push(
 
   if (typeof p === 'string') {
     r.path = p
-    r.params = ps
+    r.params = ps?.params
   } else {
     // param 的 path 和 name 是二选一的关系，一个存在另一个就一定不存在
     if (p.path) {
@@ -413,11 +416,14 @@ function changeRouter(r: Partial<Route>) {
       }
       if (r.params) {
         hashObject.sua_route_params = r.params
+      } else {
+        delete hashObject.sua_route_params
       }
       // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
       setTimeout(() => {
         window.location.hash = `#${stringifyQS(hashObject)}`
       }, 0)
+      currentRoute = routeToBeEnter
       render($('.main-content>.page-content')[0])
     } else if (typeof param === 'string') {
       replace(param)
@@ -446,7 +452,6 @@ function changeRouter(r: Partial<Route>) {
     beforeEnter(routeHookNextFunction, routeToBeEnter, currentRoute)
   } else {
     routeHookNextFunction()
-    currentRoute = routeToBeEnter
   }
   return routeToBeEnter
 }

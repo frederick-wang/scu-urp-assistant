@@ -14,7 +14,7 @@ import {
 import JsonViewer from 'vue-json-viewer'
 import { routeTrigger } from '@/helper/util'
 import { Breadcrumbs, SUAPluginMenu } from './types'
-import { addRoute, RouteConfig, router } from './router'
+import { addRoute, getCurrentRouteParams, RouteConfig, router } from './router'
 
 /**
  * 加载 Vue 组件
@@ -60,7 +60,9 @@ export const loadGlobalStyle = (): void => {
 export const loadRouteConfig = (routeConfig: RouteConfig): void => {
   addRoute(routeConfig)
   if (routeTrigger(routeConfig.path)) {
-    router.push(routeConfig.path)
+    router.push(routeConfig.path, {
+      params: getCurrentRouteParams()
+    })
   }
 }
 
