@@ -1,7 +1,4 @@
-import {
-  parse as parseQueryString,
-  stringify as stringifyQueryString
-} from 'query-string'
+import { parse as parseQS, stringify as stringifyQS } from 'qs'
 import { isLoginPage } from '@/helper/judger'
 import { RequireOnlyOne } from '@/helper/util'
 import Vue, { VNode, VNodeData, VueConstructor } from 'vue'
@@ -131,10 +128,24 @@ export const getHistory = (): Route[] => history
 
 export const getCurrentRoutePath = (): string => {
   if (!isLoginPage()) {
-    const { sua_route: suaRoute } = parseQueryString(window.location.hash)
+    const { sua_route: suaRoute } = parseQS(
+      window.location.hash.replace(/^#/, '')
+    )
     return (suaRoute ?? '').toString()
   }
   return ''
+}
+
+export const getCurrentRouteParams = ():
+  | Record<string, unknown>
+  | undefined => {
+  const { sua_route_params: params } = parseQS(window.location.hash)
+  if (typeof params === 'string') {
+    return undefined
+  } else if (Array.isArray(params)) {
+    return undefined
+  }
+  return params as Record<string, unknown> | undefined
 }
 
 export const getCurrentRouteConfigByRoutePath = (): RouteConfig =>
@@ -394,13 +405,18 @@ function changeRouter(r: Partial<Route>) {
       const $pageContent = $('.main-content>.page-content')
       $pageContent.empty()
       // 因为需要兼容书签版，只有修改 hashtag 不会触发页面的刷新
-      const hashObject = parseQueryString(window.location.hash)
+      const hashObject: Record<string, unknown> = parseQS(
+        window.location.hash.replace(/^#/, '')
+      )
       if (r.path) {
         hashObject.sua_route = r.path
       }
+      if (r.params) {
+        hashObject.sua_route_params = r.params
+      }
       // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
       setTimeout(() => {
-        window.location.hash = `#${stringifyQueryString(hashObject)}`
+        window.location.hash = `#${stringifyQS(hashObject)}`
       }, 0)
       render($('.main-content>.page-content')[0])
     } else if (typeof param === 'string') {
@@ -444,6 +460,9 @@ export const router = {
   },
   get currentRoutePath(): string {
     return getCurrentRoutePath()
+  },
+  get currentRouteParams(): Record<string, unknown> | undefined {
+    return getCurrentRouteParams()
   },
   get currentRouteConfig(): RouteConfig {
     return getCurrentRouteConfigByRoutePath()
