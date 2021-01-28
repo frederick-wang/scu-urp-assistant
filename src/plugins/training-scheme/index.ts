@@ -33,13 +33,11 @@ export const TrainingScheme: SUAPlugin = {
     item: [
       {
         name: '培养方案查询',
-        route: 'advanced_query/query_training_scheme',
-        breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案查询']
+        route: 'advanced_query/query_training_scheme'
       },
       {
         name: '培养方案比较',
-        route: 'advanced_query/compare_training_scheme',
-        breadcrumbs: ['SCU URP 助手', '高级查询', '培养方案比较']
+        route: 'advanced_query/compare_training_scheme'
       }
     ]
   }

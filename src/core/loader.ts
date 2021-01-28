@@ -78,9 +78,11 @@ const changeMenu = (
   $menuItem.find('a').prepend("<i class='menu-icon fa fa-caret-right'></i>")
 }
 
+type Breadcrumbs = [string, string, string]
+
 const showBreadcrumbs = (
   rootMenuId: string,
-  breadcrumbs: string[],
+  breadcrumbs: Breadcrumbs,
   menuId: string,
   id: string
 ) => {
@@ -138,7 +140,7 @@ export const loadMenu = (menu: SUAPluginMenu): void => {
     `)
   }
   const $menu = $rootMenu.find(`li#${menuId}>ul.submenu`)
-  items.forEach(({ name, route, breadcrumbs }) => {
+  items.forEach(({ name, route }) => {
     const id = `menu-item-${name}`
     $menu.append(`
       <li class="sua-menu-item" id="${id}">
@@ -147,6 +149,7 @@ export const loadMenu = (menu: SUAPluginMenu): void => {
       </li>
     `)
     const $menuItem = $menu.children(`#${id}`)
+    const breadcrumbs: Breadcrumbs = [rootMenuName, menuName, name]
     const menuItemClickHandler = () => {
       changeMenu($rootMenu, $menu, $menuItem)
       showBreadcrumbs(rootMenuId, breadcrumbs, menuId, id)

@@ -9,7 +9,10 @@ export const About: SUAPlugin = {
   isNecessary: true,
   defaultEnabledState: true,
   brief: '关于页面，是助手界面的一部分，不可关闭。',
-  route: { path: 'help/about', component: App },
+  route: {
+    path: 'help/about',
+    component: App
+  },
   menu: {
     rootMenuId: 'sua-menu-list',
     rootMenuName: 'SCU URP 助手',
@@ -17,8 +20,7 @@ export const About: SUAPlugin = {
     name: '帮助',
     item: {
       name: '关于',
-      route: 'help/about',
-      breadcrumbs: ['SCU URP 助手', '帮助', '关于']
+      route: 'help/about'
     }
   }
 }

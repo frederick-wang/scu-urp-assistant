@@ -9,7 +9,10 @@ export const ScuUietp: SUAPlugin = {
   isNecessary: false,
   defaultEnabledState: true,
   brief: '查询历年大创的立项信息。',
-  route: { path: 'advanced_query/scu_uietp', component: App },
+  route: {
+    path: 'advanced_query/scu_uietp',
+    component: App
+  },
   menu: {
     rootMenuId: 'sua-menu-list',
     rootMenuName: 'SCU URP 助手',
@@ -17,8 +20,7 @@ export const ScuUietp: SUAPlugin = {
     name: '高级查询',
     item: {
       name: '历届大创查询',
-      route: 'advanced_query/scu_uietp',
-      breadcrumbs: ['SCU URP 助手', '高级查询', '历届大创查询']
+      route: 'advanced_query/scu_uietp'
     }
   }
 }

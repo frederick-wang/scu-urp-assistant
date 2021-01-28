@@ -29,8 +29,7 @@ export default {
       name: '课程信息交流',
       item: {
         name: '评价已选课程',
-        route: 'course_evaluation/evaluate_selected_courses',
-        breadcrumbs: ['SCU URP 助手', '课程信息交流', '评价已选课程']
+        route: 'course_evaluation/evaluate_selected_courses'
       }
     },
     {
@@ -40,8 +39,7 @@ export default {
       name: '课程信息交流',
       item: {
         name: '查询课程评价',
-        route: 'course_evaluation/query_course_evaluation',
-        breadcrumbs: ['SCU URP 助手', '课程信息交流', '查询课程评价']
+        route: 'course_evaluation/query_course_evaluation'
       }
     }
   ]
