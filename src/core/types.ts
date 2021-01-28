@@ -44,3 +44,5 @@ export interface SUAPluginMenuItem {
   name: string
   route: string
 }
+
+export type Breadcrumbs = [string, string, string]

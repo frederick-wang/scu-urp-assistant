@@ -13,9 +13,8 @@ import {
 } from 'element-ui'
 import JsonViewer from 'vue-json-viewer'
 import { routeTrigger } from '@/helper/util'
-import { SUAPluginMenu } from './types'
+import { Breadcrumbs, SUAPluginMenu } from './types'
 import { addRoute, RouteConfig, router } from './router'
-import { Logger } from '@/helper/logger'
 
 /**
  * 加载 Vue 组件
@@ -65,41 +64,52 @@ export const loadRouteConfig = (routeConfig: RouteConfig): void => {
   }
 }
 
-const changeMenu = (
+const changeMenuAndBreadcrumbs = (
   $rootMenu: JQuery<HTMLElement>,
   $menu: JQuery<HTMLElement>,
-  $menuItem: JQuery<HTMLElement>
-) => {
-  $('.hsub').removeClass('open')
-  $('.submenu').css('display', 'none')
-  $('.submenu>li').removeClass('active')
-  $('.submenu>li>a>.menu-icon').remove()
-  $rootMenu.parent().addClass('open')
-  $rootMenu.css('display', 'block')
-  $menu.parent().addClass('open')
-  $menu.css('display', 'block')
-  $menuItem.addClass('active')
-  $menuItem.find('a').prepend("<i class='menu-icon fa fa-caret-right'></i>")
-}
-
-type Breadcrumbs = [string, string, string]
-
-const showBreadcrumbs = (
+  $menuItem: JQuery<HTMLElement>,
   rootMenuId: string,
   breadcrumbs: Breadcrumbs,
   menuId: string,
   id: string
 ) => {
-  const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
-  $breadcrumbs.empty().append(`
-  <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
-    <i class="ace-icon fa fa-home home-icon"></i>
-    首页
-  </li>
-  <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${breadcrumbs[0]}</li>
-  <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${breadcrumbs[1]}</li>
-  <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${breadcrumbs[2]}</li>
-`)
+  const changeMenu = (
+    $rootMenu: JQuery<HTMLElement>,
+    $menu: JQuery<HTMLElement>,
+    $menuItem: JQuery<HTMLElement>
+  ) => {
+    $('.hsub').removeClass('open')
+    $('.submenu').css('display', 'none')
+    $('.submenu>li').removeClass('active')
+    $('.submenu>li>a>.menu-icon').remove()
+    $rootMenu.parent().addClass('open')
+    $rootMenu.css('display', 'block')
+    $menu.parent().addClass('open')
+    $menu.css('display', 'block')
+    $menuItem.addClass('active')
+    $menuItem.find('a').prepend("<i class='menu-icon fa fa-caret-right'></i>")
+  }
+
+  const showBreadcrumbs = (
+    rootMenuId: string,
+    breadcrumbs: Breadcrumbs,
+    menuId: string,
+    id: string
+  ) => {
+    const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
+    $breadcrumbs.empty().append(`
+    <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
+      <i class="ace-icon fa fa-home home-icon"></i>
+      首页
+    </li>
+    <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${breadcrumbs[0]}</li>
+    <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${breadcrumbs[1]}</li>
+    <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${breadcrumbs[2]}</li>
+  `)
+  }
+
+  changeMenu($rootMenu, $menu, $menuItem)
+  showBreadcrumbs(rootMenuId, breadcrumbs, menuId, id)
 }
 
 /**
@@ -155,13 +165,27 @@ export const loadMenu = (menu: SUAPluginMenu): void => {
     const $menuItem = $menu.children(`#${id}`)
     const breadcrumbs: Breadcrumbs = [rootMenuName, menuName, name]
     $menuItem.click(() => {
-      changeMenu($rootMenu, $menu, $menuItem)
-      showBreadcrumbs(rootMenuId, breadcrumbs, menuId, id)
+      changeMenuAndBreadcrumbs(
+        $rootMenu,
+        $menu,
+        $menuItem,
+        rootMenuId,
+        breadcrumbs,
+        menuId,
+        id
+      )
       router.push(route)
     })
     if (routeTrigger(route)) {
-      changeMenu($rootMenu, $menu, $menuItem)
-      showBreadcrumbs(rootMenuId, breadcrumbs, menuId, id)
+      changeMenuAndBreadcrumbs(
+        $rootMenu,
+        $menu,
+        $menuItem,
+        rootMenuId,
+        breadcrumbs,
+        menuId,
+        id
+      )
     }
   })
 }
