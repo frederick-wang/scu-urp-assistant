@@ -27,12 +27,12 @@
           i.fa.fa-clock-o(aria-hidden='true')
         td 考试时间：
         td {{ examTime }}
-      tr
+      tr(v-if='isScoreShown')
         td
           i.fa.fa-star(aria-hidden='true')
         td 课程成绩：
         td {{ score }} 分
-      tr
+      tr(v-if='isScoreShown')
         td
           i.fa.fa-star-o(aria-hidden='true')
         td 课程绩点：
@@ -118,6 +118,10 @@ export default class SubitemScore extends Vue {
       ).toString()
     }
     return ''
+  }
+
+  get isScoreShown(): boolean {
+    return this.records.every(({ FXCJ }) => FXCJ)
   }
 
   async mounted(): Promise<void> {
