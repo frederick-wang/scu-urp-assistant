@@ -2,8 +2,8 @@
 // TODO: 1. 将弹出框的方向修改为自适应的上下左右4种，且大小在加载出来数据后也可以自适应
 // TODO: 2. 美化表格样式
 // TODO: 3. 将课程中时间和地点的对应关系体现的更清晰，分成两行
-import QueryTrainingScheme from '@/plugins/common/components/Blank.vue'
-import CompareTrainingScheme from '@/plugins/common/components/Blank.vue'
+import QueryTrainingScheme from '@/plugins/common/components/Tip.vue'
+import CompareTrainingScheme from '@/plugins/common/components/Tip.vue'
 import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
 
@@ -18,11 +18,23 @@ export const TrainingScheme: SUAPlugin = {
   route: [
     {
       path: 'advanced_query/query_training_scheme',
-      component: QueryTrainingScheme
+      component: QueryTrainingScheme,
+      componentOptions: {
+        props: {
+          tip:
+            '抱歉，「培养方案查询」功能正在维护中，暂时无法使用，请等待后续版本更新。'
+        }
+      }
     },
     {
       path: 'advanced_query/compare_training_scheme',
-      component: CompareTrainingScheme
+      component: CompareTrainingScheme,
+      componentOptions: {
+        props: {
+          tip:
+            '抱歉，「培养方案比较」功能正在维护中，暂时无法使用，请等待后续版本更新。'
+        }
+      }
     }
   ],
   menu: {
