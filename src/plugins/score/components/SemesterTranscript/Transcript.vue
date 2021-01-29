@@ -75,6 +75,7 @@ export default class Transcript extends Vue {
    */
   async querySubitemScore({
     executiveEducationPlanNumber,
+    courseName,
     courseNumber,
     courseSequenceNumber,
     examTime,
@@ -96,6 +97,11 @@ export default class Transcript extends Vue {
           examTime,
           coursePropertyCode
         }
+      })
+    } else {
+      Vue.prototype.$message({
+        message: `抱歉，由于种种原因，没有查询到课程「${courseName}（${courseNumber}-${courseSequenceNumber}）」的分项成绩记录`,
+        type: 'error'
       })
     }
   }
