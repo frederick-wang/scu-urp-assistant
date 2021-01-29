@@ -5,3 +5,7 @@ export const isSCU = (): boolean =>
   window.location.href.indexOf('zhjw.scu.edu.cn') !== -1
 
 export const isLoginPage = (): boolean => window.location.pathname === '/login'
+
+export function isError(arg: unknown): arg is Error {
+  return Object.prototype.toString.call(arg).includes('Error')
+}

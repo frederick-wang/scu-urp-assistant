@@ -1,5 +1,5 @@
 import { parse as parseQS, stringify as stringifyQS } from 'qs'
-import { isLoginPage } from '@/helper/judger'
+import { isError, isLoginPage } from '@/helper/judger'
 import { RequireOnlyOne } from '@/helper/util'
 import Vue, { VNode, VNodeData, VueConstructor } from 'vue'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
@@ -341,10 +341,6 @@ const go = (n: number): Route | undefined => {
 const back = (): Route | undefined => go(-1)
 
 const forward = (): Route | undefined => go(1)
-
-function isError(arg: unknown): arg is Error {
-  return Object.prototype.toString.call(arg).includes('Error')
-}
 
 type RouterChangeMode = 'push' | 'replace' | 'history'
 
