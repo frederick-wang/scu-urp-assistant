@@ -1,3 +1,21 @@
+## [0.11.1](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.0...v0.11.1) (2021-01-29)
+
+
+### Bug Fixes
+
+* **helper/util:** 将 console 换成 Logger ([0991a8b](https://github.com/frederick-wang/scu-urp-assistant/commit/0991a8bd286d6f5ea6083af1279d340361674bba))
+* **plugin/setting:** 修复了插件管理页面中，插件的 tag 过多时，行与行之间粘连的 bug ([0842991](https://github.com/frederick-wang/scu-urp-assistant/commit/08429916482a88ea8c5d1ff69185f97c6577621c))
+
+
+### Features
+
+* **helper/util:** 将 Element-UI 的 Message 和 Notification 组件提出全局方法以便调用 ([35497b4](https://github.com/frederick-wang/scu-urp-assistant/commit/35497b47eb0c94e1ccda043d9d88cbcdbfb142a5))
+* **plugin/subitem-score:** 分项成绩查询页面增加「分项成绩 × 所占系数」一列，方便查看 ([c956498](https://github.com/frederick-wang/scu-urp-assistant/commit/c956498cf185c482e0e9deaffcfb46dc2c66e565))
+* **plugin/subitem-score:** 增加参数校验与错误提示 ([37550f2](https://github.com/frederick-wang/scu-urp-assistant/commit/37550f230273a1e278b30c3f94d0f993a45c73ac))
+* **plugin/subitem-score:** 统计分项成绩查询成功或失败的次数信息 ([248159c](https://github.com/frederick-wang/scu-urp-assistant/commit/248159cf3e86ed47a84b94481020443585b6b1b1))
+
+
+
 # [0.11.0](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.10.4...v0.11.0) (2021-01-29)
 
 
