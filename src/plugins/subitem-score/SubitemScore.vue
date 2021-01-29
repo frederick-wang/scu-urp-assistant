@@ -65,6 +65,7 @@ import { SubitemScoreRecord } from '@/store/actions/result.interface'
 import { Vue, Component } from 'vue-property-decorator'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { getPointByScore } from '../score/utils'
+import { emitDataAnalysisEvent } from '../data-analysis'
 
 @Component({
   components: { Loading }
@@ -146,8 +147,13 @@ export default class SubitemScore extends Vue {
         coursePropertyCode
       } = params
       const fxcjId = `${executiveEducationPlanNumber}_${courseNumber}_${courseSequenceNumber}_${examTime}_${coursePropertyCode}`
-      this.records = await requestSubitemScoreFxcj(fxcjId)
-      this.loadingIsDone = true
+      try {
+        this.records = await requestSubitemScoreFxcj(fxcjId)
+        this.loadingIsDone = true
+        emitDataAnalysisEvent('分项成绩查询', '查询成功')
+      } catch (error) {
+        emitDataAnalysisEvent('分项成绩查询', '查询失败')
+      }
     }
   }
 }
