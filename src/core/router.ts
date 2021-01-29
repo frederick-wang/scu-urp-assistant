@@ -39,7 +39,7 @@ const routes: RouteConfig[] = []
 
 const history: Route[] = []
 
-let currentRoute: Route | undefined = undefined
+let currentRouteIndexInHistory: number | undefined = undefined
 
 export const addRoute = (r: RouteConfig): number => {
   const hasDuplicationOfPath = (routes: RouteConfig[], path: string) =>
@@ -136,7 +136,10 @@ export const getCurrentRoutePath = (): string => {
   return ''
 }
 
-export const getCurrentRoute = (): Route | undefined => currentRoute
+export const getCurrentRoute = (): Route | undefined =>
+  currentRouteIndexInHistory === undefined
+    ? currentRouteIndexInHistory
+    : history[currentRouteIndexInHistory]
 
 export const getCurrentRouteParams = ():
   | Record<string, unknown>
@@ -254,12 +257,7 @@ function replace(
   }
 
   try {
-    const result = changeRouter(r)
-    if (history.length) {
-      history[history.length - 1] = result
-    } else {
-      history.push(result)
-    }
+    const result = changeRouter(r, 'replace')
     return result
   } catch (error) {
     console.error(error)
@@ -320,14 +318,7 @@ function push(
   }
 
   try {
-    const result = changeRouter(r)
-    if (history.length) {
-      if (history[history.length - 1].path !== result.path) {
-        history.push(result)
-      }
-    } else {
-      history.push(result)
-    }
+    const result = changeRouter(r, 'push')
     return result
   } catch (error) {
     console.error(error)
@@ -335,34 +326,63 @@ function push(
   }
 }
 
+const go = (n: number): Route | undefined => {
+  if (!currentRouteIndexInHistory) {
+    return undefined
+  }
+  const newIndex = currentRouteIndexInHistory + n
+  if (newIndex < 0 || newIndex >= history.length) {
+    return undefined
+  }
+  return changeRouter(newIndex, 'history')
+}
+
+const back = (): Route | undefined => go(-1)
+
+const forward = (): Route | undefined => go(1)
+
 function isError(arg: unknown): arg is Error {
   return Object.prototype.toString.call(arg).includes('Error')
 }
 
-function changeRouter(r: Partial<Route>) {
+type RouterChangeMode = 'push' | 'replace' | 'history'
+
+function changeRouter(newIndex: number, changeMode: 'history'): Route
+function changeRouter(r: Partial<Route>, changeMode: 'push' | 'replace'): Route
+function changeRouter(
+  r: Partial<Route> | number,
+  changeMode: RouterChangeMode
+): Route {
   let path: string | undefined = undefined
   let name: string | undefined = undefined
   let routeConfig: RouteConfig | null = null
   let params: Record<string, unknown> | undefined = undefined
 
-  if (r.path) {
-    routeConfig = getRouteConfigByPath(r.path)
-    if (routeConfig) {
-      path = routeConfig.path
-      name = routeConfig.name
-    } else {
-      if (r.name) {
-        routeConfig = getRouteConfigByName(r.name)
-        if (routeConfig) {
-          path = routeConfig.path
-          name = r.name
+  if (typeof r === 'number') {
+    path = history[r].path
+    name = history[r].name
+    params = history[r].params
+    routeConfig = getRouteConfigByPath(history[r].path)
+  } else {
+    if (r.path) {
+      routeConfig = getRouteConfigByPath(r.path)
+      if (routeConfig) {
+        path = routeConfig.path
+        name = routeConfig.name
+      } else {
+        if (r.name) {
+          routeConfig = getRouteConfigByName(r.name)
+          if (routeConfig) {
+            path = routeConfig.path
+            name = r.name
+          }
         }
       }
     }
-  }
 
-  if (r.params) {
-    params = r.params
+    if (r.params) {
+      params = r.params
+    }
   }
 
   if (!path || !routeConfig) {
@@ -411,11 +431,11 @@ function changeRouter(r: Partial<Route>) {
       const hashObject: Record<string, unknown> = parseQS(
         window.location.hash.replace(/^#/, '')
       )
-      if (r.path) {
-        hashObject.sua_route = r.path
+      if (routeToBeEnter.path) {
+        hashObject.sua_route = routeToBeEnter.path
       }
-      if (r.params) {
-        hashObject.sua_route_params = r.params
+      if (routeToBeEnter.params) {
+        hashObject.sua_route_params = routeToBeEnter.params
       } else {
         delete hashObject.sua_route_params
       }
@@ -423,7 +443,42 @@ function changeRouter(r: Partial<Route>) {
       setTimeout(() => {
         window.location.hash = `#${stringifyQS(hashObject)}`
       }, 0)
-      currentRoute = routeToBeEnter
+      switch (changeMode) {
+        case 'push': {
+          if (history.length) {
+            if (history[history.length - 1].path !== routeToBeEnter.path) {
+              history.push(routeToBeEnter)
+            }
+          } else {
+            history.push(routeToBeEnter)
+          }
+          currentRouteIndexInHistory = history.length - 1
+          break
+        }
+        case 'replace': {
+          if (history.length) {
+            history[history.length - 1] = routeToBeEnter
+          } else {
+            history.push(routeToBeEnter)
+          }
+          currentRouteIndexInHistory = history.length - 1
+          break
+        }
+        case 'history': {
+          if (typeof r === 'number') {
+            currentRouteIndexInHistory = r
+            break
+          }
+        }
+        default:
+          Vue.prototype.$notify.error({
+            title: `[路由跳转] ${routeToBeEnter.path}`,
+            message: '路由跳转模式设置有误！'
+          })
+          throw new Error(
+            `路由跳转: ${routeToBeEnter.path} 路由跳转模式设置有误！`
+          )
+      }
       render($('.main-content>.page-content')[0])
     } else if (typeof param === 'string') {
       replace(param)
@@ -449,7 +504,7 @@ function changeRouter(r: Partial<Route>) {
   }
   const routeHookNextFunction = createRouteHookNextFunction()
   if (beforeEnter) {
-    beforeEnter(routeHookNextFunction, routeToBeEnter, currentRoute)
+    beforeEnter(routeHookNextFunction, routeToBeEnter, getCurrentRoute())
   } else {
     routeHookNextFunction()
   }
@@ -476,7 +531,10 @@ export const router = {
     return getHistory()
   },
   push,
-  replace
+  replace,
+  go,
+  back,
+  forward
 }
 
 export type Router = typeof router
