@@ -1,9 +1,10 @@
 import minimatch from 'minimatch'
 import { state } from '@/store'
-import { isLoginPage } from './judger'
+import { isError, isLoginPage } from './judger'
 import { API_PATH_V2 } from './info'
 import axios, { AxiosInstance } from 'axios'
 import { getCurrentRoutePath } from '@/core/router'
+import Vue from 'vue'
 
 export const sleep = (time: number): Promise<void> =>
   new Promise(resolve => setTimeout(() => resolve(), time))
@@ -99,6 +100,70 @@ export const http = (): AxiosInstance =>
         : {})
     }
   })
+
+export function notifyError(message: string, title?: string): void
+export function notifyError(error: Error, title?: string): void
+export function notifyError(error: string | Error, title?: string): void {
+  const message = typeof error === 'string' ? error : error.message
+  if (!title) {
+    title = isError(error) ? error.name : '错误'
+  }
+  Vue.prototype.$notify.error({
+    title,
+    message
+  })
+  console.error(isError(error) ? error : new Error(message))
+}
+
+export function notifyWarning(message: string, title?: string): void {
+  if (!title) {
+    title = '警告'
+  }
+  Vue.prototype.$notify.error({
+    title,
+    message
+  })
+  console.warn(message)
+}
+
+export function notifySuccess(message: string, title?: string): void {
+  if (!title) {
+    title = '成功'
+  }
+  Vue.prototype.$notify.success({
+    title,
+    message
+  })
+}
+
+export function notifyInfo(message: string, title?: string): void {
+  if (!title) {
+    title = '信息'
+  }
+  Vue.prototype.$notify.info({
+    title,
+    message
+  })
+}
+
+export function messageError(message: string): void
+export function messageError(error: Error): void
+export function messageError(error: string | Error): void {
+  const message = typeof error === 'string' ? error : error.message
+  Vue.prototype.$message.error(message)
+}
+
+export function messageWarning(message: string): void {
+  Vue.prototype.$message.warning(message)
+}
+
+export function messageSuccess(message: string): void {
+  Vue.prototype.$message.success(message)
+}
+
+export function messageInfo(message: string): void {
+  Vue.prototype.$message.info(message)
+}
 
 export type Without<T, U> = {
   [P in Exclude<keyof T, keyof U>]?: never
