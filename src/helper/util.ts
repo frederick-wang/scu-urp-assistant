@@ -5,6 +5,7 @@ import { API_PATH_V2 } from './info'
 import axios, { AxiosInstance } from 'axios'
 import { getCurrentRoutePath } from '@/core/router'
 import Vue from 'vue'
+import { Logger } from './logger'
 
 export const sleep = (time: number): Promise<void> =>
   new Promise(resolve => setTimeout(() => resolve(), time))
@@ -112,7 +113,7 @@ export function notifyError(error: string | Error, title?: string): void {
     title,
     message
   })
-  console.error(isError(error) ? error : new Error(message))
+  Logger.error(isError(error) ? error : new Error(message))
 }
 
 export function notifyWarning(message: string, title?: string): void {
@@ -123,7 +124,7 @@ export function notifyWarning(message: string, title?: string): void {
     title,
     message
   })
-  console.warn(message)
+  Logger.warn(message)
 }
 
 export function notifySuccess(message: string, title?: string): void {
