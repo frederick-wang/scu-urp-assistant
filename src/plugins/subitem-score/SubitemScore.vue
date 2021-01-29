@@ -47,12 +47,14 @@
           th 分项名称
           th 分项成绩
           th 分项所占系数
+          th 分项成绩 × 所占系数
       tbody#scoreintbody
         tr(v-for='(v, i) in records', :key='i')
           td {{ i + 1 }}
           td {{ v.CJFXMC }}
           td {{ v.FXCJ }}
           td {{ Number(v.CJFXZB) }}
+          td {{ v.FXCJ && `${v.FXCJ} × ${Number(v.CJFXZB)} = ${Number(v.FXCJ) * Number(v.CJFXZB)}` }}
 </template>
 
 <script lang="ts">
