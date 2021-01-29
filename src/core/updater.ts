@@ -8,29 +8,39 @@ import { addPreStartTask } from './hook'
 
 const { version: targetVersion } = pack
 
-const updateScript: Record<string, () => Promise<void>> = {
+const updateScript: Record<string, () => Promise<void> | void> = {
   '0.10.5': async function() {
     local.removeAll()
   }
 }
 
 const runUpdateScript = async (): Promise<void> => {
-  const convertVerStrToNum = (str: string) => Number(str.replace(/\./g, ''))
   const updateScriptList = Object.entries(updateScript).sort(([a], [b]) =>
     compareVersions(a, b)
   )
   const latestVersion = updateScriptList[updateScriptList.length - 1][0]
   const currentVersion = getVersionFromLocalStore()
-  if (convertVerStrToNum(currentVersion) < convertVerStrToNum(latestVersion)) {
+
+  if (compareVersions(latestVersion, currentVersion) > 0) {
     const currentVersionIndex = updateScriptList
       .map(([v]) => v)
       .indexOf(currentVersion)
     const versionIndex = updateScriptList.map(([v]) => v).indexOf(targetVersion)
-    for (
-      let i = currentVersionIndex == -1 ? 0 : currentVersionIndex;
-      i <= versionIndex;
-      i++
-    ) {
+    const beginIndex = currentVersionIndex == -1 ? 0 : currentVersionIndex
+    let endIndex = -1
+    if (versionIndex !== -1) {
+      endIndex = versionIndex
+    } else {
+      const restUpdateScriptList = updateScriptList.filter(
+        ([ver]) => compareVersions(targetVersion, ver) >= 0
+      )
+      if (restUpdateScriptList.length) {
+        endIndex = updateScriptList.indexOf(
+          restUpdateScriptList[restUpdateScriptList.length - 1]
+        )
+      }
+    }
+    for (let i = beginIndex; i <= endIndex; i++) {
       Logger.info(
         `执行更新脚本：${updateScriptList[i][0]} (当前版本：${currentVersion}，目标版本：${targetVersion})`
       )
