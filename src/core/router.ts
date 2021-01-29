@@ -3,6 +3,7 @@ import { isLoginPage } from '@/helper/judger'
 import { RequireOnlyOne } from '@/helper/util'
 import Vue, { VNode, VNodeData, VueConstructor } from 'vue'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
+import { equals } from 'ramda'
 
 export interface Route {
   path: string
@@ -446,7 +447,13 @@ function changeRouter(
       switch (changeMode) {
         case 'push': {
           if (history.length) {
-            if (history[history.length - 1].path !== routeToBeEnter.path) {
+            if (currentRouteIndexInHistory) {
+              history.length = currentRouteIndexInHistory + 1
+            }
+            if (
+              history[history.length - 1].path !== routeToBeEnter.path ||
+              !equals(history[history.length - 1].params, routeToBeEnter.params)
+            ) {
               history.push(routeToBeEnter)
             }
           } else {
@@ -457,6 +464,9 @@ function changeRouter(
         }
         case 'replace': {
           if (history.length) {
+            if (currentRouteIndexInHistory) {
+              history.length = currentRouteIndexInHistory + 1
+            }
             history[history.length - 1] = routeToBeEnter
           } else {
             history.push(routeToBeEnter)
