@@ -7,7 +7,7 @@
       |
       | 分项成绩查询
       span.right_top_oper
-        button.btn.btn-info.btn-xs.btn-round(title='返回')
+        button.btn.btn-info.btn-xs.btn-round(title='返回', @click='back()')
           i.ace-icon.fa.fa-reply
           |
           | 返回
@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { getCurrentRouteParams } from '@/core/router'
+import { getCurrentRouteParams, router } from '@/core/router'
 import { convertSemesterNumberToName } from '@/helper/converter'
 import { requestSubitemScoreFxcj } from '@/store/actions/request'
 import { SubitemScoreRecord } from '@/store/actions/result.interface'
@@ -127,6 +127,10 @@ export default class SubitemScore extends Vue {
 
   get isScoreShown(): boolean {
     return this.records.every(({ FXCJ }) => FXCJ)
+  }
+
+  back(): void {
+    router.back()
   }
 
   async mounted(): Promise<void> {
