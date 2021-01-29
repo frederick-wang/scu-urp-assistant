@@ -1,9 +1,9 @@
-import Vue from 'vue'
 import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
 import * as template from './template'
 import { Logger } from '@/helper/logger'
 import { emitDataAnalysisEvent } from '../data-analysis'
+import { messageError, messageSuccess } from '@/helper/util'
 
 export default {
   name: 'textbook-selection',
@@ -33,28 +33,19 @@ async function onClickSelectAllBtn(): Promise<void> {
   const { result, token } = await $.post(url, { tokenValue, param })
   Logger.info({ result, token })
   if (result === 'ok') {
-    Vue.prototype.$message({
-      message: '全选所有教材成功！正在刷新页面……',
-      type: 'success'
-    })
+    messageSuccess('全选所有教材成功！正在刷新页面……')
     emitDataAnalysisEvent('教材选择', '全选所有教材成功')
     setTimeout(() => {
       window.location.reload()
     }, 3000)
   } else if (result === '/logout') {
-    Vue.prototype.$message({
-      message: '登录状态过期，请重新登录……',
-      type: 'error'
-    })
+    messageError('登录状态过期，请重新登录……')
     emitDataAnalysisEvent('教材选择', '全选所有教材失败')
     setTimeout(() => {
       window.location.href = '/login'
     }, 3000)
   } else {
-    Vue.prototype.$message({
-      message: '未知错误',
-      type: 'error'
-    })
+    messageError('未知错误')
     emitDataAnalysisEvent('教材选择', '全选所有教材遭遇未知错误')
   }
 }
@@ -68,28 +59,19 @@ async function onClickUnselectAllBtn(): Promise<void> {
   const { result, token } = await $.post(url, { tokenValue, param })
   Logger.info({ result, token })
   if (result === 'ok') {
-    Vue.prototype.$message({
-      message: '全不选所有教材成功！正在刷新页面……',
-      type: 'success'
-    })
+    messageSuccess('全不选所有教材成功！正在刷新页面……')
     emitDataAnalysisEvent('教材选择', '全不选所有教材成功')
     setTimeout(() => {
       window.location.reload()
     }, 3000)
   } else if (result === '/logout') {
-    Vue.prototype.$message({
-      message: '登录状态过期，请重新登录……',
-      type: 'error'
-    })
+    messageError('登录状态过期，请重新登录……')
     emitDataAnalysisEvent('教材选择', '全不选所有教材失败')
     setTimeout(() => {
       window.location.href = '/login'
     }, 3000)
   } else {
-    Vue.prototype.$message({
-      message: '未知错误',
-      type: 'error'
-    })
+    messageError('未知错误')
     emitDataAnalysisEvent('教材选择', '全不选所有教材遭遇未知错误')
   }
 }

@@ -56,6 +56,7 @@ import { Vue, Component, Prop } from 'vue-property-decorator'
 import { CourseScoreRecord } from '@/plugins/score/types'
 import { router } from '@/core/router'
 import { requestSubitemScoreLook } from '@/store/actions/request'
+import { messageError } from '@/helper/util'
 
 @Component
 export default class Transcript extends Vue {
@@ -99,10 +100,9 @@ export default class Transcript extends Vue {
         }
       })
     } else {
-      Vue.prototype.$message({
-        message: `抱歉，由于种种原因，没有查询到课程「${courseName}（${courseNumber}-${courseSequenceNumber}）」的分项成绩记录`,
-        type: 'error'
-      })
+      messageError(
+        `抱歉，由于种种原因，没有查询到课程「${courseName}（${courseNumber}-${courseSequenceNumber}）」的分项成绩记录`
+      )
     }
   }
 }

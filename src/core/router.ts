@@ -1,6 +1,6 @@
 import { parse as parseQS, stringify as stringifyQS } from 'qs'
-import { isLoginPage } from '@/helper/judger'
-import { RequireOnlyOne } from '@/helper/util'
+import { isError, isLoginPage } from '@/helper/judger'
+import { notifyError, notifyWarning, RequireOnlyOne } from '@/helper/util'
 import Vue, { VNode, VNodeData, VueConstructor } from 'vue'
 import { emitDataAnalysisEvent } from '@/plugins/data-analysis'
 import { equals } from 'ramda'
@@ -58,28 +58,25 @@ export const addRoute = (r: RouteConfig): number => {
     routeIndexOf(routes, route) !== -1
 
   if (hasDuplicationOfRoute(routes, r)) {
-    Vue.prototype.$notify({
-      type: 'warning',
-      title: '[添加路由] 路由重复',
-      message: `路由 ${r.name}(${r.path}) 已被注册，无法重复注册`
-    })
+    notifyWarning(
+      `路由 ${r.name}(${r.path}) 已被注册，无法重复注册`,
+      '[添加路由] 路由重复'
+    )
     return routeIndexOf(routes, r)
   }
 
   if (hasDuplicationOfPath(routes, r.path)) {
-    Vue.prototype.$notify({
-      type: 'warning',
-      title: '[添加路由] 路由路径重复',
-      message: `路由路径 ${r.path} 已被注册，可能导致路由跳转出错`
-    })
+    notifyWarning(
+      `路由路径 ${r.path} 已被注册，可能导致路由跳转出错`,
+      '[添加路由] 路由路径重复'
+    )
   }
 
   if (r.name && hasDuplicationOfName(routes, r.name)) {
-    Vue.prototype.$notify({
-      type: 'warning',
-      title: '[添加路由] 路由名称重复',
-      message: `路由名称 ${r.name} 已被注册，可能导致路由跳转出错`
-    })
+    notifyWarning(
+      `路由名称 ${r.name} 已被注册，可能导致路由跳转出错`,
+      '[添加路由] 路由名称重复'
+    )
   }
 
   const newLength = routes.push(r)
@@ -115,11 +112,10 @@ export const removeRoute = ({
   if (i >= 0 && i < routes.length) {
     routes.splice(i, 1)
   } else {
-    Vue.prototype.$notify({
-      type: 'warning',
-      title: '[删除路由] 路由删除失败',
-      message: `传入${type}参数有误，路由删除失败`
-    })
+    notifyWarning(
+      `传入${type}参数有误，路由删除失败`,
+      '[删除路由] 路由删除失败'
+    )
   }
 }
 
@@ -342,10 +338,6 @@ const back = (): Route | undefined => go(-1)
 
 const forward = (): Route | undefined => go(1)
 
-function isError(arg: unknown): arg is Error {
-  return Object.prototype.toString.call(arg).includes('Error')
-}
-
 type RouterChangeMode = 'push' | 'replace' | 'history'
 
 function changeRouter(newIndex: number, changeMode: 'history'): Route
@@ -387,11 +379,10 @@ function changeRouter(
   }
 
   if (!path || !routeConfig) {
-    Vue.prototype.$notify({
-      type: 'warning',
-      title: '[路由跳转] 路由跳转失败',
-      message: `传入参数 ${JSON.stringify(r)} 有误，路由跳转失败`
-    })
+    notifyWarning(
+      `传入参数 ${JSON.stringify(r)} 有误，路由跳转失败`,
+      '[路由跳转] 路由跳转失败'
+    )
     throw new Error(`路由跳转失败: 传入参数 ${JSON.stringify(r)} 有误`)
   }
 
@@ -481,23 +472,16 @@ function changeRouter(
           }
         }
         default:
-          Vue.prototype.$notify.error({
-            title: `[路由跳转] ${routeToBeEnter.path}`,
-            message: '路由跳转模式设置有误！'
-          })
-          throw new Error(
-            `路由跳转: ${routeToBeEnter.path} 路由跳转模式设置有误！`
+          notifyError(
+            '路由跳转模式设置有误！',
+            `[路由跳转] ${routeToBeEnter.path}`
           )
       }
       render($('.main-content>.page-content')[0])
     } else if (typeof param === 'string') {
       replace(param)
     } else if (isError(param)) {
-      console.error(param)
-      Vue.prototype.$notify.error({
-        title: `[路由跳转] ${param.name}`,
-        message: param.message
-      })
+      notifyError(param, `[路由跳转] ${param.name}`)
     } else {
       if (param.path) {
         replace({

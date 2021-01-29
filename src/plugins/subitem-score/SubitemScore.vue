@@ -47,12 +47,14 @@
           th 分项名称
           th 分项成绩
           th 分项所占系数
+          th 分项成绩 × 所占系数
       tbody#scoreintbody
         tr(v-for='(v, i) in records', :key='i')
           td {{ i + 1 }}
           td {{ v.CJFXMC }}
           td {{ v.FXCJ }}
           td {{ Number(v.CJFXZB) }}
+          td {{ v.FXCJ && `${v.FXCJ} × ${Number(v.CJFXZB)} = ${Number(v.FXCJ) * Number(v.CJFXZB)}` }}
 </template>
 
 <script lang="ts">
@@ -63,6 +65,8 @@ import { SubitemScoreRecord } from '@/store/actions/result.interface'
 import { Vue, Component } from 'vue-property-decorator'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { getPointByScore } from '../score/utils'
+import { emitDataAnalysisEvent } from '../data-analysis'
+import { notifyError } from '@/helper/util'
 
 @Component({
   components: { Loading }
@@ -135,17 +139,40 @@ export default class SubitemScore extends Vue {
 
   async mounted(): Promise<void> {
     const params = getCurrentRouteParams()
-    if (params) {
-      const {
-        executiveEducationPlanNumber,
-        courseNumber,
-        courseSequenceNumber,
-        examTime,
-        coursePropertyCode
-      } = params
-      const fxcjId = `${executiveEducationPlanNumber}_${courseNumber}_${courseSequenceNumber}_${examTime}_${coursePropertyCode}`
+    if (!params) {
+      notifyError('参数对象初始化失败，查询中止', '[分项成绩查询] 读取参数失败')
+      emitDataAnalysisEvent('分项成绩查询', '读取参数失败')
+      return
+    }
+    const {
+      executiveEducationPlanNumber,
+      courseNumber,
+      courseSequenceNumber,
+      examTime,
+      coursePropertyCode
+    } = params
+    if (
+      !executiveEducationPlanNumber ||
+      !courseNumber ||
+      !courseSequenceNumber ||
+      !examTime ||
+      !coursePropertyCode
+    ) {
+      notifyError(
+        '参数对象初始化成功，但部分参数为空，查询中止',
+        '[分项成绩查询] 参数存在空值'
+      )
+      emitDataAnalysisEvent('分项成绩查询', '参数存在空值')
+      return
+    }
+    const fxcjId = `${executiveEducationPlanNumber}_${courseNumber}_${courseSequenceNumber}_${examTime}_${coursePropertyCode}`
+    try {
       this.records = await requestSubitemScoreFxcj(fxcjId)
       this.loadingIsDone = true
+      emitDataAnalysisEvent('分项成绩查询', '查询成功')
+    } catch (error) {
+      notifyError(error, '[分项成绩查询] 获取数据失败')
+      emitDataAnalysisEvent('分项成绩查询', '查询失败')
     }
   }
 }
