@@ -204,10 +204,18 @@ export default class PluginManager extends Vue {
       }
 
       .plugin-addition-info {
-        margin-bottom: 10px;
+        margin-bottom: 5px;
+
+        .el-tag {
+          margin-right: 5px;
+          margin-bottom: 5px;
+
+          &:last-child {
+            margin-right: 0;
+          }
+        }
 
         .tag-menu-text {
-          margin-left: 5px;
           &.tag-menu-page-link {
             cursor: pointer;
           }
