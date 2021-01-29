@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import { requestStudentInfo } from './actions/request'
 import pack from '@/../package.json'
 import { LocalStore } from './types'
@@ -9,6 +8,7 @@ import { allList as pluginList } from '@/plugins'
 import { convertSemesterNumberToName } from '@/helper/converter'
 import { getUserId } from '@/helper/getter'
 import { isSCU } from '@/helper/judger'
+import { notifyError } from '@/helper/util'
 
 const { version } = pack
 
@@ -70,11 +70,10 @@ async function init(localStore: LocalStore): Promise<void> {
     try {
       accessToken = (await actions[Request.ACCESS_TOKEN]()).accessToken
     } catch (error) {
-      Vue.prototype.$notify.error({
-        title: '[初始化错误] 获取accessToken失败',
-        message:
-          '获取accessToken失败，以下插件将无法使用：专业授位查询、培养方案相关、历届大创查询、课程评价。您可以尝试刷新页面，也许能解决问题。'
-      })
+      notifyError(
+        '获取accessToken失败，以下插件将无法使用：专业授位查询、培养方案相关、历届大创查询、课程评价。您可以尝试刷新页面，也许能解决问题。',
+        '[初始化错误] 获取accessToken失败'
+      )
     }
   }
 }

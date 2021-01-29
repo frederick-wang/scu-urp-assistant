@@ -11,6 +11,7 @@ import {
 } from './util'
 import * as template from './template'
 import { HTTP_HEADERS, EVALUATION_INTERVAL } from './config'
+import { messageError, messageSuccess, notifyError } from '@/helper/util'
 
 let $btn: JQuery<HTMLElement>
 let $prompt: JQuery<HTMLElement>
@@ -55,10 +56,10 @@ function evaluate(index: number): void {
 
   const error = (xhr: JQuery.jqXHR): void => {
     emitDataAnalysisEvent('快捷评教', '获取数据失败')
-    Vue.prototype.$notify.error({
-      title: '[快捷评教] 获取数据失败',
-      message: `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
-    })
+    notifyError(
+      `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`,
+      '[快捷评教] 获取数据失败'
+    )
   }
 
   const success = (rawHTML: string): void => {
@@ -97,10 +98,7 @@ function evaluate(index: number): void {
       )
     } else {
       const message = `读取问题编号失败：${questionnaireName}`
-      Vue.prototype.$notify.error({
-        title: '[快捷评教] 读取问题编号失败',
-        message
-      })
+      notifyError(message, '[快捷评教] 读取问题编号失败')
       emitDataAnalysisEvent('快捷评教', '读取问题编号失败', {
         questionnaireName
       })
@@ -130,10 +128,10 @@ function evaluate2ndStage(
 
   const error = (xhr: JQuery.jqXHR): void => {
     emitDataAnalysisEvent('快捷评教', '获取数据失败')
-    Vue.prototype.$notify.error({
-      title: '[快捷评教] 获取数据失败',
-      message: `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`
-    })
+    notifyError(
+      `错误代码[${xhr.readyState}-${xhr.status}]:获取数据失败！`,
+      '[快捷评教] 获取数据失败'
+    )
     changePrompt(
       `${evaluatedPeople}（${evaluationContentContent}）评价失败 QAQ，进度：${index +
         1}/${list.length}`
@@ -143,10 +141,7 @@ function evaluate2ndStage(
   const success = (data: { result: string; token: string }): void => {
     if (data.result.indexOf('/') !== -1) {
       emitDataAnalysisEvent('快捷评教', '登陆过期')
-      Vue.prototype.$notify.error({
-        title: '[快捷评教] 登陆过期',
-        message: '登陆过期，将在3秒后自动刷新页面'
-      })
+      notifyError('登陆过期，将在3秒后自动刷新页面', '[快捷评教] 登陆过期')
       changePrompt(
         `${evaluatedPeople}（${evaluationContentContent}）登陆过期 QAQ，进度：${index +
           1}/${list.length}，将在3秒后自动刷新页面~`
@@ -156,10 +151,9 @@ function evaluate2ndStage(
       }, 3000)
     } else if (data.result === 'success') {
       emitDataAnalysisEvent('快捷评教', '单位老师评教成功')
-      Vue.prototype.$message({
-        message: `${evaluatedPeople}（${evaluationContentContent}）评价成功`,
-        type: 'success'
-      })
+      messageSuccess(
+        `${evaluatedPeople}（${evaluationContentContent}）评价成功`
+      )
       changePrompt(
         `${evaluatedPeople}（${evaluationContentContent}）评价成功，进度：${index +
           1}/${
@@ -181,7 +175,7 @@ function evaluate2ndStage(
         }, EVALUATION_INTERVAL)
       } else {
         emitDataAnalysisEvent('快捷评教', '未知错误')
-        Vue.prototype.$message.error(
+        messageError(
           `${evaluatedPeople}（${evaluationContentContent}）遭遇未知错误 QAQ`
         )
         changePrompt(

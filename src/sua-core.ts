@@ -1,8 +1,7 @@
 import 'core-js'
 require('regenerator-runtime/runtime')
-import Vue from 'vue'
 
-import { pathnameTrigger } from '@/helper/util'
+import { notifyError, pathnameTrigger } from '@/helper/util'
 import { init as initStore, initState as initStoreState } from '@/store'
 import { init as initUpdater } from '@/core/updater'
 import { init as initPlugin, enabledList as pluginList } from '@/plugins'
@@ -80,12 +79,10 @@ const suaObject: SUAObject = {
       try {
         await initStoreState()
       } catch (error) {
-        Logger.error(error)
-        Vue.prototype.$notify.error({
-          title: '[初始化错误] Store初始化失败',
-          message:
-            '抱歉，Store初始化失败，助手将无法正常使用。您可以尝试刷新页面，也许能解决问题。'
-        })
+        notifyError(
+          '抱歉，Store初始化失败，助手将无法正常使用。您可以尝试刷新页面，也许能解决问题。',
+          '[初始化错误] Store初始化失败'
+        )
       }
     }
     Logger.evaMessage('开始进行第二次接触……')
@@ -93,12 +90,10 @@ const suaObject: SUAObject = {
     try {
       await initPlugin()
     } catch (error) {
-      Logger.error(error)
-      Vue.prototype.$notify.error({
-        title: '[初始化错误] 插件初始化失败',
-        message:
-          '抱歉，插件初始化失败，助手将无法正常使用。您可以尝试刷新页面，也许能解决问题。'
-      })
+      notifyError(
+        '抱歉，插件初始化失败，助手将无法正常使用。您可以尝试刷新页面，也许能解决问题。',
+        '[初始化错误] 插件初始化失败'
+      )
     }
     Logger.evaMessage('交互界面连接……')
     this.plugins = pluginList

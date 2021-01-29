@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import {
   showLoadingAnimation,
   hideLoadingAnimation,
@@ -16,6 +15,7 @@ import { initCourseInfoPopover } from './popover'
 import { getChineseNumber } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import html2canvas from 'html2canvas'
+import { notifyError } from '@/helper/util'
 
 let trainingSchemeList: TrainingScheme[]
 
@@ -442,11 +442,7 @@ export async function render(root: HTMLElement): Promise<void> {
     selectSelfMajorAndQuery()
   } catch (error) {
     const title = '培养方案列表数据获取失败'
-    const { message } = error
-    Vue.prototype.$notify.error({
-      title,
-      message
-    })
+    notifyError(error, title)
     emitDataAnalysisEvent('培养方案查询', '培养方案列表数据获取失败')
   }
 }
