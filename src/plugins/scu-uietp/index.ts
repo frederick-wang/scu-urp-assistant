@@ -1,13 +1,6 @@
 import App from './ScuUietp.vue'
 import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
-import { createComponentRender } from '@/plugins/common/utils'
-
-const render = createComponentRender(
-  '历届大创查询',
-  'sua-container-scu-uietp',
-  App
-)
 
 export const ScuUietp: SUAPlugin = {
   name: 'scu-uietp',
@@ -16,7 +9,10 @@ export const ScuUietp: SUAPlugin = {
   isNecessary: false,
   defaultEnabledState: true,
   brief: '查询历年大创的立项信息。',
-  route: 'advanced_query/scu_uietp',
+  route: {
+    path: 'advanced_query/scu_uietp',
+    component: App
+  },
   menu: {
     rootMenuId: 'sua-menu-list',
     rootMenuName: 'SCU URP 助手',
@@ -24,9 +20,7 @@ export const ScuUietp: SUAPlugin = {
     name: '高级查询',
     item: {
       name: '历届大创查询',
-      route: 'advanced_query/scu_uietp',
-      breadcrumbs: ['SCU URP 助手', '高级查询', '历届大创查询'],
-      render
+      route: 'advanced_query/scu_uietp'
     }
   }
 }

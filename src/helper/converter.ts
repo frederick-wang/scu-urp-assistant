@@ -43,11 +43,7 @@ export const convertCourseScoreInfoListToScoreRecords = (
       if (failReason && failReason.includes('缓考')) {
         return acc
       }
-      // 在 2020-2021 秋季学期出分时发现，暂存的成绩在全部成绩信息接口中会查出，分数为「负数」
-      // 为了避免产生困惑，这些成绩项需要跳过
-      if (!cur.courseScore || cur.courseScore < 0) {
-        return acc
-      }
+
       const currentSemesterRecords = acc.filter(
         v => v.semester === cur.executiveEducationPlanName
       )

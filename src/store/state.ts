@@ -8,7 +8,7 @@ import { actions, Request } from './actions'
 import { allList as pluginList } from '@/plugins'
 import { convertSemesterNumberToName } from '@/helper/converter'
 import { getUserId } from '@/helper/getter'
-import { isSCU, isLoginPage } from '@/helper/judger'
+import { isSCU } from '@/helper/judger'
 
 const { version } = pack
 
@@ -93,7 +93,6 @@ type User = {
 
 type Core = {
   version: string
-  route: string
   clientType: 'urp'
 }
 
@@ -105,16 +104,8 @@ type Basic = {
 export default {
   init,
   get core(): Core {
-    let suaRoute = ''
-    if (!isLoginPage()) {
-      const regexp = window.location.hash.match(/sua_route=(.+)$/)
-      if (regexp) {
-        suaRoute = regexp[1]
-      }
-    }
     return {
       version,
-      route: suaRoute,
       clientType: 'urp'
     }
   },

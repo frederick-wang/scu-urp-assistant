@@ -1,9 +1,13 @@
+import { RouteConfig, Router } from './router'
+
 export interface SUAObject {
   plugins: SUAPlugin[]
   pluginsInitQueue: (() => void | Promise<void>)[]
   pluginsTaskQueue: (() => void | Promise<void>)[]
   pluginsStyleQueue: string[]
+  pluginsRouteConfigQueue: RouteConfig[]
   pluginsMenuQueue: SUAPluginMenu[]
+  readonly router: Router
   start(): Promise<void>
 }
 
@@ -21,12 +25,7 @@ export interface SUAPlugin {
     | boolean
     | (() => boolean)
     | { [key: string]: string }
-  route?:
-    | string
-    | string[]
-    | boolean
-    | (() => boolean)
-    | { [key: string]: string }
+  route?: RouteConfig | RouteConfig[]
   style?: string
   menu?: SUAPluginMenu | SUAPluginMenu[]
   init?: () => Promise<void> | void
@@ -43,8 +42,7 @@ export interface SUAPluginMenu {
 
 export interface SUAPluginMenuItem {
   name: string
-  style?: string
   route: string
-  breadcrumbs: string[]
-  render: ((root: HTMLElement) => Promise<void>) | ((root: HTMLElement) => void)
 }
+
+export type Breadcrumbs = [string, string, string]

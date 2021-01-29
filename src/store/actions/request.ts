@@ -16,7 +16,13 @@ import {
 } from '../types'
 import { pipe, map } from 'ramda'
 import state from '../state'
-import { Result, TermScoresData } from './result.interface'
+import {
+  APISubitemScoreFxcjDTO,
+  APISubitemScoreLookDTO,
+  Result,
+  SubitemScoreRecord,
+  TermScoresData
+} from './result.interface'
 import { getPointByScore } from '@/plugins/score/utils'
 import { sleep, http } from '@/helper/util'
 import { getChineseNumber } from '@/helper/getter'
@@ -623,6 +629,47 @@ async function requestThisTermCourseScoreInfoList(): Promise<
       )
     )
     return res
+  } catch (error) {
+    const { title, message, html } = await LoadHTMLToDealWithError(url)
+    Logger.error({ title, message, html })
+    throw new Error(`${title}: ${message}`)
+  }
+}
+
+export async function requestSubitemScoreLook(
+  executiveEducationPlanNumber: string,
+  courseNumber: string,
+  courseSequenceNumber: string,
+  examTime: string
+): Promise<APISubitemScoreLookDTO> {
+  const url = '/student/integratedQuery/scoreQuery/subitemScore/look'
+  try {
+    const result: APISubitemScoreLookDTO = await $.post(url, {
+      zxjxjhh: executiveEducationPlanNumber,
+      kch: courseNumber,
+      kxh: courseSequenceNumber,
+      kssj: examTime,
+      param: 1
+    })
+    return result
+  } catch (error) {
+    const { title, message, html } = await LoadHTMLToDealWithError(url)
+    Logger.error({ title, message, html })
+    throw new Error(`${title}: ${message}`)
+  }
+}
+
+export async function requestSubitemScoreFxcj(
+  fxcjId: string
+): Promise<SubitemScoreRecord[]> {
+  const url = '/student/integratedQuery/scoreQuery/subitemScore/searchFxcj'
+  try {
+    const { records }: APISubitemScoreFxcjDTO = await $.post(url, {
+      fxcjId,
+      pageNum: 1,
+      pageSize: 30
+    })
+    return records
   } catch (error) {
     const { title, message, html } = await LoadHTMLToDealWithError(url)
     Logger.error({ title, message, html })

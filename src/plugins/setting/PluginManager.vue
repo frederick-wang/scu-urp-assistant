@@ -2,7 +2,7 @@
 .sua-container-setting-plugin-manager
   el-alert(type='warning', title='注意：切换插件状态后，需要刷新页面才会生效。')
   h2(
-    style='margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6;'
+    style='margin-top: 20px; padding-bottom: 20px; border-bottom: 1px solid #dcdfe6'
   ) SCU URP 助手 - 插件管理器
   .plugin-list
     .plugin(v-for='plugin in pluginList', :key='plugin.name')
@@ -21,7 +21,7 @@
           el-tag.tag-menu-text.tag-menu-page-link(
             v-for='v in plugin.menu',
             :key='v.title',
-            :title='v.title',
+            :title='`关联菜单：${v.title}`',
             type='warning',
             size='mini',
             @click='jumpToPluginPage(v.name)'
@@ -89,12 +89,12 @@ const convertMenuToTextList = (
 ): { title: string; name: string }[] => {
   if (menu) {
     if (Array.isArray(menu)) {
-      return menu.reduce((acc, { item }) => {
+      return menu.reduce((acc, { item, rootMenuName, name: menuName }) => {
         if (Array.isArray(item)) {
           return [
             ...acc,
-            ...item.map(({ breadcrumbs, name }) => ({
-              title: breadcrumbs.join(' > '),
+            ...item.map(({ name }) => ({
+              title: [rootMenuName, menuName, name].join(' > '),
               name
             }))
           ]
@@ -102,7 +102,7 @@ const convertMenuToTextList = (
           return [
             ...acc,
             {
-              title: item.breadcrumbs.join(' > '),
+              title: [rootMenuName, menuName, item.name].join(' > '),
               name: item.name
             }
           ]
@@ -110,14 +110,14 @@ const convertMenuToTextList = (
       }, [] as { title: string; name: string }[])
     } else {
       if (Array.isArray(menu.item)) {
-        return menu.item.map(({ breadcrumbs, name }) => ({
-          title: breadcrumbs.join(' > '),
+        return menu.item.map(({ name }) => ({
+          title: [menu.rootMenuName, menu.name, name].join(' > '),
           name
         }))
       } else {
         return [
           {
-            title: menu.item.breadcrumbs.join(' > '),
+            title: [menu.rootMenuName, menu.name, menu.item.name].join(' > '),
             name: menu.item.name
           }
         ]
@@ -138,7 +138,7 @@ export default class PluginManager extends Vue {
       brief,
       menu: convertMenuToTextList(menu),
       path: convertPathnameToText(pathname),
-      enabled: pluginEnabledList.some((v) => v.name === name)
+      enabled: pluginEnabledList.some(v => v.name === name)
     }))
     .sort((a, b) =>
       a.displayName.localeCompare(b.displayName, 'zh-Hans', {

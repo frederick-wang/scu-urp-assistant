@@ -13,7 +13,8 @@ import {
 } from 'element-ui'
 import JsonViewer from 'vue-json-viewer'
 import { routeTrigger } from '@/helper/util'
-import { SUAPluginMenu } from './types'
+import { Breadcrumbs, SUAPluginMenu } from './types'
+import { addRoute, getCurrentRouteParams, RouteConfig, router } from './router'
 
 /**
  * 加载 Vue 组件
@@ -56,6 +57,63 @@ export const loadGlobalStyle = (): void => {
   `)
 }
 
+export const loadRouteConfig = (routeConfig: RouteConfig): void => {
+  addRoute(routeConfig)
+  if (routeTrigger(routeConfig.path)) {
+    router.push(routeConfig.path, {
+      params: getCurrentRouteParams()
+    })
+  }
+}
+
+const changeMenuAndBreadcrumbs = (
+  $rootMenu: JQuery<HTMLElement>,
+  $menu: JQuery<HTMLElement>,
+  $menuItem: JQuery<HTMLElement>,
+  rootMenuId: string,
+  breadcrumbs: Breadcrumbs,
+  menuId: string,
+  id: string
+) => {
+  const changeMenu = (
+    $rootMenu: JQuery<HTMLElement>,
+    $menu: JQuery<HTMLElement>,
+    $menuItem: JQuery<HTMLElement>
+  ) => {
+    $('.hsub').removeClass('open')
+    $('.submenu').css('display', 'none')
+    $('.submenu>li').removeClass('active')
+    $('.submenu>li>a>.menu-icon').remove()
+    $rootMenu.parent().addClass('open')
+    $rootMenu.css('display', 'block')
+    $menu.parent().addClass('open')
+    $menu.css('display', 'block')
+    $menuItem.addClass('active')
+    $menuItem.find('a').prepend("<i class='menu-icon fa fa-caret-right'></i>")
+  }
+
+  const showBreadcrumbs = (
+    rootMenuId: string,
+    breadcrumbs: Breadcrumbs,
+    menuId: string,
+    id: string
+  ) => {
+    const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
+    $breadcrumbs.empty().append(`
+    <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
+      <i class="ace-icon fa fa-home home-icon"></i>
+      首页
+    </li>
+    <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${breadcrumbs[0]}</li>
+    <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${breadcrumbs[1]}</li>
+    <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${breadcrumbs[2]}</li>
+  `)
+  }
+
+  changeMenu($rootMenu, $menu, $menuItem)
+  showBreadcrumbs(rootMenuId, breadcrumbs, menuId, id)
+}
+
 /**
  * 初始化插件菜单
  *
@@ -64,6 +122,9 @@ export const loadGlobalStyle = (): void => {
 export const loadMenu = (menu: SUAPluginMenu): void => {
   const { rootMenuId, rootMenuName, id: menuId, name: menuName } = menu
   let { item: items } = menu
+  if (!Array.isArray(items)) {
+    items = [items]
+  }
   const $rootMenuList = $('#menus')
   // 检查根菜单是否存在，如不存在则新建
   if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
@@ -95,10 +156,7 @@ export const loadMenu = (menu: SUAPluginMenu): void => {
     `)
   }
   const $menu = $rootMenu.find(`li#${menuId}>ul.submenu`)
-  if (!Array.isArray(items)) {
-    items = [items]
-  }
-  items.forEach(({ name, style, route, breadcrumbs, render }) => {
+  items.forEach(({ name, route }) => {
     const id = `menu-item-${name}`
     $menu.append(`
       <li class="sua-menu-item" id="${id}">
@@ -107,46 +165,29 @@ export const loadMenu = (menu: SUAPluginMenu): void => {
       </li>
     `)
     const $menuItem = $menu.children(`#${id}`)
+    const breadcrumbs: Breadcrumbs = [rootMenuName, menuName, name]
     $menuItem.click(() => {
-      $('.hsub').removeClass('open')
-      $('.submenu').css('display', 'none')
-      $('.submenu>li').removeClass('active')
-      $('.submenu>li>a>.menu-icon').remove()
-      $rootMenu.parent().addClass('open')
-      $rootMenu.css('display', 'block')
-      $menu.parent().addClass('open')
-      $menu.css('display', 'block')
-      $menuItem.addClass('active')
-      $menuItem.find('a').prepend("<i class='menu-icon fa fa-caret-right'></i>")
-      const $breadcrumbs = $('.main-content>.breadcrumbs>ul.breadcrumb')
-      $breadcrumbs.empty().append(`
-        <li onclick="javascript:window.location.href='/'" style="cursor:pointer;">
-          <i class="ace-icon fa fa-home home-icon"></i>
-          首页
-        </li>
-        <li class="active" onclick="ckickTopMenu(this);return false;" id="firmenu" menuid="${rootMenuId}">${breadcrumbs[0]}</li>
-        <li class="active" onclick="ckickTopMenu(this);return false;" id="secmenu" menuid="${menuId}">${breadcrumbs[1]}</li>
-        <li class="active" onclick="ckickTopMenu(this);return false;" id="lastmenu" menuid="${id}">${breadcrumbs[2]}</li>
-      `)
-      const $pageContent = $('.main-content>.page-content')
-      $pageContent.empty()
-      // 因为需要兼容书签版，只有修改 hashtag 不会触发页面的刷新
-      const hash = `#sua_route=${route}`
-      // NOTE: 如果不这么写，hash就会被莫名其妙的清除掉。。。
-      setTimeout(() => {
-        window.location.hash = hash
-      }, 0)
-      if (style) {
-        $('head').append(`
-          <style type="text/css">
-            ${style}
-          </style>
-        `)
-      }
-      render($('.main-content>.page-content')[0])
+      changeMenuAndBreadcrumbs(
+        $rootMenu,
+        $menu,
+        $menuItem,
+        rootMenuId,
+        breadcrumbs,
+        menuId,
+        id
+      )
+      router.push(route)
     })
     if (routeTrigger(route)) {
-      $menuItem.click()
+      changeMenuAndBreadcrumbs(
+        $rootMenu,
+        $menu,
+        $menuItem,
+        rootMenuId,
+        breadcrumbs,
+        menuId,
+        id
+      )
     }
   })
 }

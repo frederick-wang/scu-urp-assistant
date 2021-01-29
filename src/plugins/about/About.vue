@@ -108,6 +108,8 @@ export default class About extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/plugins/beautify/typo.scss';
+
 ol > li {
   list-style-type: decimal;
 }
