@@ -17,6 +17,8 @@ export default class Feedback extends Vue {}
 </script>
 
 <style lang="scss" scoped>
+@import '@/plugins/beautify/typo.scss';
+
 p.indent {
   text-indent: 2em;
 }
