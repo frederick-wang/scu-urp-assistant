@@ -98,7 +98,7 @@ export default class GPACalculator extends Vue {
           ? convertCourseScoreInfoListToScoreRecords(
               await requestThisTermCourseScoreInfoList()
             )
-          : await convertCourseScoreInfoListToScoreRecords(
+          : convertCourseScoreInfoListToScoreRecords(
               await requestAllTermsCourseScoreInfoList()
             )
       this.records = records
