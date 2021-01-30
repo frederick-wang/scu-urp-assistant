@@ -37,3 +37,5 @@ function evaMessage(msg: string): void {
 }
 
 export const Logger = { log, info, warn, error, evaMessage }
+
+export { log, info, warn, error, evaMessage }
