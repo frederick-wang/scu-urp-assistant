@@ -10,6 +10,7 @@ import { UserExperienceImprovementProgram } from '@/plugins/user-experience-impr
 import { DataAnalysis } from '@/plugins/data-analysis'
 import { About } from '@/plugins/about'
 import { Feedback } from '@/plugins/feedback'
+import { Changelog } from '@/plugins/changelog'
 import { Donate } from '@/plugins/donate'
 import { BachelorDegree } from '@/plugins/bachelor-degree'
 import { ScuUietp } from '@/plugins/scu-uietp'
@@ -35,8 +36,9 @@ const optionalPluginsLogined = [
   UserExperienceImprovementProgram,
   Setting,
   About,
+  Donate,
   Feedback,
-  Donate
+  Changelog
 ]
 
 function getAllPlugins(): SUAPlugin[] {
