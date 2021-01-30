@@ -17,7 +17,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       th.center(v-if='type !== `compact`') 考试时间
       //- th.center(v-if='type !== `compact`') 任课教师
       th.center(v-if='type !== `compact`') 未通过原因
-      th.center(v-if='type !== `compact`') 分项成绩
+      th.center(v-if='type !== `compact` && isSubitemScorePluginEnabled') 分项成绩
   tbody#scoretbody
     tr.gpa-st-item(
       v-for='(courseItem, courseIndex) in courses',
@@ -35,14 +35,27 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       td.center(v-if='type === `full`') {{ courseItem.minScore }}
       td.center(
         :class='[type === `full` ? (courseItem.courseScore >= courseItem.avgScore ? `greater-than-avg` : `less-than-avg`) : ``]'
-      ) {{ courseItem.courseScore }}
+      ) {{ isNil(courseItem.courseScore) ? "/" : courseItem.courseScore }}
+        |
+        |
+        el-tooltip(
+          v-if='isNilOrNegative(courseItem.courseScore)',
+          placement='top'
+        )
+          div(slot='content')
+            p(style='line-height: 1.5'): strong
+              i.fa.fa-info-circle(aria-hidden='true')
+              |
+              | &nbsp;课程「{{ courseItem.courseName }}」的成绩无法正常显示
+            p 如果您还没有评教，请及时评教哦~如果不完成评教，是无法查看对应课程的成绩的。
+          i.fa.fa-question-circle(aria-hidden='true')
       td.center {{ courseItem.levelName }}
       td.center {{ courseItem.gradePoint }}
       td.center(v-if='type === `full`') {{ courseItem.rank }}
       td.center(v-if='type !== `compact`') {{ courseItem.examTime }}
       //- td.center(v-if='type !== `compact`') {{ courseItem.courseTeacherList[0].teacherName}}{{ courseItem.courseTeacherList.filter(({ teacherNumber }) => Number(teacherNumber).toString() === teacherNumber).length > 1 ? ' 等' : ''}}
       td.center(v-if='type !== `compact`') {{ courseItem.unpassedReasonExplain }}
-      td.center(v-if='type !== `compact`')
+      td.center(v-if='type !== `compact` && isSubitemScorePluginEnabled')
         button.btn.btn-info.btn-xs.btn-round(
           @click.stop='querySubitemScore(courseItem)'
         )
@@ -57,6 +70,9 @@ import { CourseScoreRecord } from '@/plugins/score/types'
 import { router } from '@/core/router'
 import { requestSubitemScoreLook } from '@/store/actions/request'
 import { messageError } from '@/helper/util'
+import { isPluginEnabled } from '@/plugins'
+import { SubitemScore } from '@/plugins/subitem-score'
+import { isNil } from 'ramda'
 
 @Component
 export default class Transcript extends Vue {
@@ -70,6 +86,16 @@ export default class Transcript extends Vue {
     required: true
   })
   courses!: CourseScoreRecord[]
+
+  isNil = isNil
+
+  get isSubitemScorePluginEnabled(): boolean {
+    return isPluginEnabled(SubitemScore.name)
+  }
+
+  isNilOrNegative(score: number | undefined): boolean {
+    return isNil(score) || score < 0
+  }
 
   /**
    * 当「尝试查询分项成绩」按钮被点击时，做出相应的反应

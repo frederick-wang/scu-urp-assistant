@@ -166,6 +166,88 @@ export function messageInfo(message: string): void {
   Vue.prototype.$message.info(message)
 }
 
+/**
+ * 检查浏览器是否支持 CSS 属性
+ */
+export const supportsCSS = (attribute: string, value: string): boolean => {
+  if (window.CSS && window.CSS.supports) {
+    if (typeof value === 'undefined') return window.CSS.supports(attribute)
+    return window.CSS.supports(attribute, value)
+  }
+
+  const elem = document.createElement('div')
+  if (attribute in elem.style) {
+    elem.style?.setProperty(attribute, value)
+    return elem.style?.getPropertyValue(attribute) === value
+  }
+  return false
+}
+
+export const getBrowser = (): {
+  type: 'IE' | 'Edge' | 'Firefox' | 'Chrome' | 'Opera' | 'Safari' | 'Unknown'
+  version: number
+} => {
+  const browser: Record<string, string> = {}
+  const userAgent = navigator.userAgent.toLowerCase()
+  let s
+  ;(s = userAgent.match(/rv:([\d.]+)\) like gecko/))
+    ? (browser.ie = s[1])
+    : (s = userAgent.match(/msie ([\d\.]+)/))
+    ? (browser.ie = s[1])
+    : (s = userAgent.match(/edge\/([\d\.]+)/))
+    ? (browser.edge = s[1])
+    : (s = userAgent.match(/firefox\/([\d\.]+)/))
+    ? (browser.firefox = s[1])
+    : (s = userAgent.match(/(?:opera|opr).([\d\.]+)/))
+    ? (browser.opera = s[1])
+    : (s = userAgent.match(/chrome\/([\d\.]+)/))
+    ? (browser.chrome = s[1])
+    : (s = userAgent.match(/version\/([\d\.]+).*safari/))
+    ? (browser.safari = s[1])
+    : 0
+  // 根据关系进行判断
+  if (browser.ie) {
+    return {
+      type: 'IE',
+      version: parseInt(browser.ie)
+    }
+  }
+  if (browser.edge) {
+    return {
+      type: 'Edge',
+      version: parseInt(browser.edge)
+    }
+  }
+  if (browser.firefox) {
+    return {
+      type: 'Firefox',
+      version: parseInt(browser.firefox)
+    }
+  }
+  if (browser.chrome) {
+    return {
+      type: 'Chrome',
+      version: parseInt(browser.chrome)
+    }
+  }
+  if (browser.opera) {
+    return {
+      type: 'Opera',
+      version: parseInt(browser.opera)
+    }
+  }
+  if (browser.safari) {
+    return {
+      type: 'Safari',
+      version: parseInt(browser.safari)
+    }
+  }
+  return {
+    type: 'Unknown',
+    version: -1
+  }
+}
+
 export type Without<T, U> = {
   [P in Exclude<keyof T, keyof U>]?: never
 }
