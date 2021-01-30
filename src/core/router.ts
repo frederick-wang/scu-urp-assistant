@@ -438,7 +438,7 @@ function changeRouter(
       switch (changeMode) {
         case 'push': {
           if (history.length) {
-            if (currentRouteIndexInHistory) {
+            if (currentRouteIndexInHistory !== undefined) {
               history.length = currentRouteIndexInHistory + 1
             }
             if (
@@ -455,7 +455,7 @@ function changeRouter(
         }
         case 'replace': {
           if (history.length) {
-            if (currentRouteIndexInHistory) {
+            if (currentRouteIndexInHistory !== undefined) {
               history.length = currentRouteIndexInHistory + 1
             }
             history[history.length - 1] = routeToBeEnter
