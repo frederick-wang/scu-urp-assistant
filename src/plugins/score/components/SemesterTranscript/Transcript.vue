@@ -17,7 +17,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       th.center(v-if='type !== `compact`') 考试时间
       //- th.center(v-if='type !== `compact`') 任课教师
       th.center(v-if='type !== `compact`') 未通过原因
-      th.center(v-if='type !== `compact`') 分项成绩
+      th.center(v-if='type !== `compact` && isSubitemScorePluginEnabled') 分项成绩
   tbody#scoretbody
     tr.gpa-st-item(
       v-for='(courseItem, courseIndex) in courses',
@@ -42,7 +42,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       td.center(v-if='type !== `compact`') {{ courseItem.examTime }}
       //- td.center(v-if='type !== `compact`') {{ courseItem.courseTeacherList[0].teacherName}}{{ courseItem.courseTeacherList.filter(({ teacherNumber }) => Number(teacherNumber).toString() === teacherNumber).length > 1 ? ' 等' : ''}}
       td.center(v-if='type !== `compact`') {{ courseItem.unpassedReasonExplain }}
-      td.center(v-if='type !== `compact`')
+      td.center(v-if='type !== `compact` && isSubitemScorePluginEnabled')
         button.btn.btn-info.btn-xs.btn-round(
           @click.stop='querySubitemScore(courseItem)'
         )
@@ -57,6 +57,8 @@ import { CourseScoreRecord } from '@/plugins/score/types'
 import { router } from '@/core/router'
 import { requestSubitemScoreLook } from '@/store/actions/request'
 import { messageError } from '@/helper/util'
+import { isPluginEnabled } from '@/plugins'
+import { SubitemScore } from '@/plugins/subitem-score'
 
 @Component
 export default class Transcript extends Vue {
@@ -70,6 +72,10 @@ export default class Transcript extends Vue {
     required: true
   })
   courses!: CourseScoreRecord[]
+
+  get isSubitemScorePluginEnabled(): boolean {
+    return isPluginEnabled(SubitemScore.name)
+  }
 
   /**
    * 当「尝试查询分项成绩」按钮被点击时，做出相应的反应
