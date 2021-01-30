@@ -1,3 +1,24 @@
+## [0.11.2](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.1...v0.11.2) (2021-01-30)
+
+
+### Bug Fixes
+
+* **core/router:** 修复了当 currentRouteIndexInHistory 为 0 时，push & replace 不会清除 history[1] 的 bug ([a962659](https://github.com/frederick-wang/scu-urp-assistant/commit/a962659979fc7bd4c41eb1f63d2880558f631b8b)), closes [#22](https://github.com/frederick-wang/scu-urp-assistant/issues/22)
+* **plugin/score:** 如果「分项成绩查询」插件未开启，在成绩信息页面中屏蔽「尝试查询」按钮 ([3c25ed6](https://github.com/frederick-wang/scu-urp-assistant/commit/3c25ed60cc736d2b23bc9ec654f7e7de21848cdb)), closes [#26](https://github.com/frederick-wang/scu-urp-assistant/issues/26)
+
+
+### Features
+
+* **helper/logger:** 不仅导出完整对象 Logger，其中的子方法也都分别导出 ([c433542](https://github.com/frederick-wang/scu-urp-assistant/commit/c433542ecc731a39e830ebb3ff848d1a3e7e6587))
+* **helper/util:** 增加 CSS 是否支持属性的判断方法，和浏览器类型版本的判断方法 ([3dcbd6a](https://github.com/frederick-wang/scu-urp-assistant/commit/3dcbd6a3f77d9c9c7d90553637379febd068f51f))
+* **plugin/changelog:** 在「帮助」菜单下增加「更新日志」页面 ([2283500](https://github.com/frederick-wang/scu-urp-assistant/commit/2283500582a07be179822365d1e88b88bb0328a4)), closes [#25](https://github.com/frederick-wang/scu-urp-assistant/issues/25)
+* **plugin/rearrange:** 界面重排后，使 URP 首页的「通知」中的通知标题完整显示 ([cea3e69](https://github.com/frederick-wang/scu-urp-assistant/commit/cea3e69727de6d8b154db4f4beb7e8d4348cc6d7)), closes [#21](https://github.com/frederick-wang/scu-urp-assistant/issues/21)
+* **plugin/score:** 将预期成绩估计的必修课与选修课分开，初始行数为空并增加提示 ([3a47c0e](https://github.com/frederick-wang/scu-urp-assistant/commit/3a47c0e40c63e78e71d3ab300220b6f6520ca180)), closes [#17](https://github.com/frederick-wang/scu-urp-assistant/issues/17)
+* **plugin/score:** 没有评教的课程无法查看成绩，为这种情况增加了特别的提示 ([5311a5d](https://github.com/frederick-wang/scu-urp-assistant/commit/5311a5d387b4e946225e7a74ef252c520bc7ac26)), closes [#20](https://github.com/frederick-wang/scu-urp-assistant/issues/20)
+* **plugins:** 去除 Vue 组件中对 typo.css 的单独引用，减小体积。 ([111ccc2](https://github.com/frederick-wang/scu-urp-assistant/commit/111ccc28b2d00c324ddded2559fb088be55aa7f0))
+
+
+
 ## [0.11.1](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.0...v0.11.1) (2021-01-29)
 
 
@@ -60,3 +81,16 @@
 
 
 
+## [0.10.4](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.10.3...v0.10.4) (2021-01-18)
+
+
+
+## [0.10.3](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.10.2...v0.10.3) (2021-01-12)
+
+
+
+## [0.10.2](https://github.com/frederick-wang/scu-urp-assistant/compare/0.10.1...v0.10.2) (2020-06-11)
+
+
+
+## 0.10.1 (2020-05-25)
