@@ -12,7 +12,7 @@ export const Rearrange: SUAPlugin = {
   brief: '重组教务系统中部分页面中功能的位置。',
   pathname: ['/', '/index.jsp'],
   init() {
-    if (getBrowser().type !== 'IE' || getBrowser().version > 11) {
+    if (getBrowser().type !== 'IE' || getBrowser().version > 10) {
       // 将上端三个挂件的容器设置为Flex布局
       $('#page-content-template .col-xs-12 > .row')
         .css('display', 'flex')
