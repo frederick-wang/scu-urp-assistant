@@ -20,7 +20,7 @@ const banner = `// ==UserScript==
 // @include      http://202.115.47.141/*
 // @include      http://zhjw.scu.edu.cn/*
 // @grant        none
-// @run-at       document-start
+// @run-at       document-end
 // @icon         https://gitee.com/frederick-wang/scu-urp-assistant/raw/master/icon.png
 // @icon64       https://gitee.com/frederick-wang/scu-urp-assistant/raw/master/icon64.png
 // ==/UserScript==`
