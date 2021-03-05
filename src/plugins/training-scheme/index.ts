@@ -22,7 +22,7 @@ export const TrainingScheme: SUAPlugin = {
       componentOptions: {
         props: {
           tip:
-            '抱歉，「培养方案查询」功能正在维护中，暂时无法使用，请等待后续版本更新。'
+            '综合教务系统已经推出官方版「培养方案查询」功能，位于「综合查询-->培养方案查看」，故 SCU URP 助手已删除此功能。'
         }
       }
     },
