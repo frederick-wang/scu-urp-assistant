@@ -1,3 +1,14 @@
+## [0.11.3](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.2...v0.11.3) (2021-03-05)
+
+
+### Bug Fixes
+
+* **plugin/rearrange:** iE 11 支持 flex，重排功能应当生效 ([a879040](https://github.com/frederick-wang/scu-urp-assistant/commit/a8790401d13e45050bb13a8a64c41cd64ffabd47))
+* **plugins/training-scheme:** 修改「培养方案查询」页面的提示文字。 ([8d0ab4a](https://github.com/frederick-wang/scu-urp-assistant/commit/8d0ab4a8890c7c90162cde697c53796ed42f7a8b))
+* **webpack.config:** 修改 UserScript 的加载位置为 document-end ([29563e4](https://github.com/frederick-wang/scu-urp-assistant/commit/29563e4979bdf43191025442f35cf389d6dc9c1d))
+
+
+
 ## [0.11.2](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.1...v0.11.2) (2021-01-30)
 
 
