@@ -1,3 +1,12 @@
+## [0.11.4](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.3...v0.11.4) (2021-04-03)
+
+
+### Bug Fixes
+
+* **plugins/subitem-score:** 修复了分项成绩查询表格中的异常小数问题 ([e58c519](https://github.com/frederick-wang/scu-urp-assistant/commit/e58c5191bcd1633f4ff3d7f82f65520be08518ab)), closes [#29](https://github.com/frederick-wang/scu-urp-assistant/issues/29)
+
+
+
 ## [0.11.3](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.2...v0.11.3) (2021-03-05)
 
 
