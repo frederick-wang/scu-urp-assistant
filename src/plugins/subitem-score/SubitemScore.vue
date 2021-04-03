@@ -54,7 +54,7 @@
           td {{ v.CJFXMC }}
           td {{ v.FXCJ }}
           td {{ Number(v.CJFXZB) }}
-          td {{ v.FXCJ && `${v.FXCJ} × ${Number(v.CJFXZB)} = ${Number(v.FXCJ) * Number(v.CJFXZB)}` }}
+          td {{ v.FXCJ && `${v.FXCJ} × ${Number(v.CJFXZB)} = ${calcRightProductOfGradeAndFactor(v.FXCJ, v.CJFXZB)}` }}
 </template>
 
 <script lang="ts">
@@ -67,6 +67,7 @@ import Loading from '@/plugins/common/components/Loading.vue'
 import { getPointByScore } from '../score/utils'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { notifyError } from '@/helper/util'
+import { defaultTo, nth, pipe, split } from 'ramda'
 
 @Component({
   components: { Loading }
@@ -131,6 +132,37 @@ export default class SubitemScore extends Vue {
 
   get isScoreShown(): boolean {
     return this.records.every(({ FXCJ }) => FXCJ)
+  }
+
+  /**
+   * 计算「分数」和「分数比例」的正确乘积。
+   * 解决浮点数计算精度误差，避免出现类似「13.799999999999999」这样的奇怪结果
+   */
+  calcRightProductOfGradeAndFactor(score: string, factor: string) {
+    const scoreNum = Number(score)
+    const factorNum = Number(factor)
+    /**
+     * 获取数字的小数位数
+     */
+    const toDecimalPlaces = pipe(
+      (x: number) => x.toString(),
+      split('.'),
+      nth(1),
+      (x: string | undefined) => x?.length,
+      defaultTo(0)
+    )
+    /**
+     * 乘积最大的小数位数。
+     * 如果 Number A 的小数位数是 a，Number B 的小数位数是 b，那么乘积的小数位数不会超过 a + b
+     */
+    const productDecimalPlaces =
+      toDecimalPlaces(scoreNum) + toDecimalPlaces(factorNum)
+    // 按照判断出的乘积小数位数，进行四舍五入
+    const product = scoreNum * factorNum
+    const scaleParam = 10 ** productDecimalPlaces
+    const rightProduct = Math.round(product * scaleParam) / scaleParam
+
+    return rightProduct
   }
 
   back(): void {
