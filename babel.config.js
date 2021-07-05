@@ -1,6 +1,6 @@
 const { browserslist } = require('./package.json')
 
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true)
 
   const presets = [
@@ -26,12 +26,15 @@ module.exports = function(api) {
     '@babel/proposal-object-rest-spread',
     '@babel/plugin-proposal-numeric-separator',
     ['@babel/plugin-proposal-decorators', { legacy: true }],
-    ['@babel/plugin-proposal-class-properties', { loose: true }],
+    '@babel/plugin-proposal-class-properties',
     '@babel/plugin-transform-typescript'
   ]
 
   return {
     presets,
+    assumptions: {
+      setPublicClassFields: true
+    },
     plugins
   }
 }
