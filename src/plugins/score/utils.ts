@@ -55,6 +55,18 @@ function mapScore(arr: CourseScoreRecord[]): {
 }
 
 /**
+ * 从一个课程数组里筛选出所有成绩合法的课程
+ *
+ * @param {CourseScoreRecord[]} arr 一个课程数组
+ * @returns 筛选出的所有成绩合法的课程（成绩存在且非负）
+ */
+function removeIllegalScoreCourses(
+  arr: CourseScoreRecord[]
+): CourseScoreRecord[] {
+  return arr.filter((v) => v.courseScore && v.courseScore > 0)
+}
+
+/**
  * 从一个课程数组里筛选出所有的必修课程
  *
  * @param {CourseScoreRecord[]} arr 一个课程数组
@@ -91,7 +103,11 @@ function getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
  * @returns 必修加权平均分
  */
 function getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
-  return reserveDigits(getWeightedAverage(mapScore(getSelectedCourses(arr))))
+  return reserveDigits(
+    getWeightedAverage(
+      mapScore(removeIllegalScoreCourses(getSelectedCourses(arr)))
+    )
+  )
 }
 
 /**
@@ -101,7 +117,11 @@ function getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
  * @returns 选中课程加权平均绩点
  */
 function getSelectedCoursesGPA(arr: CourseScoreRecord[]): number {
-  return reserveDigits(getWeightedAverage(mapGPA(getSelectedCourses(arr))))
+  return reserveDigits(
+    getWeightedAverage(
+      mapGPA(removeIllegalScoreCourses(getSelectedCourses(arr)))
+    )
+  )
 }
 
 /**
@@ -111,7 +131,11 @@ function getSelectedCoursesGPA(arr: CourseScoreRecord[]): number {
  * @returns 必修加权平均分
  */
 function getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
-  return reserveDigits(getWeightedAverage(mapScore(getCompulsoryCourses(arr))))
+  return reserveDigits(
+    getWeightedAverage(
+      mapScore(removeIllegalScoreCourses(getCompulsoryCourses(arr)))
+    )
+  )
 }
 
 /**
@@ -121,7 +145,9 @@ function getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
  * @returns 全部课程加权平均绩点
  */
 function getAllCoursesGPA(arr: CourseScoreRecord[]): number {
-  return reserveDigits(getWeightedAverage(mapGPA(arr)))
+  return reserveDigits(
+    getWeightedAverage(mapGPA(removeIllegalScoreCourses(arr)))
+  )
 }
 
 /**
@@ -131,7 +157,9 @@ function getAllCoursesGPA(arr: CourseScoreRecord[]): number {
  * @returns 全部课程加权平均分
  */
 function getAllCoursesScore(arr: CourseScoreRecord[]): number {
-  return reserveDigits(getWeightedAverage(mapScore(arr)))
+  return reserveDigits(
+    getWeightedAverage(mapScore(removeIllegalScoreCourses(arr)))
+  )
 }
 
 /**
