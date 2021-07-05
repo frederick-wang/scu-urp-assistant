@@ -23,21 +23,25 @@ import {
   SubitemScoreRecord,
   TermScoresData
 } from './result.interface'
-import { getPointByScore } from '@/plugins/score/utils'
+import {
+  getLevelCodeByScore,
+  getLevelNameByScore,
+  getPointByScore
+} from '@/plugins/score/utils'
 import { sleep, http } from '@/helper/util'
 import { getChineseNumber } from '@/helper/getter'
 import { Logger } from '@/helper/logger'
 
 function getPageHTML(url: string): Promise<string> {
-  return ($.get({
+  return $.get({
     url,
-    beforeSend: xhr =>
+    beforeSend: (xhr) =>
       xhr.setRequestHeader('X-Requested-With', {
         toString() {
           return ''
         }
       } as string)
-  }) as unknown) as Promise<string>
+  }) as unknown as Promise<string>
 }
 
 async function LoadHTMLToDealWithError(
@@ -56,7 +60,7 @@ async function requestStudentSemesterNumberList(): Promise<string[]> {
   const url = '/student/courseSelect/calendarSemesterCurriculum/index'
   const rawHTML = await getPageHTML(url)
   const codeList = Array.from($('#planCode', rawHTML).find('option')).map(
-    v => $(v).val() as string
+    (v) => $(v).val() as string
   )
   return codeList
 }
@@ -65,10 +69,7 @@ async function requestStudentInfo(): Promise<Map<string, string>> {
   const url = '/student/rollManagement/rollInfo/index'
   const rawHTML = await getPageHTML(url)
   const programPlanNumber = $('#zx', rawHTML).val() as string
-  const programPlanName = $('#zx', rawHTML)
-    .parent()
-    .text()
-    .trim()
+  const programPlanName = $('#zx', rawHTML).parent().text().trim()
   const infos = Array.from($('.profile-info-row', rawHTML))
     .map((v): HTMLElement[][] => {
       const num = $(v).children('.profile-info-name').length
@@ -94,15 +95,9 @@ async function requestStudentInfo(): Promise<Map<string, string>> {
       return [[]]
     })
     .flat(1)
-    .filter(v => v.length)
-    .map(v =>
-      v.map(element =>
-        $(element)
-          .text()
-          .trim()
-      )
-    )
-    .filter(v => v[0])
+    .filter((v) => v.length)
+    .map((v) => v.map((element) => $(element).text().trim()))
+    .filter((v) => v[0])
     .concat([
       ['培养方案名称', programPlanName],
       ['培养方案代码', programPlanNumber]
@@ -233,9 +228,7 @@ async function requestCourseSchedule(
   }
 }
 
-function requestTrainingScheme(
-  num: number
-): Promise<{
+function requestTrainingScheme(num: number): Promise<{
   info: TrainingSchemeBaseInfo
   list: TrainingSchemeYearInfo[]
 }> {
@@ -351,12 +344,12 @@ function requestTrainingScheme(
     )
   ]).then(([{ info, list }, table]) => ({
     info,
-    list: list.map(year => ({
+    list: list.map((year) => ({
       name: year.name,
-      children: year.children.map(semester => ({
+      children: year.children.map((semester) => ({
         name: semester.name,
         children: semester.children
-          .map(v =>
+          .map((v) =>
             Object.assign(v, table[v.courseNumber], {
               courseMajor: `${info.zym}（${info.njmc}）`
             })
@@ -451,9 +444,7 @@ async function requestScuUietpList(queryStr: string): Promise<ScuUietpDTO> {
   }
 }
 
-async function requestCurrentSemesterStudentAcademicInfo(): Promise<
-  CurrentSemesterStudentAcademicInfo
-> {
+async function requestCurrentSemesterStudentAcademicInfo(): Promise<CurrentSemesterStudentAcademicInfo> {
   // 加载本学期基本信息
   const [
     {
@@ -491,9 +482,9 @@ function filterCourseScoreInfoList(list: CourseScoreInfo[]): CourseScoreInfo[] {
       // 教师「暂存」的成绩学生不应看到
       // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
       // TODO: 考虑做开关，让用户决定看不看
-      .filter(v => v.inputStatusCode === '05')
+      .filter((v) => v.inputStatusCode === '05')
       // 分数可能为null，必须分数不为null才显示
-      .filter(v => v.courseScore)
+      .filter((v) => v.courseScore)
   )
 }
 
@@ -563,7 +554,10 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
       inputMethodCode,
       courseScore,
       // levelCode 在本学期成绩信息接口里是 string，在全部成绩信息接口里却是 number
-      levelCode: levelCode?.toString(),
+      levelCode:
+        levelCode?.toString() ||
+        getLevelCodeByScore(courseScore, executiveEducationPlanNumber) ||
+        '',
       unpassedReasonCode,
       courseName,
       englishCourseName,
@@ -571,7 +565,10 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
       studyHour,
       coursePropertyName,
       examTypeName,
-      levelName,
+      levelName:
+        levelName ||
+        getLevelNameByScore(courseScore, executiveEducationPlanNumber) ||
+        '',
       unpassedReasonExplain,
       gradePoint: getPointByScore(courseScore, executiveEducationPlanNumber)
     })
@@ -594,7 +591,7 @@ async function requestThisTermCourseScoreInfoList(): Promise<
     // console.log(`state: ${state}`)
     const res = filterCourseScoreInfoList(
       list.map(
-        v =>
+        (v) =>
           ({
             courseName: v.courseName || '',
             englishCourseName: v.englishCourseName || '',
@@ -609,8 +606,20 @@ async function requestThisTermCourseScoreInfoList(): Promise<
             minScore: Number(v.mincj) || 0,
             courseScore: Number(v.courseScore) || 0,
             // 对，你没看错，这个地方教务处接口是错别字，把level打成了levle
-            levelCode: v.levlePoint || '',
-            levelName: v.levelName || '',
+            levelCode:
+              v.levlePoint ||
+              getLevelCodeByScore(
+                Number(v.courseScore) || 0,
+                v.id.executiveEducationPlanNumber || ''
+              ) ||
+              '',
+            levelName:
+              v.levelName ||
+              getLevelNameByScore(
+                Number(v.courseScore) || 0,
+                v.id.executiveEducationPlanNumber || ''
+              ) ||
+              '',
             gradePoint: Number(v.gradePoint) || 0,
             rank: Number(v.rank) || 0,
             examTime: v.id.examtime || '',
