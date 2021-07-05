@@ -2,12 +2,12 @@
 .sua-container-bachelor-degree
   Loading(v-if='!loadingIsDone')
   el-alert(
-    v-if='loadingIsDone'
-    v-for="(v, i) in alerts"
-    :key="i"
-    :title="v.title"
-    :type="v.type"
-    :closable="v.closable"
+    v-if='loadingIsDone',
+    v-for='(v, i) in alerts',
+    :key='i',
+    :title='v.title',
+    :type='v.type',
+    :closable='v.closable',
     :close-text='v.closeText'
   )
   .row.query-wrapper(v-if='loadingIsDone')
@@ -22,8 +22,16 @@
             | 请输入专业名称关键字或专业代码
           .profile-info-value
             .profile-info-value
-              input#major(type='text', name='major' v-model.trim='inputMajor' @keyup.enter='query')
-              button#queryButton.btn.btn-info.btn-xs.btn-round(title='查询' @click='query')
+              input#major(
+                type='text',
+                name='major',
+                v-model.trim='inputMajor',
+                @keyup.enter='query'
+              )
+              button#queryButton.btn.btn-info.btn-xs.btn-round(
+                title='查询',
+                @click='query'
+              )
                 i.ace-con.fa.fa-search.white.bigger-120 &nbsp;查询
   .row.result-wrapper(v-if='loadingIsDone && hasNoError && hasQueried')
     .col-sm-12
@@ -39,7 +47,9 @@
         | 抱歉，根据您输入的关键字在《四川大学学士学位授位专业及授位学科门类表》中查询，没有得到结果，
         strong 可能没有一些新专业，欢迎向开发者反馈
         | 。
-      table.table.table-hover.table-bordered.table-striped(v-if='similarList.length')
+      table.table.table-hover.table-bordered.table-striped(
+        v-if='similarList.length'
+      )
         thead
           tr
             th.center 序号
@@ -49,7 +59,7 @@
             th.center 批准文号
             th.center 备注
         tbody
-          tr(v-for='(v, i) in similarList' :key='v.majorCode')
+          tr(v-for='(v, i) in similarList', :key='v.majorCode')
             td.center {{ i + 1 }}
             td.center {{ v.majorCode }}
             td.center {{ v.majorName }}
@@ -63,6 +73,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import { actions, Request } from '@/store'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
+import { notifyError } from '@/helper/util'
 
 interface BachelorDegreeInfo {
   majorCode: string
@@ -89,7 +100,7 @@ export default class BachelorDegree extends Vue {
   }[] = []
 
   get hasNoError(): boolean {
-    return this.alerts.every(v => v.type !== 'error')
+    return this.alerts.every((v) => v.type !== 'error')
   }
 
   async query(): Promise<void> {
@@ -111,10 +122,7 @@ export default class BachelorDegree extends Vue {
       const title = '专业授位查询'
       const message: string = error.message
       emitDataAnalysisEvent('专业授位查询', '查询失败')
-      this.$notify.error({
-        title,
-        message
-      })
+      notifyError(message, title)
       this.alerts = [
         {
           title: message,

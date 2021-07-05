@@ -160,6 +160,7 @@ import {
 } from '@/plugins/score/utils'
 import { pluck, sum } from 'ramda'
 import { requestAllTermsCourseScoreInfoList } from '@/store/actions/request'
+import { notifyError } from '@/helper/util'
 
 type NewCourseType = 'compulsory' | 'optional'
 
@@ -357,10 +358,7 @@ export default class ExpectedGradeEstimation extends Vue {
       const title = '[成绩相关工具] 预期成绩估计'
       const message: string = error.message
       emitDataAnalysisEvent('预期成绩估计', '查询失败')
-      this.$notify.error({
-        title,
-        message
-      })
+      notifyError(message, title)
       this.alerts.push({
         title: message,
         type: 'error',
