@@ -17,7 +17,7 @@
     height='300'
   )
   p.indent 您也可以直接给我发送邮件：
-    a(href='mailto:zhaoji.wang@scujs.net', title='王兆基的邮箱') zhaoji.wang@scujs.net
+    a(href='mailto:wangzhaoji@taoji.tech', title='王兆基的邮箱') wangzhaoji@taoji.tech
 </template>
 
 <script lang="ts">
