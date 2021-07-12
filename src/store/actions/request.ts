@@ -632,6 +632,11 @@ export async function requestSubitemScoreLook(
   }
 }
 
+/**
+ * NOTE: 2021-7-12
+ * 这个接口目前已经没有修复的必要了
+ * 即使在 /student/integratedQuery/scoreQuery/subitemScore/fxcjIndex 页面中加上随机字符串正确调用了接口，返回的数据仍然为空。
+ */
 export async function requestSubitemScoreFxcj(
   fxcjId: string
 ): Promise<SubitemScoreRecord[]> {

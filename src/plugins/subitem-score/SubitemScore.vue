@@ -46,22 +46,18 @@
           th 序号
           th 分项名称
           th 分项成绩
-          th 分项所占系数
-          th 分项成绩 × 所占系数
       tbody#scoreintbody
         tr(v-for='(v, i) in records', :key='i')
           td {{ i + 1 }}
-          td {{ v.CJFXMC }}
-          td {{ v.FXCJ }}
-          td {{ Number(v.CJFXZB) }}
-          td {{ v.FXCJ && `${v.FXCJ} × ${Number(v.CJFXZB)} = ${calcRightProductOfGradeAndFactor(v.FXCJ, v.CJFXZB)}` }}
+          td {{ getScoreSubItemNameByCode(v.id.scoreSubItemCode) }}
+          td {{ v.subItemScore }}
 </template>
 
 <script lang="ts">
 import { getCurrentRouteParams, router } from '@/core/router'
 import { convertSemesterNumberToName } from '@/helper/converter'
-import { requestSubitemScoreFxcj } from '@/store/actions/request'
-import { SubitemScoreRecord } from '@/store/actions/result.interface'
+import { requestSubitemScoreLook } from '@/store/actions/request'
+import { ScoreDetail } from '@/store/actions/result.interface'
 import { Vue, Component } from 'vue-property-decorator'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { getPointByScore } from '../score/utils'
@@ -73,12 +69,12 @@ import { defaultTo, nth, pipe, split } from 'ramda'
   components: { Loading }
 })
 export default class SubitemScore extends Vue {
-  records: SubitemScoreRecord[] = []
+  records: ScoreDetail[] = []
   loadingIsDone = false
 
   get semester(): string {
     if (this.records.length) {
-      return this.records[0].ZXJXJHH
+      return this.records[0].id.executiveEducationPlanNumber
     }
     return ''
   }
@@ -91,32 +87,32 @@ export default class SubitemScore extends Vue {
   }
 
   get course(): string {
-    if (this.records.length) {
-      const { KCM, KCH, KXH } = this.records[0]
-      return `${KCM}（${KCH}-${KXH}）`
+    const params = getCurrentRouteParams() as Record<string, string> | undefined
+    if (
+      params?.courseName &&
+      params?.courseNumber &&
+      params?.courseSequenceNumber
+    ) {
+      const { courseName, courseNumber, courseSequenceNumber } = params
+      return `${courseName}（${courseNumber}-${courseSequenceNumber}）`
     }
     return ''
   }
 
   get examTime(): string {
-    if (this.records.length) {
-      const { KSSJ } = this.records[0]
-      return KSSJ
+    const params = getCurrentRouteParams() as Record<string, string> | undefined
+    if (params?.examTime) {
+      const { examTime } = params
+      return examTime
     }
     return ''
   }
 
   get score(): string {
-    if (this.records.length) {
-      return Math.round(
-        this.records
-          .map(({ CJFXMC, FXCJ, CJFXZB }) => ({
-            CJFXMC,
-            FXCJ: Number(FXCJ),
-            CJFXZB: Number(CJFXZB)
-          }))
-          .reduce((acc, { FXCJ, CJFXZB }) => acc + FXCJ * CJFXZB, 0)
-      ).toString()
+    const params = getCurrentRouteParams() as Record<string, string> | undefined
+    if (params?.courseScore) {
+      const { courseScore } = params
+      return courseScore
     }
     return ''
   }
@@ -131,14 +127,14 @@ export default class SubitemScore extends Vue {
   }
 
   get isScoreShown(): boolean {
-    return this.records.every(({ FXCJ }) => FXCJ)
+    return this.records.every(({ subItemScore }) => subItemScore)
   }
 
   /**
    * 计算「分数」和「分数比例」的正确乘积。
    * 解决浮点数计算精度误差，避免出现类似「13.799999999999999」这样的奇怪结果
    */
-  calcRightProductOfGradeAndFactor(score: string, factor: string) {
+  calcRightProductOfGradeAndFactor(score: string, factor: string): number {
     const scoreNum = Number(score)
     const factorNum = Number(factor)
     /**
@@ -169,8 +165,38 @@ export default class SubitemScore extends Vue {
     router.back()
   }
 
+  getScoreSubItemNameByCode(code: string): string {
+    switch (code) {
+      case '01':
+        return '平时作业'
+      case '02':
+        return '期中考试'
+      case '03':
+        return '期末考试'
+      case '04':
+        return '实验环节'
+      case '05':
+        return '实践环节'
+      case '06':
+        return '平时测验'
+      case '07':
+        return '日常考勤'
+      case '08':
+        return '课堂表现'
+      case '09':
+        return '课程论文'
+      case '11':
+        return '平时成绩'
+      default:
+        emitDataAnalysisEvent('分项成绩查询', '无法识别的分项成绩代码', {
+          ScoreSubItemCode: code
+        })
+        return ''
+    }
+  }
+
   async mounted(): Promise<void> {
-    const params = getCurrentRouteParams()
+    const params = getCurrentRouteParams() as Record<string, string> | undefined
     if (!params) {
       notifyError('参数对象初始化失败，查询中止', '[分项成绩查询] 读取参数失败')
       emitDataAnalysisEvent('分项成绩查询', '读取参数失败')
@@ -197,9 +223,15 @@ export default class SubitemScore extends Vue {
       emitDataAnalysisEvent('分项成绩查询', '参数存在空值')
       return
     }
-    const fxcjId = `${executiveEducationPlanNumber}_${courseNumber}_${courseSequenceNumber}_${examTime}_${coursePropertyCode}`
     try {
-      this.records = await requestSubitemScoreFxcj(fxcjId)
+      this.records = (
+        await requestSubitemScoreLook(
+          executiveEducationPlanNumber,
+          courseNumber,
+          courseSequenceNumber,
+          examTime
+        )
+      ).scoreDetailList
       this.loadingIsDone = true
       emitDataAnalysisEvent('分项成绩查询', '查询成功')
     } catch (error) {

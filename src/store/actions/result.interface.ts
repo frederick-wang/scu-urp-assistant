@@ -76,18 +76,20 @@ export interface TermScoresData {
 }
 
 export interface APISubitemScoreLookDTO {
-  scoreDetailList: {
-    id: {
-      executiveEducationPlanNumber: string
-      courseNumber: string
-      coureSequenceNumber: string
-      scoreSubItemCode: string
-      examTime: string
-      studentId: string
-    }
-    scoreSubItemName?: string
-    subItemScore: number
-  }[]
+  scoreDetailList: ScoreDetail[]
+}
+
+export interface ScoreDetail {
+  id: {
+    executiveEducationPlanNumber: string
+    courseNumber: string
+    coureSequenceNumber: string
+    scoreSubItemCode: string
+    examTime: string
+    studentId: string
+  }
+  scoreSubItemName?: string
+  subItemScore: number
 }
 
 export interface SubitemScoreRecord {
