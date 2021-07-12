@@ -1,3 +1,26 @@
+# [0.12.0](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.3...v0.12.0) (2021-07-12)
+
+
+### Bug Fixes
+
+* **plugins/feedback:** 修改作者邮箱为当前正在使用的邮箱 ([2b9ae65](https://github.com/frederick-wang/scu-urp-assistant/commit/2b9ae65d4aa8f51a0dab4c548157d5677e376281))
+* **plugins/score:** typo fixed ([d685b9e](https://github.com/frederick-wang/scu-urp-assistant/commit/d685b9e514d5d749ba1f2bd3f6b0ecbc71c0fdba))
+* **plugins/score:** 修复了「均分绩点计算器」与「成绩信息查询」失效的 bug ([40fb7b8](https://github.com/frederick-wang/scu-urp-assistant/commit/40fb7b8ae2e24005e175eab3e2078f593aff988a)), closes [#43](https://github.com/frederick-wang/scu-urp-assistant/issues/43)
+* **plugins/score:** 修复了「预期成绩估计」功能无法正常使用的bug ([6716bb8](https://github.com/frederick-wang/scu-urp-assistant/commit/6716bb886b5377fa6ba0576536a556e00575bfe3)), closes [#45](https://github.com/frederick-wang/scu-urp-assistant/issues/45)
+* **plugins/score:** 修复了如果课程没有等级成绩，绩点计算器中等级成绩会留空的 bug ([46deaf4](https://github.com/frederick-wang/scu-urp-assistant/commit/46deaf4f4533c93e3b6e98d65b9c0b318b34ec4f)), closes [#40](https://github.com/frederick-wang/scu-urp-assistant/issues/40)
+* **plugins/score:** 修复了存在重修课程时计算出错的bug ([5d4c104](https://github.com/frederick-wang/scu-urp-assistant/commit/5d4c1048df2caee4290e1228a43c25331c954a59)), closes [#39](https://github.com/frederick-wang/scu-urp-assistant/issues/39)
+* **plugins/score:** 修复了未评教时，对成绩为 -999 的课程仍会加入绩点计算的 bug ([37ae082](https://github.com/frederick-wang/scu-urp-assistant/commit/37ae082761c3a836d67040e2280e07fa5e2a0485)), closes [#41](https://github.com/frederick-wang/scu-urp-assistant/issues/41)
+* **plugins/subitem-score:** 修复了分项成绩查询表格中的异常小数问题 ([e58c519](https://github.com/frederick-wang/scu-urp-assistant/commit/e58c5191bcd1633f4ff3d7f82f65520be08518ab)), closes [#29](https://github.com/frederick-wang/scu-urp-assistant/issues/29)
+* **plugins/subitem-score:** 修复了教务系统更新后，「分项成绩查询」功能无法正常使用的问题。 ([c361d66](https://github.com/frederick-wang/scu-urp-assistant/commit/c361d66d93e337b5ab2d20cfa5b4b503e5b456c9)), closes [#44](https://github.com/frederick-wang/scu-urp-assistant/issues/44)
+
+
+### Features
+
+* **plugins/donate:** 更新了 Donate 插件的信息 ([668c1c7](https://github.com/frederick-wang/scu-urp-assistant/commit/668c1c779ee71798bbb84eee59d6d91053d5432d))
+* **plugins/score:** 计算成绩时，将辅修课程单独列出 ([9601acd](https://github.com/frederick-wang/scu-urp-assistant/commit/9601acddaf1addd039b569dc18bef357112aff20)), closes [#31](https://github.com/frederick-wang/scu-urp-assistant/issues/31)
+
+
+
 ## [0.11.3](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.2...v0.11.3) (2021-03-05)
 
 
