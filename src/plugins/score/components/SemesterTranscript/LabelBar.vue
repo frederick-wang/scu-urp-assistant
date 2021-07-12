@@ -46,16 +46,16 @@ div
     |
     span.gpa-st-tag.gpa-st-tag-selected-score.label.label-pink(
       v-if='type !== `compact` && selectedCoursesLength',
-      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均分为 ${getSelectedCoursesScore(allCourses)}`'
+      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均分为 ${getSelectedCoursesScore(courses)}`'
     )
-      | 选中课程平均分：{{ getSelectedCoursesScore(allCourses) }}
+      | 选中课程平均分：{{ getSelectedCoursesScore(courses) }}
     |
     |
     span.gpa-st-tag.gpa-st-tag-selected-gpa.label.label-pink(
       v-if='type !== `compact` && selectedCoursesLength',
-      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(allCourses)}`'
+      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(courses)}`'
     )
-      | 选中课程绩点：{{ getSelectedCoursesGPA(allCourses) }}
+      | 选中课程绩点：{{ getSelectedCoursesGPA(courses) }}
   p(v-if='type === `compact`')
     span.gpa-st-tag.label.label-light(
       v-if='minorCourses.length',
@@ -75,29 +75,26 @@ div
     |
     span.gpa-st-tag.gpa-st-tag-selected-score.label.label-pink(
       v-if='selectedCoursesLength',
-      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均分为 ${getSelectedCoursesScore(allCourses)}`'
+      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均分为 ${getSelectedCoursesScore(courses)}`'
     )
-      | 选中课程平均分：{{ getSelectedCoursesScore(allCourses) }}
+      | 选中课程平均分：{{ getSelectedCoursesScore(courses) }}
     |
     |
     span.gpa-st-tag.gpa-st-tag-selected-gpa.label.label-pink(
       v-if='selectedCoursesLength',
-      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(allCourses)}`'
+      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(courses)}`'
     )
-      | 选中课程绩点：{{ getSelectedCoursesGPA(allCourses) }}
+      | 选中课程绩点：{{ getSelectedCoursesGPA(courses) }}
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { CourseScoreRecord } from '@/plugins/score/types'
 import {
-  getCompulsoryCoursesGPA,
-  getCompulsoryCoursesScore,
   getAllCoursesGPA,
   getAllCoursesScore,
   getCompulsoryCourses,
-  getSelectedCoursesScore,
-  getSelectedCoursesGPA,
+  getSelectedCourses,
   removeMinorCourses,
   reserveHigherCoursesForRetakenCourses,
   reserveMinorCourses
@@ -126,10 +123,6 @@ export default class LabelBar extends Vue {
   })
   selectedCourses!: CourseScoreRecord[]
 
-  get allCourses(): CourseScoreRecord[] {
-    return reserveHigherCoursesForRetakenCourses(this.courses)
-  }
-
   get majorCourses(): CourseScoreRecord[] {
     return reserveHigherCoursesForRetakenCourses(
       removeMinorCourses(this.courses)
@@ -151,19 +144,23 @@ export default class LabelBar extends Vue {
   }
 
   getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
-    return getCompulsoryCoursesGPA(arr)
+    return getAllCoursesGPA(getCompulsoryCourses(arr))
   }
 
   getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
-    return getCompulsoryCoursesScore(arr)
+    return getAllCoursesScore(getCompulsoryCourses(arr))
   }
 
   getSelectedCoursesGPA(arr: CourseScoreRecord[]): number {
-    return getSelectedCoursesGPA(arr)
+    return getAllCoursesGPA(
+      reserveHigherCoursesForRetakenCourses(getSelectedCourses(arr))
+    )
   }
 
   getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
-    return getSelectedCoursesScore(arr)
+    return getAllCoursesScore(
+      reserveHigherCoursesForRetakenCourses(getSelectedCourses(arr))
+    )
   }
 
   getAllCoursesGPA(arr: CourseScoreRecord[]): number {

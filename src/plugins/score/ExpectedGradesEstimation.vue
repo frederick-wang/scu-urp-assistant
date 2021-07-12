@@ -151,8 +151,6 @@ import FourTypeGradeLabels from './components/ExpectedGradesEstimation/FourTypeG
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import {
-  getCompulsoryCoursesGPA,
-  getCompulsoryCoursesScore,
   getAllCoursesGPA,
   getAllCoursesScore,
   getCompulsoryCourses,
@@ -333,11 +331,11 @@ export default class ExpectedGradeEstimation extends Vue {
   }
 
   getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
-    return getCompulsoryCoursesGPA(arr)
+    return getAllCoursesGPA(getCompulsoryCourses(arr))
   }
 
   getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
-    return getCompulsoryCoursesScore(arr)
+    return getAllCoursesScore(getCompulsoryCourses(arr))
   }
 
   getAllCoursesGPA(arr: CourseScoreRecord[]): number {

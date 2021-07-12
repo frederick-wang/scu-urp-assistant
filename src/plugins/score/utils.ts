@@ -115,58 +115,6 @@ function getSelectedCourses(arr: CourseScoreRecord[]): CourseScoreRecord[] {
 }
 
 /**
- * 输入课程数组，得到必修加权平均绩点
- *
- * @param {CourseScoreRecord[]} 课程数组
- * @returns 必修加权平均绩点
- */
-function getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
-  return reserveDigits(getWeightedAverage(mapGPA(getCompulsoryCourses(arr))))
-}
-
-/**
- * 输入课程数组，得到选中课程加权平均分
- *
- * @param {CourseScoreRecord[]} arr 课程数组
- * @returns 选中课程加权平均分
- */
-function getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
-  return reserveDigits(
-    getWeightedAverage(
-      mapScore(removeIllegalScoreCourses(getSelectedCourses(arr)))
-    )
-  )
-}
-
-/**
- * 输入课程数组，得到选中课程加权平均绩点
- *
- * @param {CourseScoreRecord[]} 课程数组
- * @returns 选中课程加权平均绩点
- */
-function getSelectedCoursesGPA(arr: CourseScoreRecord[]): number {
-  return reserveDigits(
-    getWeightedAverage(
-      mapGPA(removeIllegalScoreCourses(getSelectedCourses(arr)))
-    )
-  )
-}
-
-/**
- * 输入课程数组，得到必修加权平均分
- *
- * @param {CourseScoreRecord[]} arr 课程数组
- * @returns 必修加权平均分
- */
-function getCompulsoryCoursesScore(arr: CourseScoreRecord[]): number {
-  return reserveDigits(
-    getWeightedAverage(
-      mapScore(removeIllegalScoreCourses(getCompulsoryCourses(arr)))
-    )
-  )
-}
-
-/**
  * 输入课程数组，得到全部课程加权平均绩点
  *
  * @param {CourseScoreRecord[]} arr 课程数组
@@ -454,14 +402,10 @@ export function getLevelCodeByScore(
 }
 
 export {
-  getCompulsoryCoursesGPA,
-  getCompulsoryCoursesScore,
   getAllCoursesGPA,
   getAllCoursesScore,
   getCompulsoryCourses,
   getSelectedCourses,
-  getSelectedCoursesScore,
-  getSelectedCoursesGPA,
   getPointByScore,
   reserveNewerCoursesForRetakenCourses,
   reserveOlderCoursesForRetakenCourses

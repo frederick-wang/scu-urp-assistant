@@ -92,10 +92,6 @@ export default class Header extends Vue {
   })
   selectedCourses!: CourseScoreRecord[]
 
-  get allCourses(): CourseScoreRecord[] {
-    return reserveHigherCoursesForRetakenCourses(this.courses)
-  }
-
   get majorCourses(): CourseScoreRecord[] {
     return reserveHigherCoursesForRetakenCourses(
       removeMinorCourses(this.courses)
