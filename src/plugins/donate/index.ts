@@ -10,17 +10,17 @@ export const Donate: SUAPlugin = {
   defaultEnabledState: true,
   brief: '打赏页面，是助手界面的一部分，不可关闭。',
   route: {
-    path: 'help/donate',
+    path: 'donate/donate-developer',
     component: App
   },
   menu: {
     rootMenuId: 'sua-menu-list',
     rootMenuName: 'SCU URP 助手',
-    id: 'menu-help',
-    name: '帮助',
+    id: 'menu-donate',
+    name: '打赏',
     item: {
-      name: '打赏作者',
-      route: 'help/donate'
+      name: '打赏开发者',
+      route: 'donate/donate-developer'
     }
   }
 }
