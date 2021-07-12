@@ -26,7 +26,7 @@
         |
         strong {{ allCourses.length }}
         |
-        | 门课程（共
+        | 门属于主修培养方案的课程（共
         |
         strong {{ allCoursesCredits }}
         |
@@ -125,7 +125,7 @@
         |
         strong(style='color: #f56c6c') {{ newAllCoursesCredits }}
         |
-        | 学分的课程，其中必修课程共
+        | 学分属于主修培养方案的课程，其中必修课程共
         |
         strong(style='color: #f56c6c') {{ newCompulsoryCoursesCredits }}
         |
