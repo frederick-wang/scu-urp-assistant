@@ -56,7 +56,7 @@
             title='提示',
             type='info',
             description='您现在还没有添加预期课程~点击下面按钮新增预期课程，就可以估计预期成绩了！',
-            :show-icon='true'
+            :show-icon='true',
             :closable='false'
           )
         .input-line-list(v-for='(v, i) in newCourses', :key='i')
@@ -156,10 +156,12 @@ import {
   getAllCoursesGPA,
   getAllCoursesScore,
   getCompulsoryCourses,
-  getPointByScore
+  getPointByScore,
+  reserveHigherCoursesForRetakenCourses,
+  removeMinorCourses
 } from '@/plugins/score/utils'
 import { pluck, sum } from 'ramda'
-import { requestAllTermsCourseScoreInfoList } from '@/store/actions/request'
+import { requestAllPassingScores } from '@/store/actions/request'
 import { notifyError } from '@/helper/util'
 
 type NewCourseType = 'compulsory' | 'optional'
@@ -235,13 +237,17 @@ export default class ExpectedGradeEstimation extends Vue {
   }
 
   get hasNoError(): boolean {
-    return this.alerts.every(v => v.type !== 'error')
+    return this.alerts.every((v) => v.type !== 'error')
   }
 
   get allCourses(): CourseScoreRecord[] {
-    return this.records.reduce(
-      (acc, cur) => acc.concat(cur.courses),
-      [] as CourseScoreRecord[]
+    return reserveHigherCoursesForRetakenCourses(
+      removeMinorCourses(
+        this.records.reduce(
+          (acc, cur) => acc.concat(cur.courses),
+          [] as CourseScoreRecord[]
+        )
+      )
     )
   }
 
@@ -349,7 +355,7 @@ export default class ExpectedGradeEstimation extends Vue {
   async created(): Promise<void> {
     try {
       const records = await convertCourseScoreInfoListToScoreRecords(
-        await requestAllTermsCourseScoreInfoList()
+        await requestAllPassingScores()
       )
       this.records = records
       this.loadingIsDone = true
