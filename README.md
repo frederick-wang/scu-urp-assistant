@@ -25,7 +25,7 @@ npm install
 
 ## 开发调试
 
-开发时运行 `npm start` 或者 `npm run dev` 均可，编译出的是带调试信息的 Userscript，以 `inline-source-map` 模式输出源码，方便开发调试。此外，也可以自动监视文件变化、增量编译，并自动刷新页面。
+开发时运行 `npm start` 或者 `npm run serve` 均可，编译出的是带调试信息的 Userscript，以 `inline-source-map` 模式输出源码，方便开发调试。此外，也可以自动监视文件变化、增量编译，并自动刷新页面。
 
 编译出的 `dev模式脚本` 的路径是 `http://localhost:8080/scu-urp-assistant.user.js`，但是请不要在 Tampermonkey 中直接加载，或者用 `@require` 引入，否则会遭遇缓存问题。建议在 Tampermonkey 中新建一个脚本，例如命名为 `SCU URP Assistant (dev)`，内容为：
 

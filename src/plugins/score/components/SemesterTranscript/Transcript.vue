@@ -22,7 +22,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
     tr.gpa-st-item(
       v-for='(courseItem, courseIndex) in courses',
       :key='courseIndex',
-      :class='{ selected: courseItem.selected }',
+      :class='{ selected: courseItem.selected, minor: courseItem.coursePropertyName === `辅修` }',
       @click='$emit(`toggleCourseStatus`, courseItem)'
     )
       td(:class='{ bold: type !== `compact` }') {{ courseItem.courseName }}
@@ -106,7 +106,8 @@ export default class Transcript extends Vue {
     courseNumber,
     courseSequenceNumber,
     examTime,
-    coursePropertyCode
+    coursePropertyCode,
+    courseScore
   }: CourseScoreRecord): Promise<void> {
     const { scoreDetailList } = await requestSubitemScoreLook(
       executiveEducationPlanNumber,
@@ -119,10 +120,12 @@ export default class Transcript extends Vue {
       router.push('advanced_query/subitem_score', {
         params: {
           executiveEducationPlanNumber,
+          courseName,
           courseNumber,
           courseSequenceNumber,
           examTime,
-          coursePropertyCode
+          coursePropertyCode,
+          courseScore
         }
       })
     } else {
@@ -138,6 +141,10 @@ export default class Transcript extends Vue {
 table.gpa-st-table {
   tr.gpa-st-item {
     cursor: pointer;
+
+    &.minor {
+      opacity: 0.6;
+    }
 
     > td {
       transition: 0.1s;

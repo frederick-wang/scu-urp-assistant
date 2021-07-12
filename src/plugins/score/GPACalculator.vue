@@ -18,7 +18,8 @@
     :selectedCourses='allSelectedCourses',
     @selectAllCourses='selectAllCourses()',
     @unselectAllCourses='unselectAllCourses()',
-    @selectCompulsoryCourses='selectCompulsoryCourses()'
+    @selectCompulsoryCourses='selectCompulsoryCourses()',
+    @selectMinorCourses='selectMinorCourses()'
   )
   .gpa-st-container.row(v-if='loadingIsDone && hasNoError')
     SemesterTranscript(
@@ -41,9 +42,10 @@ import { getSelectedCourses } from '@/plugins/score/utils'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
 import {
-  requestAllTermsCourseScoreInfoList,
+  requestAllPassingScores,
   requestThisTermCourseScoreInfoList
 } from '@/store/actions/request'
+import { notifyError } from '@/helper/util'
 
 @Component({
   components: { Loading, SemesterTranscript, TotalTranscript }
@@ -65,7 +67,7 @@ export default class GPACalculator extends Vue {
   }[] = []
 
   get hasNoError(): boolean {
-    return this.alerts.every(v => v.type !== 'error')
+    return this.alerts.every((v) => v.type !== 'error')
   }
 
   get allCourses(): CourseScoreRecord[] {
@@ -80,15 +82,23 @@ export default class GPACalculator extends Vue {
   }
 
   selectAllCourses(): void {
-    this.allCourses.forEach(v => (v.selected = true))
+    this.allCourses.forEach((v) => (v.selected = true))
   }
 
   unselectAllCourses(): void {
-    this.allCourses.forEach(v => (v.selected = false))
+    this.allCourses.forEach((v) => (v.selected = false))
   }
 
   selectCompulsoryCourses(): void {
-    this.allCourses.forEach(v => (v.selected = v.coursePropertyName === '必修'))
+    this.allCourses.forEach(
+      (v) => (v.selected = v.coursePropertyName === '必修')
+    )
+  }
+
+  selectMinorCourses(): void {
+    this.allCourses.forEach(
+      (v) => (v.selected = v.coursePropertyName === '辅修')
+    )
   }
 
   async created(): Promise<void> {
@@ -99,7 +109,7 @@ export default class GPACalculator extends Vue {
               await requestThisTermCourseScoreInfoList()
             )
           : convertCourseScoreInfoListToScoreRecords(
-              await requestAllTermsCourseScoreInfoList()
+              await requestAllPassingScores()
             )
       this.records = records
       this.loadingIsDone = true
@@ -132,10 +142,7 @@ export default class GPACalculator extends Vue {
           emitDataAnalysisEvent('成绩信息查询', '查询失败')
           break
       }
-      this.$notify.error({
-        title,
-        message
-      })
+      notifyError(message, title)
       this.alerts.push({
         title: message,
         type: 'error',

@@ -76,18 +76,20 @@ export interface TermScoresData {
 }
 
 export interface APISubitemScoreLookDTO {
-  scoreDetailList: {
-    id: {
-      executiveEducationPlanNumber: string
-      courseNumber: string
-      coureSequenceNumber: string
-      scoreSubItemCode: string
-      examTime: string
-      studentId: string
-    }
-    scoreSubItemName?: string
-    subItemScore: number
-  }[]
+  scoreDetailList: ScoreDetail[]
+}
+
+export interface ScoreDetail {
+  id: {
+    executiveEducationPlanNumber: string
+    courseNumber: string
+    coureSequenceNumber: string
+    scoreSubItemCode: string
+    examTime: string
+    studentId: string
+  }
+  scoreSubItemName?: string
+  subItemScore: number
 }
 
 export interface SubitemScoreRecord {
@@ -144,4 +146,99 @@ export interface APISubitemScoreFxcjDTO {
     totalCount: number
   }
   records: SubitemScoreRecord[]
+}
+
+export interface APIAllPassingScoresDTO {
+  lnList: APIAllPassingScoresDTOLn[]
+  state: string
+  zxjxjhh: string
+}
+
+export interface APIAllPassingScoresDTOLn {
+  cjList: APIAllPassingScoresDTOLnCj[]
+  xqwtg: number
+  xqzms: number
+  xqtgms: number
+  xqzxs: number
+  xqzxf: number
+  zxf: number
+  zxs: number
+  yqzxf: number
+  yqxf: number
+  yxxf: number
+  tgms: number
+  wtgms: number
+  zms: number
+  cjlx: string
+  cjbh: string
+  fajhwkcms: number
+  kznzms: number
+  fajhnkcms: number
+  kzxdms: number
+  kzwtgms: number
+  kztgms: number
+  fajhzxf: number
+  fajhzxs: number
+  fajhzms: number
+  famc: undefined
+  zxjxjhh: string
+}
+
+export interface APIAllPassingScoresDTOLnCj {
+  id: APIAllPassingScoresDTOLnCjId
+  classNo: string
+  entryStatusCode: string
+  scoreEntryModeCode: string
+  gradePointScore?: number
+  standardScore?: number
+  percentileRankScore?: number
+  gradeScore?: number
+  planNO: string
+  courseAttributeName: string
+  courseAttributeCode: string
+  payableMoney: undefined
+  examTypeCode?: string
+  examTime: string
+  electiveTypeCode?: string
+  studyModeCode: string
+  courseScore: number
+  operator?: string
+  operatingTime?: string
+  makeupExaminationTypeCode?: string
+  notByReasonCode: undefined
+  notByReasonName: undefined
+  remark?: string
+  cycle?: string
+  courseName: string
+  englishCourseName: string
+  planName: string
+  planName2: string
+  academicYearCode: string
+  termTypeCode: string
+  termTypeName: string
+  termCode: string
+  termName: string
+  gradeName?: string
+  cj: string
+  xkcsxdm: undefined
+  xkcsxmc: undefined
+  tdkcm: undefined
+  cjlrfsdm: undefined
+  bm: undefined
+  kzlbmc: undefined
+  avgcj: undefined
+  rank: undefined
+  xkkzm: undefined
+  credit: string
+  tscore?: number
+  substituteCourseNo?: string
+}
+
+export interface APIAllPassingScoresDTOLnCjId {
+  executiveEducationPlanNumber: string
+  courseNumber: string
+  startTime: string
+  studentId: string
+  coureSequenceNumber: string
+  kch_zj: string
 }

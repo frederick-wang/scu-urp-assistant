@@ -23,9 +23,10 @@ export const convertCourseScoreInfoListToScoreRecords = (
   list
     .sort((a, b) => {
       const weights = new Map([
-        ['必修', 100],
-        ['选修', 75],
-        ['任选', 50]
+        ['必修', 1000],
+        ['选修', 100],
+        ['任选', 10],
+        ['辅修', 1]
       ])
       return (
         (weights.get(b.coursePropertyName) || 0) +
@@ -45,7 +46,7 @@ export const convertCourseScoreInfoListToScoreRecords = (
       }
 
       const currentSemesterRecords = acc.filter(
-        v => v.semester === cur.executiveEducationPlanName
+        (v) => v.semester === cur.executiveEducationPlanName
       )
       const record = {
         ...cur,
@@ -62,14 +63,14 @@ export const convertCourseScoreInfoListToScoreRecords = (
       return acc
     }, [] as SemesterScoreRecord[])
     // 不显示还没有课程成绩的学期
-    .filter(v => v.courses && v.courses.length)
+    .filter((v) => v.courses && v.courses.length)
     // 如果一门课程在同一学期内出现了两次成绩记录，取最新的一次
     .map(({ semester, courses }) => ({
       semester,
       courses: courses.filter(
         ({ courseName, courseNumber, courseSequenceNumber, examTime }) =>
           !courses.some(
-            v =>
+            (v) =>
               v.courseName === courseName &&
               v.courseNumber === courseNumber &&
               v.courseSequenceNumber === courseSequenceNumber &&

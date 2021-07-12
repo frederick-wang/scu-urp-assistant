@@ -1,5 +1,4 @@
 import {
-  AllTermScoresDTO,
   CourseScoreInfo,
   CurrentSemesterStudentAcademicInfo,
   TrainingSchemeYearInfo,
@@ -17,46 +16,34 @@ import {
 import { pipe, map } from 'ramda'
 import state from '../state'
 import {
+  APIAllPassingScoresDTO,
+  APIAllPassingScoresDTOLnCj,
   APISubitemScoreFxcjDTO,
   APISubitemScoreLookDTO,
   Result,
   SubitemScoreRecord,
   TermScoresData
 } from './result.interface'
-import { getPointByScore } from '@/plugins/score/utils'
+import {
+  getLevelCodeByScore,
+  getLevelNameByScore,
+  getPointByScore
+} from '@/plugins/score/utils'
 import { sleep, http } from '@/helper/util'
 import { getChineseNumber } from '@/helper/getter'
 import { Logger } from '@/helper/logger'
-
-function getPageHTML(url: string): Promise<string> {
-  return ($.get({
-    url,
-    beforeSend: xhr =>
-      xhr.setRequestHeader('X-Requested-With', {
-        toString() {
-          return ''
-        }
-      } as string)
-  }) as unknown) as Promise<string>
-}
-
-async function LoadHTMLToDealWithError(
-  url: string
-): Promise<{ title: string; message: string; html: string }> {
-  const html = await getPageHTML(url)
-  const title = $('title', html).text()
-  const message = $('.main-content .page-content', html)
-    .text()
-    .replace(/×/g, '')
-    .trim()
-  return { title, message, html }
-}
+import {
+  getExamTypeNameByCode,
+  getPageHTML,
+  getThisTermScoresDataURL,
+  LoadHTMLToDealWithError
+} from './utils'
 
 async function requestStudentSemesterNumberList(): Promise<string[]> {
   const url = '/student/courseSelect/calendarSemesterCurriculum/index'
   const rawHTML = await getPageHTML(url)
   const codeList = Array.from($('#planCode', rawHTML).find('option')).map(
-    v => $(v).val() as string
+    (v) => $(v).val() as string
   )
   return codeList
 }
@@ -65,10 +52,7 @@ async function requestStudentInfo(): Promise<Map<string, string>> {
   const url = '/student/rollManagement/rollInfo/index'
   const rawHTML = await getPageHTML(url)
   const programPlanNumber = $('#zx', rawHTML).val() as string
-  const programPlanName = $('#zx', rawHTML)
-    .parent()
-    .text()
-    .trim()
+  const programPlanName = $('#zx', rawHTML).parent().text().trim()
   const infos = Array.from($('.profile-info-row', rawHTML))
     .map((v): HTMLElement[][] => {
       const num = $(v).children('.profile-info-name').length
@@ -94,15 +78,9 @@ async function requestStudentInfo(): Promise<Map<string, string>> {
       return [[]]
     })
     .flat(1)
-    .filter(v => v.length)
-    .map(v =>
-      v.map(element =>
-        $(element)
-          .text()
-          .trim()
-      )
-    )
-    .filter(v => v[0])
+    .filter((v) => v.length)
+    .map((v) => v.map((element) => $(element).text().trim()))
+    .filter((v) => v[0])
     .concat([
       ['培养方案名称', programPlanName],
       ['培养方案代码', programPlanNumber]
@@ -233,9 +211,7 @@ async function requestCourseSchedule(
   }
 }
 
-function requestTrainingScheme(
-  num: number
-): Promise<{
+function requestTrainingScheme(num: number): Promise<{
   info: TrainingSchemeBaseInfo
   list: TrainingSchemeYearInfo[]
 }> {
@@ -351,12 +327,12 @@ function requestTrainingScheme(
     )
   ]).then(([{ info, list }, table]) => ({
     info,
-    list: list.map(year => ({
+    list: list.map((year) => ({
       name: year.name,
-      children: year.children.map(semester => ({
+      children: year.children.map((semester) => ({
         name: semester.name,
         children: semester.children
-          .map(v =>
+          .map((v) =>
             Object.assign(v, table[v.courseNumber], {
               courseMajor: `${info.zym}（${info.njmc}）`
             })
@@ -451,9 +427,7 @@ async function requestScuUietpList(queryStr: string): Promise<ScuUietpDTO> {
   }
 }
 
-async function requestCurrentSemesterStudentAcademicInfo(): Promise<
-  CurrentSemesterStudentAcademicInfo
-> {
+async function requestCurrentSemesterStudentAcademicInfo(): Promise<CurrentSemesterStudentAcademicInfo> {
   // 加载本学期基本信息
   const [
     {
@@ -491,65 +465,44 @@ function filterCourseScoreInfoList(list: CourseScoreInfo[]): CourseScoreInfo[] {
       // 教师「暂存」的成绩学生不应看到
       // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
       // TODO: 考虑做开关，让用户决定看不看
-      .filter(v => v.inputStatusCode === '05')
+      .filter((v) => v.inputStatusCode === '05')
       // 分数可能为null，必须分数不为null才显示
-      .filter(v => v.courseScore)
+      .filter((v) => v.courseScore)
   )
 }
 
-async function requestAllTermsCourseScoreInfoList(): Promise<
-  CourseScoreInfo[]
-> {
-  const url = '/student/integratedQuery/scoreQuery/allTermScores/data'
+export async function requestAllPassingScores(): Promise<CourseScoreInfo[]> {
+  const url = '/student/integratedQuery/scoreQuery/allPassingScores/callback'
   try {
-    const {
-      list: {
-        pageContext: { totalCount }
-      }
-    } = (await $.post(url, {
-      zxjxjhh: '',
-      kch: '',
-      kcm: '',
-      pageNum: 1,
-      pageSize: 1
-    })) as AllTermScoresDTO
-
-    const {
-      list: { records }
-    } = (await $.post(
-      '/student/integratedQuery/scoreQuery/allTermScores/data',
-      {
-        zxjxjhh: '',
-        kch: '',
-        kcm: '',
-        pageNum: 1,
-        pageSize: totalCount
-      }
-    )) as AllTermScoresDTO
-    type recordType = typeof records[0]
-    const formatRecord = ([
-      executiveEducationPlanNumber,
-      courseNumber,
-      courseSequenceNumber,
+    const { lnList } = (await $.get(url)) as APIAllPassingScoresDTO
+    const records = lnList.reduce(
+      (acc, cur) => acc.concat(cur.cjList),
+      [] as APIAllPassingScoresDTOLnCj[]
+    )
+    const formatRecord = ({
+      id: {
+        executiveEducationPlanNumber,
+        courseNumber,
+        // 对，你没看错，教务系统把 course 打成 coure 了
+        coureSequenceNumber: courseSequenceNumber
+      },
       examTime,
-      inputStatusCode,
-      coursePropertyCode,
+      entryStatusCode: inputStatusCode,
+      courseAttributeCode: coursePropertyCode,
       examTypeCode,
-      inputMethodCode,
+      scoreEntryModeCode: inputMethodCode,
       courseScore,
-      levelCode,
-      // 缓考是 '00'
-      unpassedReasonCode,
+      gradeScore: levelCode,
+      notByReasonCode: unpassedReasonCode,
+      notByReasonName: unpassedReasonExplain,
       courseName,
       englishCourseName,
       credit,
-      studyHour,
-      coursePropertyName,
-      examTypeName,
-      levelName,
-      // 缓考是 '申请缓考'
-      unpassedReasonExplain
-    ]: recordType): CourseScoreInfo => ({
+      cycle: studyHour,
+      gradeName: levelName,
+      courseAttributeName: coursePropertyName,
+      gradePointScore
+    }: APIAllPassingScoresDTOLnCj): CourseScoreInfo => ({
       executiveEducationPlanNumber,
       executiveEducationPlanName: convertSemesterNumberToText(
         executiveEducationPlanNumber
@@ -563,38 +516,46 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
       inputMethodCode,
       courseScore,
       // levelCode 在本学期成绩信息接口里是 string，在全部成绩信息接口里却是 number
-      levelCode: levelCode?.toString(),
+      levelCode:
+        levelCode?.toString() ||
+        getLevelCodeByScore(courseScore, executiveEducationPlanNumber),
       unpassedReasonCode,
       courseName,
       englishCourseName,
-      credit,
-      studyHour,
+      credit: Number(credit),
+      studyHour: Number(studyHour),
       coursePropertyName,
-      examTypeName,
-      levelName,
+      examTypeName: getExamTypeNameByCode(examTypeCode),
+      levelName:
+        levelName ||
+        getLevelNameByScore(courseScore, executiveEducationPlanNumber),
       unpassedReasonExplain,
-      gradePoint: getPointByScore(courseScore, executiveEducationPlanNumber)
+      gradePoint:
+        gradePointScore ||
+        getPointByScore(courseScore, executiveEducationPlanNumber)
     })
 
     return pipe(map(formatRecord), filterCourseScoreInfoList)(records)
   } catch (error) {
-    const { title, message, html } = await LoadHTMLToDealWithError(url)
-    Logger.error({ title, message, html })
-    throw new Error(`${title}: ${message}`)
+    console.log(error)
+    // const { title, message, html } = await LoadHTMLToDealWithError(url)
+    // Logger.error({ title, message, html })
+    // throw new Error(`${title}: ${message}`)
+    throw new Error(error)
   }
 }
 
 async function requestThisTermCourseScoreInfoList(): Promise<
   CourseScoreInfo[]
 > {
-  const url = '/student/integratedQuery/scoreQuery/thisTermScores/data'
+  const url = await getThisTermScoresDataURL()
   try {
     const data = await $.get(url)
     const [{ list }]: TermScoresData[] = data
     // console.log(`state: ${state}`)
     const res = filterCourseScoreInfoList(
       list.map(
-        v =>
+        (v) =>
           ({
             courseName: v.courseName || '',
             englishCourseName: v.englishCourseName || '',
@@ -609,8 +570,20 @@ async function requestThisTermCourseScoreInfoList(): Promise<
             minScore: Number(v.mincj) || 0,
             courseScore: Number(v.courseScore) || 0,
             // 对，你没看错，这个地方教务处接口是错别字，把level打成了levle
-            levelCode: v.levlePoint || '',
-            levelName: v.levelName || '',
+            levelCode:
+              v.levlePoint ||
+              getLevelCodeByScore(
+                Number(v.courseScore) || 0,
+                v.id.executiveEducationPlanNumber || ''
+              ) ||
+              '',
+            levelName:
+              v.levelName ||
+              getLevelNameByScore(
+                Number(v.courseScore) || 0,
+                v.id.executiveEducationPlanNumber || ''
+              ) ||
+              '',
             gradePoint: Number(v.gradePoint) || 0,
             rank: Number(v.rank) || 0,
             examTime: v.id.examtime || '',
@@ -659,6 +632,11 @@ export async function requestSubitemScoreLook(
   }
 }
 
+/**
+ * NOTE: 2021-7-12
+ * 这个接口目前已经没有修复的必要了
+ * 即使在 /student/integratedQuery/scoreQuery/subitemScore/fxcjIndex 页面中加上随机字符串正确调用了接口，返回的数据仍然为空。
+ */
 export async function requestSubitemScoreFxcj(
   fxcjId: string
 ): Promise<SubitemScoreRecord[]> {
@@ -714,7 +692,6 @@ export async function requestAccessToken(): Promise<LoginResultData> {
 
 export {
   requestThisTermCourseScoreInfoList,
-  requestAllTermsCourseScoreInfoList,
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,

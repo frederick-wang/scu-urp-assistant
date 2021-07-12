@@ -1,12 +1,12 @@
 <template lang="pug">
 .sua-container-scu-uietp
   el-alert(
-    v-if='loadingIsDone'
-    v-for="(v, i) in alerts"
-    :key="i"
-    :title="v.title"
-    :type="v.type"
-    :closable="v.closable"
+    v-if='loadingIsDone',
+    v-for='(v, i) in alerts',
+    :key='i',
+    :title='v.title',
+    :type='v.type',
+    :closable='v.closable',
     :close-text='v.closeText'
   )
   .row.query-wrapper
@@ -21,8 +21,16 @@
             | 请输入项目名称关键字、项目参与学生名字或项目指导老师名字查询
           .profile-info-value
             .profile-info-value
-              input#major(type='text', name='major' v-model.trim='queryStr' @keyup.enter='query')
-              button#queryButton.btn.btn-info.btn-xs.btn-round(title='查询' @click='query')
+              input#major(
+                type='text',
+                name='major',
+                v-model.trim='queryStr',
+                @keyup.enter='query'
+              )
+              button#queryButton.btn.btn-info.btn-xs.btn-round(
+                title='查询',
+                @click='query'
+              )
                 i.ace-con.fa.fa-search.white.bigger-120 &nbsp;查询
   .row.result-wrapper
     Loading(v-if='!loadingIsDone')
@@ -40,10 +48,12 @@
         strong 四川大学教务处公示的历年“大学生创新创业训练计划”国家级、省级、校级项目名单
         | 中查询得到的结果，共
         |
-        strong {{scuUietpList.length}}
+        strong {{ scuUietpList.length }}
         |
         | 项。
-      table.table.table-hover.table-bordered.table-striped(v-if='scuUietpList.length')
+      table.table.table-hover.table-bordered.table-striped(
+        v-if='scuUietpList.length'
+      )
         thead
           tr
             th.center 序号
@@ -58,14 +68,17 @@
             th.center 申请类别
             th.center 立项类别
         tbody
-          tr(v-for='(v, i) in scuUietpList' :key='v.projectYear+v.collegeName+v.projectName')
+          tr(
+            v-for='(v, i) in scuUietpList',
+            :key='v.projectYear + v.collegeName + v.projectName'
+          )
             td.center {{ i + 1 }}
             td.center {{ v.projectYear }}
             td.center {{ v.collegeName }}
             td.center {{ v.projectName }}
             td.center {{ v.projectLeaderName }}
             td.center {{ v.participantNumber }}
-            td.center {{ v.otherMemberNames.join('、') }}
+            td.center {{ v.otherMemberNames.join("、") }}
             td.center {{ v.schoolSupervisorName }}
             td.center {{ v.projectLevel }}
             td.center {{ v.applicationCategory }}
@@ -78,6 +91,7 @@ import { actions, Request } from '@/store'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { ScuUietpItemDTO } from '../../store/types'
+import { notifyError } from '@/helper/util'
 
 @Component({
   components: { Loading }
@@ -96,7 +110,7 @@ export default class ScuUietp extends Vue {
   }[] = []
 
   get hasNoError(): boolean {
-    return this.alerts.every(v => v.type !== 'error')
+    return this.alerts.every((v) => v.type !== 'error')
   }
 
   async query(): Promise<void> {
@@ -121,10 +135,7 @@ export default class ScuUietp extends Vue {
       emitDataAnalysisEvent('历届大创查询', '查询失败', {
         查询参数: `${this.queryStr}`
       })
-      this.$notify.error({
-        title,
-        message
-      })
+      notifyError(message, title)
       this.alerts = [
         {
           title: message,

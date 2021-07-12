@@ -4,36 +4,54 @@ h4.header.smaller.lighter.grey
   |
   | {{ getSemesterTitle(semester) }}
   |
-  span.gpa-info-badge.badge.badge-yellow(:title='`在${semester}，您一共修读了 ${courses.length} 门课程`')
-    | {{courses.length}} 门
+  span.gpa-info-badge.badge.badge-yellow(
+    :title='`在${semester}，您一共修读了 ${majorCourses.length} 门属于主修培养方案的课程`'
+  )
+    | {{ majorCourses.length }} 门
   |
   |
-  span.gpa-info-badge.badge.badge-yellow(:title='`在${semester}，您一共修读了 ${totalCourseCredits} 学分`')
-    | {{totalCourseCredits}} 学分
+  span.gpa-info-badge.badge.badge-yellow(
+    :title='`在${semester}，您一共修读了 ${getTotalCourseCredits(majorCourses)} 个属于主修培养方案的学分`'
+  )
+    | {{ getTotalCourseCredits(majorCourses) }} 学分
+  |
+  |
+  span.gpa-info-badge.badge.badge-light(
+    v-if='minorCourses.length',
+    :title='`在${semester}，您一共修读了 ${minorCourses.length} 门属于辅修培养方案的课程`'
+  )
+    | {{ minorCourses.length }} 门
+  |
+  |
+  span.gpa-info-badge.badge.badge-light(
+    v-if='minorCourses.length',
+    :title='`在${semester}，您一共修读了 ${getTotalCourseCredits(minorCourses)} 个属于辅修培养方案的学分`'
+  )
+    | {{ getTotalCourseCredits(minorCourses) }} 学分
   |
   |
   span.gpa-info-badge.gpa-info-badge-st-selected-course-quantity.badge.badge-pink(
-    v-if='selectedCourses.length'
-    :title='`在${semester}，您当前选中了 ${selectedCourses.length} 门课程`'
+    v-if='selectedCoursesLength',
+    :title='`在${semester}，您当前一共选中了 ${selectedCoursesLength} 门课程`',
     data-semester=semester
   )
-    | {{selectedCourses.length}} 门
+    | {{ selectedCoursesLength }} 门
   |
   |
   span.gpa-info-badge.gpa-info-badge-st-selected-course-credits.badge.badge-pink(
-    v-if='selectedCourses.length'
-    :title='`在${semester}，您当前选中的课程总学分为 ${selectedCourseCredits}`'
+    v-if='selectedCoursesLength',
+    :title='`在${semester}，您当前选中的课程总学分为 ${selectedCourseCredits}`',
     data-semester=semester
   )
-    | {{selectedCourseCredits}} 学分
+    | {{ selectedCourseCredits }} 学分
   button.btn.btn-white.btn-minier.gpa-st-select-all-btn(
-    v-if='!selectedCourses.length'
+    v-if='!selectedCoursesLength',
     @click='$emit(`selectAllCourses`)'
   )
     i.ace-icon.fa.fa-check.green
     | 全选
   button.btn.btn-white.btn-minier.gpa-st-cancel-btn(
-    v-else
+    v-else,
     @click='$emit(`unselectAllCourses`)'
   )
     i.ace-icon.fa.fa-times.red2
@@ -44,6 +62,12 @@ h4.header.smaller.lighter.grey
 import { Vue, Component, Prop } from 'vue-property-decorator'
 import { state } from '@/store'
 import { CourseScoreRecord } from '@/plugins/score/types'
+import {
+  getTotalCourseCredits,
+  removeMinorCourses,
+  reserveHigherCoursesForRetakenCourses,
+  reserveMinorCourses
+} from '../../utils'
 
 @Component
 export default class Header extends Vue {
@@ -68,12 +92,35 @@ export default class Header extends Vue {
   })
   selectedCourses!: CourseScoreRecord[]
 
-  get selectedCourseCredits(): number {
-    return this.selectedCourses.reduce((acc, cur) => acc + cur.credit, 0)
+  get allCourses(): CourseScoreRecord[] {
+    return reserveHigherCoursesForRetakenCourses(this.courses)
   }
 
-  get totalCourseCredits(): number {
-    return this.courses.reduce((acc, cur) => acc + cur.credit, 0)
+  get majorCourses(): CourseScoreRecord[] {
+    return reserveHigherCoursesForRetakenCourses(
+      removeMinorCourses(this.courses)
+    )
+  }
+
+  get minorCourses(): CourseScoreRecord[] {
+    return reserveHigherCoursesForRetakenCourses(
+      reserveMinorCourses(this.courses)
+    )
+  }
+
+  get selectedCoursesLength(): number {
+    return reserveHigherCoursesForRetakenCourses(this.selectedCourses).length
+  }
+
+  get selectedCourseCredits(): number {
+    return reserveHigherCoursesForRetakenCourses(this.selectedCourses).reduce(
+      (acc, cur) => acc + cur.credit,
+      0
+    )
+  }
+
+  getTotalCourseCredits(arr: CourseScoreRecord[]): number {
+    return getTotalCourseCredits(arr)
   }
 
   getSemesterTitle(semesterText: string): string {

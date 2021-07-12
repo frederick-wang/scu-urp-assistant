@@ -35,6 +35,7 @@ import * as ueip from '@/plugins/user-experience-improvement-program'
 import { SemesterInfoExchange } from './types'
 import { SemesterScoreRecord } from '../score/types'
 import { requestAllTermsCourseScoreInfoList } from '@/store/actions/request'
+import { notifyError } from '@/helper/util'
 
 @Component({
   components: { Loading, SemesterCard }
@@ -50,7 +51,7 @@ export default class EvaluateSelectedCourses extends Vue {
   }[] = []
 
   get hasNoError(): boolean {
-    return this.alerts.every(v => v.type !== 'error')
+    return this.alerts.every((v) => v.type !== 'error')
   }
 
   async created(): Promise<void> {
@@ -108,10 +109,7 @@ export default class EvaluateSelectedCourses extends Vue {
       const title = '[课程评价] 评价已选课程'
       const message: string = error.message
       emitDataAnalysisEvent('评价已选课程', '查询课程列表失败')
-      this.$notify.error({
-        title,
-        message
-      })
+      notifyError(message, title)
       this.alerts.push({
         title: message,
         type: 'error',

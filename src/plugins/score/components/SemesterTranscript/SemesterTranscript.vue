@@ -15,7 +15,8 @@
     :semester='semester',
     :courses='courses',
     :selectedCourses='selectedCourses',
-    @selectCompulsoryCourses='selectCompulsoryCourses()'
+    @selectCompulsoryCourses='selectCompulsoryCourses()',
+    @selectMinorCourses='selectMinorCourses()'
   )
   Tips(v-if='type === `full`')
   el-alert(
@@ -69,7 +70,7 @@ export default class SemesterScores extends Vue {
   }
 
   get isAllCourseScoreNegative(): boolean {
-    return this.courses.every(v => isNil(v.courseScore) || v.courseScore < 0)
+    return this.courses.every((v) => isNil(v.courseScore) || v.courseScore < 0)
   }
 
   /**
@@ -80,15 +81,19 @@ export default class SemesterScores extends Vue {
   }
 
   selectAllCourses(): void {
-    this.courses.forEach(v => (v.selected = true))
+    this.courses.forEach((v) => (v.selected = true))
   }
 
   unselectAllCourses(): void {
-    this.courses.forEach(v => (v.selected = false))
+    this.courses.forEach((v) => (v.selected = false))
   }
 
   selectCompulsoryCourses(): void {
-    this.courses.forEach(v => (v.selected = v.coursePropertyName === '必修'))
+    this.courses.forEach((v) => (v.selected = v.coursePropertyName === '必修'))
+  }
+
+  selectMinorCourses(): void {
+    this.courses.forEach((v) => (v.selected = v.coursePropertyName === '辅修'))
   }
 }
 </script>
