@@ -1,5 +1,4 @@
 import {
-  AllTermScoresDTO,
   CourseScoreInfo,
   CurrentSemesterStudentAcademicInfo,
   TrainingSchemeYearInfo,
@@ -17,6 +16,8 @@ import {
 import { pipe, map } from 'ramda'
 import state from '../state'
 import {
+  APIAllPassingScoresDTO,
+  APIAllPassingScoresDTOLnCj,
   APISubitemScoreFxcjDTO,
   APISubitemScoreLookDTO,
   Result,
@@ -31,30 +32,12 @@ import {
 import { sleep, http } from '@/helper/util'
 import { getChineseNumber } from '@/helper/getter'
 import { Logger } from '@/helper/logger'
-
-function getPageHTML(url: string): Promise<string> {
-  return $.get({
-    url,
-    beforeSend: (xhr) =>
-      xhr.setRequestHeader('X-Requested-With', {
-        toString() {
-          return ''
-        }
-      } as string)
-  }) as unknown as Promise<string>
-}
-
-async function LoadHTMLToDealWithError(
-  url: string
-): Promise<{ title: string; message: string; html: string }> {
-  const html = await getPageHTML(url)
-  const title = $('title', html).text()
-  const message = $('.main-content .page-content', html)
-    .text()
-    .replace(/×/g, '')
-    .trim()
-  return { title, message, html }
-}
+import {
+  getExamTypeNameByCode,
+  getPageHTML,
+  getThisTermScoresDataURL,
+  LoadHTMLToDealWithError
+} from './utils'
 
 async function requestStudentSemesterNumberList(): Promise<string[]> {
   const url = '/student/courseSelect/calendarSemesterCurriculum/index'
@@ -488,59 +471,38 @@ function filterCourseScoreInfoList(list: CourseScoreInfo[]): CourseScoreInfo[] {
   )
 }
 
-async function requestAllTermsCourseScoreInfoList(): Promise<
-  CourseScoreInfo[]
-> {
-  const url = '/student/integratedQuery/scoreQuery/allTermScores/data'
+export async function requestAllPassingScores(): Promise<CourseScoreInfo[]> {
+  const url = '/student/integratedQuery/scoreQuery/allPassingScores/callback'
   try {
-    const {
-      list: {
-        pageContext: { totalCount }
-      }
-    } = (await $.post(url, {
-      zxjxjhh: '',
-      kch: '',
-      kcm: '',
-      pageNum: 1,
-      pageSize: 1
-    })) as AllTermScoresDTO
-
-    const {
-      list: { records }
-    } = (await $.post(
-      '/student/integratedQuery/scoreQuery/allTermScores/data',
-      {
-        zxjxjhh: '',
-        kch: '',
-        kcm: '',
-        pageNum: 1,
-        pageSize: totalCount
-      }
-    )) as AllTermScoresDTO
-    type recordType = typeof records[0]
-    const formatRecord = ([
-      executiveEducationPlanNumber,
-      courseNumber,
-      courseSequenceNumber,
+    const { lnList } = (await $.get(url)) as APIAllPassingScoresDTO
+    const records = lnList.reduce(
+      (acc, cur) => acc.concat(cur.cjList),
+      [] as APIAllPassingScoresDTOLnCj[]
+    )
+    const formatRecord = ({
+      id: {
+        executiveEducationPlanNumber,
+        courseNumber,
+        // 对，你没看错，教务系统把 course 打成 coure 了
+        coureSequenceNumber: courseSequenceNumber
+      },
       examTime,
-      inputStatusCode,
-      coursePropertyCode,
+      entryStatusCode: inputStatusCode,
+      courseAttributeCode: coursePropertyCode,
       examTypeCode,
-      inputMethodCode,
+      scoreEntryModeCode: inputMethodCode,
       courseScore,
-      levelCode,
-      // 缓考是 '00'
-      unpassedReasonCode,
+      gradeScore: levelCode,
+      notByReasonCode: unpassedReasonCode,
+      notByReasonName: unpassedReasonExplain,
       courseName,
       englishCourseName,
       credit,
-      studyHour,
-      coursePropertyName,
-      examTypeName,
-      levelName,
-      // 缓考是 '申请缓考'
-      unpassedReasonExplain
-    ]: recordType): CourseScoreInfo => ({
+      cycle: studyHour,
+      gradeName: levelName,
+      courseAttributeName: coursePropertyName,
+      gradePointScore
+    }: APIAllPassingScoresDTOLnCj): CourseScoreInfo => ({
       executiveEducationPlanNumber,
       executiveEducationPlanName: convertSemesterNumberToText(
         executiveEducationPlanNumber
@@ -556,35 +518,37 @@ async function requestAllTermsCourseScoreInfoList(): Promise<
       // levelCode 在本学期成绩信息接口里是 string，在全部成绩信息接口里却是 number
       levelCode:
         levelCode?.toString() ||
-        getLevelCodeByScore(courseScore, executiveEducationPlanNumber) ||
-        '',
+        getLevelCodeByScore(courseScore, executiveEducationPlanNumber),
       unpassedReasonCode,
       courseName,
       englishCourseName,
-      credit,
-      studyHour,
+      credit: Number(credit),
+      studyHour: Number(studyHour),
       coursePropertyName,
-      examTypeName,
+      examTypeName: getExamTypeNameByCode(examTypeCode),
       levelName:
         levelName ||
-        getLevelNameByScore(courseScore, executiveEducationPlanNumber) ||
-        '',
+        getLevelNameByScore(courseScore, executiveEducationPlanNumber),
       unpassedReasonExplain,
-      gradePoint: getPointByScore(courseScore, executiveEducationPlanNumber)
+      gradePoint:
+        gradePointScore ||
+        getPointByScore(courseScore, executiveEducationPlanNumber)
     })
 
     return pipe(map(formatRecord), filterCourseScoreInfoList)(records)
   } catch (error) {
-    const { title, message, html } = await LoadHTMLToDealWithError(url)
-    Logger.error({ title, message, html })
-    throw new Error(`${title}: ${message}`)
+    console.log(error)
+    // const { title, message, html } = await LoadHTMLToDealWithError(url)
+    // Logger.error({ title, message, html })
+    // throw new Error(`${title}: ${message}`)
+    throw new Error(error)
   }
 }
 
 async function requestThisTermCourseScoreInfoList(): Promise<
   CourseScoreInfo[]
 > {
-  const url = '/student/integratedQuery/scoreQuery/thisTermScores/data'
+  const url = await getThisTermScoresDataURL()
   try {
     const data = await $.get(url)
     const [{ list }]: TermScoresData[] = data
@@ -723,7 +687,6 @@ export async function requestAccessToken(): Promise<LoginResultData> {
 
 export {
   requestThisTermCourseScoreInfoList,
-  requestAllTermsCourseScoreInfoList,
   requestCurrentSemesterStudentAcademicInfo,
   requestTrainingSchemeList,
   requestTrainingScheme,

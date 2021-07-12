@@ -41,7 +41,7 @@ import { getSelectedCourses } from '@/plugins/score/utils'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
 import * as ueip from '@/plugins/user-experience-improvement-program'
 import {
-  requestAllTermsCourseScoreInfoList,
+  requestAllPassingScores,
   requestThisTermCourseScoreInfoList
 } from '@/store/actions/request'
 import { notifyError } from '@/helper/util'
@@ -102,7 +102,7 @@ export default class GPACalculator extends Vue {
               await requestThisTermCourseScoreInfoList()
             )
           : convertCourseScoreInfoListToScoreRecords(
-              await requestAllTermsCourseScoreInfoList()
+              await requestAllPassingScores()
             )
       this.records = records
       this.loadingIsDone = true

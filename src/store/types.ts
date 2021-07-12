@@ -340,6 +340,23 @@ interface CourseScoreInfo extends CourseScoreCoreInfo {
   examTypeCode?: string
 }
 
+export type AllTermScoresRecord = [
+  number,
+  string,
+  string,
+  string,
+  string,
+  string,
+  number | undefined,
+  string,
+  string | undefined,
+  string | undefined,
+  // 缓考是 '00'
+  string | undefined,
+  // 缓考是 '申请缓考'
+  string | undefined
+]
+
 interface AllTermScoresDTO {
   list: {
     pageSize: number
@@ -347,28 +364,7 @@ interface AllTermScoresDTO {
     pageContext: {
       totalCount: number
     }
-    records: [
-      string,
-      string,
-      string,
-      string,
-      string,
-      string,
-      string | undefined,
-      string,
-      number | undefined,
-      number | undefined,
-      string | undefined,
-      string,
-      string,
-      number,
-      number,
-      string,
-      string | undefined,
-      string | undefined,
-      string | undefined,
-      number
-    ][]
+    records: AllTermScoresRecord[]
   }
 }
 
