@@ -1,3 +1,12 @@
+## [0.12.1](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.12.0...v0.12.1) (2021-07-12)
+
+
+### Bug Fixes
+
+* **plugins/score:** 修复了选中课程中存在重修课程时，计算会始终忽视低分课程的bug ([a249258](https://github.com/frederick-wang/scu-urp-assistant/commit/a24925883f3e6df1451f93523d9d2dc016770b57)), closes [#46](https://github.com/frederick-wang/scu-urp-assistant/issues/46)
+
+
+
 # [0.12.0](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.11.3...v0.12.0) (2021-07-12)
 
 
