@@ -90,6 +90,10 @@ export function reserveMinorCourses(
   return arr.filter((v) => v.coursePropertyName === '辅修')
 }
 
+export function getTotalCourseCredits(courses: CourseScoreRecord[]): number {
+  return courses.reduce((acc, cur) => acc + cur.credit, 0)
+}
+
 /**
  * 从一个课程数组里筛选出所有的必修课程
  *
@@ -121,10 +125,10 @@ function getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {
 }
 
 /**
- * 输入课程数组，得到必修加权平均分
+ * 输入课程数组，得到选中课程加权平均分
  *
  * @param {CourseScoreRecord[]} arr 课程数组
- * @returns 必修加权平均分
+ * @returns 选中课程加权平均分
  */
 function getSelectedCoursesScore(arr: CourseScoreRecord[]): number {
   return reserveDigits(
@@ -196,14 +200,18 @@ export function reserveHigherCoursesForRetakenCourses(
   arr: CourseScoreRecord[]
 ): CourseScoreRecord[] {
   return Object.values(
-    arr
-      .sort((a, b) => Number(a.courseScore) - Number(b.courseScore))
+    Object.entries(arr)
+      .sort((a, b) => Number(a[1].courseScore) - Number(b[1].courseScore))
       .reduceRight(
         (acc, cur) =>
-          acc[cur.courseNumber] ? acc : { ...acc, [cur.courseNumber]: cur },
-        {} as Record<string, CourseScoreRecord>
+          acc[cur[1].courseNumber]
+            ? acc
+            : { ...acc, [cur[1].courseNumber]: cur },
+        {} as Record<string, [string, CourseScoreRecord]>
       )
   )
+    .sort((a, b) => Number(a[0]) - Number(b[0]))
+    .map((v) => v[1])
 }
 
 /**

@@ -18,7 +18,8 @@
     :selectedCourses='allSelectedCourses',
     @selectAllCourses='selectAllCourses()',
     @unselectAllCourses='unselectAllCourses()',
-    @selectCompulsoryCourses='selectCompulsoryCourses()'
+    @selectCompulsoryCourses='selectCompulsoryCourses()',
+    @selectMinorCourses='selectMinorCourses()'
   )
   .gpa-st-container.row(v-if='loadingIsDone && hasNoError')
     SemesterTranscript(
@@ -91,6 +92,12 @@ export default class GPACalculator extends Vue {
   selectCompulsoryCourses(): void {
     this.allCourses.forEach(
       (v) => (v.selected = v.coursePropertyName === '必修')
+    )
+  }
+
+  selectMinorCourses(): void {
+    this.allCourses.forEach(
+      (v) => (v.selected = v.coursePropertyName === '辅修')
     )
   }
 

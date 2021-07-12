@@ -1,58 +1,90 @@
 <template lang="pug">
 div
   p
-    div(style='display: inline-block;')
+    div(style='display: inline-block')
       span.gpa-st-tag.label.label-success(
-        :title='`在${semester}，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均分为 ${getCompulsoryCoursesScore(courses)}`'
+        :title='`在${semester}，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均分为 ${getCompulsoryCoursesScore(majorCourses)}`',
         @click='$emit(`selectCompulsoryCourses`)'
       )
-        | 必修平均分：{{ getCompulsoryCoursesScore(courses) }}
+        | 必修平均分：{{ getCompulsoryCoursesScore(majorCourses) }}
       |
       |
       span.gpa-st-tag.label.label-success(
-        :title='`在${semester}，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均绩点为 ${getCompulsoryCoursesGPA(courses)}`'
+        :title='`在${semester}，您一共修读了 ${compulsoryCourses.length} 门必修课程，必修加权平均绩点为 ${getCompulsoryCoursesGPA(majorCourses)}`',
         @click='$emit(`selectCompulsoryCourses`)'
       )
-        | 必修绩点：{{ getCompulsoryCoursesGPA(courses) }}
+        | 必修绩点：{{ getCompulsoryCoursesGPA(majorCourses) }}
       |
       |
       span.gpa-st-tag.label.label-purple(
-        :title='`在${semester}，您一共修读了 ${courses.length} 门课程，加权平均分为 ${getAllCoursesScore(courses)}`'
+        :title='`在${semester}，您一共修读了 ${majorCourses.length} 门属于主修培养方案的课程，加权平均分为 ${getAllCoursesScore(majorCourses)}`'
       )
-        | 全部平均分：{{ getAllCoursesScore(courses) }}
+        | 全部平均分：{{ getAllCoursesScore(majorCourses) }}
       |
       |
       span.gpa-st-tag.label.label-purple(
-        :title='`在${semester}，您一共修读了 ${courses.length} 门课程，加权平均绩点为 ${getAllCoursesGPA(courses)}`'
+        :title='`在${semester}，您一共修读了 ${majorCourses.length} 门属于主修培养方案的课程，加权平均绩点为 ${getAllCoursesGPA(majorCourses)}`'
       )
-        | 全部绩点：{{ getAllCoursesGPA(courses) }}
+        | 全部绩点：{{ getAllCoursesGPA(majorCourses) }}
+    |
+    |
+    span.gpa-st-tag.label.label-light(
+      v-if='type !== `compact` && minorCourses.length',
+      :title='`在${semester}，您一共修读了 ${minorCourses.length} 门属于辅修培养方案的课程，加权平均分为 ${getAllCoursesScore(minorCourses)}`',
+      @click='$emit(`selectMinorCourses`)'
+    )
+      | 辅修平均分：{{ getAllCoursesScore(minorCourses) }}
+    |
+    |
+    span.gpa-st-tag.label.label-light(
+      v-if='type !== `compact` && minorCourses.length',
+      :title='`在${semester}，您一共修读了 ${minorCourses.length} 门属于辅修培养方案的课程，加权平均绩点为 ${getAllCoursesGPA(minorCourses)}`',
+      @click='$emit(`selectMinorCourses`)'
+    )
+      | 辅修绩点：{{ getAllCoursesGPA(minorCourses) }}
     |
     |
     span.gpa-st-tag.gpa-st-tag-selected-score.label.label-pink(
-      v-if='type !== `compact` && selectedCourses.length'
-      :title='`在${semester}，您当前选出了 ${selectedCourses.length} 门课程进行计算，选中课程的加权平均分为 ${getSelectedCoursesScore(courses)}`'
+      v-if='type !== `compact` && selectedCoursesLength',
+      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均分为 ${getSelectedCoursesScore(allCourses)}`'
     )
-      | 选中课程平均分：{{ getSelectedCoursesScore(courses) }}
+      | 选中课程平均分：{{ getSelectedCoursesScore(allCourses) }}
     |
     |
     span.gpa-st-tag.gpa-st-tag-selected-gpa.label.label-pink(
-      v-if='type !== `compact` && selectedCourses.length'
-      :title='`在${semester}，您当前选出了 ${selectedCourses.length} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(courses)}`'
+      v-if='type !== `compact` && selectedCoursesLength',
+      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(allCourses)}`'
     )
-      | 选中课程绩点：{{ getSelectedCoursesGPA(courses) }}
+      | 选中课程绩点：{{ getSelectedCoursesGPA(allCourses) }}
   p(v-if='type === `compact`')
-    span.gpa-st-tag.gpa-st-tag-selected-score.label.label-pink(
-      v-if='selectedCourses.length'
-      :title='`在${semester}，您当前选出了 ${selectedCourses.length} 门课程进行计算，选中课程的加权平均分为 ${getSelectedCoursesScore(courses)}`'
+    span.gpa-st-tag.label.label-light(
+      v-if='minorCourses.length',
+      :title='`在${semester}，您一共修读了 ${minorCourses.length} 门属于辅修培养方案的课程，加权平均分为 ${getAllCoursesScore(minorCourses)}`',
+      @click='$emit(`selectMinorCourses`)'
     )
-      | 选中课程平均分：{{ getSelectedCoursesScore(courses) }}
+      | 辅修平均分：{{ getAllCoursesScore(minorCourses) }}
+    |
+    |
+    span.gpa-st-tag.label.label-light(
+      v-if='minorCourses.length',
+      :title='`在${semester}，您一共修读了 ${minorCourses.length} 门属于辅修培养方案的课程，加权平均绩点为 ${getAllCoursesGPA(minorCourses)}`',
+      @click='$emit(`selectMinorCourses`)'
+    )
+      | 辅修绩点：{{ getAllCoursesGPA(minorCourses) }}
+    |
+    |
+    span.gpa-st-tag.gpa-st-tag-selected-score.label.label-pink(
+      v-if='selectedCoursesLength',
+      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均分为 ${getSelectedCoursesScore(allCourses)}`'
+    )
+      | 选中课程平均分：{{ getSelectedCoursesScore(allCourses) }}
     |
     |
     span.gpa-st-tag.gpa-st-tag-selected-gpa.label.label-pink(
-      v-if='selectedCourses.length'
-      :title='`在${semester}，您当前选出了 ${selectedCourses.length} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(courses)}`'
+      v-if='selectedCoursesLength',
+      :title='`在${semester}，您当前选出了 ${selectedCoursesLength} 门课程进行计算，选中课程的加权平均绩点为 ${getSelectedCoursesGPA(allCourses)}`'
     )
-      | 选中课程绩点：{{ getSelectedCoursesGPA(courses) }}
+      | 选中课程绩点：{{ getSelectedCoursesGPA(allCourses) }}
 </template>
 
 <script lang="ts">
@@ -65,7 +97,10 @@ import {
   getAllCoursesScore,
   getCompulsoryCourses,
   getSelectedCoursesScore,
-  getSelectedCoursesGPA
+  getSelectedCoursesGPA,
+  removeMinorCourses,
+  reserveHigherCoursesForRetakenCourses,
+  reserveMinorCourses
 } from '@/plugins/score/utils'
 
 @Component
@@ -91,8 +126,28 @@ export default class LabelBar extends Vue {
   })
   selectedCourses!: CourseScoreRecord[]
 
+  get allCourses(): CourseScoreRecord[] {
+    return reserveHigherCoursesForRetakenCourses(this.courses)
+  }
+
+  get majorCourses(): CourseScoreRecord[] {
+    return reserveHigherCoursesForRetakenCourses(
+      removeMinorCourses(this.courses)
+    )
+  }
+
+  get minorCourses(): CourseScoreRecord[] {
+    return reserveHigherCoursesForRetakenCourses(
+      reserveMinorCourses(this.courses)
+    )
+  }
+
+  get selectedCoursesLength(): number {
+    return reserveHigherCoursesForRetakenCourses(this.selectedCourses).length
+  }
+
   get compulsoryCourses(): CourseScoreRecord[] {
-    return getCompulsoryCourses(this.courses)
+    return getCompulsoryCourses(this.majorCourses)
   }
 
   getCompulsoryCoursesGPA(arr: CourseScoreRecord[]): number {

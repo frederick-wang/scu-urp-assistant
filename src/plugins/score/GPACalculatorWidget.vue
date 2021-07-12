@@ -5,10 +5,16 @@
       h5.widget-title.gpa-title
         | 我的成绩
         |
-        span.badge.badge-primary(style='padding-top:3px;position:relative;top:-3px;') SCU URP 助手
+        span.badge.badge-primary(
+          style='padding-top: 3px; position: relative; top: -3px'
+        ) SCU URP 助手
       .widget-toolbar
         .widget-menu
-          a#gpa-toolbar-detail(data-action='settings', data-toggle='dropdown' @click='openFullGPACalculator()')
+          a#gpa-toolbar-detail(
+            data-action='settings',
+            data-toggle='dropdown',
+            @click='openFullGPACalculator()'
+          )
             i.ace-icon.fa.fa-bars
     .widget-body
       .widget-main
