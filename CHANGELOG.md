@@ -1,3 +1,12 @@
+## [0.12.3](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.12.2...v0.12.3) (2021-07-13)
+
+
+### Bug Fixes
+
+* **plugins/subitem-score:** 修复了分项名称「课堂笔记」无法正常解析的bug ([589c3f8](https://github.com/frederick-wang/scu-urp-assistant/commit/589c3f81fa27864d3c62df85c1a634cee47bf522)), closes [#52](https://github.com/frederick-wang/scu-urp-assistant/issues/52)
+
+
+
 ## [0.12.2](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.12.1...v0.12.2) (2021-07-13)
 
 
