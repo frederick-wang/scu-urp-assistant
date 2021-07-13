@@ -260,5 +260,16 @@ export default class SubitemScore extends Vue {
       }
     }
   }
+
+  .subitem-info {
+    width: auto;
+
+    th,
+    td {
+      text-align: center;
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+  }
 }
 </style>
