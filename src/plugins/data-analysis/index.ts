@@ -1,9 +1,10 @@
 // 数据统计插件
 import pack from '@/../package.json'
 import { SUAPlugin } from '@/core/types'
-import { isDev } from '@/helper/judger'
+import { isDev, isVersion } from '@/helper/judger'
 import { Logger } from '@/helper/logger'
 import { getPluginIcon } from '@/helper/getter'
+import { getVersionName } from '@/helper/info'
 
 const { version } = pack
 
@@ -45,8 +46,8 @@ export const DataAnalysis: SUAPlugin = {
   init() {
     if (process.env.NODE_ENV !== 'development') {
       const APP_ID = '36482C98B3E94A4D93A0C66E43702C77'
-      const versionName = `${version} (${isDev() ? 'dev' : 'stable'})`
       const script = document.createElement('script')
+      const versionName = getVersionName()
       const src = `https://jic.talkingdata.com/app/h5/v1?appid=${APP_ID}&vn=${versionName}&vc=${version}`
       script.setAttribute('src', src)
       document.getElementsByTagName('head')[0].appendChild(script)
