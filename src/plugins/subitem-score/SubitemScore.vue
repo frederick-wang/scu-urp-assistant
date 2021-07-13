@@ -64,6 +64,7 @@ import { getPointByScore } from '../score/utils'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { notifyError } from '@/helper/util'
 import { defaultTo, nth, pipe, split } from 'ramda'
+import subitems from './subitems.json'
 
 @Component({
   components: { Loading }
@@ -166,33 +167,14 @@ export default class SubitemScore extends Vue {
   }
 
   getScoreSubItemNameByCode(code: string): string {
-    switch (code) {
-      case '01':
-        return '平时作业'
-      case '02':
-        return '期中考试'
-      case '03':
-        return '期末考试'
-      case '04':
-        return '实验环节'
-      case '05':
-        return '实践环节'
-      case '06':
-        return '平时测验'
-      case '07':
-        return '日常考勤'
-      case '08':
-        return '课堂表现'
-      case '09':
-        return '课程论文'
-      case '11':
-        return '平时成绩'
-      default:
-        emitDataAnalysisEvent('分项成绩查询', '无法识别的分项成绩代码', {
-          unidentifyedSubitem: `${code}-${this.semester}-${this.course}-${this.examTime}`
-        })
-        return ''
+    const list = subitems as Record<string, string>
+    if (list[code]) {
+      return list[code]
     }
+    emitDataAnalysisEvent('分项成绩查询', '无法识别的分项成绩代码', {
+      unidentifyedSubitem: `${code}-${this.semester}-${this.course}-${this.examTime}`
+    })
+    return ''
   }
 
   async mounted(): Promise<void> {
