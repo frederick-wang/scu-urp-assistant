@@ -3,6 +3,7 @@ import pack from '@/../package.json'
 import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
 import { isDev, isLoginPage } from '@/helper/judger'
+import { getVersionName } from '@/helper/info'
 
 const { version } = pack
 
@@ -15,7 +16,7 @@ export const Tooltip: SUAPlugin = {
   brief: '在登录页面以及教务系统的顶部导航栏显示提示，告知用户当前的程序版本。',
   pathname: true,
   init() {
-    const versionName = `${version} (${isDev() ? 'dev' : 'stable'})`
+    const versionName = getVersionName()
     if (isLoginPage()) {
       const $loginTooltip = $(
         require('./loginTooltip.pug')({ version: versionName })

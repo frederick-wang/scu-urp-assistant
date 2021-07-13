@@ -16,7 +16,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       th.center(v-if='type === `full`') 名次
       th.center(v-if='type !== `compact`') 考试时间
       //- th.center(v-if='type !== `compact`') 任课教师
-      th.center(v-if='type !== `compact`') 未通过原因
+      //- th.center(v-if='type !== `compact`') 未通过原因
       th.center(v-if='type !== `compact` && isSubitemScorePluginEnabled') 分项成绩
   tbody#scoretbody
     tr.gpa-st-item(
@@ -54,7 +54,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       td.center(v-if='type === `full`') {{ courseItem.rank }}
       td.center(v-if='type !== `compact`') {{ courseItem.examTime }}
       //- td.center(v-if='type !== `compact`') {{ courseItem.courseTeacherList[0].teacherName}}{{ courseItem.courseTeacherList.filter(({ teacherNumber }) => Number(teacherNumber).toString() === teacherNumber).length > 1 ? ' 等' : ''}}
-      td.center(v-if='type !== `compact`') {{ courseItem.unpassedReasonExplain }}
+      //- td.center(v-if='type !== `compact`') {{ courseItem.unpassedReasonExplain }}
       td.center(v-if='type !== `compact` && isSubitemScorePluginEnabled')
         button.btn.btn-info.btn-xs.btn-round(
           @click.stop='querySubitemScore(courseItem)'

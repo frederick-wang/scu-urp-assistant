@@ -1,3 +1,11 @@
+type Version = 'bookmarklet' | 'userscript'
+
+let version: Version
+
+export const setVersion = (v: Version) => (version = v)
+
+export const isVersion = (v: string) => v === version
+
 export const isDev = (): boolean => process.env.NODE_ENV === 'development'
 
 export const isSCU = (): boolean =>
