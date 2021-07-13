@@ -1,3 +1,19 @@
+## [0.12.2](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.12.1...v0.12.2) (2021-07-13)
+
+
+### Bug Fixes
+
+* **plugins/score:** [均分绩点计算器] 删除「未通过原因」这一列 ([fc26d3e](https://github.com/frederick-wang/scu-urp-assistant/commit/fc26d3e02c2d2e735876cf04510ae7a8d0b8233c)), closes [#49](https://github.com/frederick-wang/scu-urp-assistant/issues/49)
+* **plugins/subitem-score:** 出现无法识别的分项成绩代码时，上报错误 ([ee4fb93](https://github.com/frederick-wang/scu-urp-assistant/commit/ee4fb93bec6d605e357bb7d316bbbd5b0a5e046e))
+
+
+### Features
+
+* **plugins/{tooltip,data-analysis}:** 在版本号中区分书签版与Userscript版 ([c65a729](https://github.com/frederick-wang/scu-urp-assistant/commit/c65a729018ee1aa4344085467d738662262e2aae)), closes [#51](https://github.com/frederick-wang/scu-urp-assistant/issues/51)
+* **plugins/subitem-score:** 优化分项成绩信息表格的宽度设置 ([4048d68](https://github.com/frederick-wang/scu-urp-assistant/commit/4048d68a5804596d953544b382415d4fbd0d4f54)), closes [#50](https://github.com/frederick-wang/scu-urp-assistant/issues/50)
+
+
+
 ## [0.12.1](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.12.0...v0.12.1) (2021-07-12)
 
 
