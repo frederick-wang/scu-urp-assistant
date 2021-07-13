@@ -189,7 +189,7 @@ export default class SubitemScore extends Vue {
         return '平时成绩'
       default:
         emitDataAnalysisEvent('分项成绩查询', '无法识别的分项成绩代码', {
-          ScoreSubItemCode: code
+          unidentifyedSubitem: `${code}-${this.semester}-${this.course}-${this.examTime}`
         })
         return ''
     }
