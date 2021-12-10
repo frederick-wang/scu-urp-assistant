@@ -115,5 +115,12 @@
     "maintained node versions",
     "not dead",
     "ie >= 9"
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "ansi-regex@>2.1.1 <5.0.1": ">=5.0.1",
+      "nth-check@<2.0.1": ">=2.0.1",
+      "glob-parent@<5.1.2": ">=5.1.2"
+    }
+  }
 }
