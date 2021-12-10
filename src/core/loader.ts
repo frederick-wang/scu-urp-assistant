@@ -24,7 +24,7 @@ import { addRoute, getCurrentRouteParams, RouteConfig, router } from './router'
 export const loadElementUI = (): void => {
   // 导入 Element-UI 的样式
   $('head').append(
-    '<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"></link>'
+    '<link rel="stylesheet" href="//cdn.staticfile.org/element-ui/2.15.6/theme-chalk/index.min.css"></link>'
   )
   // 导入 Element-UI 组件
   Vue.use(Button)
