@@ -1,3 +1,4 @@
+import { Num } from '@/helper/util'
 import { CourseScoreRecord } from './types'
 
 /**
@@ -8,7 +9,7 @@ import { CourseScoreRecord } from './types'
  * @returns 保留对应位数后的小数
  */
 function reserveDigits(num: number, fractionDigits = 3): number {
-  return Number(num.toFixed(fractionDigits))
+  return Num(num.toFixed(fractionDigits))
 }
 
 /**
@@ -149,7 +150,7 @@ export function reserveHigherCoursesForRetakenCourses(
 ): CourseScoreRecord[] {
   return Object.values(
     Object.entries(arr)
-      .sort((a, b) => Number(a[1].courseScore) - Number(b[1].courseScore))
+      .sort((a, b) => Num(a[1].courseScore) - Num(b[1].courseScore))
       .reduceRight(
         (acc, cur) =>
           acc[cur[1].courseNumber]
@@ -158,7 +159,7 @@ export function reserveHigherCoursesForRetakenCourses(
         {} as Record<string, [string, CourseScoreRecord]>
       )
   )
-    .sort((a, b) => Number(a[0]) - Number(b[0]))
+    .sort((a, b) => Num(a[0]) - Num(b[0]))
     .map((v) => v[1])
 }
 
@@ -173,7 +174,7 @@ function reserveNewerCoursesForRetakenCourses(
 ): CourseScoreRecord[] {
   return Object.values(
     arr
-      .sort((a, b) => Number(a.examTime) - Number(b.examTime))
+      .sort((a, b) => Num(a.examTime) - Num(b.examTime))
       .reduceRight(
         (acc, cur) =>
           acc[cur.courseNumber] ? acc : { ...acc, [cur.courseNumber]: cur },
@@ -193,7 +194,7 @@ function reserveOlderCoursesForRetakenCourses(
 ): CourseScoreRecord[] {
   return Object.values(
     arr
-      .sort((a, b) => Number(a.examTime) - Number(b.examTime))
+      .sort((a, b) => Num(a.examTime) - Num(b.examTime))
       .reduce(
         (acc, cur) =>
           acc[cur.courseNumber] ? acc : { ...acc, [cur.courseNumber]: cur },
@@ -221,7 +222,7 @@ function getPointByScore(
   if (!r) {
     return undefined
   }
-  const enrollmentYear = Number(r[0])
+  const enrollmentYear = Num(r[0])
   if (enrollmentYear >= 2017) {
     // 2017-2018秋季学期起使用如下标准（Fall Term 2017-2018~Present）
     if (score >= 90) {
@@ -303,7 +304,7 @@ export function getLevelNameByScore(
   if (!r) {
     return undefined
   }
-  const enrollmentYear = Number(r[0])
+  const enrollmentYear = Num(r[0])
   if (enrollmentYear >= 2017) {
     // 2017-2018秋季学期起使用如下标准（Fall Term 2017-2018~Present）
     if (score >= 90) {
@@ -368,7 +369,7 @@ export function getLevelCodeByScore(
   if (!r) {
     return undefined
   }
-  const enrollmentYear = Number(r[0])
+  const enrollmentYear = Num(r[0])
   if (enrollmentYear >= 2017) {
     // 2017-2018秋季学期起使用如下标准（Fall Term 2017-2018~Present）
     if (score >= 90) {

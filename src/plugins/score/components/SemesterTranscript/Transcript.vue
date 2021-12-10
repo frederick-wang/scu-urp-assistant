@@ -53,7 +53,7 @@ table.gpa-st-table.table.table-striped.table-bordered.table-hover
       td.center {{ courseItem.gradePoint }}
       td.center(v-if='type === `full`') {{ courseItem.rank }}
       td.center(v-if='type !== `compact`') {{ courseItem.examTime }}
-      //- td.center(v-if='type !== `compact`') {{ courseItem.courseTeacherList[0].teacherName}}{{ courseItem.courseTeacherList.filter(({ teacherNumber }) => Number(teacherNumber).toString() === teacherNumber).length > 1 ? ' 等' : ''}}
+      //- td.center(v-if='type !== `compact`') {{ courseItem.courseTeacherList[0].teacherName}}{{ courseItem.courseTeacherList.filter(({ teacherNumber }) => Num(teacherNumber).toString() === teacherNumber).length > 1 ? ' 等' : ''}}
       //- td.center(v-if='type !== `compact`') {{ courseItem.unpassedReasonExplain }}
       td.center(v-if='type !== `compact` && isSubitemScorePluginEnabled')
         button.btn.btn-info.btn-xs.btn-round(

@@ -1,26 +1,26 @@
 import {
   CourseScoreInfo,
   CurrentSemesterStudentAcademicInfo,
-  TrainingSchemeYearInfo,
-  InstructionalTeachingPlanDTO,
-  TrainingSchemeDTO,
-  TrainingSchemeNodeDTO,
-  TrainingSchemeCourseInfo,
+  // TrainingSchemeYearInfo,
+  // InstructionalTeachingPlanDTO,
+  // TrainingSchemeDTO,
+  // TrainingSchemeNodeDTO,
+  // TrainingSchemeCourseInfo,
   CourseScheduleInfoDTO,
-  CourseScheduleInfo,
-  ScuUietpDTO,
-  TrainingSchemeBaseInfo,
-  BachelorDegreeInfo,
-  TrainingScheme
+  CourseScheduleInfo
+  // ScuUietpDTO,
+  // TrainingSchemeBaseInfo,
+  // BachelorDegreeInfo,
+  // TrainingScheme
 } from '../types'
 import { pipe, map } from 'ramda'
-import state from '../state'
+// import state from '../state'
 import {
   APIAllPassingScoresDTO,
   APIAllPassingScoresDTOLnCj,
   APISubitemScoreFxcjDTO,
   APISubitemScoreLookDTO,
-  Result,
+  // Result,
   SubitemScoreRecord,
   TermScoresData
 } from './result.interface'
@@ -29,7 +29,8 @@ import {
   getLevelNameByScore,
   getPointByScore
 } from '@/plugins/score/utils'
-import { sleep, http } from '@/helper/util'
+// import { sleep, http } from '@/helper/util'
+import { Num, sleep } from '@/helper/util'
 import { getChineseNumber } from '@/helper/getter'
 import { Logger } from '@/helper/logger'
 import {
@@ -202,7 +203,7 @@ async function requestCourseSchedule(
         }, [] as CourseScheduleInfo[])
         .sort(
           (a, b) =>
-            Number(a.courseSequenceNumber) - Number(b.courseSequenceNumber)
+            Num(a.courseSequenceNumber) - Num(b.courseSequenceNumber)
         )
     }
   }
@@ -211,221 +212,221 @@ async function requestCourseSchedule(
   }
 }
 
-function requestTrainingScheme(num: number): Promise<{
-  info: TrainingSchemeBaseInfo
-  list: TrainingSchemeYearInfo[]
-}> {
-  const coursePropertyNameList = ['必修', '选修']
-  const res = Promise.all([
-    $.get(`/student/rollManagement/project/${num}/2/detail`).then(
-      ({ jhFajhb, treeList }: InstructionalTeachingPlanDTO) => ({
-        info: jhFajhb,
-        list: treeList
-          .reduce((acc, cur) => {
-            if (cur.name.match(/^\d{4}-\d{4}学年$/)) {
-              acc.push({
-                name: cur.name,
-                children: []
-              })
-            } else if (cur.name === '春' || cur.name === '秋') {
-              acc[acc.length - 1].children.push({
-                name: cur.name,
-                children: []
-              })
-            } else {
-              const r = cur.urlPath.match(/project\/.+\/(\d+)$/)
-              acc[acc.length - 1].children[
-                acc[acc.length - 1].children.length - 1
-              ].children.push({
-                courseName: cur.name,
-                courseNumber: r ? r[1] : '',
-                courseAttributes: [],
-                courseMajor: '',
-                coursePropertyName: ''
-              })
-            }
-            return acc
-          }, [] as TrainingSchemeYearInfo[])
-          .sort((a, b) => {
-            const regexpResultA = a.name.match(/^(\d+)-(\d+)学年$/)
-            const regexpResultB = b.name.match(/^(\d+)-(\d+)学年$/)
-            if (!regexpResultA || !regexpResultB) {
-              return 0
-            }
-            const resultA = Number(regexpResultA[1]) + Number(regexpResultA[2])
-            const resultB = Number(regexpResultB[1]) + Number(regexpResultB[2])
-            return resultA - resultB
-          })
-      })
-    ),
-    $.get(`/student/rollManagement/project/${num}/1/detail`).then(
-      ({ treeList }: TrainingSchemeDTO) =>
-        Object.values(
-          treeList.reduce(
-            (acc, cur) => {
-              acc[cur.id] = cur
-              if (!acc[cur.pId]) {
-                acc[cur.pId] = {
-                  id: cur.pId,
-                  courseName: '',
-                  coursePropertyName: '',
-                  isDir: false,
-                  name: '',
-                  pId: '',
-                  urlPath: ''
-                }
-              }
-              cur.parent = acc[cur.pId]
-              cur.isDir = cur.name.includes('fa-kz')
-              if (cur.name.includes('必修')) {
-                cur.coursePropertyName = '必修'
-              } else if (cur.name.includes('选修')) {
-                cur.coursePropertyName = '选修'
-              } else {
-                cur.coursePropertyName = ''
-              }
-              // 有时候 cur.name 里会混入 CRLF
-              const r = cur.name.replace(/\r|\n/g, '').match(/<\/i>(.+)$/)
-              cur.courseName = r
-                ? r[1].replace(' 必修', '').replace(' 选修', '')
-                : ''
-              return acc
-            },
-            {} as {
-              [key: string]: TrainingSchemeNodeDTO
-            }
-          )
-        ).reduce(
-          (acc, { urlPath, isDir, parent, courseName, coursePropertyName }) => {
-            if (urlPath) {
-              const r = urlPath.match(/@(.+)$/)
-              const courseNumber = r ? r[1] : ''
-              if (!isDir) {
-                const courseAttributes = []
-                let p = parent
-                while (p && p.courseName) {
-                  if (!coursePropertyNameList.includes(p.courseName)) {
-                    courseAttributes.unshift(p.courseName)
-                  }
-                  p = p.parent
-                }
-                acc[courseNumber] = {
-                  courseName,
-                  courseNumber,
-                  coursePropertyName,
-                  courseAttributes,
-                  courseMajor: ''
-                }
-              }
-            }
-            return acc
-          },
-          {} as {
-            [key: string]: TrainingSchemeCourseInfo
-          }
-        )
-    )
-  ]).then(([{ info, list }, table]) => ({
-    info,
-    list: list.map((year) => ({
-      name: year.name,
-      children: year.children.map((semester) => ({
-        name: semester.name,
-        children: semester.children
-          .map((v) =>
-            Object.assign(v, table[v.courseNumber], {
-              courseMajor: `${info.zym}（${info.njmc}）`
-            })
-          )
-          .sort((a, b) => {
-            const propertyWeight = {
-              必修: 100,
-              '中华文化（春）': 75,
-              '中华文化（秋）': 75,
-              选修: 50
-            } as {
-              [key: string]: number
-            }
-            const attributeWeight = {
-              公共基础课: 10,
-              公共课: 10,
-              '中华文化（春）_kz': 9,
-              '中华文化（秋）_kz': 9,
-              学科基础课: 8,
-              专业基础课: 8,
-              专业课: 6,
-              实践环节: 4
-            } as {
-              [key: string]: number
-            }
-            const getAttributesWeight = (attributes: string[]): number =>
-              attributes.reduce(
-                (acc, cur) => acc + (attributeWeight[cur] || 0),
-                0
-              )
-            const weightA =
-              (propertyWeight[a.coursePropertyName] || 0) +
-              getAttributesWeight(a.courseAttributes)
-            const weightB =
-              (propertyWeight[b.coursePropertyName] || 0) +
-              getAttributesWeight(b.courseAttributes)
-            return weightB - weightA
-          })
-      }))
-    })) as TrainingSchemeYearInfo[]
-  }))
-  return res
-}
+// function requestTrainingScheme(num: number): Promise<{
+//   info: TrainingSchemeBaseInfo
+//   list: TrainingSchemeYearInfo[]
+// }> {
+//   const coursePropertyNameList = ['必修', '选修']
+//   const res = Promise.all([
+//     $.get(`/student/rollManagement/project/${num}/2/detail`).then(
+//       ({ jhFajhb, treeList }: InstructionalTeachingPlanDTO) => ({
+//         info: jhFajhb,
+//         list: treeList
+//           .reduce((acc, cur) => {
+//             if (cur.name.match(/^\d{4}-\d{4}学年$/)) {
+//               acc.push({
+//                 name: cur.name,
+//                 children: []
+//               })
+//             } else if (cur.name === '春' || cur.name === '秋') {
+//               acc[acc.length - 1].children.push({
+//                 name: cur.name,
+//                 children: []
+//               })
+//             } else {
+//               const r = cur.urlPath.match(/project\/.+\/(\d+)$/)
+//               acc[acc.length - 1].children[
+//                 acc[acc.length - 1].children.length - 1
+//               ].children.push({
+//                 courseName: cur.name,
+//                 courseNumber: r ? r[1] : '',
+//                 courseAttributes: [],
+//                 courseMajor: '',
+//                 coursePropertyName: ''
+//               })
+//             }
+//             return acc
+//           }, [] as TrainingSchemeYearInfo[])
+//           .sort((a, b) => {
+//             const regexpResultA = a.name.match(/^(\d+)-(\d+)学年$/)
+//             const regexpResultB = b.name.match(/^(\d+)-(\d+)学年$/)
+//             if (!regexpResultA || !regexpResultB) {
+//               return 0
+//             }
+//             const resultA = Num(regexpResultA[1]) + Num(regexpResultA[2])
+//             const resultB = Num(regexpResultB[1]) + Num(regexpResultB[2])
+//             return resultA - resultB
+//           })
+//       })
+//     ),
+//     $.get(`/student/rollManagement/project/${num}/1/detail`).then(
+//       ({ treeList }: TrainingSchemeDTO) =>
+//         Object.values(
+//           treeList.reduce(
+//             (acc, cur) => {
+//               acc[cur.id] = cur
+//               if (!acc[cur.pId]) {
+//                 acc[cur.pId] = {
+//                   id: cur.pId,
+//                   courseName: '',
+//                   coursePropertyName: '',
+//                   isDir: false,
+//                   name: '',
+//                   pId: '',
+//                   urlPath: ''
+//                 }
+//               }
+//               cur.parent = acc[cur.pId]
+//               cur.isDir = cur.name.includes('fa-kz')
+//               if (cur.name.includes('必修')) {
+//                 cur.coursePropertyName = '必修'
+//               } else if (cur.name.includes('选修')) {
+//                 cur.coursePropertyName = '选修'
+//               } else {
+//                 cur.coursePropertyName = ''
+//               }
+//               // 有时候 cur.name 里会混入 CRLF
+//               const r = cur.name.replace(/\r|\n/g, '').match(/<\/i>(.+)$/)
+//               cur.courseName = r
+//                 ? r[1].replace(' 必修', '').replace(' 选修', '')
+//                 : ''
+//               return acc
+//             },
+//             {} as {
+//               [key: string]: TrainingSchemeNodeDTO
+//             }
+//           )
+//         ).reduce(
+//           (acc, { urlPath, isDir, parent, courseName, coursePropertyName }) => {
+//             if (urlPath) {
+//               const r = urlPath.match(/@(.+)$/)
+//               const courseNumber = r ? r[1] : ''
+//               if (!isDir) {
+//                 const courseAttributes = []
+//                 let p = parent
+//                 while (p && p.courseName) {
+//                   if (!coursePropertyNameList.includes(p.courseName)) {
+//                     courseAttributes.unshift(p.courseName)
+//                   }
+//                   p = p.parent
+//                 }
+//                 acc[courseNumber] = {
+//                   courseName,
+//                   courseNumber,
+//                   coursePropertyName,
+//                   courseAttributes,
+//                   courseMajor: ''
+//                 }
+//               }
+//             }
+//             return acc
+//           },
+//           {} as {
+//             [key: string]: TrainingSchemeCourseInfo
+//           }
+//         )
+//     )
+//   ]).then(([{ info, list }, table]) => ({
+//     info,
+//     list: list.map((year) => ({
+//       name: year.name,
+//       children: year.children.map((semester) => ({
+//         name: semester.name,
+//         children: semester.children
+//           .map((v) =>
+//             Object.assign(v, table[v.courseNumber], {
+//               courseMajor: `${info.zym}（${info.njmc}）`
+//             })
+//           )
+//           .sort((a, b) => {
+//             const propertyWeight = {
+//               必修: 100,
+//               '中华文化（春）': 75,
+//               '中华文化（秋）': 75,
+//               选修: 50
+//             } as {
+//               [key: string]: number
+//             }
+//             const attributeWeight = {
+//               公共基础课: 10,
+//               公共课: 10,
+//               '中华文化（春）_kz': 9,
+//               '中华文化（秋）_kz': 9,
+//               学科基础课: 8,
+//               专业基础课: 8,
+//               专业课: 6,
+//               实践环节: 4
+//             } as {
+//               [key: string]: number
+//             }
+//             const getAttributesWeight = (attributes: string[]): number =>
+//               attributes.reduce(
+//                 (acc, cur) => acc + (attributeWeight[cur] || 0),
+//                 0
+//               )
+//             const weightA =
+//               (propertyWeight[a.coursePropertyName] || 0) +
+//               getAttributesWeight(a.courseAttributes)
+//             const weightB =
+//               (propertyWeight[b.coursePropertyName] || 0) +
+//               getAttributesWeight(b.courseAttributes)
+//             return weightB - weightA
+//           })
+//       }))
+//     })) as TrainingSchemeYearInfo[]
+//   }))
+//   return res
+// }
 
-let trainingSchemeList: TrainingScheme[]
+// let trainingSchemeList: TrainingScheme[]
 
-async function requestTrainingSchemeList(): Promise<TrainingScheme[]> {
-  const url = `student/training_scheme`
-  try {
-    if (!trainingSchemeList) {
-      trainingSchemeList = (await http().get(url)).data
-    }
-    return trainingSchemeList
-  } catch (error) {
-    const {
-      status,
-      statusText,
-      responseJSON: { message }
-    } = error
-    throw new Error(`[${status}] ${statusText}: ${message}`)
-  }
-}
+// async function requestTrainingSchemeList(): Promise<TrainingScheme[]> {
+//   const url = `student/training_scheme`
+//   try {
+//     if (!trainingSchemeList) {
+//       trainingSchemeList = (await http().get(url)).data
+//     }
+//     return trainingSchemeList
+//   } catch (error) {
+//     const {
+//       status,
+//       statusText,
+//       responseJSON: { message }
+//     } = error
+//     throw new Error(`[${status}] ${statusText}: ${message}`)
+//   }
+// }
 
-async function requestBachelorDegree(
-  queryStr: string
-): Promise<BachelorDegreeInfo[]> {
-  const url = `info/bachelor_degree/${encodeURIComponent(queryStr)}`
-  try {
-    return (await http().get(url)).data
-  } catch (error) {
-    const {
-      status,
-      statusText,
-      responseJSON: { message }
-    } = error
-    throw new Error(`[${status}] ${statusText}: ${message}`)
-  }
-}
+// async function requestBachelorDegree(
+//   queryStr: string
+// ): Promise<BachelorDegreeInfo[]> {
+//   const url = `info/bachelor_degree/${encodeURIComponent(queryStr)}`
+//   try {
+//     return (await http().get(url)).data
+//   } catch (error) {
+//     const {
+//       status,
+//       statusText,
+//       responseJSON: { message }
+//     } = error
+//     throw new Error(`[${status}] ${statusText}: ${message}`)
+//   }
+// }
 
-async function requestScuUietpList(queryStr: string): Promise<ScuUietpDTO> {
-  const url = `info/scu_uietp/${encodeURIComponent(queryStr)}`
-  try {
-    const res = (await http().get(url)).data
-    return res as ScuUietpDTO
-  } catch (error) {
-    const {
-      status,
-      statusText,
-      responseJSON: { message }
-    } = error
-    throw new Error(`[${status}] ${statusText}: ${message}`)
-  }
-}
+// async function requestScuUietpList(queryStr: string): Promise<ScuUietpDTO> {
+//   const url = `info/scu_uietp/${encodeURIComponent(queryStr)}`
+//   try {
+//     const res = (await http().get(url)).data
+//     return res as ScuUietpDTO
+//   } catch (error) {
+//     const {
+//       status,
+//       statusText,
+//       responseJSON: { message }
+//     } = error
+//     throw new Error(`[${status}] ${statusText}: ${message}`)
+//   }
+// }
 
 async function requestCurrentSemesterStudentAcademicInfo(): Promise<CurrentSemesterStudentAcademicInfo> {
   // 加载本学期基本信息
@@ -522,8 +523,8 @@ export async function requestAllPassingScores(): Promise<CourseScoreInfo[]> {
       unpassedReasonCode,
       courseName,
       englishCourseName,
-      credit: Number(credit),
-      studyHour: Number(studyHour),
+      credit: Num(credit),
+      studyHour: Num(studyHour),
       coursePropertyName,
       examTypeName: getExamTypeNameByCode(examTypeCode),
       levelName:
@@ -541,7 +542,7 @@ export async function requestAllPassingScores(): Promise<CourseScoreInfo[]> {
     // const { title, message, html } = await LoadHTMLToDealWithError(url)
     // Logger.error({ title, message, html })
     // throw new Error(`${title}: ${message}`)
-    throw new Error(error)
+    throw new Error(String(error))
   }
 }
 
@@ -562,30 +563,30 @@ async function requestThisTermCourseScoreInfoList(): Promise<
             courseNumber: v.id.courseNumber || '',
             // 对，你没看错，这个地方教务处接口是错别字，把course打成了coure
             courseSequenceNumber: v.coureSequenceNumber || '',
-            credit: Number(v.credit) || 0,
+            credit: Num(v.credit) || 0,
             coursePropertyCode: v.coursePropertyCode || '',
             coursePropertyName: v.coursePropertyName || '',
-            maxScore: Number(v.maxcj) || 0,
-            avgScore: Number(v.avgcj) || 0,
-            minScore: Number(v.mincj) || 0,
-            courseScore: Number(v.courseScore) || 0,
+            maxScore: Num(v.maxcj) || 0,
+            avgScore: Num(v.avgcj) || 0,
+            minScore: Num(v.mincj) || 0,
+            courseScore: Num(v.courseScore) || 0,
             // 对，你没看错，这个地方教务处接口是错别字，把level打成了levle
             levelCode:
               v.levlePoint ||
               getLevelCodeByScore(
-                Number(v.courseScore) || 0,
+                Num(v.courseScore) || 0,
                 v.id.executiveEducationPlanNumber || ''
               ) ||
               '',
             levelName:
               v.levelName ||
               getLevelNameByScore(
-                Number(v.courseScore) || 0,
+                Num(v.courseScore) || 0,
                 v.id.executiveEducationPlanNumber || ''
               ) ||
               '',
-            gradePoint: Number(v.gradePoint) || 0,
-            rank: Number(v.rank) || 0,
+            gradePoint: Num(v.gradePoint) || 0,
+            rank: Num(v.rank) || 0,
             examTime: v.id.examtime || '',
             unpassedReasonCode: v.unpassedReasonCode || '',
             unpassedReasonExplain: v.unpassedReasonExplain || '',
@@ -596,7 +597,7 @@ async function requestThisTermCourseScoreInfoList(): Promise<
               '',
             inputStatusCode: v.inputStatusCode || '',
             inputMethodCode: v.inputMethodCode || '',
-            studyHour: Number(v.studyHour) || 0,
+            studyHour: Num(v.studyHour) || 0,
             examTypeName: v.examTypeName || ''
           } as CourseScoreInfo)
       )
@@ -655,49 +656,49 @@ export async function requestSubitemScoreFxcj(
   }
 }
 
-type LoginResultData = {
-  accessToken: string
-}
+// type LoginResultData = {
+//   accessToken: string
+// }
 
-export async function requestAccessToken(): Promise<LoginResultData> {
-  const { version, clientType: type } = state.core
-  const { id } = state.user
-  const url = `user/login`
-  try {
-    const res: Result = (
-      await http().post(url, {
-        id,
-        client: { version, type }
-      })
-    ).data
-    if (res.error) {
-      const { code, title, message } = res.error
-      throw new Error(`[${code}] ${title}: ${message}`)
-    }
-    const { accessToken } = res.data as LoginResultData
-    return { accessToken }
-  } catch (error) {
-    try {
-      const {
-        status,
-        statusText,
-        responseJSON: { message }
-      } = error
-      throw new Error(`[${status}] ${statusText}: ${message}`)
-    } catch (error) {
-      throw new Error(error)
-    }
-  }
-}
+// export async function requestAccessToken(): Promise<LoginResultData> {
+//   const { version, clientType: type } = state.core
+//   const { id } = state.user
+//   const url = `user/login`
+//   try {
+//     const res: Result = (
+//       await http().post(url, {
+//         id,
+//         client: { version, type }
+//       })
+//     ).data
+//     if (res.error) {
+//       const { code, title, message } = res.error
+//       throw new Error(`[${code}] ${title}: ${message}`)
+//     }
+//     const { accessToken } = res.data as LoginResultData
+//     return { accessToken }
+//   } catch (error) {
+//     try {
+//       const {
+//         status,
+//         statusText,
+//         responseJSON: { message }
+//       } = error
+//       throw new Error(`[${status}] ${statusText}: ${message}`)
+//     } catch (error) {
+//       throw new Error(error)
+//     }
+//   }
+// }
 
 export {
   requestThisTermCourseScoreInfoList,
   requestCurrentSemesterStudentAcademicInfo,
-  requestTrainingSchemeList,
-  requestTrainingScheme,
+  // requestTrainingSchemeList,
+  // requestTrainingScheme,
   requestCourseSchedule,
   requestStudentSemesterNumberList,
-  requestStudentInfo,
-  requestScuUietpList,
-  requestBachelorDegree
+  requestStudentInfo
+  // requestScuUietpList,
+  // requestBachelorDegree
 }

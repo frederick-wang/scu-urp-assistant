@@ -62,7 +62,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import Loading from '@/plugins/common/components/Loading.vue'
 import { getPointByScore } from '../score/utils'
 import { emitDataAnalysisEvent } from '../data-analysis'
-import { notifyError } from '@/helper/util'
+import { notifyError, Num } from '@/helper/util'
 import { defaultTo, nth, pipe, split } from 'ramda'
 import subitems from './subitems.json'
 
@@ -120,9 +120,7 @@ export default class SubitemScore extends Vue {
 
   get gpa(): string {
     if (this.score) {
-      return (
-        getPointByScore(Number(this.score), this.semester) ?? ''
-      ).toString()
+      return (getPointByScore(Num(this.score), this.semester) ?? '').toString()
     }
     return ''
   }
@@ -136,8 +134,8 @@ export default class SubitemScore extends Vue {
    * 解决浮点数计算精度误差，避免出现类似「13.799999999999999」这样的奇怪结果
    */
   calcRightProductOfGradeAndFactor(score: string, factor: string): number {
-    const scoreNum = Number(score)
-    const factorNum = Number(factor)
+    const scoreNum = Num(score)
+    const factorNum = Num(factor)
     /**
      * 获取数字的小数位数
      */
@@ -217,7 +215,7 @@ export default class SubitemScore extends Vue {
       this.loadingIsDone = true
       emitDataAnalysisEvent('分项成绩查询', '查询成功')
     } catch (error) {
-      notifyError(error, '[分项成绩查询] 获取数据失败')
+      notifyError(String(error), '[分项成绩查询] 获取数据失败')
       emitDataAnalysisEvent('分项成绩查询', '查询失败')
     }
   }

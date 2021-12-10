@@ -68,6 +68,7 @@ import {
   reserveHigherCoursesForRetakenCourses,
   reserveMinorCourses
 } from '../../utils'
+import { Num } from '@/helper/util'
 
 @Component
 export default class Header extends Vue {
@@ -130,8 +131,8 @@ export default class Header extends Vue {
     if (!rC || !r) {
       return semesterText + '成绩'
     }
-    const sumC = Number(rC[1]) + Number(rC[2]) + Number(rC[3])
-    const sum = Number(r[1]) + Number(r[2]) + Number(r[3] === '秋' ? 1 : 2)
+    const sumC = Num(rC[1]) + Num(rC[2]) + Num(rC[3])
+    const sum = Num(r[1]) + Num(r[2]) + Num(r[3] === '秋' ? 1 : 2)
     let suffix = ''
     if (sum === sumC) {
       suffix = '（本学期）'

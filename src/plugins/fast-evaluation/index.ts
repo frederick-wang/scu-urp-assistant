@@ -11,7 +11,7 @@ import {
 } from './util'
 import * as template from './template'
 import { HTTP_HEADERS, EVALUATION_INTERVAL } from './config'
-import { messageError, messageSuccess, notifyError } from '@/helper/util'
+import { messageError, messageSuccess, notifyError, Num } from '@/helper/util'
 
 let $btn: JQuery<HTMLElement>
 let $prompt: JQuery<HTMLElement>
@@ -232,7 +232,7 @@ function showSelectionModal(): void {
   const yes = (layerIndex: number): void => {
     list = $('#selection-form')
       .serializeArray()
-      .map(v => list[Number(v.name.replace('selection-checkbox-', ''))])
+      .map(v => list[Num(v.name.replace('selection-checkbox-', ''))])
     window.layer.close(layerIndex)
     if (list.length) {
       $btn.remove()

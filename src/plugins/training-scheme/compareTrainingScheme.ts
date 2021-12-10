@@ -13,7 +13,7 @@ import { getChineseNumber } from '@/helper/getter'
 import { Request, actions, state } from '@/store'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import html2canvas from 'html2canvas'
-import { notifyError } from '@/helper/util'
+import { notifyError, Num } from '@/helper/util'
 
 let trainingSchemeList: TrainingScheme[]
 
@@ -87,8 +87,8 @@ function genQueryHTML(): string {
                     ${gradeList
                       .sort(
                         (a, b) =>
-                          Number(b.replace('级', '')) -
-                          Number(a.replace('级', ''))
+                          Num(b.replace('级', '')) -
+                          Num(a.replace('级', ''))
                       )
                       .map(v => `<option value="${v}">${v}</option>`)
                       .join('')}
@@ -125,8 +125,8 @@ function genQueryHTML(): string {
                     ${gradeList
                       .sort(
                         (a, b) =>
-                          Number(b.replace('级', '')) -
-                          Number(a.replace('级', ''))
+                          Num(b.replace('级', '')) -
+                          Num(a.replace('级', ''))
                       )
                       .map(v => `<option value="${v}">${v}</option>`)
                       .join('')}
@@ -674,8 +674,8 @@ async function query(): Promise<void> {
         { info: info1, list: list1 },
         { info: info2, list: list2 }
       ] = await Promise.all([
-        actions[Request.TRAINING_SCHEME](Number(majorNumber1)),
-        actions[Request.TRAINING_SCHEME](Number(majorNumber2))
+        actions[Request.TRAINING_SCHEME](Num(majorNumber1)),
+        actions[Request.TRAINING_SCHEME](Num(majorNumber2))
       ])
       hideLoadingAnimation()
       $('.sua-container-compare-training-scheme').append(
@@ -713,10 +713,10 @@ function save(): void {
       })
       canvas.toBlob(blob => {
         const majorName1 = trainingSchemeList.filter(
-          ({ majorId }) => majorId === Number($('#query-major-1 #major').val())
+          ({ majorId }) => majorId === Num($('#query-major-1 #major').val())
         )[0].majorName
         const majorName2 = trainingSchemeList.filter(
-          ({ majorId }) => majorId === Number($('#query-major-2 #major').val())
+          ({ majorId }) => majorId === Num($('#query-major-2 #major').val())
         )[0].majorName
         const grade1 = $('#query-major-1 #grade').val()
         const grade2 = $('#query-major-2 #grade').val()
@@ -775,7 +775,7 @@ function initEvents(): void {
 async function selectSelfMajorAndQuery(): Promise<void> {
   const selfMajorNumber = state.user.programPlanNumber
   const selfSchemeInfo = trainingSchemeList.filter(
-    v => Number(v.majorId) === selfMajorNumber
+    v => Num(v.majorId) === selfMajorNumber
   )[0]
   $('#query-major-1 #grade').val(selfSchemeInfo.grade)
   $('#query-major-2 #grade').val(selfSchemeInfo.grade)

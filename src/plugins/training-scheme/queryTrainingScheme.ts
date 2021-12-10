@@ -15,7 +15,7 @@ import { initCourseInfoPopover } from './popover'
 import { getChineseNumber } from '@/helper/getter'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import html2canvas from 'html2canvas'
-import { notifyError } from '@/helper/util'
+import { notifyError, Num } from '@/helper/util'
 
 let trainingSchemeList: TrainingScheme[]
 
@@ -250,7 +250,7 @@ async function query(): Promise<void> {
     showLoadingAnimation('.sua-container-query-training-scheme')
     try {
       const { info, list } = await actions[Request.TRAINING_SCHEME](
-        Number(majorNumber)
+        Num(majorNumber)
       )
       hideLoadingAnimation()
       $('.sua-container-query-training-scheme').append(
@@ -331,8 +331,8 @@ function genQueryHTML(): string {
                     ${gradeList
                       .sort(
                         (a, b) =>
-                          Number(b.replace('级', '')) -
-                          Number(a.replace('级', ''))
+                          Num(b.replace('级', '')) -
+                          Num(a.replace('级', ''))
                       )
                       .map(v => `<option value="${v}">${v}</option>`)
                       .join('')}
@@ -375,7 +375,7 @@ function save(): void {
       })
       canvas.toBlob(blob => {
         const majorName = trainingSchemeList.filter(
-          ({ majorId }) => majorId === Number($('#major').val())
+          ({ majorId }) => majorId === Num($('#major').val())
         )[0].majorName
         const grade = $('#grade').val()
         const department = $('#department').val()
@@ -422,7 +422,7 @@ function initEvents(): void {
 async function selectSelfMajorAndQuery(): Promise<void> {
   const selfMajorNumber = state.user.programPlanNumber
   const selfSchemeInfo = trainingSchemeList.filter(
-    v => Number(v.majorId) === selfMajorNumber
+    v => Num(v.majorId) === selfMajorNumber
   )[0]
   $('#grade').val(selfSchemeInfo.grade)
   $('#department').val(selfSchemeInfo.department)
