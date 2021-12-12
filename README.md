@@ -36,35 +36,39 @@ npm install
 // @include      http://202.115.47.141/*
 // @include      http://zhjw.scu.edu.cn/*
 // @grant        none
-// @run-at       document-start
+// @run-at       document-end
 // ==/UserScript==
 
-var remoteScript = document.createElement('script');
-remoteScript.src = 'http://localhost:8080/scu-urp-assistant.user.js?ts='+(+new Date());
-document.head.appendChild(remoteScript);
+/**
+ * 教务系统引入的 r-slider.js 会重写 Number 函数，需要将其复原。
+ */
+function setNumber() {
+  var NumberConstructor = Object.getPrototypeOf ? Object.getPrototypeOf(0).constructor : (0).__proto__.constructor;
+  if (Number != NumberConstructor) {
+    Number = NumberConstructor;
+  } else {
+    setTimeout(setNumber, 10);
+  }
+}
+
+setNumber();
+
+function insertScript() {
+  if (document.head) {
+    var remoteScript = document.createElement('script');
+    remoteScript.src = 'http://localhost:8080/scu-urp-assistant.user.js?ts='+(+new Date());
+    document.head.appendChild(remoteScript);
+  } else {
+    setTimeout(insertScript, 10);
+  }
+}
+
+insertScript();
 ```
 
 启动该脚本后，就会自动加载 `dev模式脚本` 了。之后如果本地文件有修改，也会自动监测到文件变化并重新编译，然后自动刷新页面。
 
-此外，还需要用 `env` 文件配置环境变量。在调试时，程序会加载 `.env.development` 文件，在打包发布的版本中，程序会加载 `.env.production` 文件。这两个文件均会被 `git` 忽略。目前程序会调用的变量共有 2 个，分别为：
-
-- API_PATH
-- API_PATH_V2
-
-您可以将 API Server 部署在您自己的服务器上，也可以直接将这两个变量设置到我的服务器上：
-
-```
-API_PATH=https://sua.zhaoji.wang/api/v1
-API_PATH_V2=https://api.scu.plus/sua/v2
-```
-
-功能依赖 `API Server` 的插件包括：
-
-- 专业授位查询
-- 培养方案相关
-- 历届大创查询
-- 课程信息交流
-- 用户体验改善计划
+此外，自 Chrome 94 开始，网页无法直接加载来自 localhost 的脚本，这会导致 `dev模式脚本` 无法使用。因此，建议在开发调试时，进入 `chrome://flags/#block-insecure-private-network-requests` 设置页面，将 `Block insecure private network requests` 选项设置为 `Disabled` ，开发完成后再改回去。
 
 ## 打包编译
 
@@ -82,7 +86,7 @@ npm run analyze
 
 ## 打赏作者
 
-自2018年5月20日以来，SCU URP 助手已经更新了91个版本，编写了8000多行代码。在这两年的时间中，作者不断地跟进综合教务系统的升级与变化，保证旧的功能稳定可用；同时也不断地听取同学们的反馈，持续地为助手加入新的有用的功能，从未停止过前进的步伐。
+自2018年5月20日以来，SCU URP 助手已经更新了上百个版本，编写了8000多行代码。在这两年的时间中，作者不断地跟进综合教务系统的升级与变化，保证旧的功能稳定可用；同时也不断地听取同学们的反馈，持续地为助手加入新的有用的功能，从未停止过前进的步伐。
 
 如果您使用过 SCU URP 助手后觉得很好用，确实帮助到了您，可以考虑请作者喝一杯咖啡或者吃一碗泡面哦。
 

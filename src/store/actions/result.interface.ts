@@ -75,9 +75,15 @@ export interface TermScoresData {
   }[]
 }
 
-export interface APISubitemScoreLookDTO {
-  scoreDetailList: ScoreDetail[]
-}
+export type APISubitemScoreLookDTO =
+  | {
+      msg: undefined
+      scoreDetailList: ScoreDetail[]
+    }
+  | {
+      msg: string
+      scoreDetailList: never
+    }
 
 export interface ScoreDetail {
   id: {
@@ -241,4 +247,53 @@ export interface APIAllPassingScoresDTOLnCjId {
   studentId: string
   coureSequenceNumber: string
   kch_zj: string
+}
+
+export interface APITeachingAssessmentEvaluationQueryAllResult {
+  status: number
+  msg: string
+  data: {
+    pageSize: number
+    pageNum: number
+    pageContext: {
+      totalCount: number
+    }
+    records: {
+      KTID: string // 课堂ID
+      LSRXM: string // 老师人姓名
+      WJBM: string // 问卷编码
+      ZXJXJHH: string // 执行教学计划号
+      KCH: string // 课程号
+      KXH: string // 课序号
+      SFPG: '1' | '0' // 是否评估
+      JKRQ: string // 结课日期
+      WJMC: string // 问卷名称
+      YXDCPG: string // 允许多次评估
+      PGLXDM: '01' | '02' // 评估类型代码: '01' - 过程评估, '02' - 绩效评估, 还有一个未知代码的「投票评估」
+      JKKG: '1' | '0' | '' // 结课开关，不过目前看到的代码里返回的全是 ''
+      JKPGTS: string // 结课评估天数
+      KCM: string // 课程名
+      PGID: string // 评估ID
+      RN: string // 记录编号（RecordNumber）
+    }[]
+  }
+}
+
+export interface TeachingAssessmentEvaluationRecord {
+  courseId: string
+  teacherName: string
+  questionnaireId: string
+  executiveEducationPlanNumber: string
+  courseNumber: string
+  courseSequenceNumber: string
+  isEvaluated: boolean
+  courseEndDate: string
+  questionnaireName: string
+  allowMultipleEvaluations: boolean
+  evaluationTypeCode: string
+  JKKG: string
+  JKPGTS: string
+  courseName: string
+  evaluationId: string
+  recordNumber: string
 }

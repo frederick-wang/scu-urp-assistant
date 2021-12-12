@@ -5,25 +5,9 @@ const path = require('path')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const webpack = require('webpack')
-const { version, description, author, license } = require('./package.json')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin
-
-const banner = `// ==UserScript==
-// @name         四川大学综合教务系统助手
-// @namespace    https://zhaoji.wang/
-// @version      ${version}
-// @description  ${description}
-// @author       ${author}
-// @license      ${license}
-// @include      http://202.115.47.141/*
-// @include      http://zhjw.scu.edu.cn/*
-// @grant        none
-// @run-at       document-end
-// @icon         https://gitee.com/frederick-wang/scu-urp-assistant/raw/master/icon.png
-// @icon64       https://gitee.com/frederick-wang/scu-urp-assistant/raw/master/icon64.png
-// ==/UserScript==`
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 module.exports = env => {
@@ -38,14 +22,7 @@ module.exports = env => {
   const prodConfig = {
     optimization: {
       minimize: true,
-      minimizer: [
-        new TerserPlugin({
-          extractComments: {
-            condition: 'some',
-            banner: banner
-          }
-        })
-      ],
+      minimizer: [new TerserPlugin()],
       concatenateModules: true
     }
   }
@@ -55,13 +32,13 @@ module.exports = env => {
     target: 'web',
     entry: {
       'scu-urp-assistant.user': './src/scu-urp-assistant.user.ts',
-      'scu-urp-assistant-bookmarklet': './src/scu-urp-assistant-bookmarklet.ts'
+      'scu-urp-assistant.bookmarklet': './src/scu-urp-assistant.bookmarklet.ts'
     },
     plugins: [
-      new webpack.DefinePlugin({
-        'process.env.API_PATH': `'${process.env.API_PATH}'`,
-        'process.env.API_PATH_V2': `'${process.env.API_PATH_V2}'`
-      }),
+      // new webpack.DefinePlugin({
+      //   'process.env.API_PATH': `'${process.env.API_PATH}'`,
+      //   'process.env.API_PATH_V2': `'${process.env.API_PATH_V2}'`
+      // }),
       new CleanWebpackPlugin(),
       new webpack.ProvidePlugin({
         $: 'jquery',
@@ -105,7 +82,8 @@ module.exports = env => {
               use: [
                 'vue-style-loader',
                 {
-                  loader: 'css-loader', options: {
+                  loader: 'css-loader',
+                  options: {
                     importLoaders: 2,
                     esModule: false
                   }
@@ -123,7 +101,8 @@ module.exports = env => {
               use: [
                 'to-string-loader',
                 {
-                  loader: 'css-loader', options: {
+                  loader: 'css-loader',
+                  options: {
                     importLoaders: 2,
                     esModule: false
                   }
@@ -150,7 +129,8 @@ module.exports = env => {
               use: [
                 'vue-style-loader',
                 {
-                  loader: 'css-loader', options: {
+                  loader: 'css-loader',
+                  options: {
                     importLoaders: 1,
                     esModule: false
                   }
@@ -162,7 +142,8 @@ module.exports = env => {
               use: [
                 'to-string-loader',
                 {
-                  loader: 'css-loader', options: {
+                  loader: 'css-loader',
+                  options: {
                     importLoaders: 1,
                     esModule: false
                   }

@@ -109,14 +109,19 @@ export default class Transcript extends Vue {
     coursePropertyCode,
     courseScore
   }: CourseScoreRecord): Promise<void> {
-    const { scoreDetailList } = await requestSubitemScoreLook(
+    const lookRes = await requestSubitemScoreLook(
       executiveEducationPlanNumber,
       courseNumber,
       courseSequenceNumber,
       examTime
     )
 
-    if (scoreDetailList.length > 0) {
+    if (lookRes.msg) {
+      messageError(lookRes.msg)
+      return
+    }
+
+    if (lookRes.scoreDetailList.length > 0) {
       router.push('advanced_query/subitem_score', {
         params: {
           executiveEducationPlanNumber,

@@ -10,7 +10,10 @@ import {
   Notification,
   Rate,
   Divider,
-  Tooltip
+  Tooltip,
+  CheckboxGroup,
+  Checkbox,
+  CheckboxButton
 } from 'element-ui'
 import JsonViewer from 'vue-json-viewer'
 import { routeTrigger } from '@/helper/util'
@@ -35,6 +38,9 @@ export const loadElementUI = (): void => {
   Vue.use(Rate)
   Vue.use(Divider)
   Vue.use(Tooltip)
+  Vue.use(CheckboxGroup)
+  Vue.use(Checkbox)
+  Vue.use(CheckboxButton)
   Vue.prototype.$loading = Loading.service
   Vue.prototype.$msgbox = MessageBox
   Vue.prototype.$alert = MessageBox.alert

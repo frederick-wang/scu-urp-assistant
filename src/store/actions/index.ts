@@ -9,11 +9,11 @@ import {
   // requestAccessToken
 } from './request'
 
-import {
-  submitCourseScorePublicInfo,
-  submitCourseScorePublicInfos,
-  submitStudentCourseScorePublicInfos
-} from './submit'
+// import {
+//   submitCourseScorePublicInfo,
+//   submitCourseScorePublicInfos,
+//   submitStudentCourseScorePublicInfos
+// } from './submit'
 
 enum Request {
   ALL_TERMS_COURSE_SCORE_INFO_LIST = 'all_terms_course_score_info_list',
@@ -36,19 +36,18 @@ enum Submit {
 }
 
 const actions = {
-  [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]:
-    requestCurrentSemesterStudentAcademicInfo,
+  [Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO]: requestCurrentSemesterStudentAcademicInfo,
   // [Request.TRAINING_SCHEME_LIST]: requestTrainingSchemeList,
   // [Request.TRAINING_SCHEME]: requestTrainingScheme,
   // [Request.BACHELOR_DEGREE]: requestBachelorDegree,
   [Request.COURSE_SCHEDULE]: requestCourseSchedule,
-  [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList,
+  [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList
   // [Request.SCU_UIETP_LIST]: requestScuUietpList,
   // [Request.ACCESS_TOKEN]: requestAccessToken,
-  [Submit.COURSE_SCORE_PUBLIC_INFO]: submitCourseScorePublicInfo,
-  [Submit.COURSE_SCORE_PUBLIC_INFOS]: submitCourseScorePublicInfos,
-  [Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS]:
-    submitStudentCourseScorePublicInfos
+  // [Submit.COURSE_SCORE_PUBLIC_INFO]: submitCourseScorePublicInfo,
+  // [Submit.COURSE_SCORE_PUBLIC_INFOS]: submitCourseScorePublicInfos,
+  // [Submit.STUDENT_COURSE_SCORE_PUBLIC_INFOS]:
+  // submitStudentCourseScorePublicInfos
 }
 
 export { Request, Submit, actions }

@@ -8,7 +8,7 @@
     "serve": "cross-env NODE_ENV=development webpack serve --mode=development --progress --env development",
     "lint": "tsc --noEmit",
     "lint:watch": "npm run type-check -- --watch",
-    "build": "npm run build:types && npm run build:js",
+    "build": "npm run build:types && npm run build:js && node scripts/add-header.js",
     "build:types": "cross-env NODE_ENV=production tsc --emitDeclarationOnly",
     "build:js": "cross-env NODE_ENV=production webpack --mode=production --progress --env production",
     "analyze": "cross-env NODE_ENV=production webpack --mode=production --progress --env production --env analyze",

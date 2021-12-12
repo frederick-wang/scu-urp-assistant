@@ -20,8 +20,10 @@ import {
   APIAllPassingScoresDTOLnCj,
   APISubitemScoreFxcjDTO,
   APISubitemScoreLookDTO,
+  APITeachingAssessmentEvaluationQueryAllResult,
   // Result,
   SubitemScoreRecord,
+  TeachingAssessmentEvaluationRecord,
   TermScoresData
 } from './result.interface'
 import {
@@ -40,11 +42,121 @@ import {
   LoadHTMLToDealWithError
 } from './utils'
 
+const requestTeachingAssessmentEvaluationQueryAll = async ({
+  pageNum,
+  pageSize,
+  flag
+}: {
+  pageNum: number
+  pageSize: number
+  flag: 'kt' | 'ktjs'
+}): Promise<APITeachingAssessmentEvaluationQueryAllResult> =>
+  await $.post('/student/teachingAssessment/evaluation/queryAll', {
+    pageNum,
+    pageSize,
+    flag
+  })
+
+const requestTeachingAssessmentEvaluationRecords = async (
+  type: '期末评教' | '课堂及时评教'
+): Promise<TeachingAssessmentEvaluationRecord[]> => {
+  const flag =
+    type === '期末评教' ? 'kt' : type === '课堂及时评教' ? 'ktjs' : null
+  if (!flag) {
+    throw new Error(`[教学评估查询] 错误的查询类型: ${type}`)
+  }
+  const probeRes = await requestTeachingAssessmentEvaluationQueryAll({
+    pageNum: 1,
+    pageSize: 1,
+    flag
+  })
+  if (
+    probeRes.status !== 200 ||
+    probeRes.msg !== 'OK' ||
+    !probeRes?.data?.records
+  ) {
+    throw new Error(
+      `[教学评估查询] teachingAssessment/evaluation/queryAll 探针返回值错误: ${JSON.stringify(
+        probeRes
+      )}`
+    )
+  }
+  const {
+    data: {
+      pageContext: { totalCount: pageSize }
+    }
+  } = probeRes
+  const res = await requestTeachingAssessmentEvaluationQueryAll({
+    pageNum: 1,
+    pageSize,
+    flag
+  })
+  if (res.status !== 200 || res.msg !== 'OK' || !res?.data?.records) {
+    throw new Error(
+      `[教学评估查询] teachingAssessment/evaluation/queryAll 返回值错误: ${JSON.stringify(
+        res
+      )}`
+    )
+  }
+  const {
+    data: { records }
+  } = res
+  const convert = (
+    list: typeof records
+  ): TeachingAssessmentEvaluationRecord[] =>
+    list.map(
+      ({
+        KTID,
+        LSRXM,
+        WJBM,
+        ZXJXJHH,
+        KCH,
+        KXH,
+        SFPG,
+        JKRQ,
+        WJMC,
+        YXDCPG,
+        PGLXDM,
+        JKKG,
+        JKPGTS,
+        KCM,
+        PGID,
+        RN
+      }) => ({
+        courseId: KTID,
+        teacherName: LSRXM,
+        questionnaireId: WJBM,
+        executiveEducationPlanNumber: ZXJXJHH,
+        courseNumber: KCH,
+        courseSequenceNumber: KXH,
+        isEvaluated: Boolean(Num(SFPG)),
+        courseEndDate: JKRQ,
+        questionnaireName: WJMC,
+        allowMultipleEvaluations: Boolean(Num(YXDCPG)),
+        evaluationTypeCode: PGLXDM,
+        JKKG,
+        JKPGTS: JKPGTS,
+        courseName: KCM,
+        evaluationId: PGID,
+        recordNumber: RN
+      })
+    )
+  return convert(records)
+}
+
+const requestTeachingEvaluationPageHTML = async (
+  courseId: string
+): Promise<string> => {
+  const url = `/student/teachingEvaluation/newEvaluation/evaluation/${courseId}`
+  const html = await getPageHTML(url)
+  return html
+}
+
 async function requestStudentSemesterNumberList(): Promise<string[]> {
   const url = '/student/courseSelect/calendarSemesterCurriculum/index'
   const rawHTML = await getPageHTML(url)
   const codeList = Array.from($('#planCode', rawHTML).find('option')).map(
-    (v) => $(v).val() as string
+    v => $(v).val() as string
   )
   return codeList
 }
@@ -53,7 +165,10 @@ async function requestStudentInfo(): Promise<Map<string, string>> {
   const url = '/student/rollManagement/rollInfo/index'
   const rawHTML = await getPageHTML(url)
   const programPlanNumber = $('#zx', rawHTML).val() as string
-  const programPlanName = $('#zx', rawHTML).parent().text().trim()
+  const programPlanName = $('#zx', rawHTML)
+    .parent()
+    .text()
+    .trim()
   const infos = Array.from($('.profile-info-row', rawHTML))
     .map((v): HTMLElement[][] => {
       const num = $(v).children('.profile-info-name').length
@@ -79,9 +194,15 @@ async function requestStudentInfo(): Promise<Map<string, string>> {
       return [[]]
     })
     .flat(1)
-    .filter((v) => v.length)
-    .map((v) => v.map((element) => $(element).text().trim()))
-    .filter((v) => v[0])
+    .filter(v => v.length)
+    .map(v =>
+      v.map(element =>
+        $(element)
+          .text()
+          .trim()
+      )
+    )
+    .filter(v => v[0])
     .concat([
       ['培养方案名称', programPlanName],
       ['培养方案代码', programPlanNumber]
@@ -202,8 +323,7 @@ async function requestCourseSchedule(
           return acc
         }, [] as CourseScheduleInfo[])
         .sort(
-          (a, b) =>
-            Num(a.courseSequenceNumber) - Num(b.courseSequenceNumber)
+          (a, b) => Num(a.courseSequenceNumber) - Num(b.courseSequenceNumber)
         )
     }
   }
@@ -428,7 +548,9 @@ async function requestCourseSchedule(
 //   }
 // }
 
-async function requestCurrentSemesterStudentAcademicInfo(): Promise<CurrentSemesterStudentAcademicInfo> {
+async function requestCurrentSemesterStudentAcademicInfo(): Promise<
+  CurrentSemesterStudentAcademicInfo
+> {
   // 加载本学期基本信息
   const [
     {
@@ -466,9 +588,9 @@ function filterCourseScoreInfoList(list: CourseScoreInfo[]): CourseScoreInfo[] {
       // 教师「暂存」的成绩学生不应看到
       // 因此为了和教务处成绩显示保持一致，这里只显示「已提交」的成绩
       // TODO: 考虑做开关，让用户决定看不看
-      .filter((v) => v.inputStatusCode === '05')
+      .filter(v => v.inputStatusCode === '05')
       // 分数可能为null，必须分数不为null才显示
-      .filter((v) => v.courseScore)
+      .filter(v => v.courseScore)
   )
 }
 
@@ -556,7 +678,7 @@ async function requestThisTermCourseScoreInfoList(): Promise<
     // console.log(`state: ${state}`)
     const res = filterCourseScoreInfoList(
       list.map(
-        (v) =>
+        v =>
           ({
             courseName: v.courseName || '',
             englishCourseName: v.englishCourseName || '',
@@ -610,6 +732,11 @@ async function requestThisTermCourseScoreInfoList(): Promise<
   }
 }
 
+/**
+ * 2021-12-13 01:40:29
+ * NOTE: 发现调用接口时会返回 { msg: '当前不允许查看分项成绩！' }
+ * 不知道是暂时的还是永久的，有待进一步观察。
+ */
 export async function requestSubitemScoreLook(
   executiveEducationPlanNumber: string,
   courseNumber: string,
@@ -634,8 +761,8 @@ export async function requestSubitemScoreLook(
 }
 
 /**
- * NOTE: 2021-7-12
- * 这个接口目前已经没有修复的必要了
+ * 2021-7-12
+ * NOTE: 这个接口目前已经没有修复的必要了
  * 即使在 /student/integratedQuery/scoreQuery/subitemScore/fxcjIndex 页面中加上随机字符串正确调用了接口，返回的数据仍然为空。
  */
 export async function requestSubitemScoreFxcj(
@@ -692,6 +819,8 @@ export async function requestSubitemScoreFxcj(
 // }
 
 export {
+  requestTeachingAssessmentEvaluationRecords,
+  requestTeachingEvaluationPageHTML,
   requestThisTermCourseScoreInfoList,
   requestCurrentSemesterStudentAcademicInfo,
   // requestTrainingSchemeList,
@@ -700,5 +829,5 @@ export {
   requestStudentSemesterNumberList,
   requestStudentInfo
   // requestScuUietpList,
-  // requestBachelorDegree
+  // requestBachelorDegree,
 }
