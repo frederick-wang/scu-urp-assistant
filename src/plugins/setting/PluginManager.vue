@@ -49,6 +49,7 @@ import { SUAPluginMenu } from '@/core/types'
 import { fromPairs } from 'ramda'
 import { state } from '../../store'
 import local from '@/store/local'
+import { Num } from '@/helper/util'
 
 interface PluginInfo {
   name: string
@@ -145,7 +146,7 @@ export default class PluginManager extends Vue {
         sensitivity: 'accent'
       })
     )
-    .sort((a, b) => Number(b.isNecessary) - Number(a.isNecessary))
+    .sort((a, b) => Num(b.isNecessary) - Num(a.isNecessary))
 
   async onSwitchChange(): Promise<void> {
     const newPluginEnabledStates = fromPairs(

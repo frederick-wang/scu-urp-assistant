@@ -10,7 +10,10 @@ import {
   Notification,
   Rate,
   Divider,
-  Tooltip
+  Tooltip,
+  CheckboxGroup,
+  Checkbox,
+  CheckboxButton
 } from 'element-ui'
 import JsonViewer from 'vue-json-viewer'
 import { routeTrigger } from '@/helper/util'
@@ -24,7 +27,7 @@ import { addRoute, getCurrentRouteParams, RouteConfig, router } from './router'
 export const loadElementUI = (): void => {
   // 导入 Element-UI 的样式
   $('head').append(
-    '<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"></link>'
+    '<link rel="stylesheet" href="//cdn.staticfile.org/element-ui/2.15.6/theme-chalk/index.min.css"></link>'
   )
   // 导入 Element-UI 组件
   Vue.use(Button)
@@ -35,6 +38,9 @@ export const loadElementUI = (): void => {
   Vue.use(Rate)
   Vue.use(Divider)
   Vue.use(Tooltip)
+  Vue.use(CheckboxGroup)
+  Vue.use(Checkbox)
+  Vue.use(CheckboxButton)
   Vue.prototype.$loading = Loading.service
   Vue.prototype.$msgbox = MessageBox
   Vue.prototype.$alert = MessageBox.alert

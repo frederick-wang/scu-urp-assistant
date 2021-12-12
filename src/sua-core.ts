@@ -116,7 +116,7 @@ const suaObject: SUAObject = {
       // 将路由配置推入队列中
       if (plugin.route) {
         if (Array.isArray(plugin.route)) {
-          plugin.route.forEach(r => this.pluginsRouteConfigQueue.push(r))
+          plugin.route.forEach((r) => this.pluginsRouteConfigQueue.push(r))
         } else {
           this.pluginsRouteConfigQueue.push(plugin.route)
         }

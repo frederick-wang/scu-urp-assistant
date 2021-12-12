@@ -31,7 +31,7 @@ import Loading from '@/plugins/common/components/Loading.vue'
 import SemesterCard from './components/SemesterCard.vue'
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
-import * as ueip from '@/plugins/user-experience-improvement-program'
+// import * as ueip from '@/plugins/user-experience-improvement-program'
 import { SemesterInfoExchange } from './types'
 import { SemesterScoreRecord } from '../score/types'
 import { requestAllTermsCourseScoreInfoList } from '@/store/actions/request'
@@ -51,7 +51,7 @@ export default class EvaluateSelectedCourses extends Vue {
   }[] = []
 
   get hasNoError(): boolean {
-    return this.alerts.every((v) => v.type !== 'error')
+    return this.alerts.every(v => v.type !== 'error')
   }
 
   async created(): Promise<void> {
@@ -104,10 +104,10 @@ export default class EvaluateSelectedCourses extends Vue {
         }))
       this.records = convertRecordsToRecordsWithInfoExchange(records)
       this.loadingIsDone = true
-      ueip.sendStudentCourseScorePublicList(records)
+      // ueip.sendStudentCourseScorePublicList(records)
     } catch (error) {
       const title = '[课程评价] 评价已选课程'
-      const message: string = error.message
+      const message: string = (error as Error).message
       emitDataAnalysisEvent('评价已选课程', '查询课程列表失败')
       notifyError(message, title)
       this.alerts.push({

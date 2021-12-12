@@ -360,7 +360,7 @@ export default class ExpectedGradeEstimation extends Vue {
       emitDataAnalysisEvent('预期成绩估计', '查询成功')
     } catch (error) {
       const title = '[成绩相关工具] 预期成绩估计'
-      const message: string = error.message
+      const message: string = (error as Error).message
       emitDataAnalysisEvent('预期成绩估计', '查询失败')
       notifyError(message, title)
       this.alerts.push({

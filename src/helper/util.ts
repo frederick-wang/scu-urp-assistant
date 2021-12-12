@@ -1,11 +1,17 @@
 import minimatch from 'minimatch'
-import { state } from '@/store'
+// import { state } from '@/store'
 import { isError, isLoginPage } from './judger'
-import { API_PATH_V2 } from './info'
+// import { API_PATH_V2 } from './info'
 import axios, { AxiosInstance } from 'axios'
 import { getCurrentRoutePath } from '@/core/router'
 import Vue from 'vue'
 import { Logger } from './logger'
+
+/**
+ * SCU URP 引入的 JS 文件中，重写了 Number 函数；
+ * 本函数是 Number 函数的替代
+ */
+export const Num: NumberConstructor = Object.getPrototypeOf(0).constructor
 
 export const sleep = (time: number): Promise<void> =>
   new Promise(resolve => setTimeout(() => resolve(), time))
@@ -91,15 +97,15 @@ export const routeTrigger = (
 // 确保 http 调用时 state 已经被初始化
 export const http = (): AxiosInstance =>
   axios.create({
-    baseURL: API_PATH_V2,
-    timeout: 10000,
-    headers: {
-      ...(state.user.accessToken
-        ? {
-            Authorization: `Bearer ${state.user.accessToken}`
-          }
-        : {})
-    }
+    // baseURL: API_PATH_V2,
+    timeout: 10000
+    // headers: {
+    //   ...(state.user.accessToken
+    //     ? {
+    //         Authorization: `Bearer ${state.user.accessToken}`
+    //       }
+    //     : {})
+    // }
   })
 
 export function notifyError(message: string, title?: string): void

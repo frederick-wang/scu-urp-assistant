@@ -1,5 +1,6 @@
 import { CourseScoreInfo } from '@/store/types'
 import { SemesterScoreRecord } from '@/plugins/score/types'
+import { Num } from './util'
 
 export const convertSemesterNumberToName = (semesterNumber: string): string => {
   const r = semesterNumber.match(/(\d+)-(\d+)-(\d)/)
@@ -74,14 +75,14 @@ export const convertCourseScoreInfoListToScoreRecords = (
               v.courseName === courseName &&
               v.courseNumber === courseNumber &&
               v.courseSequenceNumber === courseSequenceNumber &&
-              Number(v.examTime) > Number(examTime)
+              Num(v.examTime) > Num(examTime)
           )
       )
     }))
     .sort((a, b) => {
       const getWeightSum = ({ semester }: SemesterScoreRecord): number => {
         const r = semester.match(/^(\d+)-(\d+)学年\s(.)季学期$/)
-        return r ? Number(r[1]) + Number(r[2]) + (r[3] === '秋' ? 0 : 1) : 0
+        return r ? Num(r[1]) + Num(r[2]) + (r[3] === '秋' ? 0 : 1) : 0
       }
       // 从大到小排
       return getWeightSum(b) - getWeightSum(a)

@@ -40,7 +40,7 @@ import SemesterTranscript from './components/SemesterTranscript/SemesterTranscri
 import { emitDataAnalysisEvent } from '../data-analysis'
 import { getSelectedCourses } from '@/plugins/score/utils'
 import { convertCourseScoreInfoListToScoreRecords } from '@/helper/converter'
-import * as ueip from '@/plugins/user-experience-improvement-program'
+// import * as ueip from '@/plugins/user-experience-improvement-program'
 import {
   requestAllPassingScores,
   requestThisTermCourseScoreInfoList
@@ -67,7 +67,7 @@ export default class GPACalculator extends Vue {
   }[] = []
 
   get hasNoError(): boolean {
-    return this.alerts.every((v) => v.type !== 'error')
+    return this.alerts.every(v => v.type !== 'error')
   }
 
   get allCourses(): CourseScoreRecord[] {
@@ -82,23 +82,19 @@ export default class GPACalculator extends Vue {
   }
 
   selectAllCourses(): void {
-    this.allCourses.forEach((v) => (v.selected = true))
+    this.allCourses.forEach(v => (v.selected = true))
   }
 
   unselectAllCourses(): void {
-    this.allCourses.forEach((v) => (v.selected = false))
+    this.allCourses.forEach(v => (v.selected = false))
   }
 
   selectCompulsoryCourses(): void {
-    this.allCourses.forEach(
-      (v) => (v.selected = v.coursePropertyName === '必修')
-    )
+    this.allCourses.forEach(v => (v.selected = v.coursePropertyName === '必修'))
   }
 
   selectMinorCourses(): void {
-    this.allCourses.forEach(
-      (v) => (v.selected = v.coursePropertyName === '辅修')
-    )
+    this.allCourses.forEach(v => (v.selected = v.coursePropertyName === '辅修'))
   }
 
   async created(): Promise<void> {
@@ -113,7 +109,7 @@ export default class GPACalculator extends Vue {
             )
       this.records = records
       this.loadingIsDone = true
-      ueip.sendStudentCourseScorePublicList(records)
+      // ueip.sendStudentCourseScorePublicList(records)
       switch (this.type) {
         case 'compact':
           emitDataAnalysisEvent('均分绩点计算器挂件', '查询成功')
@@ -127,7 +123,7 @@ export default class GPACalculator extends Vue {
       }
     } catch (error) {
       let title = '[成绩相关工具] '
-      const message: string = error.message
+      const message: string = (error as Error).message
       switch (this.type) {
         case 'compact':
           title += '均分绩点计算器挂件'
