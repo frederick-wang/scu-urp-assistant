@@ -1,3 +1,18 @@
+# [0.13.0](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.12.3...v0.13.0) (2021-12-12)
+
+
+### Bug Fixes
+
+* **all:** 屏蔽失效插件；修复Number函数被重写导致不可用的bug ([8a974ff](https://github.com/frederick-wang/scu-urp-assistant/commit/8a974ffc0d67ed85f33840edf041a5f3ab1c6a74))
+* **core:** chrome94开始，http网站无法加载https资源了。 ([4b50f22](https://github.com/frederick-wang/scu-urp-assistant/commit/4b50f22f72d027df810919c1d4ec36bf42de9b6e))
+
+
+### Features
+
+* **plugins/fast-evaluation:** 支援新版评教系统 ([6ddc15d](https://github.com/frederick-wang/scu-urp-assistant/commit/6ddc15deb7b8967addfe61f184eb9f0a484b1902))
+
+
+
 ## [0.12.3](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.12.2...v0.12.3) (2021-07-13)
 
 
