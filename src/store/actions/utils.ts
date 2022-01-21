@@ -50,6 +50,19 @@ export async function getThisTermScoresDataURL(): Promise<string> {
   }
 }
 
+export async function getAllPassingScoresURL(): Promise<string> {
+  const referralUrl = 'student/integratedQuery/scoreQuery/allPassingScores/index'
+  const referralPageHTML = await getPageHTML(referralUrl)
+  const r = /scoreQuery\/(.+?)\/allPassingScores/.exec(referralPageHTML)
+  if (!r) {
+    const msg = '无法获取 allPassingScores 接口的完整地址。'
+    notifyError(msg, '[均分绩点计算器] 获取数据接口地址失败')
+    throw new Error(msg)
+  } else {
+    return `/student/integratedQuery/scoreQuery/${r[1]}/allPassingScores/callback`
+  }
+}
+
 export function getExamTypeNameByCode(
   examTypeCode: string | undefined
 ): string | undefined {

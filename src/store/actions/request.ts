@@ -39,6 +39,7 @@ import {
   getExamTypeNameByCode,
   getPageHTML,
   getThisTermScoresDataURL,
+  getAllPassingScoresURL,
   LoadHTMLToDealWithError
 } from './utils'
 
@@ -595,7 +596,7 @@ function filterCourseScoreInfoList(list: CourseScoreInfo[]): CourseScoreInfo[] {
 }
 
 export async function requestAllPassingScores(): Promise<CourseScoreInfo[]> {
-  const url = '/student/integratedQuery/scoreQuery/allPassingScores/callback'
+  const url = await getAllPassingScoresURL()
   try {
     const { lnList } = (await $.get(url)) as APIAllPassingScoresDTO
     const records = lnList.reduce(

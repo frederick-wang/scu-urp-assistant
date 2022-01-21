@@ -1,11 +1,8 @@
 // 提示信息插件
-import pack from '@/../package.json'
 import { getPluginIcon } from '@/helper/getter'
 import { SUAPlugin } from '@/core/types'
-import { isDev, isLoginPage } from '@/helper/judger'
+import { isLoginPage } from '@/helper/judger'
 import { getVersionName } from '@/helper/info'
-
-const { version } = pack
 
 export const Tooltip: SUAPlugin = {
   name: 'tooltip',

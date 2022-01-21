@@ -81,14 +81,14 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
 import pack from '@/../package.json'
-import { isDev } from '@/helper/judger'
+import { getVersionName } from '@/helper/info'
 
-const { version, description } = pack
+const { description } = pack
 
 @Component
 export default class About extends Vue {
   get version(): string {
-    return `${version} (${isDev() ? 'dev' : 'stable'})`
+    return getVersionName()
   }
 
   get featureList(): string[][] {
