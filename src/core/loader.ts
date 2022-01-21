@@ -133,6 +133,10 @@ export const loadMenu = (menu: SUAPluginMenu): void => {
   if (!Array.isArray(items)) {
     items = [items]
   }
+  // 将侧边栏置顶，避免在手机上使用时，顶栏因高度增加挡住侧边栏。
+  const $sidebar = $('#sidebar')
+  $sidebar.css('z-index', 9999)
+
   const $rootMenuList = $('#menus')
   // 检查根菜单是否存在，如不存在则新建
   if (!$rootMenuList.children(`li#${rootMenuId}`).length) {
