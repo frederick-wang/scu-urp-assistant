@@ -1,3 +1,14 @@
+## [0.13.1](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.13.0...v0.13.1) (2022-01-21)
+
+
+### Bug Fixes
+
+* **core:** 修复在浏览器宽度不够时，顶栏遮挡菜单的bug ([7cacf76](https://github.com/frederick-wang/scu-urp-assistant/commit/7cacf76c25fd302262b4a7409633e4916b819c71)), closes [#54](https://github.com/frederick-wang/scu-urp-assistant/issues/54)
+* **plugins/about:** 修复「关于」页面中版本号显示有误的bug ([0543312](https://github.com/frederick-wang/scu-urp-assistant/commit/05433121c736fbdc6ced779f750a4adfb8777126)), closes [#55](https://github.com/frederick-wang/scu-urp-assistant/issues/55)
+* **plugins/score:** Fix requestAllPassingScores ([#64](https://github.com/frederick-wang/scu-urp-assistant/issues/64)) ([9acac3f](https://github.com/frederick-wang/scu-urp-assistant/commit/9acac3faed1cccce6841d3afc3de9c967f11ffdf))
+
+
+
 # [0.13.0](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.12.3...v0.13.0) (2021-12-12)
 
 
