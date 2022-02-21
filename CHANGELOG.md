@@ -1,3 +1,14 @@
+## [0.13.2](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.13.1...v0.13.2) (2022-02-21)
+
+
+### Bug Fixes
+
+* **plugins/fast-evaluation:** 修复无待评教记录时报错的bug ([a57ceae](https://github.com/frederick-wang/scu-urp-assistant/commit/a57ceae1373c3eb208a584f6fe794708433f06d6))
+* **plugins/score:** 修复了成绩相关工具有时不能使用的bug ([b5e8298](https://github.com/frederick-wang/scu-urp-assistant/commit/b5e829809cab160e55c1993c7ceac5effdce9223))
+* **plugins/score:** 修复了会造成历年学期课表无法使用的 bug ([0ab424c](https://github.com/frederick-wang/scu-urp-assistant/commit/0ab424c6bb574005e30e6432f2b15b745ff8c35e))
+
+
+
 ## [0.13.1](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.13.0...v0.13.1) (2022-01-21)
 
 
