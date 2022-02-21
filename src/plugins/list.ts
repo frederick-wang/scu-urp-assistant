@@ -4,7 +4,7 @@ import { Tooltip } from '@/plugins/tooltip'
 import { RecoverRememberMe } from '@/plugins/recover-remember-me'
 import { Rearrange } from '@/plugins/rearrange'
 import { Score } from '@/plugins/score'
-import { SubitemScore } from '@/plugins/subitem-score'
+// import { SubitemScore } from '@/plugins/subitem-score'
 // import { TrainingScheme } from '@/plugins/training-scheme'
 // import { UserExperienceImprovementProgram } from '@/plugins/user-experience-improvement-program'
 import { DataAnalysis } from '@/plugins/data-analysis'
@@ -30,7 +30,7 @@ const optionalPluginsLogined = [
   FastEvaluation,
   textbookSelection,
   Score,
-  SubitemScore,
+  // SubitemScore,
   // 之所以放到中间，是因为菜单的渲染顺序是和数组中的顺序一致的
   // 需要将「设置」菜单和「帮助」菜单放到最后
   ...(isSCU() ? optionalPluginsLoginedOnlySCU : []),

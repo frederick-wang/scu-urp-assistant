@@ -71,16 +71,15 @@ const requestTeachingAssessmentEvaluationRecords = async (
     pageSize: 1,
     flag
   })
-  if (
-    probeRes.status !== 200 ||
-    probeRes.msg !== 'OK' ||
-    !probeRes?.data?.records
-  ) {
+  if (probeRes.status !== 200 || probeRes.msg !== 'OK') {
     throw new Error(
       `[教学评估查询] teachingAssessment/evaluation/queryAll 探针返回值错误: ${JSON.stringify(
         probeRes
       )}`
     )
+  }
+  if (!probeRes?.data?.records) {
+    return []
   }
   const {
     data: {
@@ -153,14 +152,20 @@ const requestTeachingEvaluationPageHTML = async (
   return html
 }
 
-async function requestStudentSemesterNumberList(): Promise<string[]> {
-  const url = '/student/courseSelect/calendarSemesterCurriculum/index'
-  const rawHTML = await getPageHTML(url)
-  const codeList = Array.from($('#planCode', rawHTML).find('option')).map(
-    v => $(v).val() as string
-  )
-  return codeList
-}
+/**
+ * 获取学生自入学到现在全部的执行教学计划号列表
+ * NOTE: 2022-2-21 废弃此方法，会造成「历年学期课表」功能无法正常使用，报错「非法请求」
+ *
+ * @returns 执行教学计划号列表
+ */
+// async function requestStudentSemesterNumberList(): Promise<string[]> {
+//   const url = '/student/courseSelect/calendarSemesterCurriculum/index'
+//   const rawHTML = await getPageHTML(url)
+//   const codeList = Array.from($('#planCode', rawHTML).find('option')).map(
+//     v => $(v).val() as string
+//   )
+//   return codeList
+// }
 
 async function requestStudentInfo(): Promise<Map<string, string>> {
   const url = '/student/rollManagement/rollInfo/index'
@@ -827,7 +832,6 @@ export {
   // requestTrainingSchemeList,
   // requestTrainingScheme,
   requestCourseSchedule,
-  requestStudentSemesterNumberList,
   requestStudentInfo
   // requestScuUietpList,
   // requestBachelorDegree,

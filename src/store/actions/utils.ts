@@ -51,7 +51,7 @@ export async function getThisTermScoresDataURL(): Promise<string> {
 }
 
 export async function getAllPassingScoresURL(): Promise<string> {
-  const referralUrl = 'student/integratedQuery/scoreQuery/allPassingScores/index'
+  const referralUrl = '/student/integratedQuery/scoreQuery/allPassingScores/index'
   const referralPageHTML = await getPageHTML(referralUrl)
   const r = /scoreQuery\/(.+?)\/allPassingScores/.exec(referralPageHTML)
   if (!r) {
