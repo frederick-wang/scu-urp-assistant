@@ -235,7 +235,7 @@ export default class ExpectedGradeEstimation extends Vue {
   }
 
   get hasNoError(): boolean {
-    return this.alerts.every((v) => v.type !== 'error')
+    return this.alerts.every(v => v.type !== 'error')
   }
 
   get allCourses(): CourseScoreRecord[] {
@@ -384,7 +384,7 @@ export default class ExpectedGradeEstimation extends Vue {
     this.newCourses[index].compulsoryGPA =
       getPointByScore(
         this.newCourses[index].compulsoryScore,
-        state.user.semesterNumberList[0]
+        state.basic.currentSemesterNumber
       ) || 0
   }
 
@@ -392,7 +392,7 @@ export default class ExpectedGradeEstimation extends Vue {
     this.newCourses[index].optionalGPA =
       getPointByScore(
         this.newCourses[index].optionalScore,
-        state.user.semesterNumberList[0]
+        state.basic.currentSemesterNumber
       ) || 0
   }
 }

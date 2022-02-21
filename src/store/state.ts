@@ -8,8 +8,6 @@ import { allList as pluginList } from '@/plugins'
 import { convertSemesterNumberToName } from '@/helper/converter'
 import { getUserId } from '@/helper/getter'
 import { Num } from '@/helper/util'
-// import { isSCU } from '@/helper/judger'
-// import { notifyError } from '@/helper/util'
 
 const { version } = pack
 
@@ -22,7 +20,6 @@ interface AcademicInfo {
 }
 let academicInfo: AcademicInfo
 let studentInfos: Map<string, string>
-let userSemesterNumberList: string[]
 // let accessToken: string
 const data = {} as {
   [key: string]: unknown
@@ -61,30 +58,16 @@ async function init(localStore: LocalStore): Promise<void> {
   await initPluginEnabledStates()
   const res = await Promise.all([
     actions[Request.CURRENT_SEMESTER_STUDENT_ACADEMIC_INFO](),
-    requestStudentInfo(),
-    actions[Request.STUDENT_SEMESTER_CODE_LIST]()
+    requestStudentInfo()
   ])
   academicInfo = res[0]
   studentInfos = res[1]
-  userSemesterNumberList = res[2]
-  // if (isSCU()) {
-  //   try {
-  //     accessToken = (await actions[Request.ACCESS_TOKEN]()).accessToken
-  //   } catch (error) {
-  //     notifyError(
-  //       '获取accessToken失败，以下插件将无法使用：专业授位查询、培养方案相关、历届大创查询、课程评价。您可以尝试刷新页面，也许能解决问题。',
-  //       '[初始化错误] 获取accessToken失败'
-  //     )
-  //   }
-  // }
 }
 
 type User = {
   id: string
-  // accessToken: string
   programPlanNumber: number
   programPlanName: string
-  semesterNumberList: string[]
   courseNumber: number
   gpa: number
   currentSemesterCourseNumber: number
@@ -112,10 +95,8 @@ export default {
   get user(): User {
     return {
       id: getUserId(studentInfos),
-      // accessToken,
       programPlanNumber: Num(studentInfos.get('培养方案代码')),
       programPlanName: studentInfos.get('培养方案名称') || '',
-      semesterNumberList: userSemesterNumberList,
       courseNumber: academicInfo.courseNumber,
       gpa: academicInfo.gpa,
       currentSemesterCourseNumber: academicInfo.currentSemesterCourseNumber,

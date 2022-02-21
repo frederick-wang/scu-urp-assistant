@@ -3,8 +3,8 @@ import {
   // requestTrainingSchemeList,
   // requestTrainingScheme,
   // requestBachelorDegree,
-  requestCourseSchedule,
-  requestStudentSemesterNumberList
+  requestCourseSchedule
+  // requestStudentSemesterNumberList
   // requestScuUietpList,
   // requestAccessToken
 } from './request'
@@ -40,8 +40,8 @@ const actions = {
   // [Request.TRAINING_SCHEME_LIST]: requestTrainingSchemeList,
   // [Request.TRAINING_SCHEME]: requestTrainingScheme,
   // [Request.BACHELOR_DEGREE]: requestBachelorDegree,
-  [Request.COURSE_SCHEDULE]: requestCourseSchedule,
-  [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList
+  [Request.COURSE_SCHEDULE]: requestCourseSchedule
+  // [Request.STUDENT_SEMESTER_CODE_LIST]: requestStudentSemesterNumberList
   // [Request.SCU_UIETP_LIST]: requestScuUietpList,
   // [Request.ACCESS_TOKEN]: requestAccessToken,
   // [Submit.COURSE_SCORE_PUBLIC_INFO]: submitCourseScorePublicInfo,
