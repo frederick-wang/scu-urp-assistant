@@ -71,16 +71,15 @@ const requestTeachingAssessmentEvaluationRecords = async (
     pageSize: 1,
     flag
   })
-  if (
-    probeRes.status !== 200 ||
-    probeRes.msg !== 'OK' ||
-    !probeRes?.data?.records
-  ) {
+  if (probeRes.status !== 200 || probeRes.msg !== 'OK') {
     throw new Error(
       `[教学评估查询] teachingAssessment/evaluation/queryAll 探针返回值错误: ${JSON.stringify(
         probeRes
       )}`
     )
+  }
+  if (!probeRes?.data?.records) {
+    return []
   }
   const {
     data: {
