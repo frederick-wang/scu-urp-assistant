@@ -48,7 +48,7 @@
     "babel-loader": "^8.2.3",
     "babel-plugin-component": "^1.1.1",
     "clean-webpack-plugin": "^3.0.0",
-    "commitizen": "^4.2.4",
+    "commitizen": "^4.3.0",
     "conventional-changelog-cli": "^2.2.2",
     "cross-env": "^7.0.3",
     "css-loader": "^5.2.7",
