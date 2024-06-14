@@ -135,11 +135,18 @@ const evaluate = async (
   }
 }
 
+const evaluateMultiple = async (evaluations: { html: string, text: string }[]): Promise<EvaluationResult[]> => {
+  // 等待 1 分 40 秒
+  await new Promise(resolve => setTimeout(resolve, 100000))
+  return Promise.all(evaluations.map(e => evaluate(e.html, e.text)))
+}
+
 export {
   getRecordText,
   getRandomComment,
   getEvaluationItem,
   EvaluationItem,
   EvaluationStatus,
-  evaluate
+  evaluate,
+  evaluateMultiple
 }
