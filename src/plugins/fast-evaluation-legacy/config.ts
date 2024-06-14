@@ -1,4 +1,4 @@
-export const EVALUATION_INTERVAL = 1000 * (10 + 1)
+export const EVALUATION_INTERVAL = 10000000 * (10 + 1)
 
 export const HTTP_HEADERS = {
   Accept:

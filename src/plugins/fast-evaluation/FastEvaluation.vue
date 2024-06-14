@@ -26,6 +26,7 @@
             li 选中多选题除了「以上均无」之外的全部选项；
             li 从评价文本库中随机抽取一条评价作为「主观评价」。
           p: strong 请您在确认已阅读以上说明，并确定程序运行的效果为自己所需的效果之后，再点击「开始评教」！
+          p: strong 由于评教逻辑更新，每一次评教前都要等1分40秒才可以进行再次评教。在点击「开始评教」！后，我们将按照顺序依次进行评教，请您耐心等待！
         .checkboxs-wrapper(v-if='options.length && !isEvaluated && !isEvaluating')
           .check-all-box-wrapper
             el-checkbox(:indeterminate='isIndeterminate' @change='triggerCheckAll') 全选
@@ -51,7 +52,7 @@
                   i.el-icon-loading(v-if='v.status === `evaluating`')
                   span(v-if='v.status === `evaluating`')
                     |
-                    | 正在评教
+                    | 正在评教（{{ v.countdown }}秒）
                   i.el-icon-circle-check(v-if='v.status === `evaluated`')
                   span(v-if='v.status === `evaluated`')
                     |
@@ -87,8 +88,19 @@
     EvaluationItem,
     getEvaluationItem,
     getRecordText,
-    evaluateMultiple
+    evaluate
   } from './tools'
+  
+  interface EvaluationItem {
+    key: string
+    teacherName: string
+    courseName: string
+    courseNumber: string
+    courseSequenceNumber: string
+    status: 'pending' | 'evaluating' | 'evaluated' | 'error'
+    courseId: string
+    countdown?: number
+  }
   
   @Component({ components: { Loading } })
   export default class FastEvaluation extends Vue {
@@ -104,6 +116,8 @@
     options: string[] = []
     checkedOptions: string[] = []
     evaluationItems: EvaluationItem[] = []
+  
+    countdownIntervals: { [key: string]: NodeJS.Timeout } = {}
   
     get isEvaluating(): boolean {
       return (
@@ -159,40 +173,45 @@
       this.init()
     }
   
-    async start(): Promise<void> {
+    start(): void {
       const items = this.records
         .filter(rec => this.checkedOptions.includes(getRecordText(rec)))
-        .map(getEvaluationItem)
+        .map(record => ({
+          ...getEvaluationItem(record),
+          countdown: 100 // 初始化倒计时为100秒
+        }))
       if (!items.length) {
         messageWarning('您尚未选择老师，请至少选择一人！')
         return
       }
       this.evaluationItems = items
-      await this.startEvaluation()
+      this.startEvaluation()
     }
   
     async startEvaluation(): Promise<void> {
-      // Set all items to evaluating status
-      this.evaluationItems.forEach(item => {
+      for (const item of this.evaluationItems) {
         item.status = 'evaluating'
-      })
-  
-      const evaluations = this.evaluationItems.map(item => {
+        this.startCountdown(item)
         const { courseId, key } = item
-        return requestTeachingEvaluationPageHTML(courseId).then(html => ({ html, text: key }))
-      })
+        const html = await requestTeachingEvaluationPageHTML(courseId)
+        const { error } = await evaluate(html, key)
+        if (error) {
+          item.status = 'error'
+          break
+        }
+        item.status = 'evaluated'
+        clearInterval(this.countdownIntervals[item.key]) // 清除倒计时
+      }
+    }
   
-      // Wait for all evaluations to be ready
-      const evaluationData = await Promise.all(evaluations)
-  
-      // Start all evaluations simultaneously
-      const results = await evaluateMultiple(evaluationData)
-  
-      // Update evaluation statuses based on results
-      results.forEach((result, index) => {
-        const item = this.evaluationItems[index]
-        item.status = result.error === 0 ? 'evaluated' : 'error'
-      })
+    startCountdown(item: EvaluationItem) {
+      this.countdownIntervals[item.key] = setInterval(() => {
+        if (item.countdown && item.countdown > 0) {
+          item.countdown--
+        } else {
+          clearInterval(this.countdownIntervals[item.key])
+        }
+      }, 1000)
     }
   
     async created(): Promise<void> {
@@ -207,6 +226,10 @@
       this.checkedOptions = []
       this.evaluationItems = []
       try {
+        /**
+         * 2021-12-13 01:06:23
+         * TODO: 先只整一个「期末评教」，等有样本了再处理「课堂及时评教」
+         */
         const records = await requestTeachingAssessmentEvaluationRecords(
           '期末评教'
         )

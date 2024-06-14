@@ -42,6 +42,8 @@ type EvaluationResult = {
   msg: string
 }
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 const evaluate = async (
   html: string,
   text: string
@@ -62,6 +64,9 @@ const evaluate = async (
   const $form = $('#saveEvaluation', $html)[0] as HTMLFormElement
   const form = new FormData($form)
   const url = `/student/teachingAssessment/baseInformation/questionsAdd/doSave?tokenValue=${tokenValue}`
+
+  await delay(100000) // 等待1分40秒（100000毫秒）
+
   try {
     const data = await $.ajax({
       url,
@@ -135,18 +140,11 @@ const evaluate = async (
   }
 }
 
-const evaluateMultiple = async (evaluations: { html: string, text: string }[]): Promise<EvaluationResult[]> => {
-  // 等待 1 分 40 秒
-  await new Promise(resolve => setTimeout(resolve, 100000))
-  return Promise.all(evaluations.map(e => evaluate(e.html, e.text)))
-}
-
 export {
   getRecordText,
   getRandomComment,
   getEvaluationItem,
   EvaluationItem,
   EvaluationStatus,
-  evaluate,
-  evaluateMultiple
+  evaluate
 }
