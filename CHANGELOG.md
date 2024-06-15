@@ -1,3 +1,12 @@
+## [0.13.3](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.13.2...v0.13.3) (2024-06-15)
+
+
+### Bug Fixes
+
+* **plugins/fast-evaluation:** 修复评教时长限制的bug ([74f6ba1](https://github.com/frederick-wang/scu-urp-assistant/commit/74f6ba14fe2e769b80d8bcb30dd7c8d48e3ddccb))
+* **plugins/score:** 弃用了已被ban的高级成绩查询接口 ([94677ae](https://github.com/frederick-wang/scu-urp-assistant/commit/94677ae8a05fdbfd9862b39ada274bb993de2795))
+
+
 ## [0.13.2](https://github.com/frederick-wang/scu-urp-assistant/compare/v0.13.1...v0.13.2) (2022-02-21)
 
 
