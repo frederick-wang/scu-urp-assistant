@@ -24,9 +24,9 @@ jobs:
     - run: |
         npm install -g npm
         npm ci
+        npm i cross-env
         export PATH=./node_modules/.bin:$PATH
         ls ./node_modules/.bin
-        cross-env --help
         npm run build
     - uses: actions/upload-artifact@v4
       with:
