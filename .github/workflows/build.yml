@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -28,8 +28,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: |
         npm cache clean --force
-        npm ci
-        npm run build
+        npm install -g pnpm
+        pnpm store prune
+        pnpm install
+        pnpm run build
     - uses: actions/upload-artifact@v4
       with:
         name: user-script
