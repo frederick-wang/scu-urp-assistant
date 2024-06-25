@@ -14,22 +14,19 @@ jobs:
   build:
 
     runs-on: ubuntu-22.04
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '20'
+        # cache: 'npm'
     - run: |
-        export PATH=$PWD/node_modules/.bin:$PATH
         npm install -g npm
         npm ci
+        export PATH=./node_modules/.bin:$PATH
+        ls ./node_modules/.bin
+        cross-env --help
         npm run build
     - uses: actions/upload-artifact@v4
       with:
