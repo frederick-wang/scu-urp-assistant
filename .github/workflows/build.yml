@@ -19,16 +19,18 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
-        node-version: '18'
-        # cache: 'npm'
+        node-version: '24'
+        # cache: 'yarn'
     - run: |
         yarn
-        npm run build
+        yarn run build
     - uses: actions/upload-artifact@v4
       with:
         name: user-script
+        compression-level: 0
         path: ./dist/scu-urp-assistant.user.js
-    - uses: actions/upload-artifact@v4
-      with:
-        name: bookmarklet
-        path: ./dist/scu-urp-assistant.bookmarklet.js
+    # - uses: actions/upload-artifact@v4
+    #   with:
+    #     name: bookmarklet
+    #     compression-level: 0
+    #     path: ./dist/scu-urp-assistant.bookmarklet.js
