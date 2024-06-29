@@ -34,20 +34,27 @@ const getEvaluationItem = (
   status: 'pending'
 })
 
+async function sleep(time: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time)
+  })
+}
+
 const getRandomComment = (): string =>
   comments[Math.floor(Math.random() * comments.length)]
 
 type EvaluationResult = {
   error: 0 | 1
   msg: string
+  token: string
 }
 
 const evaluate = async (
   html: string,
-  text: string
+  text: string,
+  token: string
 ): Promise<EvaluationResult> => {
   const $html = $(html)
-  const tokenValue = $('#tokenValue', $html).val()
   $('#saveEvaluation [data-name=szt]', $html).val(100)
   $('#saveEvaluation input[type=radio][value*=A]', $html).attr(
     'checked',
@@ -61,7 +68,7 @@ const evaluate = async (
   $('#saveEvaluation textarea', $html).val(comment)
   const $form = $('#saveEvaluation', $html)[0] as HTMLFormElement
   const form = new FormData($form)
-  const url = `/student/teachingAssessment/baseInformation/questionsAdd/doSave?tokenValue=${tokenValue}`
+  const url = `/student/teachingAssessment/baseInformation/questionsAdd/doSave?tokenValue=${token}`
   try {
     const data = await $.ajax({
       url,
@@ -72,13 +79,15 @@ const evaluate = async (
       contentType: false
     })
     console.log(data)
+    const token = data.token ?? ''
     if (data.result.includes('/')) {
       const msg =
         '因登录持续时间过长，当前暂时无法评教。请点击右上角头像注销，并在重新登录后再次尝试。如果还是无法评教，您可以更换浏览器或电脑后再尝试。'
       notifyError(msg, '[快捷评教] 无法评教')
       return {
         error: 1,
-        msg
+        msg,
+        token
       }
     } else {
       if (data.result == 'ok') {
@@ -86,42 +95,48 @@ const evaluate = async (
         messageSuccess(msg)
         return {
           error: 0,
-          msg
+          msg,
+          token
         }
       } else if (data.result == 'no') {
         const msg = '评教失败，请刷新页面重新尝试！'
         notifyError(msg, '[快捷评教] 评教失败')
         return {
           error: 1,
-          msg
+          msg,
+          token
         }
       } else if (data.result == 'error') {
         const msg = '附件保存失败，请刷新页面后重新尝试！'
         notifyError(msg, '[快捷评教] 附件保存失败')
         return {
           error: 1,
-          msg
+          msg,
+          token
         }
       } else if (data.result == 'typeerr') {
         const msg = '附件只能上传jpg/jpeg/png格式的图片，请确认！'
         notifyError(msg, '[快捷评教] 附件格式错误')
         return {
           error: 1,
-          msg
+          msg,
+          token
         }
       } else if (data.result == 'timeout') {
         const msg = '超出了问卷所规定的的评估期限，评教失败，请联系管理员！'
         notifyError(msg, '[快捷评教] 评估期限超时')
         return {
           error: 1,
-          msg
+          msg,
+          token
         }
       } else {
         const msg = JSON.stringify(data.result)
         messageWarning(msg)
         return {
           error: 1,
-          msg
+          msg,
+          token
         }
       }
     }
@@ -130,7 +145,8 @@ const evaluate = async (
     notifyError(msg, '[快捷评教] 评教失败')
     return {
       error: 1,
-      msg
+      msg,
+      token
     }
   }
 }
@@ -141,5 +157,6 @@ export {
   getEvaluationItem,
   EvaluationItem,
   EvaluationStatus,
-  evaluate
+  evaluate,
+  sleep
 }

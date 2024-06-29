@@ -87,7 +87,8 @@ import {
   EvaluationItem,
   getEvaluationItem,
   getRecordText,
-  evaluate
+  evaluate,
+  sleep
 } from './tools'
 
 @Component({ components: { Loading } })
@@ -174,14 +175,20 @@ export default class FastEvaluation extends Vue {
   async startEvaluation(): Promise<void> {
     for (const item of this.evaluationItems) {
       item.status = 'evaluating'
-      const { courseId, key } = item
-      const html = await requestTeachingEvaluationPageHTML(courseId)
-      const { error } = await evaluate(html, key)
-      if (error) {
+      const { courseId } = item
+      item.html = await requestTeachingEvaluationPageHTML(courseId)
+    }
+    await sleep(105 * 1000);
+    let token: string = $('#tokenValue', this.evaluationItems[0].html).val()
+    for (const item of this.evaluationItems) {
+      const { html, key } = item
+      const result = await evaluate(html, key, token)
+      if (result.error) {
         item.status = 'error'
         break
       }
       item.status = 'evaluated'
+      token = result.token
     }
   }
 
