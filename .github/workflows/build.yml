@@ -27,10 +27,8 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: user-script
-        compression-level: 0
         path: ./dist/scu-urp-assistant.user.js
     # - uses: actions/upload-artifact@v4
     #   with:
     #     name: bookmarklet
-    #     compression-level: 0
     #     path: ./dist/scu-urp-assistant.bookmarklet.js
