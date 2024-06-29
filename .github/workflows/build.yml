@@ -22,6 +22,7 @@ jobs:
         node-version: '22'
         # cache: 'npm'
     - run: |
+        rm -rf ./package-lock.json
         npm install -g npm
         npm install
         npm i cross-env
