@@ -21,11 +21,14 @@ jobs:
       name: Install pnpm
       with:
         version: latest
+        run_install: false
     - uses: actions/setup-node@v4
       with:
         node-version: '22'
-        cache: 'pnpm'
-    - run: pnpm run build
+        # cache: 'pnpm'
+    - run: |
+        pnpm install
+        pnpm run build
     - uses: actions/upload-artifact@v4
       with:
         name: user-script
