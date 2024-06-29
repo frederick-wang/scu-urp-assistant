@@ -22,9 +22,8 @@ jobs:
         node-version: '18'
         # cache: 'npm'
     - run: |
-        pnpm install
-        pnpm install --save-dev @types/minimatch
-        pnpm run build
+        yarn
+        npm run build
     - uses: actions/upload-artifact@v4
       with:
         name: user-script
