@@ -22,14 +22,8 @@ jobs:
         node-version: '18'
         # cache: 'npm'
     - run: |
-        npm cache clean --force
-        npm install -g pnpm
-        rm -rf pnpm-lock.yaml
         pnpm install
         pnpm install --save-dev @types/minimatch
-        pnpm install cross-env
-        export PATH=./node_modules/.bin:$PATH
-        ls ./node_modules/.bin
         pnpm run build
     - uses: actions/upload-artifact@v4
       with:
