@@ -55,6 +55,7 @@ const evaluate = async (
   token: string
 ): Promise<EvaluationResult> => {
   const $html = $(html)
+  $("#tokenValue", $html).attr('value', token)
   $('#saveEvaluation [data-name=szt]', $html).val(100)
   $('#saveEvaluation input[type=radio][value*=A]', $html).attr(
     'checked',
