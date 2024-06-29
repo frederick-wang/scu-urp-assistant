@@ -23,12 +23,12 @@ jobs:
         # cache: 'npm'
     - run: |
         npm cache clean --force
-        npm install -g npm
-        npm install
-        npm i cross-env
+        npm install -g pnpm
+        pnpm install --frozen-lockfile
+        pnpm install cross-env
         export PATH=./node_modules/.bin:$PATH
         ls ./node_modules/.bin
-        npm run build
+        pnpm run build
     - uses: actions/upload-artifact@v4
       with:
         name: user-script
