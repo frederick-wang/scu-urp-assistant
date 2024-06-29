@@ -24,7 +24,9 @@ jobs:
     - run: |
         npm cache clean --force
         npm install -g pnpm
-        pnpm install --no-frozen-lockfile
+        rm -rf pnpm-lock.yaml
+        pnpm install
+        pnpm install --save-dev @types/minimatch
         pnpm install cross-env
         export PATH=./node_modules/.bin:$PATH
         ls ./node_modules/.bin
