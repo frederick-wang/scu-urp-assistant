@@ -23,7 +23,6 @@ jobs:
         # cache: 'npm'
     - run: |
         npm cache clean --force
-        rm -rf ./package-lock.json
         npm install -g npm
         npm install
         npm i cross-env
