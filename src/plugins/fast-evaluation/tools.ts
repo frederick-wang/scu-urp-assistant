@@ -20,6 +20,8 @@ type EvaluationItem = {
   courseNumber: string
   courseSequenceNumber: string
   status: EvaluationStatus
+  html: string
+  fetchTime: Date
 }
 
 const getEvaluationItem = (
