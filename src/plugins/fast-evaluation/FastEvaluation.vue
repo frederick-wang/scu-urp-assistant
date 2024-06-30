@@ -66,7 +66,7 @@
               td {{ v.courseSequenceNumber }}
       .btn-wrapper(v-if='options.length')
         el-button.full-width-btn(type='primary' icon='el-icon-s-promotion' v-if='!isEvaluated && !isEvaluating' @click='start()') 开始评教
-        el-button.full-width-btn(type='primary' :loading='true' v-if='!hasEvaluationError && !isEvaluated && isEvaluating') 正在评教
+        el-button.full-width-btn(type='primary' :loading='true' v-if='!hasEvaluationError && !isEvaluated && isEvaluating') 正在评教，已经等待 {{ pendingTime }}
         el-button.full-width-btn(type='warning' icon='el-icon-close' v-if='hasEvaluationError' @click='back()') 评教发生错误，点此返回
         el-button.full-width-btn(type='success' icon='el-icon-check' v-if='isEvaluated' @click='jump()') 评教完成，点此跳转到「教师课堂评价 > 学生评教 > 教学评估」页面查看评教结果
       .btn-wrapper(v-if='!options.length')
@@ -105,6 +105,7 @@ export default class FastEvaluation extends Vue {
   options: string[] = []
   checkedOptions: string[] = []
   evaluationItems: EvaluationItem[] = []
+  pendingTime: string = ""
 
   get isEvaluating(): boolean {
     return (
@@ -173,15 +174,24 @@ export default class FastEvaluation extends Vue {
   }
 
   async startEvaluation(): Promise<void> {
+    const startTime = new Date()
+    async sleep1(): Promise<void> {
+      await sleep(1000);
+      const dt = (new Date() - startTime) / 1000
+      const mm = Math.floor(dt / 60)
+      const ss = Math.floor(dt) % 60
+      this.pendingTime = `${mm.toString().padStart(2, 0)}:${ss.toString().padStart(2, 0)}`
+    }
     for (const item of this.evaluationItems) {
       item.status = 'evaluating'
       const { courseId } = item
       item.html = await requestTeachingEvaluationPageHTML(courseId)
+      item.fetchTime = new Date()
     }
-    await sleep(105 * 1000);
     let token: string = $('#tokenValue', this.evaluationItems[0].html).val()
     for (const item of this.evaluationItems) {
-      const { html, key } = item
+      const { html, key, fetchTime } = item
+      while ((new Date() - fetchTime) > 100 * 1000) await sleep1()
       const result = await evaluate(html, key, token)
       if (result.error) {
         item.status = 'error'
