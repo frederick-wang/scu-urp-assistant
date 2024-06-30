@@ -175,7 +175,7 @@ export default class FastEvaluation extends Vue {
 
   async startEvaluation(): Promise<void> {
     const startTime = new Date()
-    async sleep1(): Promise<void> {
+    const sleep1 = async (): Promise<void> => {
       await sleep(1000);
       const dt = (new Date() - startTime) / 1000
       const mm = Math.floor(dt / 60)
