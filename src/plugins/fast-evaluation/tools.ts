@@ -42,6 +42,8 @@ type EvaluationResult = {
   msg: string
 }
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 const evaluate = async (
   html: string,
   text: string
@@ -62,6 +64,9 @@ const evaluate = async (
   const $form = $('#saveEvaluation', $html)[0] as HTMLFormElement
   const form = new FormData($form)
   const url = `/student/teachingAssessment/baseInformation/questionsAdd/doSave?tokenValue=${tokenValue}`
+
+  await delay(100000) // 等待1分40秒（100000毫秒）
+
   try {
     const data = await $.ajax({
       url,
