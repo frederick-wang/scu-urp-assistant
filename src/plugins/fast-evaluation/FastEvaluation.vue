@@ -105,7 +105,7 @@ export default class FastEvaluation extends Vue {
   options: string[] = []
   checkedOptions: string[] = []
   evaluationItems: EvaluationItem[] = []
-  pendingTime: string = ""
+  pendingTime: string = "00:00"
 
   get isEvaluating(): boolean {
     return (
