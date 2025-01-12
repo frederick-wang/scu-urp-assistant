@@ -191,7 +191,7 @@ export default class FastEvaluation extends Vue {
     let token: string = $('#tokenValue', this.evaluationItems[0].html).val()
     for (const item of this.evaluationItems) {
       const { html, key, fetchTime } = item
-      while ((new Date() - fetchTime) > 100 * 1000) await sleep1()
+      while ((new Date() - fetchTime) < 100 * 1000) await sleep1()
       const result = await evaluate(html, key, token)
       if (result.error) {
         item.status = 'error'
