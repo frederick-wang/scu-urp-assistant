@@ -33,7 +33,9 @@ const getEvaluationItem = (
   courseName: rec.courseName,
   courseNumber: rec.courseNumber,
   courseSequenceNumber: rec.courseSequenceNumber,
-  status: 'pending'
+  status: 'pending',
+  html: '',
+  fetchTime: new Date(0)
 })
 
 async function sleep(time: number): Promise<void> {
